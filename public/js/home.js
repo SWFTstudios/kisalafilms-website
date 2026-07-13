@@ -53,6 +53,26 @@
     }
   }
 
+  const reveals = document.querySelectorAll(".reveal");
+  if (reveals.length) {
+    if ("IntersectionObserver" in window) {
+      const rio = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-in");
+              rio.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+      );
+      reveals.forEach((el) => rio.observe(el));
+    } else {
+      reveals.forEach((el) => el.classList.add("is-in"));
+    }
+  }
+
   const form = document.getElementById("home-inquiry");
   const note = document.getElementById("form-note");
   if (form) {
