@@ -3,106 +3,180 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Style Guide — K Films (Carsy)</title>
+  <title>Style Guide — K Films</title>
+  <meta name="description" content="Carsy-derived design tokens for Kisala Films.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/carsy.css">
 </head>
 <body class="carsy">
+
   <header class="site-header">
     <div class="container header-bar">
       <a class="logo" href="/">K FILMS</a>
-      <nav class="nav-desktop">
-        <a href="/">Home</a>
-        <a href="/styleguide.html">Style Guide</a>
-        <a class="btn btn-primary" href="/contact.html#inquiry" style="padding:12px 20px">Book</a>
+      <nav class="nav-desktop" aria-label="Primary">
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
+          <div class="nav-dd-menu">
+            <a href="/services.html">All Services</a>
+            <a href="/services/full-wraps.html">Full Wraps</a>
+            <a href="/services/accent-package.html">Partial &amp; Accents</a>
+            <a href="/services/transformation-film.html">Transformation Film</a>
+            <a href="/services.html#protect">Tank / PPF</a>
+            <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+          </div>
+        </div>
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
+          <div class="nav-dd-menu">
+            <a href="/about.html">Who I Am</a>
+            <a href="/about.html#values">Craft &amp; Values</a>
+            <a href="/films.html">Showcase</a>
+            <a href="/testimonials.html">Testimonials</a>
+            <a href="/faq.html">FAQ</a>
+            <a href="/locations.html">Location</a>
+          </div>
+        </div>
+        <a href="/films.html">Showcase</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/journal.html">Journal</a>
+        <a href="/contact.html">Contact</a>
+        <a class="btn btn-primary nav-cta" href="/contact.html">Contact Us</a>
       </nav>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </div>
   </header>
-
-  <main class="container section">
-    <p class="eyebrow">Design system</p>
-    <h1>Style Guide</h1>
-    <p class="p-lg">Tokens and components mirrored from the Carsy Webflow style guide — Chakra Petch, Mulish, and the primary/secondary palette.</p>
-    <nav class="sg-nav">
-      <a href="#grid">Grid System</a>
-      <a href="#spacing">Spacing</a>
-      <a href="#color">Color Palette</a>
-      <a href="#type">Typography</a>
-      <a href="#buttons">Buttons</a>
+  <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
+  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
+    <div class="nav-panel-head">
+      <a class="logo" href="/">K FILMS</a>
+      <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
+    </div>
+    <nav class="nav-panel-body">
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">▼</span></button>
+        <div class="nav-acc-panel">
+          <a href="/services.html">All Services</a>
+          <a href="/services/full-wraps.html">Full Wraps</a>
+          <a href="/services/accent-package.html">Partial &amp; Accents</a>
+          <a href="/services/transformation-film.html">Transformation Film</a>
+          <a href="/services.html#protect">Tank / PPF</a>
+          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+        </div>
+      </div>
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">▼</span></button>
+        <div class="nav-acc-panel">
+          <a href="/about.html">Who I Am</a>
+          <a href="/about.html#values">Craft &amp; Values</a>
+          <a href="/films.html">Showcase</a>
+          <a href="/testimonials.html">Testimonials</a>
+          <a href="/faq.html">FAQ</a>
+          <a href="/locations.html">Location</a>
+        </div>
+      </div>
+      <a class="nav-row" href="/films.html">Showcase</a>
+      <a class="nav-row" href="/pricing.html">Pricing</a>
+      <a class="nav-row" href="/journal.html">Journal</a>
+      <a class="nav-row" href="/contact.html">Contact</a>
+      <a class="btn btn-primary nav-panel-cta" href="/contact.html">Contact Us</a>
     </nav>
+  </aside>
 
-    <section id="grid">
-      <h2>Grid System</h2>
-      <h4>The table of grid system sizes</h4>
-      <table class="sg-table">
-        <thead>
-          <tr><th>Device Width</th><th>≥ 992px</th><th>&lt; 992px</th><th>&lt; 767px</th><th>&lt; 479px</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Max Container Width</td><td>1200px</td><td>100%</td><td>100%</td><td>100%</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section id="spacing">
-      <h2>Spacing System</h2>
-      <h4>Spacing — Desktop</h4>
-      <p class="p">Section paddings top/bottom: <strong>130px</strong>. Inside blocks: <strong>60px</strong>.</p>
-      <h4>Spacing — Tablet</h4>
-      <p class="p">Section paddings: <strong>80px</strong>. Inside blocks: <strong>40px</strong>.</p>
-      <h4>Spacing — Mobile</h4>
-      <p class="p">Section paddings: <strong>60px</strong>. Inside blocks: <strong>40px</strong>.</p>
-    </section>
-
-    <section id="color">
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">System</p>
+      <h1>Style Guide</h1>
+      <p class="p-lg">Carsy tokens adapted for K Films — Chakra Petch, Mulish, #ff4d24.</p>
+    </div>
+  </section>
+  <section class="section reveal">
+    <div class="container">
       <h2>Color Palette</h2>
-      <h4>Primary</h4>
       <div class="sg-swatch-row">
         <div class="sg-swatch" style="background:#ff4d24;color:#fff">#ff4d24</div>
-        <div class="sg-swatch" style="background:#ffffff">#ffffff</div>
+        <div class="sg-swatch" style="background:#fff;color:#000">#ffffff</div>
+        <div class="sg-swatch" style="background:#a5a5a5;color:#000">#a5a5a5</div>
+        <div class="sg-swatch" style="background:#111;color:#fff">#111111</div>
+        <div class="sg-swatch" style="background:#000;color:#fff">#000000</div>
       </div>
-      <h4>Secondary</h4>
-      <div class="sg-swatch-row">
-        <div class="sg-swatch" style="background:#a5a5a5;color:#111">#a5a5a5</div>
-        <div class="sg-swatch" style="background:#111111;color:#fff">#111111</div>
-        <div class="sg-swatch" style="background:#000000;color:#fff">#000000</div>
-      </div>
-    </section>
-
-    <section id="type">
       <h2>Typography</h2>
-      <h4>Headers</h4>
-      <h1>Heading 1</h1>
-      <h2>Heading 2</h2>
-      <h3>Heading 3</h3>
-      <h4>Heading 4</h4>
-      <h5>Heading 5</h5>
-      <h6>Heading 6</h6>
-      <h4>Body</h4>
-      <p class="p">Paragraph — Mulish body copy used across descriptions and supporting text.</p>
-      <p class="p-lg">Paragraph Large — larger lead copy for hero and section introductions.</p>
-      <h4>Links</h4>
-      <p><a href="#">Look more</a></p>
-      <p><a class="link-arrow" href="#">All services →</a></p>
-    </section>
-
-    <section id="buttons">
+      <h1>Heading 1</h1><h2>Heading 2</h2><h3>Heading 3</h3><h4>Heading 4</h4><h5>Heading 5</h5><h6>Heading 6</h6>
+      <p class="p-lg">Paragraph large — Mulish body copy for readable leads.</p>
+      <p class="p">Paragraph — secondary body in gray.</p>
       <h2>Buttons</h2>
       <div class="btn-row">
-        <a class="btn btn-primary" href="#">Primary Button</a>
-        <a class="btn btn-black" href="#">Primary Button Black</a>
-        <a class="btn btn-secondary" href="#">Secondary Button</a>
+        <a class="btn btn-primary" href="#">Primary</a>
+        <a class="btn btn-black" href="#">Primary Black</a>
+        <a class="btn btn-secondary" href="#">Secondary</a>
       </div>
-    </section>
-  </main>
+      <h2 style="margin-top:48px">Spacing</h2>
+      <table class="sg-table">
+        <thead><tr><th>Breakpoint</th><th>Section pad</th><th>Inner pad</th><th>Container</th></tr></thead>
+        <tbody>
+          <tr><td>≥992px</td><td>130px</td><td>60px</td><td>1200px</td></tr>
+          <tr><td>&lt;992px</td><td>80px</td><td>40px</td><td>100%</td></tr>
+          <tr><td>&lt;767px</td><td>60px</td><td>40px</td><td>100%</td></tr>
+        </tbody>
+      </table>
+      <div class="sg-nav">
+        <a class="link-arrow" href="/">Home →</a>
+        <a class="link-arrow" href="/services.html">Services →</a>
+        <a class="link-arrow" href="/films.html">Showcase →</a>
+      </div>
+    </div>
+  </section>
 
   <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h5>Explore Our Full Range of Offerings</h5>
+        <div class="footer-links">
+          <a href="/about.html">Discover K Films</a>
+          <a href="/services.html">Our Services</a>
+          <a href="/pricing.html">Pricing Plans</a>
+          <a href="/films.html">Latest Films</a>
+          <a href="/journal.html">Journal</a>
+        </div>
+      </div>
+      <div>
+        <h5>Connect &amp; Locate Us</h5>
+        <div class="footer-links">
+          <a href="/contact.html">Start inquiry</a>
+          <a href="/locations.html">Jersey City</a>
+          <a href="#">Instagram @kisalafilms</a>
+          <a href="#">YouTube</a>
+          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+          <a href="mailto:hello@kisalafilms.com">hello@kisalafilms.com</a>
+        </div>
+      </div>
+      <div>
+        <h5>Stay Updated with K Films</h5>
+        <p class="p">Subscribe for new episodes, wrap slots, and shop drops.</p>
+        <form class="form" data-stub>
+          <div class="fld"><input type="email" placeholder="Email address" aria-label="Email"></div>
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-note">Thanks — stub captured locally.</p>
+        </form>
+      </div>
+      <div class="footer-hours">
+        <h5>Office Address</h5>
+        <p>Visit Us: Jersey City, NJ (by appointment)</p>
+        <p>Headquarters: Kisala Films garage — Jersey City, USA</p>
+        <p>Monday to Friday: 10:00 AM – 6:00 PM</p>
+        <p>Saturday/Sunday: By appointment</p>
+      </div>
+    </div>
     <div class="container footer-bottom">
-      <span>© 2026 Kisala Films — Jersey City, NJ.</span>
-      <a href="/">Back home</a>
+      <span>© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</span>
+      <a href="/styleguide.html">Style Guide</a>
     </div>
   </footer>
+  <script src="/js/nav.js"></script>
+  <script src="/js/site.js"></script>
+
 </body>
 </html>

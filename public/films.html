@@ -3,84 +3,169 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Films — K Films</title>
-  <meta name="description" content="Transformations, BTS, and rider stories from the K Films YouTube channel.">
+  <title>Showcase — K Films</title>
+  <meta name="description" content="Transformations, BTS, riders, travel, and adventure through the K Films lens.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/site.css">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/carsy.css">
 </head>
-<body>
-  <header class="hdr">
-    <div class="wrap hbar">
-      <a href="/" class="logo">K FILMS</a>
-      <nav class="nav" aria-label="Primary">
-        <a href="/services.html" class="cap">Services</a>
-        <a href="/films.html" class="cap acc">Films</a>
-        <a href="/about.html" class="cap">About</a>
-        <a href="/contact.html" class="cap">Contact</a>
-        <a href="/contact.html#inquiry" class="btn btnP" style="padding:12px 20px">Book</a>
+<body class="carsy">
+
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="logo" href="/">K FILMS</a>
+      <nav class="nav-desktop" aria-label="Primary">
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
+          <div class="nav-dd-menu">
+            <a href="/services.html">All Services</a>
+            <a href="/services/full-wraps.html">Full Wraps</a>
+            <a href="/services/accent-package.html">Partial &amp; Accents</a>
+            <a href="/services/transformation-film.html">Transformation Film</a>
+            <a href="/services.html#protect">Tank / PPF</a>
+            <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+          </div>
+        </div>
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
+          <div class="nav-dd-menu">
+            <a href="/about.html">Who I Am</a>
+            <a href="/about.html#values">Craft &amp; Values</a>
+            <a href="/films.html">Showcase</a>
+            <a href="/testimonials.html">Testimonials</a>
+            <a href="/faq.html">FAQ</a>
+            <a href="/locations.html">Location</a>
+          </div>
+        </div>
+        <a href="/films.html">Showcase</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/journal.html">Journal</a>
+        <a href="/contact.html">Contact</a>
+        <a class="btn btn-primary nav-cta" href="/contact.html">Contact Us</a>
       </nav>
-      <div class="fx ac gap16 mobonly">
-        <a href="/contact.html#inquiry" class="cap acc">Book</a>
-        <button class="bgr" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
-          <span class="bline"></span><span class="bline"></span>
-        </button>
-      </div>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </div>
   </header>
-  <div id="nav-drawer" class="nav-drawer"></div>
-
-  <div class="wrap sec" style="padding-bottom:0">
-    <div class="brow"><span class="tick"></span><span class="cap acc">The channel</span></div>
-    <h1 class="h1 subpage">Our films</h1>
-    <p class="bd mut">Transformations, behind the scenes, and the riders behind the bikes — everything we shoot, in one place.</p>
-  </div>
-
-  <div class="wrap sec">
-    <div class="tabs" id="films-tabs" role="tablist">
-      <button class="tab tabOn" type="button" data-tab="All">All</button>
-      <button class="tab" type="button" data-tab="Transformations">Transformations</button>
-      <button class="tab" type="button" data-tab="BTS">BTS</button>
-      <button class="tab" type="button" data-tab="Rider Stories">Rider Stories</button>
+  <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
+  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
+    <div class="nav-panel-head">
+      <a class="logo" href="/">K FILMS</a>
+      <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
     </div>
-    <div class="fgrid" id="films-grid"></div>
-  </div>
-
-  <div class="dark2">
-    <div class="wrap sec" style="align-items:flex-start">
-      <h2 class="h2">New episodes weekly</h2>
-      <div class="fx gap12" style="flex-wrap:wrap">
-        <a href="#" class="btn btnP">Subscribe on YouTube</a>
-        <a href="#" class="btn btnS">Follow on Instagram</a>
+    <nav class="nav-panel-body">
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">▼</span></button>
+        <div class="nav-acc-panel">
+          <a href="/services.html">All Services</a>
+          <a href="/services/full-wraps.html">Full Wraps</a>
+          <a href="/services/accent-package.html">Partial &amp; Accents</a>
+          <a href="/services/transformation-film.html">Transformation Film</a>
+          <a href="/services.html#protect">Tank / PPF</a>
+          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+        </div>
       </div>
-      <a href="/contact.html#inquiry" class="cap acc">Want your bike in the next one? →</a>
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">▼</span></button>
+        <div class="nav-acc-panel">
+          <a href="/about.html">Who I Am</a>
+          <a href="/about.html#values">Craft &amp; Values</a>
+          <a href="/films.html">Showcase</a>
+          <a href="/testimonials.html">Testimonials</a>
+          <a href="/faq.html">FAQ</a>
+          <a href="/locations.html">Location</a>
+        </div>
+      </div>
+      <a class="nav-row" href="/films.html">Showcase</a>
+      <a class="nav-row" href="/pricing.html">Pricing</a>
+      <a class="nav-row" href="/journal.html">Journal</a>
+      <a class="nav-row" href="/contact.html">Contact</a>
+      <a class="btn btn-primary nav-panel-cta" href="/contact.html">Contact Us</a>
+    </nav>
+  </aside>
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Gallery</p>
+      <h1>Showcase</h1>
+      <p class="p-lg">Bikes, bikers, wraps, travel, and adventure — life through the lens.</p>
     </div>
-  </div>
-
-  <footer class="ftr">
-    <div class="wrap col gap16">
-      <span class="logo">K FILMS</span>
-      <div class="flinks">
-        <a href="/services.html" class="cap mut">Services</a>
-        <a href="/films.html" class="cap mut">Films</a>
-        <a href="/about.html" class="cap mut">About</a>
-        <a href="/contact.html" class="cap mut">Contact</a>
-        <a href="#" class="cap mut">YouTube</a>
-        <a href="#" class="cap mut">Instagram</a>
-        <a href="https://rollerreels.com" class="cap mut">Roller Reels</a>
+  </section>
+  <section class="section reveal">
+    <div class="container">
+      <div class="filter-tabs" data-filter-tabs>
+        <button type="button" class="on" data-filter="all">All</button>
+        <button type="button" data-filter="transformations">Transformations</button>
+        <button type="button" data-filter="bts">BTS</button>
+        <button type="button" data-filter="riders">Riders</button>
+        <button type="button" data-filter="travel">Travel / Adventure</button>
       </div>
-      <p class="sm mut">© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</p>
+      <div class="showcase-grid">
+        <article class="showcase-card" data-filter-item="transformations"><img src="/images/thumb-f4i-reveal.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Transformations</span><h4>F4i — Full Build Reveal</h4><p class="p">Own-bike wrap from strip to premiere.</p></div></article>
+        <article class="showcase-card" data-filter-item="transformations"><img src="/images/thumb-transformation-mid.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Transformations</span><h4>Mid-Build Progress</h4><p class="p">Panels landing under garage light.</p></div></article>
+        <article class="showcase-card" data-filter-item="bts"><img src="/images/thumb-shop-bts.jpg" alt="" loading="lazy"><div class="body"><span class="tag">BTS</span><h4>Inside the Garage</h4><p class="p">Shop life between wraps.</p></div></article>
+        <article class="showcase-card" data-filter-item="bts"><img src="/images/thumb-wrap-process.jpg" alt="" loading="lazy"><div class="body"><span class="tag">BTS</span><h4>Tank Lines, No Seams</h4><p class="p">Knife work up close.</p></div></article>
+        <article class="showcase-card" data-filter-item="bts"><img src="/images/thumb-timelapse-shop.jpg" alt="" loading="lazy"><div class="body"><span class="tag">BTS</span><h4>Shop Timelapse</h4><p class="p">A full day compressed.</p></div></article>
+        <article class="showcase-card" data-filter-item="riders"><img src="/images/thumb-customer-interview.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Riders</span><h4>Marcus — Newark</h4><p class="p">Post-transform curb interview.</p></div></article>
+        <article class="showcase-card" data-filter-item="riders"><img src="/images/thumb-customer-interview-2.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Riders</span><h4>Yara — Jersey City</h4><p class="p">Rider story after the reveal.</p></div></article>
+        <article class="showcase-card" data-filter-item="travel"><img src="/images/thumb-night-pov.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Travel / Adventure</span><h4>Night Run — Jersey City</h4><p class="p">Helmet-cam energy after dark.</p></div></article>
+        <article class="showcase-card" data-filter-item="travel"><img src="/images/hero-f4i-garage-night.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Travel / Adventure</span><h4>Garage to Street</h4><p class="p">From bay lights to city asphalt.</p></div></article>
+        <article class="showcase-card" data-filter-item="transformations bts"><img src="/images/thumb-before-strip.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Transformations</span><h4>Before — Strip Day</h4><p class="p">Where every full build starts.</p></div></article>
+        <article class="showcase-card" data-filter-item="bts"><img src="/images/thumb-panel-lines.jpg" alt="" loading="lazy"><div class="body"><span class="tag">BTS</span><h4>Panel Discipline</h4><p class="p">Lines that hold on camera.</p></div></article>
+        <article class="showcase-card" data-filter-item="travel"><img src="/images/story-elombe-workshop.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Travel / Adventure</span><h4>Craft on the Road</h4><p class="p">Elombe’s workshop energy traveling with the work.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h5>Explore Our Full Range of Offerings</h5>
+        <div class="footer-links">
+          <a href="/about.html">Discover K Films</a>
+          <a href="/services.html">Our Services</a>
+          <a href="/pricing.html">Pricing Plans</a>
+          <a href="/films.html">Latest Films</a>
+          <a href="/journal.html">Journal</a>
+        </div>
+      </div>
+      <div>
+        <h5>Connect &amp; Locate Us</h5>
+        <div class="footer-links">
+          <a href="/contact.html">Start inquiry</a>
+          <a href="/locations.html">Jersey City</a>
+          <a href="#">Instagram @kisalafilms</a>
+          <a href="#">YouTube</a>
+          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+          <a href="mailto:hello@kisalafilms.com">hello@kisalafilms.com</a>
+        </div>
+      </div>
+      <div>
+        <h5>Stay Updated with K Films</h5>
+        <p class="p">Subscribe for new episodes, wrap slots, and shop drops.</p>
+        <form class="form" data-stub>
+          <div class="fld"><input type="email" placeholder="Email address" aria-label="Email"></div>
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-note">Thanks — stub captured locally.</p>
+        </form>
+      </div>
+      <div class="footer-hours">
+        <h5>Office Address</h5>
+        <p>Visit Us: Jersey City, NJ (by appointment)</p>
+        <p>Headquarters: Kisala Films garage — Jersey City, USA</p>
+        <p>Monday to Friday: 10:00 AM – 6:00 PM</p>
+        <p>Saturday/Sunday: By appointment</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</span>
+      <a href="/styleguide.html">Style Guide</a>
     </div>
   </footer>
-
-  <div class="sticky">
-    <a href="/contact.html#inquiry" class="btn btnP f1">Start your inquiry</a>
-    <a href="#" class="btn btnS f1">Subscribe</a>
-  </div>
-  <script>
-    document.getElementById("nav-drawer").innerHTML = `<a href="/services.html" class="cap">Services</a><a href="/films.html" class="cap">Films</a><a href="/about.html" class="cap">About</a><a href="/contact.html" class="cap">Contact</a><a href="/contact.html#inquiry" class="btn btnP">Book</a>`;
-  </script>
+  <script src="/js/nav.js"></script>
   <script src="/js/site.js"></script>
+
 </body>
 </html>

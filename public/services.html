@@ -4,125 +4,158 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Services — K Films</title>
-  <meta name="description" content="Motorcycle wrap services and transparent pricing in Jersey City, NJ.">
+  <meta name="description" content="Motorcycle vinyl wraps, protection film, and transformation cinema in Jersey City.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/site.css">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/carsy.css">
 </head>
-<body>
-  <header class="hdr">
-    <div class="wrap hbar">
-      <a href="/" class="logo">K FILMS</a>
-      <nav class="nav" aria-label="Primary">
-        <a href="/services.html" class="cap acc">Services</a>
-        <a href="/films.html" class="cap">Films</a>
-        <a href="/about.html" class="cap">About</a>
-        <a href="/contact.html" class="cap">Contact</a>
-        <a href="/contact.html#inquiry" class="btn btnP" style="padding:12px 20px">Book</a>
+<body class="carsy">
+
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="logo" href="/">K FILMS</a>
+      <nav class="nav-desktop" aria-label="Primary">
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
+          <div class="nav-dd-menu">
+            <a href="/services.html">All Services</a>
+            <a href="/services/full-wraps.html">Full Wraps</a>
+            <a href="/services/accent-package.html">Partial &amp; Accents</a>
+            <a href="/services/transformation-film.html">Transformation Film</a>
+            <a href="/services.html#protect">Tank / PPF</a>
+            <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+          </div>
+        </div>
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
+          <div class="nav-dd-menu">
+            <a href="/about.html">Who I Am</a>
+            <a href="/about.html#values">Craft &amp; Values</a>
+            <a href="/films.html">Showcase</a>
+            <a href="/testimonials.html">Testimonials</a>
+            <a href="/faq.html">FAQ</a>
+            <a href="/locations.html">Location</a>
+          </div>
+        </div>
+        <a href="/films.html">Showcase</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/journal.html">Journal</a>
+        <a href="/contact.html">Contact</a>
+        <a class="btn btn-primary nav-cta" href="/contact.html">Contact Us</a>
       </nav>
-      <div class="fx ac gap16 mobonly">
-        <a href="/contact.html#inquiry" class="cap acc">Book</a>
-        <button class="bgr" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
-          <span class="bline"></span><span class="bline"></span>
-        </button>
-      </div>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </div>
   </header>
-  <div id="nav-drawer" class="nav-drawer"></div>
-
-  <div class="wrap sec" style="padding-bottom:0">
-    <div class="brow"><span class="tick"></span><span class="cap acc">Vinyl wraps · Jersey City, NJ</span></div>
-    <h1 class="h1 subpage">What we offer</h1>
-    <p class="bd mut">Every wrap is filmed and edited into a transformation video. Need photo or video only, no wrap? Book through Roller Reels instead.</p>
-  </div>
-
-  <div class="wrap sec">
-    <div class="cards cards5">
-      <div class="card"><span class="chip">Wrap</span><h3 class="h3">Full Wraps</h3><p class="sm mut">Complete color transformation in premium cast vinyl — any finish, any bike.</p></div>
-      <div class="card"><span class="chip">Wrap</span><h3 class="h3">Partial &amp; Accents</h3><p class="sm mut">Fairing accents, racing stripes, chrome delete — targeted changes with full impact.</p></div>
-      <div class="card"><span class="chip">Protect</span><h3 class="h3">Tank Protection</h3><p class="sm mut">Durable clear layers for the highest-wear areas on the tank.</p></div>
-      <div class="card"><span class="chip">Protect</span><h3 class="h3">Paint Protection Film</h3><p class="sm mut">Clear bra installation that preserves factory paint underneath.</p></div>
-      <div class="card" style="border-color:#3a3a3a"><span class="chip">Photo / Video</span><h3 class="h3">Photo &amp; Video Only</h3><p class="sm mut">No wrap, just a shoot. Booked through Roller Reels, our creator network.</p><a href="https://rollerreels.com" class="cap acc">rollerreels.com →</a></div>
+  <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
+  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
+    <div class="nav-panel-head">
+      <a class="logo" href="/">K FILMS</a>
+      <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
     </div>
-  </div>
-
-  <div class="dark2">
-    <div class="wrap sec" id="pricing">
-      <div class="brow"><span class="tick"></span><span class="cap acc">Packages</span></div>
-      <h2 class="h2">Straightforward pricing</h2>
-      <div class="pgrid3">
-        <div class="ppcard">
-          <span class="cap mut">Protection only</span>
-          <span class="stnum">$250+</span>
-          <p class="sm mut">No color change, just protection.</p>
-          <div class="col gap8">
-            <div class="feat"><span class="dot"></span>Tank PPF install</div>
-            <div class="feat"><span class="dot"></span>High-wear panel coverage</div>
-            <div class="feat"><span class="dot"></span>Care instructions</div>
-          </div>
-          <a href="/contact.html#inquiry" class="btn btnS">Book this package</a>
-        </div>
-        <div class="ppcard hi">
-          <span class="cap acc">Full transformation</span>
-          <span class="stnum">$1,800+</span>
-          <p class="sm mut">Our most popular package.</p>
-          <div class="col gap8">
-            <div class="feat"><span class="dot"></span>Full color-change wrap</div>
-            <div class="feat"><span class="dot"></span>Tank PPF included</div>
-            <div class="feat"><span class="dot"></span>Cinematic transformation video</div>
-            <div class="feat"><span class="dot"></span>Priority scheduling</div>
-          </div>
-          <a href="/contact.html#inquiry" class="btn btnP">Book this package</a>
-        </div>
-        <div class="ppcard">
-          <span class="cap mut">Accent package</span>
-          <span class="stnum">$650+</span>
-          <p class="sm mut">Partial coverage, full statement.</p>
-          <div class="col gap8">
-            <div class="feat"><span class="dot"></span>Partial wrap or stripes</div>
-            <div class="feat"><span class="dot"></span>Chrome delete option</div>
-            <div class="feat"><span class="dot"></span>Behind-the-scenes reel</div>
-          </div>
-          <a href="/contact.html#inquiry" class="btn btnS">Book this package</a>
+    <nav class="nav-panel-body">
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">▼</span></button>
+        <div class="nav-acc-panel">
+          <a href="/services.html">All Services</a>
+          <a href="/services/full-wraps.html">Full Wraps</a>
+          <a href="/services/accent-package.html">Partial &amp; Accents</a>
+          <a href="/services/transformation-film.html">Transformation Film</a>
+          <a href="/services.html#protect">Tank / PPF</a>
+          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
         </div>
       </div>
-      <p class="sm mut">Final pricing depends on bike size, vinyl choice, and coverage — confirmed at your design consult.</p>
-    </div>
-  </div>
-
-  <div class="wrap sec" style="align-items:flex-start">
-    <h2 class="h2">Ready to start?</h2>
-    <div class="fx gap12" style="flex-wrap:wrap">
-      <a href="/contact.html#inquiry" class="btn btnP">Send your inquiry</a>
-      <a href="/films.html" class="btn btnS">See the results first</a>
-    </div>
-  </div>
-
-  <footer class="ftr">
-    <div class="wrap col gap16">
-      <span class="logo">K FILMS</span>
-      <div class="flinks">
-        <a href="/services.html" class="cap mut">Services</a>
-        <a href="/films.html" class="cap mut">Films</a>
-        <a href="/about.html" class="cap mut">About</a>
-        <a href="/contact.html" class="cap mut">Contact</a>
-        <a href="#" class="cap mut">YouTube</a>
-        <a href="#" class="cap mut">Instagram</a>
-        <a href="https://rollerreels.com" class="cap mut">Roller Reels</a>
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">▼</span></button>
+        <div class="nav-acc-panel">
+          <a href="/about.html">Who I Am</a>
+          <a href="/about.html#values">Craft &amp; Values</a>
+          <a href="/films.html">Showcase</a>
+          <a href="/testimonials.html">Testimonials</a>
+          <a href="/faq.html">FAQ</a>
+          <a href="/locations.html">Location</a>
+        </div>
       </div>
-      <p class="sm mut">© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</p>
+      <a class="nav-row" href="/films.html">Showcase</a>
+      <a class="nav-row" href="/pricing.html">Pricing</a>
+      <a class="nav-row" href="/journal.html">Journal</a>
+      <a class="nav-row" href="/contact.html">Contact</a>
+      <a class="btn btn-primary nav-panel-cta" href="/contact.html">Contact Us</a>
+    </nav>
+  </aside>
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Technical services</p>
+      <h1>Wrap × Film Services</h1>
+      <p class="p-lg">Full builds, accents, protection, and the cinema that documents it all.</p>
+    </div>
+  </section>
+  <section class="section reveal">
+    <div class="container">
+      <div class="svc-grid">
+        <article class="svc-card"><span class="svc-chip">Wrap</span><h3>Full Wraps</h3><p class="p">Complete color-change in premium cast vinyl with transformation film included.</p><a class="details" href="/services/full-wraps.html">Details →</a></article>
+        <article class="svc-card"><span class="svc-chip">Wrap</span><h3>Partial &amp; Accents</h3><p class="p">Stripes, chrome delete, fairing accents — high impact, focused coverage.</p><a class="details" href="/services/accent-package.html">Details →</a></article>
+        <article class="svc-card" id="protect"><span class="svc-chip">Protect</span><h3>Tank Protection</h3><p class="p">Clear armor for tank wear zones without changing your colorway.</p><a class="details" href="/contact.html#inquiry">Inquire →</a></article>
+        <article class="svc-card"><span class="svc-chip">Protect</span><h3>Paint Protection Film</h3><p class="p">Clear bra installs that keep factory paint locked in.</p><a class="details" href="/contact.html#inquiry">Inquire →</a></article>
+        <article class="svc-card"><span class="svc-chip">Film</span><h3>Transformation Film</h3><p class="p">Cinematic before/after edits — included with full wraps, available à la carte.</p><a class="details" href="/services/transformation-film.html">Details →</a></article>
+        <article class="svc-card"><span class="svc-chip">Film</span><h3>BTS &amp; Shop Life</h3><p class="p">Process reels, knife work, and garage energy for the channel.</p><a class="details" href="/films.html">View showcase →</a></article>
+        <article class="svc-card"><span class="svc-chip">Stories</span><h3>Rider Stories</h3><p class="p">Interviews and docs with riders after the reveal.</p><a class="details" href="/films.html">View showcase →</a></article>
+        <article class="svc-card"><span class="svc-chip">Photo / Video</span><h3>Roller Reels</h3><p class="p">No wrap? Book photo/video-only through our creator network.</p><a class="details" href="https://rollerreels.com">rollerreels.com →</a></article>
+      </div>
+      <p style="margin-top:40px"><a class="link-arrow" href="/pricing.html">See pricing packages →</a></p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h5>Explore Our Full Range of Offerings</h5>
+        <div class="footer-links">
+          <a href="/about.html">Discover K Films</a>
+          <a href="/services.html">Our Services</a>
+          <a href="/pricing.html">Pricing Plans</a>
+          <a href="/films.html">Latest Films</a>
+          <a href="/journal.html">Journal</a>
+        </div>
+      </div>
+      <div>
+        <h5>Connect &amp; Locate Us</h5>
+        <div class="footer-links">
+          <a href="/contact.html">Start inquiry</a>
+          <a href="/locations.html">Jersey City</a>
+          <a href="#">Instagram @kisalafilms</a>
+          <a href="#">YouTube</a>
+          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+          <a href="mailto:hello@kisalafilms.com">hello@kisalafilms.com</a>
+        </div>
+      </div>
+      <div>
+        <h5>Stay Updated with K Films</h5>
+        <p class="p">Subscribe for new episodes, wrap slots, and shop drops.</p>
+        <form class="form" data-stub>
+          <div class="fld"><input type="email" placeholder="Email address" aria-label="Email"></div>
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-note">Thanks — stub captured locally.</p>
+        </form>
+      </div>
+      <div class="footer-hours">
+        <h5>Office Address</h5>
+        <p>Visit Us: Jersey City, NJ (by appointment)</p>
+        <p>Headquarters: Kisala Films garage — Jersey City, USA</p>
+        <p>Monday to Friday: 10:00 AM – 6:00 PM</p>
+        <p>Saturday/Sunday: By appointment</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</span>
+      <a href="/styleguide.html">Style Guide</a>
     </div>
   </footer>
-
-  <div class="sticky">
-    <a href="/contact.html#inquiry" class="btn btnP f1">Start your inquiry</a>
-    <a href="/films.html" class="btn btnS f1">Watch films</a>
-  </div>
-  <script>
-    const d = document.getElementById("nav-drawer");
-    d.innerHTML = `<a href="/services.html" class="cap">Services</a><a href="/films.html" class="cap">Films</a><a href="/about.html" class="cap">About</a><a href="/contact.html" class="cap">Contact</a><a href="/contact.html#inquiry" class="btn btnP">Book</a>`;
-  </script>
+  <script src="/js/nav.js"></script>
   <script src="/js/site.js"></script>
+
 </body>
 </html>
