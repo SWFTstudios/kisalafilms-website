@@ -18,7 +18,12 @@
   });
 
   const reveals = document.querySelectorAll(".reveal");
-  if (reveals.length && "IntersectionObserver" in window) {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const coarsePointer = window.matchMedia("(max-width: 899px), (pointer: coarse)").matches;
+  // Skip scroll-linked transforms on phones — they fight touch momentum
+  if (!reveals.length || reduceMotion || coarsePointer || !("IntersectionObserver" in window)) {
+    reveals.forEach((el) => el.classList.add("is-in"));
+  } else {
     const rio = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -28,11 +33,9 @@
           }
         });
       },
-      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+      { threshold: 0.08, rootMargin: "0px 0px -4% 0px" }
     );
     reveals.forEach((el) => rio.observe(el));
-  } else {
-    reveals.forEach((el) => el.classList.add("is-in"));
   }
 
   document.querySelectorAll("form[data-stub]").forEach((form) => {
