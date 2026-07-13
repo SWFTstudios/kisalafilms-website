@@ -7,187 +7,458 @@
   <meta name="description" content="Custom vinyl wraps for motorcycles in Jersey City — every wrap comes with a cinematic transformation video.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/site.css">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/carsy.css">
 </head>
-<body>
-  <header class="hdr">
-    <div class="wrap hbar">
-      <a href="/" class="logo">K FILMS</a>
-      <nav class="nav" aria-label="Primary">
-        <a href="/services.html" class="cap">Services</a>
-        <a href="/films.html" class="cap">Films</a>
-        <a href="/about.html" class="cap">About</a>
-        <a href="/contact.html" class="cap">Contact</a>
-        <a href="/contact.html#inquiry" class="btn btnP" style="padding:12px 20px">Book</a>
+<body class="carsy">
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="logo" href="/">K FILMS</a>
+      <nav class="nav-desktop" aria-label="Primary">
+        <a href="/services.html">Services</a>
+        <a href="/films.html">Films</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+        <a class="btn btn-primary" href="/contact.html#inquiry" style="padding:12px 22px">Book</a>
       </nav>
-      <div class="fx ac gap16 mobonly">
-        <a href="/contact.html#inquiry" class="cap acc">Book</a>
-        <button class="bgr" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
-          <span class="bline"></span><span class="bline"></span>
-        </button>
-      </div>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-drawer" id="nav-drawer">
+      <a href="/services.html">Services</a>
+      <a href="/films.html">Films</a>
+      <a href="/about.html">About</a>
+      <a href="/contact.html">Contact</a>
+      <a class="btn btn-primary" href="/contact.html#inquiry">Book</a>
     </div>
   </header>
-  <div id="nav-drawer" class="nav-drawer" hidden>
-    <a href="/services.html" class="cap">Services</a>
-    <a href="/films.html" class="cap">Films</a>
-    <a href="/about.html" class="cap">About</a>
-    <a href="/contact.html" class="cap">Contact</a>
-    <a href="/contact.html#inquiry" class="btn btnP">Book</a>
-  </div>
 
   <section class="hero">
-    <img class="ph media fill" src="/images/hero-f4i-garage-night.jpg" alt="Gloss black 2002 Honda CBR600F4i in a dark garage with orange rim light" width="1920" height="1080">
-    <div class="fill hfade"></div>
-    <div class="wrap hcontent">
-      <div class="col gap12" style="max-width:640px">
-        <div class="brow"><span class="tick"></span><span class="cap acc">Motorcycle wraps × cinema · Jersey City, NJ</span></div>
-        <h1 class="h1">Express your ride.</h1>
-        <p class="bd mut">Custom vinyl wraps for motorcycles — and every wrap comes with a cinematic transformation video for the channel.</p>
-        <div class="hcta">
-          <a href="/contact.html#inquiry" class="btn btnP">Start your inquiry</a>
-          <a href="/films.html" class="btn btnS">Watch the films</a>
+    <img class="hero-media" src="/images/hero-f4i-garage-night.jpg" alt="Gloss black Honda CBR600F4i in garage at night" width="1920" height="1080">
+    <div class="hero-fade"></div>
+    <div class="container hero-content">
+      <p class="eyebrow">Step into the future of motorcycle wraps with K Films</p>
+      <h1>Wrap with Confidence, Ride K Films Now</h1>
+      <p class="p-lg">Welcome to Kisala Films — Jersey City’s home for precision vinyl wraps and cinematic transformation videos. We combine craft with camera so every bike leaves looking sharper and ready for the channel.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="/contact.html#inquiry">Start your inquiry</a>
+        <a class="btn btn-secondary" href="/films.html">Watch the films</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee-wrap">
+    <div class="marquee-label">You've Chosen the Best</div>
+    <div class="marquee-track" aria-hidden="true">
+      <span>K Films</span><span>Jersey City</span><span>Vinyl Wraps</span><span>Transformation Films</span><span>YouTube</span><span>Roller Reels</span><span>Precision Craft</span>
+      <span>K Films</span><span>Jersey City</span><span>Vinyl Wraps</span><span>Transformation Films</span><span>YouTube</span><span>Roller Reels</span><span>Precision Craft</span>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="stats-grid">
+        <article class="stat-card">
+          <div class="stat-num">48</div>
+          <h6>Bikes Wrapped</h6>
+          <p class="p">Full builds, accents, and protection installs documented from drop-off to reveal.</p>
+        </article>
+        <article class="stat-card">
+          <div class="stat-num">120+</div>
+          <h6>Videos on YouTube</h6>
+          <p class="p">Transformations, shop BTS, POV rides, and rider stories cut for the channel.</p>
+        </article>
+        <article class="stat-card">
+          <div class="stat-num">1.2M</div>
+          <h6>Total Views</h6>
+          <p class="p">A growing audience watching every wrap turn into an episode.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-muted">
+    <div class="container story-grid">
+      <div>
+        <p class="eyebrow">Discover the passion and expertise behind K Films</p>
+        <h2>From Our Garage to Your Feed: The Story of Kisala Films’ Commitment to Precision Wraps and Cinematic Storytelling</h2>
+        <div class="story-cols">
+          <div>
+            <h6>Core Values</h6>
+            <p class="p">Precision, craft, and story. We wrap like engineers and shoot like documentarians — honest process, clean lines, and films you actually want to share.</p>
+          </div>
+          <div>
+            <h6>Get to Know</h6>
+            <p class="p">Elombe Kisala builds wraps in Jersey City and turns every project into channel content — so clients leave with a bike and an episode.</p>
+          </div>
+        </div>
+        <p style="margin-top:28px"><a class="link-arrow" href="/about.html">About us →</a></p>
+      </div>
+      <div class="story-media">
+        <img src="/images/story-elombe-workshop.jpg" alt="Elombe working on the F4i in the workshop" width="640" height="800" loading="lazy">
+        <img src="/images/about-vinyl-hands.jpg" alt="Hands applying vinyl wrap" width="640" height="800" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Technical services</p>
+        <h2>What We Offer</h2>
+        <p class="p-lg">A full range of wrap and film services. Photo or video only — no wrap? Book through Roller Reels.</p>
+      </div>
+      <div class="svc-grid">
+        <article class="svc-card">
+          <span class="svc-chip">Wrap</span>
+          <h3>Full Wraps</h3>
+          <p class="p">Complete color transformation in premium cast vinyl — any finish, any bike.</p>
+          <a class="details" href="/services.html">Details →</a>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">Wrap</span>
+          <h3>Partial &amp; Accents</h3>
+          <p class="p">Fairing accents, racing stripes, chrome delete — targeted changes with full impact.</p>
+          <a class="details" href="/services.html">Details →</a>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">Protect</span>
+          <h3>Tank Protection</h3>
+          <p class="p">Durable clear layers for the highest-wear areas on the tank.</p>
+          <a class="details" href="/services.html">Details →</a>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">Protect</span>
+          <h3>Paint Protection Film</h3>
+          <p class="p">Clear bra installation that preserves factory paint underneath.</p>
+          <a class="details" href="/services.html">Details →</a>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">Film</span>
+          <h3>Transformation Film</h3>
+          <p class="p">Cinematic before/after edit included with full wrap packages.</p>
+          <a class="details" href="/films.html">Details →</a>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">Film</span>
+          <h3>BTS Content</h3>
+          <p class="p">Shop footage, knife work, and process clips for the channel.</p>
+          <a class="details" href="/films.html">Details →</a>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">Stories</span>
+          <h3>Rider Stories</h3>
+          <p class="p">Post-transform interviews and rider docs from Jersey City and beyond.</p>
+          <a class="details" href="/films.html">Details →</a>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">Photo / Video</span>
+          <h3>Roller Reels</h3>
+          <p class="p">No wrap, just a shoot — book through our creator network.</p>
+          <a class="details" href="https://rollerreels.com">Details →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark">
+    <div class="container why-grid">
+      <div>
+        <p class="eyebrow">Discover the K Films advantage</p>
+        <h2>Why Choose K Films?</h2>
+        <p class="p-lg">We prioritize your bike’s finish and your story on camera. Expert wrapping, transparent packages, and a transformation video that ships with the build.</p>
+      </div>
+      <div class="progress-list" data-progress>
+        <div class="progress-item">
+          <div class="progress-top"><span>On-time delivery</span><span class="pct">96%</span></div>
+          <div class="progress-track"><div class="progress-fill" data-width="96"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-top"><span>Clients who rebook</span><span class="pct">92%</span></div>
+          <div class="progress-track"><div class="progress-fill" data-width="92"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-top"><span>Video delivered same week</span><span class="pct">90%</span></div>
+          <div class="progress-track"><div class="progress-fill" data-width="90"></div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="stats">
-    <div class="stat"><span class="stnum">48</span><span class="cap mut">Bikes wrapped</span></div>
-    <div class="stat"><span class="stnum">120+</span><span class="cap mut">Videos on YouTube</span></div>
-    <div class="stat"><span class="stnum">1.2M</span><span class="cap mut">Views</span></div>
-  </div>
-
-  <div class="wrap sec" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:24px">
-    <img class="ph media media-rounded" src="/images/story-elombe-workshop.jpg" alt="Elombe Kisala working on his Honda CBR600F4i in the workshop" width="840" height="1050" style="width:100%;max-width:420px;aspect-ratio:4/5;flex-shrink:0;height:auto">
-    <div class="col gap12 f1" style="min-width:260px">
-      <div class="brow"><span class="tick"></span><span class="cap acc">Who's behind the wrench</span></div>
-      <h2 class="h2">From our garage to your feed</h2>
-      <p class="bd mut">Elombe Kisala wraps motorcycles as a precision craft, then documents the process for a growing YouTube channel — builds, behind the scenes, and the riders who bring their bikes in.</p>
-      <a href="/about.html" class="cap acc">Read the full story →</a>
-    </div>
-  </div>
-
-  <div class="wrap sec">
-    <div class="brow"><span class="tick"></span><span class="cap acc">Our expertise</span></div>
-    <h2 class="h2">Technical services</h2>
-    <div class="cards">
-      <div class="card"><span class="chip">Wrap</span><h3 class="h3">Full Wraps</h3><p class="sm mut">Complete color transformation in premium cast vinyl.</p></div>
-      <div class="card"><span class="chip">Wrap</span><h3 class="h3">Partial &amp; Accents</h3><p class="sm mut">Fairing accents, racing stripes, chrome delete.</p></div>
-      <div class="card"><span class="chip">Protect</span><h3 class="h3">Tank Protection</h3><p class="sm mut">Durable layers for high-wear tank areas.</p></div>
-      <div class="card"><span class="chip">Protect</span><h3 class="h3">Paint Protection Film</h3><p class="sm mut">Clear bra installation that preserves factory paint.</p></div>
-    </div>
-    <a href="/services.html" class="cap acc">All services &amp; pricing →</a>
-  </div>
-
-  <div class="dark2">
-    <div class="wrap sec">
-      <div class="brow"><span class="tick"></span><span class="cap acc">Why K Films</span></div>
-      <h2 class="h2">Built on trust, not just vinyl</h2>
-      <div class="col gap16">
-        <div class="prog"><div class="fx jb"><span class="cap">On-time delivery</span><span class="cap acc">96%</span></div><div class="progtrack"><div class="progfill" style="width:96%"></div></div></div>
-        <div class="prog"><div class="fx jb"><span class="cap">Clients who rebook</span><span class="cap acc">92%</span></div><div class="progtrack"><div class="progfill" style="width:92%"></div></div></div>
-        <div class="prog"><div class="fx jb"><span class="cap">Video delivered same week</span><span class="cap acc">90%</span></div><div class="progtrack"><div class="progfill" style="width:90%"></div></div></div>
+  <section class="section">
+    <div class="container faq-grid">
+      <div>
+        <p class="eyebrow">Quick FAQs for easy answers</p>
+        <h2>All You Need to Know</h2>
+        <p class="p-lg">Everything riders ask before a wrap — timing, paint safety, video, and photo-only bookings.</p>
+      </div>
+      <div class="faq-list" data-faq>
+        <div class="faq-item open">
+          <button class="faq-q" type="button">How long does a full wrap take?<span class="mark">–</span></button>
+          <p class="faq-a">Most full wraps take 4–6 days including the shoot. You get a delivery date at drop-off.</p>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">Will a wrap damage my paint?<span class="mark">+</span></button>
+          <p class="faq-a">No — premium cast vinyl protects paint when installed and removed correctly. We won’t wrap compromised panels.</p>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">What does the video cost?<span class="mark">+</span></button>
+          <p class="faq-a">Transformation video is included with full wraps. Accent packages include a BTS reel. Photo/video-only shoots go through Roller Reels.</p>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">Can I book just a photo/video shoot?<span class="mark">+</span></button>
+          <p class="faq-a">Yes — book through Roller Reels at rollerreels.com for cinematic shoots without a wrap.</p>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="wrap sec">
-    <h2 class="h2">How it works</h2>
-    <div class="col">
-      <div class="step"><span class="cap acc">01</span><h3 class="h3">Send your inquiry</h3></div>
-      <div class="step"><span class="cap acc">02</span><h3 class="h3">Design consult</h3></div>
-      <div class="step"><span class="cap acc">03</span><h3 class="h3">Vinyl selection</h3></div>
-      <div class="step"><span class="cap acc">04</span><h3 class="h3">Drop-off</h3></div>
-      <div class="step"><span class="cap acc">05</span><h3 class="h3">Wrap + shoot</h3></div>
-      <div class="step"><span class="cap acc">06</span><h3 class="h3">Reveal &amp; premiere on the channel</h3></div>
-    </div>
-  </div>
-
-  <div class="dark2">
-    <div class="wrap sec">
-      <div class="brow"><span class="tick"></span><span class="cap acc">On the channel</span></div>
-      <h2 class="h2">Every wrap gets a film</h2>
-      <div class="hrow">
-        <div class="vcard"><img class="ph media m169" src="/images/thumb-f4i-reveal.jpg" alt="F4i full build reveal" width="640" height="360"><span class="chip">Transformation</span><p class="sm">F4i — Full Build Reveal</p></div>
-        <div class="vcard"><img class="ph media m169" src="/images/thumb-shop-bts.jpg" alt="Inside the K Films garage" width="640" height="360"><span class="chip">BTS</span><p class="sm">Inside the K Films garage</p></div>
-        <div class="vcard"><img class="ph media m169" src="/images/thumb-customer-interview.jpg" alt="Customer interview after transformation" width="640" height="360"><span class="chip">Rider story</span><p class="sm">Marcus — Newark</p></div>
-        <div class="vcard"><img class="ph media m169" src="/images/thumb-night-pov.jpg" alt="Night POV moto vlog" width="640" height="360"><span class="chip">POV</span><p class="sm">Night Run — Jersey City</p></div>
+  <section class="section section-muted">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Your bike’s service adventure</p>
+        <h2>Drive Through Our Wrap Process</h2>
+        <div class="process-tabs">
+          <span class="on">Best services</span>
+          <span>Our customers</span>
+        </div>
       </div>
-      <div class="fx gap12" style="flex-wrap:wrap">
-        <a href="#" class="btn btnP">Subscribe on YouTube</a>
-        <a href="/films.html" class="btn btnS">Watch all films →</a>
+      <div class="process-grid">
+        <article class="process-card"><div class="process-num">01</div><h4>Send your inquiry</h4><p class="p">Tell us the bike, coverage, finish idea, and timeline.</p></article>
+        <article class="process-card"><div class="process-num">02</div><h4>Design consult</h4><p class="p">We lock colors, coverage, and film plan before vinyl arrives.</p></article>
+        <article class="process-card"><div class="process-num">03</div><h4>Vinyl selection</h4><p class="p">Premium cast films chosen for durability and camera finish.</p></article>
+        <article class="process-card"><div class="process-num">04</div><h4>Drop-off</h4><p class="p">Leave the bike — we confirm dates and start prep.</p></article>
+        <article class="process-card"><div class="process-num">05</div><h4>Wrap + shoot</h4><p class="p">Install, detail, and capture the build for the channel.</p></article>
+        <article class="process-card"><div class="process-num">06</div><h4>Reveal &amp; premiere</h4><p class="p">Pick up the bike and watch the transformation premiere.</p></article>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="wrap sec">
-    <div class="brow"><span class="tick"></span><span class="cap acc">What riders say</span></div>
-    <h2 class="h2">Straight from the garage</h2>
-    <div class="qgrid">
-      <div class="quote"><p class="qtext">"He didn't just wrap my bike. He made a film about why I ride."</p><span class="cap mut">Marcus — Street Triple RS</span></div>
-      <div class="quote"><p class="qtext">"Clean lines, no bubbles, and I got a video I actually repost."</p><span class="cap mut">Yara — MT-09</span></div>
-      <div class="quote"><p class="qtext">"Dropped it off Monday, picked up a wrapped bike and a film by Friday."</p><span class="cap mut">Devon — ZX-10R</span></div>
-    </div>
-    <a href="/contact.html#testimonials" class="cap acc">More reviews →</a>
-  </div>
-
-  <div class="wrap sec">
-    <div class="brow"><span class="tick"></span><span class="cap acc">Packages</span></div>
-    <h2 class="h2">Straightforward tiers</h2>
-    <div class="pgrid">
-      <div class="card"><span class="cap acc">Full transformation</span><span class="stnum" style="color:#e6e4e2">$1,800+</span><p class="sm mut">Full wrap · tank PPF · transformation video</p><a href="/contact.html#inquiry" class="btn btnP">Book this package</a></div>
-      <div class="card"><span class="cap mut">Accent package</span><span class="stnum" style="color:#e6e4e2">$650+</span><p class="sm mut">Partial coverage · stripes · BTS reel</p><a href="/contact.html#inquiry" class="btn btnS">Book this package</a></div>
-    </div>
-    <a href="/services.html#pricing" class="cap acc">See full pricing →</a>
-  </div>
-
-  <div class="wrap sec" style="padding-top:0">
-    <div class="rr">
-      <div class="col gap8">
-        <span class="cap acc">Photo &amp; video only?</span>
-        <h3 class="h3">Book a shoot through Roller Reels</h3>
-        <p class="sm mut">Cinematic photo and video sessions — me and other creators in the area, managed under one roof.</p>
+  <section class="section">
+    <div class="container split-cta">
+      <div>
+        <h3>Speed Stories</h3>
+        <p class="p-lg">Competitive packages, clear quotes, and a film that ships with the wrap — stress-free from inquiry to premiere.</p>
+        <a class="btn btn-primary" href="/about.html">About us</a>
       </div>
-      <a href="https://rollerreels.com" class="btn btnS noshrink">rollerreels.com →</a>
-    </div>
-  </div>
-
-  <div class="dark2">
-    <div class="wrap sec" style="align-items:flex-start">
-      <h2 class="h2">Your bike could be the next episode.</h2>
-      <div class="fx gap12" style="flex-wrap:wrap">
-        <a href="/contact.html#inquiry" class="btn btnP">Start your inquiry</a>
-        <a href="/contact.html" class="btn btnS">Text or DM us</a>
+      <div class="thumb-grid">
+        <img src="/images/thumb-shop-bts.jpg" alt="Shop BTS" width="640" height="400" loading="lazy">
+        <img src="/images/thumb-wrap-process.jpg" alt="Wrap process" width="640" height="400" loading="lazy">
+        <img src="/images/thumb-panel-lines.jpg" alt="Panel lines" width="640" height="400" loading="lazy">
+        <img src="/images/thumb-timelapse-shop.jpg" alt="Shop timelapse" width="640" height="400" loading="lazy">
       </div>
     </div>
-  </div>
+  </section>
 
-  <footer class="ftr">
-    <div class="wrap col gap16">
-      <span class="logo">K FILMS</span>
-      <div class="flinks">
-        <a href="/services.html" class="cap mut">Services</a>
-        <a href="/films.html" class="cap mut">Films</a>
-        <a href="/about.html" class="cap mut">About</a>
-        <a href="/contact.html" class="cap mut">Contact</a>
-        <a href="#" class="cap mut">YouTube</a>
-        <a href="#" class="cap mut">Instagram</a>
-        <a href="https://rollerreels.com" class="cap mut">Roller Reels</a>
+  <section class="section section-dark">
+    <div class="container">
+      <div class="section-head">
+        <h3>Film Showcase</h3>
+        <p class="p-lg">Transformations, BTS, POV rides, and rider interviews — every wrap gets a film.</p>
+        <a class="link-arrow" href="/films.html">Our gallery →</a>
       </div>
-      <p class="sm mut">© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</p>
+      <div class="gallery-row">
+        <article class="gallery-card">
+          <img src="/images/thumb-f4i-reveal.jpg" alt="F4i reveal" width="640" height="360" loading="lazy">
+          <h4>F4i — Full Build Reveal</h4>
+        </article>
+        <article class="gallery-card">
+          <img src="/images/thumb-night-pov.jpg" alt="Night POV" width="640" height="360" loading="lazy">
+          <h4>Night Run — Jersey City</h4>
+        </article>
+        <article class="gallery-card">
+          <img src="/images/thumb-shop-bts.jpg" alt="Garage BTS" width="640" height="360" loading="lazy">
+          <h4>Inside the K Films garage</h4>
+        </article>
+        <article class="gallery-card">
+          <img src="/images/thumb-customer-interview.jpg" alt="Rider interview" width="640" height="360" loading="lazy">
+          <h4>Marcus — Newark</h4>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Packages</p>
+        <h2>Straightforward Pricing</h2>
+      </div>
+      <div class="price-grid">
+        <article class="price-card featured">
+          <span class="tag">Premium · Care Package</span>
+          <h6>Full transformation</h6>
+          <div class="price-amount">$1,800+</div>
+          <ul class="price-list">
+            <li>Full color-change wrap</li>
+            <li>Tank PPF included</li>
+            <li>Cinematic transformation video</li>
+            <li>Priority scheduling</li>
+          </ul>
+          <a class="btn btn-primary" href="/contact.html#inquiry">Purchase a package now</a>
+        </article>
+        <article class="price-card">
+          <span class="tag">Basic · Care Package</span>
+          <h6>Accent package</h6>
+          <div class="price-amount">$650+</div>
+          <ul class="price-list">
+            <li>Partial wrap or stripes</li>
+            <li>Chrome delete option</li>
+            <li>Behind-the-scenes reel</li>
+            <li>Design consult included</li>
+          </ul>
+          <a class="btn btn-black" href="/contact.html#inquiry">Purchase a package now</a>
+        </article>
+      </div>
+      <p style="margin-top:24px"><a class="link-arrow" href="/services.html#pricing">See full pricing →</a></p>
+    </div>
+  </section>
+
+  <section class="section section-muted">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Discover our complete care</p>
+        <h2>Essential Contact Package</h2>
+      </div>
+      <div class="contact-tiles">
+        <div class="contact-tile">
+          <h6>Text or call</h6>
+          <a href="/contact.html#inquiry">Send a message</a>
+        </div>
+        <div class="contact-tile">
+          <h6>Email</h6>
+          <a href="mailto:hello@kisalafilms.com">hello@kisalafilms.com</a>
+        </div>
+        <div class="contact-tile">
+          <h6>Instagram</h6>
+          <a href="#">DM @kisalafilms</a>
+        </div>
+        <div class="contact-tile">
+          <h6>Location</h6>
+          <p>Jersey City, NJ · By appointment</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">From the channel</p>
+        <h2>Latest Episodes</h2>
+      </div>
+      <div class="blog-grid">
+        <article class="blog-card">
+          <img src="/images/thumb-f4i-reveal.jpg" alt="" width="640" height="400" loading="lazy">
+          <div class="blog-body">
+            <div class="blog-meta">Transformation · By Elombe Kisala</div>
+            <h4>F4i — Full Build Reveal</h4>
+            <p class="p">Own-bike wrap series from strip to premiere.</p>
+            <a class="link-arrow" href="/films.html">Read details →</a>
+          </div>
+        </article>
+        <article class="blog-card">
+          <img src="/images/thumb-wrap-process.jpg" alt="" width="640" height="400" loading="lazy">
+          <div class="blog-body">
+            <div class="blog-meta">BTS · By Elombe Kisala</div>
+            <h4>Tank Lines, No Seams</h4>
+            <p class="p">Knife work and panel discipline up close.</p>
+            <a class="link-arrow" href="/films.html">Read details →</a>
+          </div>
+        </article>
+        <article class="blog-card">
+          <img src="/images/thumb-night-pov.jpg" alt="" width="640" height="400" loading="lazy">
+          <div class="blog-body">
+            <div class="blog-meta">POV · By Elombe Kisala</div>
+            <h4>Night Run — Jersey City</h4>
+            <p class="p">Helmet-cam energy after the reveal.</p>
+            <a class="link-arrow" href="/films.html">Read details →</a>
+          </div>
+        </article>
+        <article class="blog-card">
+          <img src="/images/thumb-customer-interview-2.jpg" alt="" width="640" height="400" loading="lazy">
+          <div class="blog-body">
+            <div class="blog-meta">Rider Stories · By Elombe Kisala</div>
+            <h4>Yara — Jersey City</h4>
+            <p class="p">Post-transform interview on the curb.</p>
+            <a class="link-arrow" href="/films.html">Read details →</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-black" id="book">
+    <div class="container book-grid">
+      <div>
+        <p class="eyebrow">Book your appointment today</p>
+        <h3>Upgrade Your Ride!</h3>
+        <p class="p-lg">Schedule your wrap consult today. Don’t wait — get your bike camera-ready with a clear package and a film on the way.</p>
+      </div>
+      <form class="form" id="home-inquiry" action="#" method="post">
+        <div class="fld">
+          <label for="bike">Motorcycle make &amp; model</label>
+          <input id="bike" name="bike" type="text" placeholder="e.g., Honda CBR600F4i" required>
+        </div>
+        <div class="fld">
+          <label for="finish">Desired color / finish idea</label>
+          <input id="finish" name="finish" type="text" placeholder="e.g., Matte black, gloss red" required>
+        </div>
+        <div class="fld">
+          <label for="notes">Anything else?</label>
+          <textarea id="notes" name="notes" rows="3" placeholder="Timeline, coverage, questions…"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Submit inquiry →</button>
+        <p class="form-note" id="form-note">Thanks — your inquiry stub was captured locally. We’ll wire a real endpoint next.</p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h5>Explore Our Full Range of Offerings</h5>
+        <div class="footer-links">
+          <a href="/about.html">Discover K Films</a>
+          <a href="/services.html">Our Services</a>
+          <a href="/services.html#pricing">Pricing Plans</a>
+          <a href="/films.html">Latest Films</a>
+          <a href="/styleguide.html">Style Guide</a>
+        </div>
+      </div>
+      <div>
+        <h5>Connect &amp; Locate Us</h5>
+        <div class="footer-links">
+          <a href="/contact.html#inquiry">Start inquiry</a>
+          <a href="#">Instagram @kisalafilms</a>
+          <a href="#">YouTube</a>
+          <a href="https://rollerreels.com">Roller Reels</a>
+          <a href="mailto:hello@kisalafilms.com">hello@kisalafilms.com</a>
+        </div>
+      </div>
+      <div>
+        <h5>Stay Updated with K Films</h5>
+        <p class="p">Subscribe for new episodes, wrap slots, and shop drops.</p>
+        <form class="form" id="newsletter" onsubmit="return false">
+          <div class="fld"><input type="email" placeholder="Email address" aria-label="Email"></div>
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+        </form>
+      </div>
+      <div class="footer-hours">
+        <h5>Office Address</h5>
+        <p>Visit Us: Jersey City, NJ (by appointment)</p>
+        <p>Headquarters: Kisala Films garage — Jersey City, USA</p>
+        <p>Monday to Friday: 10:00 AM – 6:00 PM</p>
+        <p>Saturday/Sunday: By appointment</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</span>
+      <a href="/styleguide.html">Style Guide</a>
     </div>
   </footer>
 
-  <div class="sticky">
-    <a href="/contact.html#inquiry" class="btn btnP f1">Start your inquiry</a>
-    <a href="/films.html" class="btn btnS f1">Watch films</a>
-  </div>
-
-  <script>
-    document.getElementById("nav-drawer")?.removeAttribute("hidden");
-  </script>
-  <script src="/js/site.js"></script>
+  <script src="/js/home.js"></script>
 </body>
 </html>
