@@ -1,6 +1,6 @@
 # Kisala Films website
 
-Marketing + booking site for **Kisala Films** (K Films) — motorcycle vinyl wraps in Jersey City, NJ, with a YouTube channel documenting every build.
+Marketing + booking site for **Kisala Films** (K Films) — motorcycle vinyl wraps (and PPF) in Jersey City, NJ, paired with cinematic photography/video and moto adventure content. Film means vinyl *and* cinema.
 
 ## Stack
 
