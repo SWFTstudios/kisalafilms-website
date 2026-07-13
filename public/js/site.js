@@ -37,15 +37,15 @@
   const tabs = document.getElementById("films-tabs");
   if (grid && tabs) {
     const films = [
-      { title: "Panigale V4 — Full Build", category: "Transformations", still: "reveal edit" },
-      { title: "Night Run — R1 Reveal", category: "Transformations", still: "night edit" },
-      { title: "Matte Ghost — ZX-10R", category: "Transformations", still: "matte wrap" },
-      { title: "Ember — MT-09", category: "Transformations", still: "orange wrap" },
-      { title: "Inside the K Films garage", category: "BTS", still: "shop vlog" },
-      { title: "Tank lines, no seams", category: "BTS", still: "knife work" },
-      { title: "6 days in 60 seconds", category: "BTS", still: "timelapse" },
-      { title: "Marcus — Newark", category: "Rider Stories", still: "documentary frame" },
-      { title: "Yara — Jersey City", category: "Rider Stories", still: "documentary frame" },
+      { title: "F4i — Full Build Reveal", category: "Transformations", thumb: "/images/thumb-f4i-reveal.jpg", alt: "Own-bike wrap reveal of the CBR600F4i" },
+      { title: "Night Run — Jersey City", category: "Transformations", thumb: "/images/thumb-night-pov.jpg", alt: "POV night ride on the F4i" },
+      { title: "Mid-Wrap Transformation", category: "Transformations", thumb: "/images/thumb-transformation-mid.jpg", alt: "F4i mid-wrap in the shop" },
+      { title: "Pre-Wrap Strip", category: "Transformations", thumb: "/images/thumb-before-strip.jpg", alt: "Black F4i before the wrap project" },
+      { title: "Inside the K Films garage", category: "BTS", thumb: "/images/thumb-shop-bts.jpg", alt: "Behind the scenes in the wrap shop" },
+      { title: "Tank lines, no seams", category: "BTS", thumb: "/images/thumb-panel-lines.jpg", alt: "Knife work on vinyl panel lines" },
+      { title: "6 days in 60 seconds", category: "BTS", thumb: "/images/thumb-timelapse-shop.jpg", alt: "Shop timelapse still" },
+      { title: "Marcus — Newark", category: "Rider Stories", thumb: "/images/thumb-customer-interview.jpg", alt: "Post-transform customer interview" },
+      { title: "Yara — Jersey City", category: "Rider Stories", thumb: "/images/thumb-customer-interview-2.jpg", alt: "Rider story interview outdoors" },
     ];
     let active = "All";
 
@@ -55,7 +55,7 @@
         .map(
           (f) => `
         <article class="fcard">
-          <div class="ph m169">16:9 thumb — ${f.still}</div>
+          <img class="ph media m169" src="${f.thumb}" alt="${f.alt}" width="640" height="360" loading="lazy">
           <span class="chip">${f.category}</span>
           <h3 class="h3">${f.title}</h3>
         </article>`
