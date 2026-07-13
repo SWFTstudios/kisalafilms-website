@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"><style>
+body{margin:0;background:#0c0c0c;color:#e6e4e2;font-family:Manrope,sans-serif}
+a{color:#e6e4e2;text-decoration:none}a:hover{color:#ff5538}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px;width:100%;box-sizing:border-box}
+.sec{padding:64px 0;display:flex;flex-direction:column;gap:20px}
+.h1{font:800 40px/1.04 'Hanken Grotesk';letter-spacing:-.02em;text-transform:uppercase;margin:0}
+.h2{font:700 27px/1.12 'Hanken Grotesk';letter-spacing:-.01em;text-transform:uppercase;margin:0}
+.h3{font:600 18px/1.3 'Hanken Grotesk';margin:0}
+.bd{font:400 16px/1.65 Manrope;margin:0;max-width:560px}
+.sm{font:400 13px/1.6 Manrope;margin:0}
+.cap{font:700 11px/1.2 'Hanken Grotesk';letter-spacing:.14em;text-transform:uppercase}
+.mut{color:#98928c}
+.acc{color:#ff5538}
+.brow{display:flex;align-items:center;gap:8px}
+.tick{width:4px;height:14px;background:#ff5538;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 24px;font:700 12px/1 'Hanken Grotesk';letter-spacing:.14em;text-transform:uppercase;text-align:center;cursor:pointer;box-sizing:border-box}
+.btnP{background:#ff5538;color:#0c0c0c}.btnP:hover{color:#0c0c0c;opacity:.9}
+.btnS{border:1px solid #2e2e2e;color:#e6e4e2}
+.ph{background:repeating-linear-gradient(45deg,#1d1c1a 0 12px,#151412 12px 24px);display:flex;align-items:flex-start;justify-content:flex-start;color:#6f6a63;font:400 11px/1.5 ui-monospace,Menlo,monospace;padding:14px;box-sizing:border-box}
+.fill{position:absolute;inset:0}
+.hdr{position:sticky;top:0;z-index:40;background:rgba(12,12,12,.75);backdrop-filter:blur(20px);border-bottom:1px solid #242424}
+.hbar{height:62px;display:flex;align-items:center;justify-content:space-between}
+.logo{font:800 17px/1 'Hanken Grotesk';letter-spacing:.18em}
+.nav{display:none;gap:28px;align-items:center}
+.bgr{display:flex;flex-direction:column;gap:5px;cursor:pointer}
+.bline{width:26px;height:2px;background:#e6e4e2}
+.hero{position:relative;min-height:78vh;display:flex}
+.hfade{background:linear-gradient(180deg,rgba(12,12,12,.05) 35%,#0c0c0c 96%)}
+.hcontent{position:relative;margin-top:auto;width:100%;padding:120px 0 56px}
+.hcta{display:flex;flex-direction:column;gap:10px;margin-top:24px;max-width:400px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#242424;border-top:1px solid #242424;border-bottom:1px solid #242424}
+.stat{background:#0c0c0c;padding:20px 16px;display:flex;flex-direction:column;gap:6px}
+.stnum{font:800 28px/1 'Hanken Grotesk';letter-spacing:-.01em;color:#ff5538}
+.cards{display:grid;grid-template-columns:1fr;gap:14px}
+.card{background:#141414;border:1px solid #242424;padding:22px;display:flex;flex-direction:column;gap:10px}
+.card:hover{border-color:#ff5538}
+.chip{border:1px solid #3a3a3a;color:#b7b1aa;font:700 9px/1 'Hanken Grotesk';letter-spacing:.12em;padding:5px 7px;text-transform:uppercase;align-self:flex-start}
+.hrow{display:flex;gap:14px;overflow-x:auto;margin:0 -20px;padding:0 20px 6px;scrollbar-width:none}
+.hrow::-webkit-scrollbar{display:none}
+.vcard{width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:9px}
+.m169{aspect-ratio:16/9;width:100%}
+.step{display:flex;gap:16px;padding:16px 0;border-top:1px solid #242424;align-items:baseline}
+.dark2{background:#111}
+.rr{border:1px solid #242424;background:#141414;padding:24px;display:flex;flex-direction:column;gap:12px}
+.ftr{border-top:1px solid #242424;padding:48px 0 56px;display:flex;flex-direction:column;gap:18px}
+.flinks{display:flex;gap:20px;flex-wrap:wrap}
+.sticky{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(12,12,12,.85);backdrop-filter:blur(16px);border-top:1px solid #242424;padding:12px 20px;display:flex;gap:10px}
+.prog{display:flex;flex-direction:column;gap:8px}
+.progtrack{height:8px;background:#1a1a1a;border:1px solid #242424;position:relative}
+.progfill{position:absolute;inset:0;background:#ff5538}
+.quote{background:#141414;border:1px solid #242424;padding:22px;display:flex;flex-direction:column;gap:12px}
+.qtext{font:600 15px/1.5 'Hanken Grotesk';margin:0}
+.qgrid{display:grid;grid-template-columns:1fr;gap:14px}
+.pgrid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:640px){.qgrid{grid-template-columns:1fr 1fr 1fr}}
+@media(min-width:900px){.sec{padding:104px 0}.h1{font-size:68px}.h2{font-size:38px}.nav{display:flex}.bgr{display:none}.mobonly{display:none}.hcta{flex-direction:row;max-width:none}.hcta .btn{flex:0 0 auto}.cards{grid-template-columns:repeat(4,1fr)}.stats{grid-template-columns:repeat(3,1fr)}.vcard{width:340px}.sticky{display:none}.rr{flex-direction:row;align-items:center;justify-content:space-between}.pgrid{grid-template-columns:1fr 1fr}}
+</style></helmet>
+<header class="hdr"><div class="wrap hbar"><a href="Home.dc.html" class="logo">K FILMS</a><nav class="nav"><a href="Services.dc.html" class="cap">Services</a><a href="Films.dc.html" class="cap">Films</a><a href="About.dc.html" class="cap">About</a><a href="Contact.dc.html" class="cap">Contact</a><a href="Contact.dc.html#inquiry" class="btn btnP" style="padding:12px 20px">Book</a></nav><div class="fx ac gap16 mobonly"><a href="Contact.dc.html#inquiry" class="cap acc">Book</a><div class="bgr"><span class="bline"></span><span class="bline"></span></div></div></div></header>
+<div class="hero"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-hero" shape="rect" placeholder="Hero photo or video still — wrapped motorcycle, garage at night, orange rim light" class="fill" hint-size="100%,100%"></x-import><div class="fill hfade"></div><div class="wrap hcontent"><div class="col gap12" style="max-width:640px"><div class="brow"><span class="tick"></span><span class="cap acc">Motorcycle wraps × cinema · Jersey City, NJ</span></div><h1 class="h1">Express your ride.</h1><p class="bd mut">Custom vinyl wraps for motorcycles — and every wrap comes with a cinematic transformation video for the channel.</p><div class="hcta"><a href="Contact.dc.html#inquiry" class="btn btnP">Start your inquiry</a><a href="Films.dc.html" class="btn btnS">Watch the films</a></div></div></div></div>
+<div class="stats"><div class="stat"><span class="stnum">48</span><span class="cap mut">Bikes wrapped</span></div><div class="stat"><span class="stnum">120+</span><span class="cap mut">Videos on YouTube</span></div><div class="stat"><span class="stnum">1.2M</span><span class="cap mut">Views</span></div></div>
+<div class="wrap sec" style="flex-direction:row;flex-wrap:wrap;align-items:center"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-story-photo" shape="rounded" radius="4" placeholder="Elombe Kisala working on a bike, workshop light" style="width:100%;max-width:420px;aspect-ratio:4/5;flex-shrink:0" hint-size="420px,525px"></x-import><div class="col gap12 f1" style="min-width:260px"><div class="brow"><span class="tick"></span><span class="cap acc">Who's behind the wrench</span></div><h2 class="h2">From our garage to your feed</h2><p class="bd mut">Elombe Kisala wraps motorcycles as a precision craft, then documents the process for a growing YouTube channel — builds, behind the scenes, and the riders who bring their bikes in.</p><a href="About.dc.html" class="cap acc">Read the full story →</a></div></div>
+<div class="wrap sec"><div class="brow"><span class="tick"></span><span class="cap acc">Our expertise</span></div><h2 class="h2">Technical services</h2>
+<div class="cards"><div class="card"><span class="chip">Wrap</span><h3 class="h3">Full Wraps</h3><p class="sm mut">Complete color transformation in premium cast vinyl.</p></div><div class="card"><span class="chip">Wrap</span><h3 class="h3">Partial &amp; Accents</h3><p class="sm mut">Fairing accents, racing stripes, chrome delete.</p></div><div class="card"><span class="chip">Protect</span><h3 class="h3">Tank Protection</h3><p class="sm mut">Durable layers for high-wear tank areas.</p></div><div class="card"><span class="chip">Protect</span><h3 class="h3">Paint Protection Film</h3><p class="sm mut">Clear bra installation that preserves factory paint.</p></div></div>
+<a href="Services.dc.html" class="cap acc">All services &amp; pricing →</a></div>
+<div class="dark2"><div class="wrap sec"><div class="brow"><span class="tick"></span><span class="cap acc">Why K Films</span></div><h2 class="h2">Built on trust, not just vinyl</h2>
+<div class="col gap16"><div class="prog"><div class="fx jb"><span class="cap">On-time delivery</span><span class="cap acc">96%</span></div><div class="progtrack"><div class="progfill" style="width:96%"></div></div></div>
+<div class="prog"><div class="fx jb"><span class="cap">Clients who rebook</span><span class="cap acc">92%</span></div><div class="progtrack"><div class="progfill" style="width:92%"></div></div></div>
+<div class="prog"><div class="fx jb"><span class="cap">Video delivered same week</span><span class="cap acc">90%</span></div><div class="progtrack"><div class="progfill" style="width:90%"></div></div></div></div></div></div>
+<div class="wrap sec"><h2 class="h2">How it works</h2>
+<div class="col"><div class="step"><span class="cap acc">01</span><h3 class="h3">Send your inquiry</h3></div><div class="step"><span class="cap acc">02</span><h3 class="h3">Design consult</h3></div><div class="step"><span class="cap acc">03</span><h3 class="h3">Vinyl selection</h3></div><div class="step"><span class="cap acc">04</span><h3 class="h3">Drop-off</h3></div><div class="step"><span class="cap acc">05</span><h3 class="h3">Wrap + shoot</h3></div><div class="step"><span class="cap acc">06</span><h3 class="h3">Reveal &amp; premiere on the channel</h3></div></div></div>
+<div class="dark2"><div class="wrap sec"><div class="brow"><span class="tick"></span><span class="cap acc">On the channel</span></div><h2 class="h2">Every wrap gets a film</h2>
+<div class="hrow"><div class="vcard"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-film-1" shape="rect" placeholder="16:9 thumb — reveal edit" class="m169" hint-size="250px,141px"></x-import><span class="chip">Transformation</span><p class="sm">Panigale V4 — Full Build</p></div><div class="vcard"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-film-2" shape="rect" placeholder="16:9 thumb — shop vlog" class="m169" hint-size="250px,141px"></x-import><span class="chip">BTS</span><p class="sm">Inside the K Films garage</p></div><div class="vcard"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-film-3" shape="rect" placeholder="16:9 thumb — documentary" class="m169" hint-size="250px,141px"></x-import><span class="chip">Rider story</span><p class="sm">Marcus — Newark</p></div><div class="vcard"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="home-film-4" shape="rect" placeholder="16:9 thumb — night edit" class="m169" hint-size="250px,141px"></x-import><span class="chip">Transformation</span><p class="sm">Night Run — R1 Reveal</p></div></div>
+<div class="fx gap12" style="flex-wrap:wrap"><a href="#" class="btn btnP">Subscribe on YouTube</a><a href="Films.dc.html" class="btn btnS">Watch all films →</a></div></div></div>
+<div class="wrap sec"><div class="brow"><span class="tick"></span><span class="cap acc">What riders say</span></div><h2 class="h2">Straight from the garage</h2>
+<div class="qgrid"><div class="quote"><p class="qtext">"He didn't just wrap my bike. He made a film about why I ride."</p><span class="cap mut">Marcus — Street Triple RS</span></div><div class="quote"><p class="qtext">"Clean lines, no bubbles, and I got a video I actually repost."</p><span class="cap mut">Yara — MT-09</span></div><div class="quote"><p class="qtext">"Dropped it off Monday, picked up a wrapped bike and a film by Friday."</p><span class="cap mut">Devon — ZX-10R</span></div></div>
+<a href="Contact.dc.html#testimonials" class="cap acc">More reviews →</a></div>
+<div class="wrap sec"><div class="brow"><span class="tick"></span><span class="cap acc">Packages</span></div><h2 class="h2">Straightforward tiers</h2>
+<div class="pgrid"><div class="card"><span class="cap acc">Full transformation</span><span class="stnum" style="color:#e6e4e2">$1,800+</span><p class="sm mut">Full wrap · tank PPF · transformation video</p><a href="Contact.dc.html#inquiry" class="btn btnP">Book this package</a></div><div class="card"><span class="cap mut">Accent package</span><span class="stnum" style="color:#e6e4e2">$650+</span><p class="sm mut">Partial coverage · stripes · BTS reel</p><a href="Contact.dc.html#inquiry" class="btn btnS">Book this package</a></div></div>
+<a href="Services.dc.html#pricing" class="cap acc">See full pricing →</a></div>
+<sc-if value="{{ showRollerReels }}" hint-placeholder-val="{{ true }}"><div class="wrap sec" style="padding-top:0"><div class="rr"><div class="col gap8"><span class="cap acc">Photo &amp; video only?</span><h3 class="h3">Book a shoot through Roller Reels</h3><p class="sm mut">Cinematic photo and video sessions — me and other creators in the area, managed under one roof.</p></div><a href="https://rollerreels.com" class="btn btnS noshrink">rollerreels.com →</a></div></div></sc-if>
+<div class="dark2"><div class="wrap sec" style="align-items:flex-start"><h2 class="h2">Your bike could be the next episode.</h2><div class="fx gap12" style="flex-wrap:wrap"><a href="Contact.dc.html#inquiry" class="btn btnP">Start your inquiry</a><a href="Contact.dc.html" class="btn btnS">Text or DM us</a></div></div></div>
+<footer class="ftr"><div class="wrap col gap16"><span class="logo">K FILMS</span><div class="flinks"><a href="Services.dc.html" class="cap mut">Services</a><a href="Films.dc.html" class="cap mut">Films</a><a href="About.dc.html" class="cap mut">About</a><a href="Contact.dc.html" class="cap mut">Contact</a><a href="#" class="cap mut">YouTube</a><a href="#" class="cap mut">Instagram</a><a href="https://rollerreels.com" class="cap mut">Roller Reels</a></div><p class="sm mut">© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</p></div></footer>
+<sc-if value="{{ stickyCta }}" hint-placeholder-val="{{ true }}"><div class="sticky"><a href="Contact.dc.html#inquiry" class="btn btnP f1">Start your inquiry</a><a href="Films.dc.html" class="btn btnS f1">Watch films</a></div></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;stickyCta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Conversion&quot;},&quot;showRollerReels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      stickyCta: this.props.stickyCta ?? true,
+      showRollerReels: this.props.showRollerReels ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

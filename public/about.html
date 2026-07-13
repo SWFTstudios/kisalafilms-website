@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About — K Films</title>
+  <meta name="description" content="Elombe Kisala — motorcycle wrap craftsmanship and cinematic storytelling in Jersey City.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+  <header class="hdr">
+    <div class="wrap hbar">
+      <a href="/" class="logo">K FILMS</a>
+      <nav class="nav" aria-label="Primary">
+        <a href="/services.html" class="cap">Services</a>
+        <a href="/films.html" class="cap">Films</a>
+        <a href="/about.html" class="cap acc">About</a>
+        <a href="/contact.html" class="cap">Contact</a>
+        <a href="/contact.html#inquiry" class="btn btnP" style="padding:12px 20px">Book</a>
+      </nav>
+      <div class="fx ac gap16 mobonly">
+        <a href="/contact.html#inquiry" class="cap acc">Book</a>
+        <button class="bgr" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+          <span class="bline"></span><span class="bline"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div id="nav-drawer" class="nav-drawer"></div>
+
+  <div class="wrap sec" style="padding-bottom:0">
+    <div class="brow"><span class="tick"></span><span class="cap acc">Craftsmanship &amp; precision</span></div>
+    <h1 class="h1 subpage">The engineer's touch</h1>
+  </div>
+
+  <div class="wrap sec" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:24px">
+    <div class="ph" style="width:100%;max-width:440px;aspect-ratio:4/5;flex-shrink:0;border-radius:4px">Close-up, hands applying vinyl in the workshop</div>
+    <div class="col gap12 f1" style="min-width:260px">
+      <h2 class="h2" style="font-size:24px">Elombe Kisala</h2>
+      <p class="bd mut">Based in the heart of Jersey City, Elombe approaches motorcycle wrapping not just as an art, but as a precise engineering discipline. Every cut, every stretch, and every finish is calculated for maximum durability and visual impact.</p>
+      <p class="bd mut">Every project is also a story — the build gets filmed and cut into a transformation video, and the riders themselves often become episodes of their own on the K Films channel.</p>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <h2 class="h2">What drives the work</h2>
+    <div class="cards cards3">
+      <div class="card"><span class="cap acc">Precision</span><h3 class="h3">Engineering, not guesswork</h3><p class="sm mut">Every wrap is planned and cut like a technical build, not a quick paint job.</p></div>
+      <div class="card"><span class="cap acc">Craft</span><h3 class="h3">Made to be seen up close</h3><p class="sm mut">No seams, no bubbles — panels that hold up under a macro lens.</p></div>
+      <div class="card"><span class="cap acc">Story</span><h3 class="h3">Your bike, your episode</h3><p class="sm mut">Every build becomes a short film. Every rider gets to tell their story.</p></div>
+    </div>
+  </div>
+
+  <div class="dark2">
+    <div class="wrap sec">
+      <div class="rr">
+        <div class="col gap8">
+          <span class="cap acc">Beyond the wrap</span>
+          <h3 class="h3">Roller Reels — the creator network</h3>
+          <p class="sm mut">K Films is part of Roller Reels, a small collective of local photographers and videographers making cinematic automotive content. If you just want a shoot, no wrap, that's who to book.</p>
+        </div>
+        <a href="https://rollerreels.com" class="btn btnS noshrink">rollerreels.com →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap sec" style="align-items:flex-start">
+    <h2 class="h2">Want to be next?</h2>
+    <div class="fx gap12" style="flex-wrap:wrap">
+      <a href="/contact.html#inquiry" class="btn btnP">Start your inquiry</a>
+      <a href="/films.html" class="btn btnS">Watch the films</a>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div class="wrap col gap16">
+      <span class="logo">K FILMS</span>
+      <div class="flinks">
+        <a href="/services.html" class="cap mut">Services</a>
+        <a href="/films.html" class="cap mut">Films</a>
+        <a href="/about.html" class="cap mut">About</a>
+        <a href="/contact.html" class="cap mut">Contact</a>
+        <a href="#" class="cap mut">YouTube</a>
+        <a href="#" class="cap mut">Instagram</a>
+        <a href="https://rollerreels.com" class="cap mut">Roller Reels</a>
+      </div>
+      <p class="sm mut">© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</p>
+    </div>
+  </footer>
+
+  <div class="sticky">
+    <a href="/contact.html#inquiry" class="btn btnP f1">Start your inquiry</a>
+    <a href="/films.html" class="btn btnS f1">Watch films</a>
+  </div>
+  <script>
+    document.getElementById("nav-drawer").innerHTML = `<a href="/services.html" class="cap">Services</a><a href="/films.html" class="cap">Films</a><a href="/about.html" class="cap">About</a><a href="/contact.html" class="cap">Contact</a><a href="/contact.html#inquiry" class="btn btnP">Book</a>`;
+  </script>
+  <script src="/js/site.js"></script>
+</body>
+</html>

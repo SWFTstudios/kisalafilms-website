@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"><style>
+body{margin:0;background:#0c0c0c;color:#e6e4e2;font-family:Manrope,sans-serif}
+a{color:#e6e4e2;text-decoration:none}a:hover{color:#ff5538}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px;width:100%;box-sizing:border-box}
+.sec{padding:64px 0;display:flex;flex-direction:column;gap:20px}
+.h1{font:800 40px/1.04 'Hanken Grotesk';letter-spacing:-.02em;text-transform:uppercase;margin:0}
+.h2{font:700 27px/1.12 'Hanken Grotesk';letter-spacing:-.01em;text-transform:uppercase;margin:0}
+.h3{font:600 16px/1.3 'Hanken Grotesk';margin:0}
+.bd{font:400 16px/1.65 Manrope;margin:0;max-width:560px}
+.sm{font:400 13px/1.6 Manrope;margin:0}
+.cap{font:700 11px/1.2 'Hanken Grotesk';letter-spacing:.14em;text-transform:uppercase}
+.mut{color:#98928c}
+.acc{color:#ff5538}
+.brow{display:flex;align-items:center;gap:8px}
+.tick{width:4px;height:14px;background:#ff5538;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 24px;font:700 12px/1 'Hanken Grotesk';letter-spacing:.14em;text-transform:uppercase;text-align:center;cursor:pointer;box-sizing:border-box}
+.btnP{background:#ff5538;color:#0c0c0c}.btnP:hover{color:#0c0c0c;opacity:.9}
+.btnS{border:1px solid #2e2e2e;color:#e6e4e2}
+.ph{background:repeating-linear-gradient(45deg,#1d1c1a 0 12px,#151412 12px 24px);display:flex;align-items:flex-start;justify-content:flex-start;color:#6f6a63;font:400 11px/1.5 ui-monospace,Menlo,monospace;padding:14px;box-sizing:border-box}
+.hdr{position:sticky;top:0;z-index:40;background:rgba(12,12,12,.75);backdrop-filter:blur(20px);border-bottom:1px solid #242424}
+.hbar{height:62px;display:flex;align-items:center;justify-content:space-between}
+.logo{font:800 17px/1 'Hanken Grotesk';letter-spacing:.18em}
+.nav{display:none;gap:28px;align-items:center}
+.bgr{display:flex;flex-direction:column;gap:5px;cursor:pointer}
+.bline{width:26px;height:2px;background:#e6e4e2}
+.chip{border:1px solid #3a3a3a;color:#b7b1aa;font:700 9px/1 'Hanken Grotesk';letter-spacing:.12em;padding:5px 7px;text-transform:uppercase;align-self:flex-start}
+.dark2{background:#111}
+.ftr{border-top:1px solid #242424;padding:48px 0 56px;display:flex;flex-direction:column;gap:18px}
+.flinks{display:flex;gap:20px;flex-wrap:wrap}
+.sticky{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(12,12,12,.85);backdrop-filter:blur(16px);border-top:1px solid #242424;padding:12px 20px;display:flex;gap:10px}
+.tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:11px 18px;border:1px solid #242424;font:700 11px/1 'Hanken Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#98928c;cursor:pointer;background:transparent;white-space:nowrap;flex-shrink:0}
+.tabOn{background:#ff5538;color:#0c0c0c;border-color:#ff5538}
+.fgrid{display:grid;grid-template-columns:1fr;gap:16px}
+.fcard{display:flex;flex-direction:column;gap:9px}
+.m169{aspect-ratio:16/9;width:100%}
+@media(min-width:640px){.fgrid{grid-template-columns:1fr 1fr}}
+@media(min-width:900px){.sec{padding:104px 0}.h1{font-size:56px}.h2{font-size:38px}.nav{display:flex}.bgr{display:none}.mobonly{display:none}.sticky{display:none}.fgrid{grid-template-columns:1fr 1fr 1fr}}
+</style></helmet>
+<header class="hdr"><div class="wrap hbar"><a href="Home.dc.html" class="logo">K FILMS</a><nav class="nav"><a href="Services.dc.html" class="cap">Services</a><a href="Films.dc.html" class="cap acc">Films</a><a href="About.dc.html" class="cap">About</a><a href="Contact.dc.html" class="cap">Contact</a><a href="Contact.dc.html#inquiry" class="btn btnP" style="padding:12px 20px">Book</a></nav><div class="fx ac gap16 mobonly"><a href="Contact.dc.html#inquiry" class="cap acc">Book</a><div class="bgr"><span class="bline"></span><span class="bline"></span></div></div></div></header>
+<div class="wrap sec" style="padding-bottom:0"><div class="brow"><span class="tick"></span><span class="cap acc">The channel</span></div><h1 class="h1">Our films</h1><p class="bd mut">Transformations, behind the scenes, and the riders behind the bikes — everything we shoot, in one place.</p></div>
+<div class="wrap sec"><div class="tabs"><sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button class="tab {{ t.cls }}" type="button" onClick="{{ t.onClick }}">{{ t.label }}</button></sc-for></div>
+<div class="fgrid"><sc-for list="{{ items }}" as="f" hint-placeholder-count="6"><div class="fcard"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="film-{{ $index }}" shape="rect" placeholder="16:9 thumb — {{ f.still }}" class="m169" hint-size="250px,141px"></x-import><span class="chip">{{ f.category }}</span><h3 class="h3">{{ f.title }}</h3></div></sc-for></div></div>
+<div class="dark2"><div class="wrap sec" style="align-items:flex-start"><h2 class="h2">New episodes weekly</h2><div class="fx gap12" style="flex-wrap:wrap"><a href="#" class="btn btnP">Subscribe on YouTube</a><a href="#" class="btn btnS">Follow on Instagram</a></div><a href="Contact.dc.html#inquiry" class="cap acc">Want your bike in the next one? →</a></div></div>
+<footer class="ftr"><div class="wrap col gap16"><span class="logo">K FILMS</span><div class="flinks"><a href="Services.dc.html" class="cap mut">Services</a><a href="Films.dc.html" class="cap mut">Films</a><a href="About.dc.html" class="cap mut">About</a><a href="Contact.dc.html" class="cap mut">Contact</a><a href="#" class="cap mut">YouTube</a><a href="#" class="cap mut">Instagram</a><a href="https://rollerreels.com" class="cap mut">Roller Reels</a></div><p class="sm mut">© 2026 Kisala Films — Jersey City, NJ. Every wrap ends with a film.</p></div></footer>
+<sc-if value="{{ stickyCta }}" hint-placeholder-val="{{ true }}"><div class="sticky"><a href="Contact.dc.html#inquiry" class="btn btnP f1">Start your inquiry</a><a href="#" class="btn btnS f1">Subscribe</a></div></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;stickyCta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Conversion&quot;}}">
+class Component extends DCLogic {
+  state = { tab: 'All' };
+  categories = ['All','Transformations','BTS','Rider Stories'];
+  all = [
+    { title: 'Panigale V4 — Full Build', category: 'Transformations', still: 'reveal edit' },
+    { title: 'Night Run — R1 Reveal', category: 'Transformations', still: 'night edit' },
+    { title: 'Matte Ghost — ZX-10R', category: 'Transformations', still: 'matte wrap' },
+    { title: 'Ember — MT-09', category: 'Transformations', still: 'orange wrap' },
+    { title: 'Inside the K Films garage', category: 'BTS', still: 'shop vlog' },
+    { title: 'Tank lines, no seams', category: 'BTS', still: 'knife work' },
+    { title: '6 days in 60 seconds', category: 'BTS', still: 'timelapse' },
+    { title: 'Marcus — Newark', category: 'Rider Stories', still: 'documentary frame' },
+    { title: 'Yara — Jersey City', category: 'Rider Stories', still: 'documentary frame' }
+  ];
+  setTab(t) { this.setState({ tab: t }); }
+  renderVals() {
+    const tab = this.state.tab;
+    return {
+      stickyCta: this.props.stickyCta ?? true,
+      tabs: this.categories.map(c => ({ label: c, cls: c === tab ? 'tabOn' : '', onClick: () => this.setTab(c) })),
+      items: tab === 'All' ? this.all : this.all.filter(f => f.category === tab)
+    };
+  }
+}
+</script>
+</body>
+</html>
