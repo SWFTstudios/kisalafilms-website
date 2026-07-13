@@ -20,7 +20,14 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+/* Smooth scroll on desktop only — on phones it fights native momentum and feels shaky */
+html { scroll-behavior: auto; }
+@media (hover: hover) and (pointer: fine) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 
 body.carsy {
   margin: 0;
@@ -30,6 +37,8 @@ body.carsy {
   color: var(--c-white);
   background: var(--c-black);
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+  overscroll-behavior-y: contain;
 }
 
 img { max-width: 100%; height: auto; display: block; }
@@ -363,7 +372,9 @@ body.nav-lock { overflow: hidden; }
 /* Hero — Carsy home-2 centered cinematic */
 .hero {
   position: relative;
+  /* svh avoids jump/shake when mobile browser chrome shows/hides */
   min-height: 92vh;
+  min-height: 92svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -428,15 +439,40 @@ body.nav-lock { overflow: hidden; }
   to { opacity: 1; transform: none; }
 }
 
-/* Reveal on scroll */
+/* Reveal on scroll — transform-only jank is worst mid-touch on mobile */
 .reveal {
   opacity: 0;
   transform: translateY(36px);
   transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1);
+  will-change: opacity, transform;
 }
 .reveal.is-in {
   opacity: 1;
   transform: none;
+  will-change: auto;
+}
+
+@media (max-width: 899px) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .hero-media,
+  .hero-content > * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .marquee-track {
+    animation: none !important;
+  }
 }
 
 /* Marquee — Carsy red band */
@@ -476,6 +512,8 @@ body.nav-lock { overflow: hidden; }
   letter-spacing: .06em;
   white-space: nowrap;
   color: rgba(0,0,0,.55);
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 .marquee-track span { opacity: 1; }
 @keyframes marquee {
