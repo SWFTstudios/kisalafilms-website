@@ -23,7 +23,8 @@ img.media-rounded{border-radius:4px}
 .fill{position:absolute;inset:0}
 .hdr{position:sticky;top:0;z-index:40;background:rgba(12,12,12,.75);backdrop-filter:blur(20px);border-bottom:1px solid #242424}
 .hbar{height:62px;display:flex;align-items:center;justify-content:space-between}
-.logo{font:800 17px/1 'Hanken Grotesk',sans-serif;letter-spacing:.18em}
+.logo{display:inline-flex;align-items:center;line-height:0}
+.logo img{height:30px;width:auto;display:block}
 .nav{display:none;gap:28px;align-items:center}
 .bgr{display:flex;flex-direction:column;gap:5px;cursor:pointer;background:none;border:0;padding:0}
 .bline{width:26px;height:2px;background:#e6e4e2;display:block}
@@ -46,6 +47,7 @@ img.media-rounded{border-radius:4px}
 .dark2{background:#111}
 .rr{border:1px solid #242424;background:#141414;padding:24px;display:flex;flex-direction:column;gap:12px}
 .ftr{border-top:1px solid #242424;padding:48px 0 100px;display:flex;flex-direction:column;gap:18px}
+.ftr .logo img{height:36px}
 .flinks{display:flex;gap:20px;flex-wrap:wrap}
 .sticky{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(12,12,12,.85);backdrop-filter:blur(16px);border-top:1px solid #242424;padding:12px 20px;display:flex;gap:10px}
 .prog{display:flex;flex-direction:column;gap:8px}
