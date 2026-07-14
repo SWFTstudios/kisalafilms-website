@@ -877,6 +877,14 @@ body.nav-lock { overflow: hidden; }
   display: none;
 }
 .form-note.show { display: block; }
+.honey {
+  position: absolute;
+  left: -9999px;
+  height: 0;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+}
 
 /* Footer */
 .site-footer {

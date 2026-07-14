@@ -378,7 +378,8 @@
       margin-bottom: 8px;
       color: var(--c-white);
     }
-    .fld input {
+    .fld input,
+    .fld select {
       width: 100%;
       padding: 14px 14px;
       background: var(--c-black);
@@ -386,10 +387,90 @@
       color: var(--c-white);
       font-family: var(--font-body);
       font-size: 1rem;
+      appearance: none;
+      border-radius: 0;
     }
-    .fld input:focus {
+    .fld input:focus,
+    .fld select:focus {
       outline: none;
       border-color: var(--c-orange);
+    }
+    .fld select {
+      background-image: linear-gradient(45deg, transparent 50%, var(--c-gray) 50%),
+        linear-gradient(135deg, var(--c-gray) 50%, transparent 50%);
+      background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 36px;
+    }
+    .bike-combo { position: relative; }
+    .bike-grid {
+      display: grid;
+      gap: 14px;
+    }
+    @media (min-width: 480px) {
+      .bike-grid {
+        grid-template-columns: 110px 1fr;
+        gap: 12px;
+      }
+    }
+    .bike-list {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 20;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      max-height: 240px;
+      overflow: auto;
+      background: var(--c-dark);
+      border: 1px solid #2a2a2a;
+      box-shadow: 0 12px 28px rgba(0,0,0,.45);
+    }
+    .bike-list li {
+      padding: 12px 14px;
+      cursor: pointer;
+      color: var(--c-white);
+      font-size: .95rem;
+      border-top: 1px solid #242424;
+    }
+    .bike-list li:first-child { border-top: 0; }
+    .bike-list li[aria-selected="true"],
+    .bike-list li:hover {
+      background: #1c1c1c;
+      color: var(--c-orange);
+    }
+    .bike-list li {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .bike-opt-meta {
+      font-size: .78rem;
+      color: var(--c-gray);
+      letter-spacing: .02em;
+    }
+    .bike-list li[aria-selected="true"] .bike-opt-meta,
+    .bike-list li:hover .bike-opt-meta {
+      color: #c8c8c8;
+    }
+    .fld-hint {
+      margin: 8px 0 0;
+      font-size: .85rem;
+      color: #777;
+    }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
     .form-note {
       display: none;
@@ -398,6 +479,14 @@
       font-size: .95rem;
     }
     .form-note.show { display: block; color: #9ad89a; }
+    .honey {
+      position: absolute;
+      left: -9999px;
+      height: 0;
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
 
     .site-footer {
       border-top: 1px solid #242424;
@@ -623,7 +712,12 @@
         <h2>Get My Free Quote</h2>
         <p class="lede">Name, contact, bike, finish. I’ll reply with a clear quote — limited slots right now.</p>
       </div>
-      <form class="form" data-stub>
+      <form class="form" action="https://formsubmit.co/hello@swftstudios.com" method="POST">
+        <input type="hidden" name="_subject" value="Kisala Films — Meta wrap quote lead">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/wrap-quote/?sent=1">
+        <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="fld">
           <label for="name">Name</label>
           <input id="name" name="name" type="text" autocomplete="name" required>
@@ -637,15 +731,89 @@
           <input id="phone" name="phone" type="tel" autocomplete="tel" required>
         </div>
         <div class="fld">
-          <label for="bike">Bike make / model</label>
-          <input id="bike" name="bike" type="text" placeholder="Honda CBR600F4i" required>
+          <label for="bike">Bike year / make / model</label>
+          <div class="bike-grid">
+            <div>
+              <label class="visually-hidden" for="year">Year</label>
+              <select id="year" name="year" data-bike-year required>
+                <option value="">Year</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+                <option value="2016">2016</option>
+                <option value="2015">2015</option>
+                <option value="2014">2014</option>
+                <option value="2013">2013</option>
+                <option value="2012">2012</option>
+                <option value="2011">2011</option>
+                <option value="2010">2010</option>
+                <option value="2009">2009</option>
+                <option value="2008">2008</option>
+                <option value="2007">2007</option>
+                <option value="2006">2006</option>
+                <option value="2005">2005</option>
+                <option value="2004">2004</option>
+                <option value="2003">2003</option>
+                <option value="2002">2002</option>
+                <option value="2001">2001</option>
+                <option value="2000">2000</option>
+                <option value="1999">1999</option>
+                <option value="1998">1998</option>
+                <option value="1997">1997</option>
+                <option value="1996">1996</option>
+                <option value="1995">1995</option>
+                <option value="1994">1994</option>
+                <option value="1993">1993</option>
+                <option value="1992">1992</option>
+                <option value="1991">1991</option>
+                <option value="1990">1990</option>
+                <option value="1989">1989</option>
+                <option value="1988">1988</option>
+                <option value="1987">1987</option>
+                <option value="1986">1986</option>
+                <option value="1985">1985</option>
+              </select>
+            </div>
+            <div class="bike-combo">
+              <label class="visually-hidden" for="bike">Make and model</label>
+              <input
+                id="bike"
+                name="bike"
+                type="text"
+                placeholder="Start typing make or model"
+                autocomplete="off"
+                spellcheck="false"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="bike-list"
+                data-bike-search
+                required
+              >
+              <ul id="bike-list" class="bike-list" role="listbox" data-bike-list hidden></ul>
+            </div>
+          </div>
+          <p class="fld-hint">Search 2,000+ motorcycles — e.g. Honda CBR600F4i, Yamaha R1, Harley Sportster</p>
+          <!-- Backend quoting metadata (fairing uninstall/reinstall heuristic bands) -->
+          <input type="hidden" name="bike_body_class" value="" data-bike-body-class>
+          <input type="hidden" name="bike_difficulty" value="" data-bike-difficulty>
+          <input type="hidden" name="fairing_rr_hours_low" value="" data-bike-hours-low>
+          <input type="hidden" name="fairing_rr_hours_high" value="" data-bike-hours-high>
+          <input type="hidden" name="fairing_rr_label" value="" data-bike-labor-label>
         </div>
         <div class="fld">
           <label for="finish">Desired finish</label>
           <input id="finish" name="finish" type="text" placeholder="Gloss black, matte red, metallic…" required>
         </div>
         <button class="btn" type="submit">Get My Free Quote</button>
-        <p class="form-note">Got it — details captured. I’ll follow up with your quote.</p>
+        <p class="form-note" data-form-note>Got it — I’ll follow up with your quote.</p>
       </form>
     </div>
   </section>
@@ -659,6 +827,7 @@
     <p>© 2026 Kisala Films</p>
   </footer>
 
+  <script src="/js/bike-search.js" defer></script>
   <script>
     (() => {
       document.querySelectorAll("[data-faq] .faq-item").forEach((item) => {
@@ -698,14 +867,14 @@
         reveals.forEach((el) => rio.observe(el));
       }
 
-      document.querySelectorAll("form[data-stub]").forEach((form) => {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const note = form.querySelector(".form-note");
-          if (note) note.classList.add("show");
-          form.reset();
-        });
-      });
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("sent")) {
+        const note = document.querySelector("[data-form-note]");
+        if (note) {
+          note.classList.add("show");
+          note.scrollIntoView({ block: "center" });
+        }
+      }
     })();
   </script>
 </body>
