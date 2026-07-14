@@ -78,6 +78,22 @@ These hours are **starting heuristics** — refine with photos and your own time
 python3 scripts/build-motorcycle-index.py
 ```
 
+### Vinyl color catalog (Metro Restyling)
+
+Quote forms load [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) (~1,100 SKUs) so customers can search Metro Restyling colors and open the product page for swatches.
+
+Included product types: Vinyl, Colored PPF Wrap, PPF, Brake Caliper, Light Wrap. **Camo Roll** and **Sample Book** are omitted by default (add them to `INCLUDE_TYPES` in the script to bring them back).
+
+Rebuild from Metro’s public Shopify collection JSON:
+
+```bash
+python3 scripts/build-vinyl-catalog.py
+```
+
+Sources: `all-vinyl-wrap`, `brake-caliper-wrap`, `light-wrap-film`, `paint-protection-film`. Hex codes are not scraped yet — each result links to the Metro product page.
+
+Client: [`public/js/vinyl-search.js`](./public/js/vinyl-search.js) on `/wrap-quote` and `/contact`.
+
 ## Design handoff
 
 High-fidelity design references and the full design spec live in [`design/`](./design/). Production pages in `public/` were built from that handoff (tokens, copy, and layout).

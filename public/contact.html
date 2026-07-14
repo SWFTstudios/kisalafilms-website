@@ -200,6 +200,20 @@
             <option value="Custom / other (see notes)">Custom / other (see notes)</option>
           </select>
         </div>
+        <div class="fld vinyl-search-wrap">
+          <label for="vinyl-color">Vinyl color (optional)</label>
+          <input id="vinyl-color" type="search" name="vinyl_color_query" placeholder="Search Metro colors — e.g. gloss black, KPMF, Avery" data-vinyl-search>
+          <div class="vinyl-results" id="vinyl-color-results" data-vinyl-results hidden></div>
+          <div class="vinyl-picked" data-vinyl-selected hidden></div>
+          <button type="button" class="vinyl-clear" data-vinyl-clear hidden>Clear color</button>
+          <p class="fld-hint">From Metro Restyling — pick a color, then View to see swatches on their site</p>
+          <input type="hidden" name="vinyl_color" value="" data-vinyl-label>
+          <input type="hidden" name="vinyl_handle" value="" data-vinyl-handle>
+          <input type="hidden" name="vinyl_url" value="" data-vinyl-url>
+          <input type="hidden" name="vinyl_vendor" value="" data-vinyl-vendor>
+          <input type="hidden" name="vinyl_type" value="" data-vinyl-type>
+          <input type="hidden" name="vinyl_finish" value="" data-vinyl-finish>
+        </div>
         <div class="fld">
           <label for="coverage">Coverage</label>
           <select id="coverage" name="coverage" required>
@@ -280,6 +294,7 @@
   <script src="/js/nav.js"></script>
   <script src="/js/site.js"></script>
   <script src="/js/bike-search.js" defer></script>
+  <script src="/js/vinyl-search.js" defer></script>
 
 </body>
 </html>
