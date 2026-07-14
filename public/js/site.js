@@ -38,17 +38,13 @@
     reveals.forEach((el) => rio.observe(el));
   }
 
-  document.querySelectorAll("form[data-stub]").forEach((form) => {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const note = form.querySelector(".form-note");
-      if (note) note.classList.add("show");
-      form.reset();
-    });
-  });
+  // Show success notes when FormSubmit redirects back with ?sent=1 or ?subscribed=1
+  const params = new URLSearchParams(window.location.search);
+  if (params.has("sent") || params.has("subscribed")) {
+    document.querySelectorAll(".form-note").forEach((note) => note.classList.add("show"));
+  }
 
-  const filters = document.querySelector("[data-filter-tabs]");
-  if (filters) {
+  const filters = document.querySelector("[data-filter-tabs]");  if (filters) {
     const cards = document.querySelectorAll("[data-filter-item]");
     filters.querySelectorAll("button").forEach((btn) => {
       btn.addEventListener("click", () => {

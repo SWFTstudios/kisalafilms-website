@@ -309,12 +309,18 @@
         <h3>Tell me about the bike</h3>
         <p class="p-lg">Make, model, finish idea, timeline. I’ll reply with a clear quote. Feature on the site or channel later is your call.</p>
       </div>
-      <form class="form" data-stub id="home-inquiry" action="#" method="post">
+      <form class="form" id="home-inquiry" action="https://formsubmit.co/hello@swftstudios.com" method="POST">
+        <input type="hidden" name="_subject" value="Kisala Films — home inquiry">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/?sent=1#book">
+        <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="fld"><label for="bike">Motorcycle make &amp; model</label><input id="bike" name="bike" type="text" placeholder="e.g., Honda CBR600F4i" required></div>
+        <div class="fld"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
         <div class="fld"><label for="finish">Desired color / finish idea</label><input id="finish" name="finish" type="text" placeholder="e.g., Matte black, gloss red" required></div>
         <div class="fld"><label for="notes">Anything else?</label><textarea id="notes" name="notes" rows="3" placeholder="Timeline, coverage, camera comfort…"></textarea></div>
         <button class="btn btn-primary" type="submit">Send me details →</button>
-        <p class="form-note">Thanks — your inquiry stub was captured locally. A real endpoint comes next.</p>
+        <p class="form-note">Thanks — I’ll reply with next steps.</p>
       </form>
     </div>
   </section>
@@ -346,10 +352,15 @@
       <div>
         <h5>Stay updated</h5>
         <p class="p">Follow Instagram for garage drops and ride posts while the channel fills in.</p>
-        <form class="form" data-stub>
-          <div class="fld"><input type="email" placeholder="Email address" aria-label="Email"></div>
+        <form class="form" action="https://formsubmit.co/hello@swftstudios.com" method="POST">
+          <input type="hidden" name="_subject" value="Kisala Films — email subscribe">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/?subscribed=1">
+          <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="fld"><input type="email" name="email" placeholder="Email address" aria-label="Email" required></div>
           <button class="btn btn-primary" type="submit">Subscribe</button>
-          <p class="form-note">Thanks — stub captured locally.</p>
+          <p class="form-note">Thanks — you’re on the list.</p>
         </form>
       </div>
       <div class="footer-hours">

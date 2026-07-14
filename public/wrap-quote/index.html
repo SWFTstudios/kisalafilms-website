@@ -442,6 +442,20 @@
       background: #1c1c1c;
       color: var(--c-orange);
     }
+    .bike-list li {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .bike-opt-meta {
+      font-size: .78rem;
+      color: var(--c-gray);
+      letter-spacing: .02em;
+    }
+    .bike-list li[aria-selected="true"] .bike-opt-meta,
+    .bike-list li:hover .bike-opt-meta {
+      color: #c8c8c8;
+    }
     .fld-hint {
       margin: 8px 0 0;
       font-size: .85rem;
@@ -465,6 +479,14 @@
       font-size: .95rem;
     }
     .form-note.show { display: block; color: #9ad89a; }
+    .honey {
+      position: absolute;
+      left: -9999px;
+      height: 0;
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
 
     .site-footer {
       border-top: 1px solid #242424;
@@ -690,7 +712,12 @@
         <h2>Get My Free Quote</h2>
         <p class="lede">Name, contact, bike, finish. I’ll reply with a clear quote — limited slots right now.</p>
       </div>
-      <form class="form" data-stub>
+      <form class="form" action="https://formsubmit.co/hello@swftstudios.com" method="POST">
+        <input type="hidden" name="_subject" value="Kisala Films — Meta wrap quote lead">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/wrap-quote/?sent=1">
+        <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="fld">
           <label for="name">Name</label>
           <input id="name" name="name" type="text" autocomplete="name" required>
@@ -786,7 +813,7 @@
           <input id="finish" name="finish" type="text" placeholder="Gloss black, matte red, metallic…" required>
         </div>
         <button class="btn" type="submit">Get My Free Quote</button>
-        <p class="form-note">Got it — details captured. I’ll follow up with your quote.</p>
+        <p class="form-note" data-form-note>Got it — I’ll follow up with your quote.</p>
       </form>
     </div>
   </section>
@@ -840,14 +867,14 @@
         reveals.forEach((el) => rio.observe(el));
       }
 
-      document.querySelectorAll("form[data-stub]").forEach((form) => {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const note = form.querySelector(".form-note");
-          if (note) note.classList.add("show");
-          form.reset();
-        });
-      });
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("sent")) {
+        const note = document.querySelector("[data-form-note]");
+        if (note) {
+          note.classList.add("show");
+          note.scrollIntoView({ block: "center" });
+        }
+      }
     })();
   </script>
 </body>

@@ -23,6 +23,16 @@ npm run deploy
 
 Worker `name` in `wrangler.jsonc` must stay `kisalafilms-website` to match the Cloudflare project.
 
+## Forms → FormSubmit
+
+All site forms POST to [FormSubmit](https://formsubmit.co/) at `hello@swftstudios.com`:
+
+```html
+action="https://formsubmit.co/hello@swftstudios.com"
+```
+
+After the first submission, confirm the activation email on that inbox. Leads and subscribe notices land there with table formatting; `_next` redirects users back to the site with `?sent=1` / `?subscribed=1`.
+
 ## Lead-gen landing page (`/wrap-quote`)
 
 Purpose-built Meta ad funnel — **not** part of the main marketing IA.
