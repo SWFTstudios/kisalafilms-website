@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Showcase — K Films</title>
-  <meta name="description" content="Own-bike wrap docs, BTS, and moto adventure content — building the film library in public.">
+  <meta name="description" content="Photo and video showcase by K Films — lifestyle, automotive, and behind-the-scenes work from the Jersey City garage and beyond.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,6 +15,13 @@
   <link rel="stylesheet" href="/css/carsy.css">
 </head>
 <body class="carsy">
+
+  <div class="gallery-intro" data-gallery-intro>
+    <div class="intro-stage">
+      <img class="intro-logo" src="/images/k-films-logo-white.png" alt="K Films">
+      <span class="intro-square" style="background-image:url('/images/hero-f4i-garage-night.jpg')"></span>
+    </div>
+  </div>
 
   <header class="site-header">
     <div class="container header-bar">
@@ -43,7 +50,6 @@
           </div>
         </div>
         <a href="/films.html">Showcase</a>
-        <a href="/gallery.html">Gallery</a>
         <a href="/pricing.html">Pricing</a>
         <a href="/journal.html">Journal</a>
         <div class="nav-dd">
@@ -91,7 +97,6 @@
         </div>
       </div>
       <a class="nav-row" href="/films.html">Showcase</a>
-      <a class="nav-row" href="/gallery.html">Gallery</a>
       <a class="nav-row" href="/pricing.html">Pricing</a>
       <a class="nav-row" href="/journal.html">Journal</a>
       <div class="nav-acc">
@@ -106,38 +111,102 @@
     </nav>
   </aside>
 
-  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow">Film library · in progress</p>
-      <h1>Showcase</h1>
-      <p class="p-lg">Own-bike practice wraps, garage BTS, night rides, and adventure on the road. Client features appear as real wraps happen — never before.</p>
+  <section class="gallery-hero" aria-label="Showcase">
+    <div class="gallery-hero-media">
+      <img src="/images/hero-f4i-garage-night.jpg" alt="" fetchpriority="high">
+    </div>
+    <div class="gallery-hero-overlay">
+      <p class="eyebrow">Photo &amp; video</p>
+      <h1 class="gallery-wordmark">SHOWCASE</h1>
+      <p class="p-lg">Lifestyle, automotive, and behind-the-scenes work — shot in the Jersey City garage and out on the road.</p>
     </div>
   </section>
-  <section class="section reveal">
+
+  <section class="section">
     <div class="container">
       <div class="filter-tabs" data-filter-tabs>
         <button type="button" class="on" data-filter="all">All</button>
-        <button type="button" data-filter="transformations">Transformations</button>
+        <button type="button" data-filter="lifestyle">Lifestyle</button>
+        <button type="button" data-filter="automotive">Automotive</button>
         <button type="button" data-filter="bts">BTS</button>
-        <button type="button" data-filter="riders">Riders</button>
-        <button type="button" data-filter="travel">Travel / Adventure</button>
       </div>
-      <div class="showcase-grid">
-        <article class="showcase-card" data-filter-item="transformations"><img src="/images/thumb-f4i-reveal.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Transformations</span><h4>Own bike — wrap practice</h4><p class="p">Documenting wrap passes on my F4i while I get good.</p></div></article>
-        <article class="showcase-card" data-filter-item="transformations"><img src="/images/thumb-transformation-mid.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Transformations</span><h4>Mid-build process</h4><p class="p">Panels and film under garage light.</p></div></article>
-        <article class="showcase-card" data-filter-item="bts"><img src="/images/thumb-shop-bts.jpg" alt="" loading="lazy"><div class="body"><span class="tag">BTS</span><h4>Inside the Garage</h4><p class="p">Garage life between wraps.</p></div></article>
-        <article class="showcase-card" data-filter-item="bts"><img src="/images/thumb-wrap-process.jpg" alt="" loading="lazy"><div class="body"><span class="tag">BTS</span><h4>Process notes</h4><p class="p">Knife work and learning curve up close.</p></div></article>
-        <article class="showcase-card" data-filter-item="bts"><img src="/images/thumb-timelapse-shop.jpg" alt="" loading="lazy"><div class="body"><span class="tag">BTS</span><h4>Garage Timelapse</h4><p class="p">A day of practice compressed.</p></div></article>
-        <article class="showcase-card" data-filter-item="riders"><img src="/images/thumb-customer-interview.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Riders</span><h4>Rider features — coming</h4><p class="p">Optional client features when wraps begin.</p></div></article>
-        <article class="showcase-card" data-filter-item="riders"><img src="/images/thumb-customer-interview-2.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Riders</span><h4>Connect worldwide</h4><p class="p">Riders and creators who share the passion.</p></div></article>
-        <article class="showcase-card" data-filter-item="travel"><img src="/images/thumb-night-pov.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Travel / Adventure</span><h4>Night Run — Jersey City</h4><p class="p">Helmet-cam energy after dark.</p></div></article>
-        <article class="showcase-card" data-filter-item="travel"><img src="/images/hero-f4i-garage-night.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Travel / Adventure</span><h4>Garage to Street</h4><p class="p">From bay lights to city asphalt.</p></div></article>
-        <article class="showcase-card" data-filter-item="transformations bts"><img src="/images/thumb-before-strip.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Transformations</span><h4>Before — Strip Day</h4><p class="p">Where every full practice build starts.</p></div></article>
-        <article class="showcase-card" data-filter-item="bts"><img src="/images/thumb-panel-lines.jpg" alt="" loading="lazy"><div class="body"><span class="tag">BTS</span><h4>Panel Discipline</h4><p class="p">Lines that hold on camera.</p></div></article>
-        <article class="showcase-card" data-filter-item="travel"><img src="/images/story-elombe-workshop.jpg" alt="" loading="lazy"><div class="body"><span class="tag">Travel / Adventure</span><h4>Adventures ahead</h4><p class="p">Moto travel content as I ride and meet people.</p></div></article>
+
+      <div class="masonry" data-gallery-grid>
+        <figure class="masonry-item" data-filter-item="automotive" data-type="photo" data-full="/images/hero-f4i-garage-night.jpg" data-caption="F4i — garage to street">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: F4i — garage to street">
+            <img src="/images/hero-f4i-garage-night.jpg" alt="F4i motorcycle under garage lights at night" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="automotive" data-type="photo" data-full="/images/thumb-f4i-reveal.jpg" data-caption="Own bike — wrap reveal">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: Own bike — wrap reveal">
+            <img src="/images/thumb-f4i-reveal.jpg" alt="Freshly wrapped F4i reveal" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="lifestyle" data-type="video" data-video="/videos/night-ride.mp4" data-full="/images/thumb-night-pov.jpg" data-caption="Night ride POV — Jersey City">
+          <button type="button" class="tile is-video" data-lightbox aria-label="Play video: Night ride POV">
+            <img src="/images/thumb-night-pov.jpg" alt="Helmet-cam night ride through the city" loading="lazy">
+            <span class="tile-play" aria-hidden="true"></span>
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="bts" data-type="photo" data-full="/images/thumb-shop-bts.jpg" data-caption="Inside the garage">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: Inside the garage">
+            <img src="/images/thumb-shop-bts.jpg" alt="Behind the scenes in the garage" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="lifestyle" data-type="photo" data-full="/images/story-elombe-workshop.jpg" data-caption="In the workshop">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: In the workshop">
+            <img src="/images/story-elombe-workshop.jpg" alt="Elombe working in the workshop" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="automotive" data-type="photo" data-full="/images/thumb-transformation-mid.jpg" data-caption="Mid-build process">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: Mid-build process">
+            <img src="/images/thumb-transformation-mid.jpg" alt="Motorcycle panels mid wrap build" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="bts" data-type="video" data-video="/videos/garage-timelapse.mp4" data-full="/images/thumb-timelapse-shop.jpg" data-caption="Garage timelapse — a day of practice">
+          <button type="button" class="tile is-video" data-lightbox aria-label="Play video: Garage timelapse">
+            <img src="/images/thumb-timelapse-shop.jpg" alt="Timelapse of a day in the garage" loading="lazy">
+            <span class="tile-play" aria-hidden="true"></span>
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="bts" data-type="photo" data-full="/images/thumb-wrap-process.jpg" data-caption="Process notes — knife work">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: Process notes">
+            <img src="/images/thumb-wrap-process.jpg" alt="Close-up of vinyl wrap knife work" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="automotive" data-type="photo" data-full="/images/thumb-panel-lines.jpg" data-caption="Panel discipline">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: Panel discipline">
+            <img src="/images/thumb-panel-lines.jpg" alt="Clean panel lines on a wrapped panel" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="lifestyle" data-type="photo" data-full="/images/thumb-customer-interview.jpg" data-caption="Rider features — coming soon">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: Rider features">
+            <img src="/images/thumb-customer-interview.jpg" alt="Rider portrait" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="automotive bts" data-type="photo" data-full="/images/thumb-before-strip.jpg" data-caption="Before — strip day">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: Before — strip day">
+            <img src="/images/thumb-before-strip.jpg" alt="Motorcycle stripped down before a wrap" loading="lazy">
+          </button>
+        </figure>
+        <figure class="masonry-item" data-filter-item="lifestyle" data-type="photo" data-full="/images/thumb-customer-interview-2.jpg" data-caption="Connect worldwide">
+          <button type="button" class="tile" data-lightbox aria-label="Expand: Connect worldwide">
+            <img src="/images/thumb-customer-interview-2.jpg" alt="Rider and creator portrait" loading="lazy">
+          </button>
+        </figure>
       </div>
+
+      <p class="gallery-empty" data-gallery-empty hidden>No work in this category yet — check back soon.</p>
     </div>
   </section>
+
+  <div class="lightbox" data-lightbox-modal hidden aria-modal="true" role="dialog" aria-label="Media viewer">
+    <button class="lb-close" type="button" data-lb-close aria-label="Close viewer">&times;</button>
+    <button class="lb-nav lb-prev" type="button" data-lb-prev aria-label="Previous">&#8249;</button>
+    <div class="lb-stage" data-lb-stage></div>
+    <button class="lb-nav lb-next" type="button" data-lb-next aria-label="Next">&#8250;</button>
+    <p class="lb-caption" data-lb-caption></p>
+  </div>
 
   <footer class="site-footer">
     <div class="container footer-grid">
@@ -147,7 +216,6 @@
           <a href="/about.html">Who I am</a>
           <a href="/services.html">What I offer</a>
           <a href="/pricing.html">Pricing</a>
-          <a href="/films.html">Films</a>
           <a href="/journal.html">Journal</a>
         </div>
       </div>
@@ -190,6 +258,7 @@
   </footer>
   <script src="/js/nav.js"></script>
   <script src="/js/site.js"></script>
+  <script src="/js/gallery.js"></script>
 
 </body>
 </html>

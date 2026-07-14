@@ -106,19 +106,19 @@ Sources: `all-vinyl-wrap`, `brake-caliper-wrap`, `light-wrap-film`, `paint-prote
 
 Client: [`public/js/vinyl-search.js`](./public/js/vinyl-search.js) on `/wrap-quote` and `/contact`.
 
-## Gallery (`/gallery.html`)
+## Showcase (`/films.html`)
 
-Photo + video portfolio at [`public/gallery.html`](./public/gallery.html), styled in [`public/css/carsy.css`](./public/css/carsy.css) and driven by [`public/js/gallery.js`](./public/js/gallery.js).
+Photo + video gallery at [`public/films.html`](./public/films.html) (the former card Showcase), styled in [`public/css/carsy.css`](./public/css/carsy.css) and driven by [`public/js/gallery.js`](./public/js/gallery.js). `/gallery.html` redirects here.
 
 - **Responsive masonry** via CSS columns (1 → 4 columns by width). Each item is a `<figure class="masonry-item">`.
 - **Filters** reuse the shared `[data-filter-tabs]` logic in [`public/js/site.js`](./public/js/site.js): categories are `all`, `lifestyle`, `automotive`, `bts`. A tile can carry multiple space-separated tags in `data-filter-item`.
 - **Lightbox** (in `gallery.js`) expands photos and videos, with Esc/arrow keys, prev/next across the currently visible tiles, and backdrop-to-close.
 - **Intro animation** plays once per browser session (guarded by `sessionStorage["kfilms-intro"]`) and is skipped for `prefers-reduced-motion`: the logo shows, then a square opens into the hero image.
-- **Say Hello** dropdown (Contact page / Instagram / Email) and a `Gallery` link were added to the shared nav on every top-level page.
+- **Say Hello** dropdown (Contact page / Instagram / Email) is in the shared nav on every top-level page; Showcase is the single gallery entry point.
 
-### Adding gallery items
+### Adding showcase items
 
-Add a `<figure>` inside `[data-gallery-grid]`.
+Add a `<figure>` inside `[data-gallery-grid]` on `films.html`.
 
 Photo:
 
@@ -143,7 +143,7 @@ Video (drop the file in `public/videos/`; `.mp4` with an H.264 codec plays wides
 </figure>
 ```
 
-`data-full` is the large image shown in the lightbox (photos) or the video poster; the inner `<img>` is the grid thumbnail. Video tiles currently point at placeholder paths under `public/videos/` — add the real clips there.
+`data-full` is the large image shown in the lightbox (photos) or the video poster; the inner `<img>` is the grid thumbnail. Video tiles may point at paths under `public/videos/` — add the real clips there.
 
 ## Design handoff
 
