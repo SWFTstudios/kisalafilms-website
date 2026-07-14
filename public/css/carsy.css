@@ -867,9 +867,54 @@ body.nav-lock { overflow: hidden; }
   font-family: var(--font-body);
   font-size: 1rem;
 }
-.fld input:focus, .fld textarea:focus {
+.fld input:focus, .fld textarea:focus, .fld select:focus {
   outline: 1px solid var(--c-orange);
   border-color: var(--c-orange);
+}
+.fld select {
+  width: 100%;
+  padding: 14px 36px 14px 14px;
+  background: var(--c-dark);
+  border: 1px solid #2a2a2a;
+  color: var(--c-white);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  appearance: none;
+  border-radius: 0;
+  background-image: linear-gradient(45deg, transparent 50%, var(--c-gray) 50%),
+    linear-gradient(135deg, var(--c-gray) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+.fld select:disabled {
+  opacity: .55;
+}
+.bike-grid {
+  display: grid;
+  gap: 12px;
+}
+@media (min-width: 560px) {
+  .bike-grid {
+    grid-template-columns: 110px 1fr 1.2fr;
+    gap: 12px;
+  }
+}
+.fld-hint {
+  margin: 8px 0 0;
+  font-size: .85rem;
+  color: #777;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .form-note {
   font-size: .9rem;

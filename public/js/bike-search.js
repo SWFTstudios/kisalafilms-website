@@ -132,8 +132,11 @@
 
   resetModels("Select make first");
 
-  const quote = document.getElementById("quote");
-  if (quote && "IntersectionObserver" in window) {
+  const preloadRoot =
+    document.getElementById("quote") ||
+    document.getElementById("inquiry") ||
+    FORM;
+  if (preloadRoot && "IntersectionObserver" in window) {
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
@@ -143,7 +146,7 @@
       },
       { rootMargin: "200px" }
     );
-    io.observe(quote);
+    io.observe(preloadRoot);
   } else {
     loadData();
   }
