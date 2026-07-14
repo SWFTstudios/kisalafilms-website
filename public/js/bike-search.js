@@ -8,25 +8,25 @@
   const MODEL = document.querySelector("[data-bike-model]");
   const BIKE_HIDDEN = document.querySelector("[data-bike-label]");
   const FORM = MAKE ? MAKE.closest("form") : null;
-  if (!YEAR || !MAKE || !MODEL) return;
+  if (!YEAR || !MAKE || !MODEL || !FORM) return;
 
   const META = {
-    bodyClass: FORM && FORM.querySelector("[data-bike-body-class]"),
-    difficulty: FORM && FORM.querySelector("[data-bike-difficulty]"),
-    hoursLow: FORM && FORM.querySelector("[data-bike-hours-low]"),
-    hoursHigh: FORM && FORM.querySelector("[data-bike-hours-high]"),
-    laborLabel: FORM && FORM.querySelector("[data-bike-labor-label]"),
+    bodyClass: FORM.querySelector("[data-bike-body-class]"),
+    difficulty: FORM.querySelector("[data-bike-difficulty]"),
+    hoursLow: FORM.querySelector("[data-bike-hours-low]"),
+    hoursHigh: FORM.querySelector("[data-bike-hours-high]"),
+    laborLabel: FORM.querySelector("[data-bike-labor-label]"),
   };
 
   let byMake = {};
   let laborBands = {};
   let loaded = false;
+  let loading = null;
 
-  function option(value, label, disabled) {
+  function option(value, label) {
     const opt = document.createElement("option");
     opt.value = value;
     opt.textContent = label;
-    if (disabled) opt.disabled = true;
     return opt;
   }
 
@@ -54,9 +54,8 @@
 
   function resetModels(placeholder) {
     MODEL.innerHTML = "";
-    MODEL.appendChild(option("", placeholder || "Select model", false));
+    MODEL.appendChild(option("", placeholder || "Select model"));
     MODEL.disabled = true;
-    MODEL.required = true;
     clearMeta();
   }
 
@@ -64,20 +63,30 @@
     const selected = MAKE.value;
     const makes = Object.keys(byMake).sort((a, b) => a.localeCompare(b));
     MAKE.innerHTML = "";
-    MAKE.appendChild(option("", "Select make", false));
+    MAKE.appendChild(option("", "Select make"));
     makes.forEach((make) => MAKE.appendChild(option(make, make)));
-    if (selected && byMake[selected]) MAKE.value = selected;
+    MAKE.appendChild(option("Other", "Other / not listed"));
+    if (selected) MAKE.value = selected;
   }
 
   function fillModels(make) {
     resetModels(make ? "Select model" : "Select make first");
-    if (!make || !byMake[make]) return;
+    if (!make) return;
+
+    if (make === "Other") {
+      MODEL.appendChild(option("See notes", "See notes / will describe"));
+      MODEL.disabled = false;
+      MODEL.value = "See notes";
+      writeMeta({ l: "Other (see notes)", m: "Other", o: "See notes", c: "unknown" });
+      return;
+    }
+
+    if (!byMake[make]) return;
     const models = byMake[make].slice().sort((a, b) => a.o.localeCompare(b.o));
     models.forEach((bike) => {
-      const opt = option(bike.o, bike.o);
-      opt.dataset.bodyClass = bike.c;
-      MODEL.appendChild(opt);
+      MODEL.appendChild(option(bike.o, bike.o));
     });
+    MODEL.appendChild(option("Other / not listed", "Other / not listed"));
     MODEL.disabled = false;
   }
 
@@ -86,6 +95,15 @@
     const model = MODEL.value;
     if (!make || !model) {
       clearMeta();
+      return;
+    }
+    if (make === "Other" || model === "Other / not listed" || model === "See notes") {
+      writeMeta({
+        l: `${make} ${model}`,
+        m: make,
+        o: model,
+        c: "unknown",
+      });
       return;
     }
     const bike = (byMake[make] || []).find((b) => b.o === model) || {
@@ -99,25 +117,32 @@
 
   async function loadData() {
     if (loaded) return;
-    loaded = true;
-    try {
-      const res = await fetch("/data/motorcycles.json", { credentials: "same-origin" });
-      if (!res.ok) throw new Error(String(res.status));
-      const data = await res.json();
-      laborBands = data.laborBands || {};
-      byMake = {};
-      (data.bikes || []).forEach((bike) => {
-        if (!byMake[bike.m]) byMake[bike.m] = [];
-        byMake[bike.m].push(bike);
-      });
-      fillMakes();
-      if (MAKE.value) fillModels(MAKE.value);
-    } catch (err) {
-      console.warn("Bike index failed to load", err);
-      MAKE.innerHTML = "";
-      MAKE.appendChild(option("", "Couldn’t load makes — refresh", true));
-      resetModels("Unavailable");
-    }
+    if (loading) return loading;
+    loading = (async () => {
+      try {
+        const res = await fetch("/data/motorcycles.json", { credentials: "same-origin" });
+        if (!res.ok) throw new Error(String(res.status));
+        const data = await res.json();
+        laborBands = data.laborBands || {};
+        byMake = {};
+        (data.bikes || []).forEach((bike) => {
+          if (!byMake[bike.m]) byMake[bike.m] = [];
+          byMake[bike.m].push(bike);
+        });
+        loaded = true;
+        fillMakes();
+        if (MAKE.value) fillModels(MAKE.value);
+      } catch (err) {
+        console.warn("Bike index failed to load", err);
+        MAKE.innerHTML = "";
+        MAKE.appendChild(option("", "Couldn’t load list — use Other"));
+        MAKE.appendChild(option("Other", "Other / not listed"));
+        resetModels("Select make first");
+      } finally {
+        loading = null;
+      }
+    })();
+    return loading;
   }
 
   MAKE.addEventListener("change", () => {
@@ -130,24 +155,21 @@
   MODEL.addEventListener("focus", loadData);
   YEAR.addEventListener("focus", loadData);
 
-  resetModels("Select make first");
+  // Before FormSubmit POST: enable selects, sync bike label, clear honeypot
+  FORM.addEventListener("submit", () => {
+    const honey = FORM.querySelector('input[name="_honey"]');
+    if (honey) honey.value = "";
+    if (MODEL.disabled && MAKE.value) {
+      // Shouldn't happen after make pick; re-enable so value posts
+      MODEL.disabled = false;
+    }
+    onModelChange();
+    if (BIKE_HIDDEN && !BIKE_HIDDEN.value && MAKE.value && MODEL.value) {
+      BIKE_HIDDEN.value = `${MAKE.value} ${MODEL.value}`;
+    }
+  });
 
-  const preloadRoot =
-    document.getElementById("quote") ||
-    document.getElementById("inquiry") ||
-    FORM;
-  if (preloadRoot && "IntersectionObserver" in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          loadData();
-          io.disconnect();
-        }
-      },
-      { rootMargin: "200px" }
-    );
-    io.observe(preloadRoot);
-  } else {
-    loadData();
-  }
+  resetModels("Select make first");
+  // Prefetch immediately so mobile users don't wait on first tap
+  loadData();
 })();
