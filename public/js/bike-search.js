@@ -1,14 +1,24 @@
 /**
- * Bike year / make / model typeahead for the quote form.
- * Data: /data/motorcycles.json (NHTSA motorcycle makes/models + curated aliases)
+ * Bike year / make / model typeahead + fairing R&R labor metadata for leads.
+ * Data: /data/motorcycles.json
  */
 (() => {
   const YEAR_INPUT = document.querySelector("[data-bike-year]");
   const BIKE_INPUT = document.querySelector("[data-bike-search]");
   const LIST = document.querySelector("[data-bike-list]");
+  const FORM = BIKE_INPUT ? BIKE_INPUT.closest("form") : null;
   if (!YEAR_INPUT || !BIKE_INPUT || !LIST) return;
 
-  let searchIndex = [];
+  const META = {
+    bodyClass: FORM && FORM.querySelector("[data-bike-body-class]"),
+    difficulty: FORM && FORM.querySelector("[data-bike-difficulty]"),
+    hoursLow: FORM && FORM.querySelector("[data-bike-hours-low]"),
+    hoursHigh: FORM && FORM.querySelector("[data-bike-hours-high]"),
+    laborLabel: FORM && FORM.querySelector("[data-bike-labor-label]"),
+  };
+
+  let bikes = [];
+  let laborBands = {};
   let years = { min: 1985, max: new Date().getFullYear() + 1 };
   let loaded = false;
   let activeIndex = -1;
@@ -22,7 +32,6 @@
 
   function fillYears() {
     const selected = YEAR_INPUT.value;
-    // Keep static HTML options if already populated (no-JS / first paint)
     if (YEAR_INPUT.options.length > 2) {
       if (selected) YEAR_INPUT.value = selected;
       return;
@@ -41,6 +50,31 @@
     if (selected) YEAR_INPUT.value = selected;
   }
 
+  function clearMeta() {
+    Object.values(META).forEach((el) => {
+      if (el) el.value = "";
+    });
+  }
+
+  function writeMeta(bike) {
+    if (!bike) {
+      clearMeta();
+      return;
+    }
+    const band = laborBands[bike.c] || laborBands.unknown || {};
+    const hours = band.fairingRrHours || {};
+    if (META.bodyClass) META.bodyClass.value = bike.c || "";
+    if (META.difficulty) META.difficulty.value = band.difficulty != null ? String(band.difficulty) : "";
+    if (META.hoursLow) META.hoursLow.value = hours.low != null ? String(hours.low) : "";
+    if (META.hoursHigh) META.hoursHigh.value = hours.high != null ? String(hours.high) : "";
+    if (META.laborLabel) META.laborLabel.value = band.label || "";
+  }
+
+  function findBike(label) {
+    const n = normalize(label);
+    return bikes.find((b) => normalize(b.l) === n) || null;
+  }
+
   async function loadData() {
     if (loaded) return;
     loaded = true;
@@ -52,8 +86,11 @@
         min: Number(data.yearMin) || 1985,
         max: Number(data.yearMax) || new Date().getFullYear() + 1,
       };
-      searchIndex = Array.isArray(data.search) ? data.search : [];
+      laborBands = data.laborBands || {};
+      bikes = Array.isArray(data.bikes) ? data.bikes : [];
       fillYears();
+      const selected = findBike(BIKE_INPUT.value);
+      if (selected) writeMeta(selected);
     } catch (err) {
       console.warn("Bike index failed to load", err);
       fillYears();
@@ -75,12 +112,12 @@
   function queryResults(q) {
     if (!q || q.length < 1) return [];
     const ranked = [];
-    for (const entry of searchIndex) {
-      const score = scoreMatch(q, entry);
-      if (score > 0) ranked.push({ entry, score });
+    for (const bike of bikes) {
+      const score = scoreMatch(q, bike.l);
+      if (score > 0) ranked.push({ bike, score });
     }
-    ranked.sort((a, b) => b.score - a.score || a.entry.localeCompare(b.entry));
-    return ranked.slice(0, 8).map((r) => r.entry);
+    ranked.sort((a, b) => b.score - a.score || a.bike.l.localeCompare(b.bike.l));
+    return ranked.slice(0, 8).map((r) => r.bike);
   }
 
   function closeList() {
@@ -99,15 +136,24 @@
       closeList();
       return;
     }
-    items.forEach((label, i) => {
+    items.forEach((bike, i) => {
+      const band = laborBands[bike.c] || {};
+      const hours = band.fairingRrHours || {};
       const li = document.createElement("li");
       li.id = `bike-opt-${i}`;
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", i === activeIndex ? "true" : "false");
-      li.textContent = label;
+      li.innerHTML = `<span class="bike-opt-name"></span><span class="bike-opt-meta"></span>`;
+      li.querySelector(".bike-opt-name").textContent = bike.l;
+      const metaBits = [];
+      if (hours.low != null && hours.high != null) {
+        metaBits.push(`${hours.low}–${hours.high}h fairing R&R`);
+      }
+      if (band.difficulty != null) metaBits.push(`diff ${band.difficulty}/5`);
+      li.querySelector(".bike-opt-meta").textContent = metaBits.join(" · ");
       li.addEventListener("mousedown", (e) => {
         e.preventDefault();
-        pick(label);
+        pick(bike);
       });
       LIST.appendChild(li);
     });
@@ -128,8 +174,9 @@
     }
   }
 
-  function pick(label) {
-    BIKE_INPUT.value = label;
+  function pick(bike) {
+    BIKE_INPUT.value = bike.l;
+    writeMeta(bike);
     closeList();
     BIKE_INPUT.focus();
   }
@@ -145,7 +192,13 @@
   });
 
   BIKE_INPUT.addEventListener("input", () => {
+    clearMeta();
     loadData().then(refresh);
+  });
+
+  BIKE_INPUT.addEventListener("change", () => {
+    const bike = findBike(BIKE_INPUT.value);
+    writeMeta(bike);
   });
 
   BIKE_INPUT.addEventListener("keydown", (e) => {
@@ -171,12 +224,14 @@
   });
 
   BIKE_INPUT.addEventListener("blur", () => {
-    setTimeout(closeList, 120);
+    setTimeout(() => {
+      closeList();
+      writeMeta(findBike(BIKE_INPUT.value));
+    }, 120);
   });
 
   YEAR_INPUT.addEventListener("focus", loadData);
 
-  // Prefetch when the quote section is near viewport
   const quote = document.getElementById("quote");
   if (quote && "IntersectionObserver" in window) {
     const io = new IntersectionObserver(

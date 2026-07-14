@@ -44,7 +44,25 @@ Either way, keep `robots noindex` until/unless you intentionally want this page 
 
 ### Bike year / make / model index
 
-The quote form typeahead loads [`public/data/motorcycles.json`](./public/data/motorcycles.json) (31 major brands, ~2,000 make+model strings, years 1985–2026). Rebuild from NHTSA:
+The quote form typeahead loads [`public/data/motorcycles.json`](./public/data/motorcycles.json) (~2,000 bikes across 31 brands, years 1985–2026).
+
+Each bike is tagged with a **fairing R&R labor band** for backend quoting (uninstall + reinstall bodywork around a wrap — not film install time):
+
+| Band | Difficulty | Hours (est.) | Examples |
+| --- | --- | --- | --- |
+| `naked_minimal` | 1/5 | 0.5–1.5h | MT-07, Z900, Grom |
+| `cruiser_simple` | 2/5 | 1–2.5h | Sportster, Rebel, Vulcan |
+| `half_faired` | 3/5 | 2–4h | Ninja 650, sport-touring cowls |
+| `adventure_touring` | 3/5 | 2.5–5h | Africa Twin, Versys, Pan America |
+| `full_sport` | 4/5 | 4–8h | CBR600F4i, GSX-R, R1, ZX-6R |
+| `touring_complex` | 5/5 | 6–12h | Gold Wing, Street Glide |
+| `scooter_enclosed` | 3/5 | 3–6h | Vespa, ADV160 |
+| `dirt_mx` | 2/5 | 1–3h | CRF-R, YZ, KX |
+| `sidecar_utv` | 5/5 | 4–10h | specialty / UTV |
+
+Selecting a bike fills hidden lead fields: `bike_body_class`, `bike_difficulty`, `fairing_rr_hours_low`, `fairing_rr_hours_high`, `fairing_rr_label`.
+
+These hours are **starting heuristics** — refine with photos and your own timed jobs. Rebuild:
 
 ```bash
 python3 scripts/build-motorcycle-index.py
