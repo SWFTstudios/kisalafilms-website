@@ -762,7 +762,15 @@
         </div>
         <div class="fld">
           <label for="finish">Desired finish</label>
-          <input id="finish" name="finish" type="text" placeholder="Gloss black, matte red, metallic…" required>
+          <select id="finish" name="finish" required>
+            <option value="">Select finish</option>
+            <option value="Gloss">Gloss</option>
+            <option value="Satin">Satin</option>
+            <option value="Matte">Matte</option>
+            <option value="Metallic">Metallic</option>
+            <option value="Not sure — want recommendations">Not sure — want recommendations</option>
+            <option value="Custom / other">Custom / other</option>
+          </select>
         </div>
         <button class="btn" type="submit">Get My Free Quote</button>
         <p class="form-note" data-form-note>Got it — I’ll follow up with your quote.</p>

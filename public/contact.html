@@ -185,10 +185,39 @@
           <input type="hidden" name="fairing_rr_hours_high" value="" data-bike-hours-high>
           <input type="hidden" name="fairing_rr_label" value="" data-bike-labor-label>
         </div>
-        <div class="fld"><label for="finish">Desired finish</label><input id="finish" name="finish" type="text" placeholder="Gloss black, matte red…"></div>
-        <div class="fld"><label for="coverage">Coverage</label><input id="coverage" name="coverage" type="text" placeholder="Full / accents / PPF"></div>
-        <div class="fld"><label for="timeline">Timeline</label><input id="timeline" name="timeline" type="text" placeholder="When do you need it?"></div>
-        <div class="fld"><label for="msg">Notes</label><textarea id="msg" name="msg" rows="4"></textarea></div>
+        <div class="fld">
+          <label for="finish">Desired finish</label>
+          <select id="finish" name="finish" required>
+            <option value="">Select finish</option>
+            <option value="Gloss">Gloss</option>
+            <option value="Satin">Satin</option>
+            <option value="Matte">Matte</option>
+            <option value="Metallic">Metallic</option>
+            <option value="Not sure — want recommendations">Not sure — want recommendations</option>
+            <option value="Custom / other (see notes)">Custom / other (see notes)</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label for="coverage">Coverage</label>
+          <select id="coverage" name="coverage" required>
+            <option value="">Select coverage</option>
+            <option value="Full transformation">Full transformation</option>
+            <option value="Accent package">Accent package</option>
+            <option value="Tank / PPF only">Tank / PPF only</option>
+            <option value="Not sure yet">Not sure yet</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label for="timeline">Timeline</label>
+          <select id="timeline" name="timeline" required>
+            <option value="">Select timeline</option>
+            <option value="ASAP / this month">ASAP / this month</option>
+            <option value="1–2 months">1–2 months</option>
+            <option value="3+ months">3+ months</option>
+            <option value="Flexible / just exploring">Flexible / just exploring</option>
+          </select>
+        </div>
+        <div class="fld"><label for="msg">Notes</label><textarea id="msg" name="msg" rows="4" placeholder="Color idea, must-haves, questions…"></textarea></div>
         <button class="btn btn-primary" type="submit">Send me details →</button>
         <p class="form-note">Thanks — I’ll reply with a clear quote.</p>
       </form>
