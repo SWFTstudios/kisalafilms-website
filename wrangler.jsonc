@@ -1,9 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "kisalafilms-website",
-  "compatibility_date": "2026-07-13",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-07",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./public",
+    "binding": "ASSETS",
     "not_found_handling": "404-page"
   },
   "observability": {
