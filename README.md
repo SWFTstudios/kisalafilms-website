@@ -106,6 +106,45 @@ Sources: `all-vinyl-wrap`, `brake-caliper-wrap`, `light-wrap-film`, `paint-prote
 
 Client: [`public/js/vinyl-search.js`](./public/js/vinyl-search.js) on `/wrap-quote` and `/contact`.
 
+## Gallery (`/gallery.html`)
+
+Photo + video portfolio at [`public/gallery.html`](./public/gallery.html), styled in [`public/css/carsy.css`](./public/css/carsy.css) and driven by [`public/js/gallery.js`](./public/js/gallery.js).
+
+- **Responsive masonry** via CSS columns (1 → 4 columns by width). Each item is a `<figure class="masonry-item">`.
+- **Filters** reuse the shared `[data-filter-tabs]` logic in [`public/js/site.js`](./public/js/site.js): categories are `all`, `lifestyle`, `automotive`, `bts`. A tile can carry multiple space-separated tags in `data-filter-item`.
+- **Lightbox** (in `gallery.js`) expands photos and videos, with Esc/arrow keys, prev/next across the currently visible tiles, and backdrop-to-close.
+- **Intro animation** plays once per browser session (guarded by `sessionStorage["kfilms-intro"]`) and is skipped for `prefers-reduced-motion`: the logo shows, then a square opens into the hero image.
+- **Say Hello** dropdown (Contact page / Instagram / Email) and a `Gallery` link were added to the shared nav on every top-level page.
+
+### Adding gallery items
+
+Add a `<figure>` inside `[data-gallery-grid]`.
+
+Photo:
+
+```html
+<figure class="masonry-item" data-filter-item="automotive" data-type="photo"
+        data-full="/images/full-shot.jpg" data-caption="Caption">
+  <button type="button" class="tile" data-lightbox aria-label="Expand: Caption">
+    <img src="/images/thumb-shot.jpg" alt="Describe the shot" loading="lazy">
+  </button>
+</figure>
+```
+
+Video (drop the file in `public/videos/`; `.mp4` with an H.264 codec plays widest):
+
+```html
+<figure class="masonry-item" data-filter-item="lifestyle" data-type="video"
+        data-video="/videos/clip.mp4" data-full="/images/clip-poster.jpg" data-caption="Caption">
+  <button type="button" class="tile is-video" data-lightbox aria-label="Play video: Caption">
+    <img src="/images/clip-poster.jpg" alt="Describe the clip" loading="lazy">
+    <span class="tile-play" aria-hidden="true"></span>
+  </button>
+</figure>
+```
+
+`data-full` is the large image shown in the lightbox (photos) or the video poster; the inner `<img>` is the grid thumbnail. Video tiles currently point at placeholder paths under `public/videos/` — add the real clips there.
+
 ## Design handoff
 
 High-fidelity design references and the full design spec live in [`design/`](./design/). Production pages in `public/` were built from that handoff (tokens, copy, and layout).
