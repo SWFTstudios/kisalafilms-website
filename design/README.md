@@ -68,7 +68,7 @@ Sections top to bottom:
 7. **Process** — H2 "How it works", 6 numbered steps (01 Send your inquiry → 06 Reveal & premiere on the channel), no photos, just numbered rows with hairline top border
 8. **Films teaser** (dark alt background) — H2 "Every wrap gets a film", horizontally-scrolling row of 4 video thumbnails (image slots `home-film-1..4`) each with a category chip (Transformation/BTS/Rider story) and title, "Subscribe on YouTube" + "Watch all films →" buttons
 9. **Testimonials teaser** — H2 "Straight from the garage", 3 quote cards, "More reviews →" link to Contact.html#testimonials
-10. **Pricing teaser** — H2 "Straightforward tiers", 2 cards (Full transformation $1,800+ / Accent package $650+), "See full pricing →" link to Services.html#pricing
+10. **Pricing teaser** — H2 "Straightforward tiers", 2 cards (Full transformation $1,650+ / Accent package $575+), "See full pricing →" link to Services.html#pricing
 11. **Roller Reels cross-sell banner** — copy explaining photo/video-only clients should book via rollerreels.com, with outbound link button
 12. **Final CTA band** (dark alt background) — "Your bike could be the next episode." + two buttons
 13. **Footer** (shared, see below)
@@ -79,7 +79,7 @@ Purpose: full service list + transparent pricing.
 1. Header (shared)
 2. Page intro — eyebrow, H1 "What we offer", subhead mentioning Roller Reels for photo/video-only
 3. **Service cards grid** (5 cards): Full Wraps, Partial & Accents, Tank Protection, Paint Protection Film, and a 5th card "Photo & Video Only" that links out to rollerreels.com (visually distinguished with a lighter border)
-4. **Pricing section** `id="pricing"` (dark alt background) — 3 package cards: Protection only $250+, Full transformation $1,800+ (highlighted/featured with orange border), Accent package $650+ — each lists 3–4 bullet features with a small orange dot marker and a book button
+4. **Pricing section** `id="pricing"` (dark alt background) — 3 package cards: Protection only $220+, Full transformation $1,650+ (highlighted/featured with orange border), Accent package $575+ — each lists 3–4 bullet features with a small orange dot marker and a book button
 5. Closing CTA band — "Ready to start?" + two buttons
 6. Footer + sticky bar
 
