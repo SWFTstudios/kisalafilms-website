@@ -2,7 +2,7 @@
   "name": "kisalafilms-website",
   "private": true,
   "version": "0.1.0",
-  "description": "Kisala Films marketing site — motorcycle wraps × cinema",
+  "description": "Kisala Films personal brand — life through my lens",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
