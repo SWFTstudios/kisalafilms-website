@@ -168,12 +168,12 @@ h6, .h6 { font-size: 1.25rem; letter-spacing: .04em; }
   color: var(--c-white);
 }
 .logo img {
-  height: 36px;
+  height: 42px;
   width: auto;
   display: block;
 }
-.logo:hover { opacity: .85; }
-.nav-panel-head .logo img { height: 32px; }
+.logo:hover { opacity: .9; }
+.nav-panel-head .logo img { height: 36px; }
 .nav-desktop { display: none; align-items: center; gap: 24px; }
 .nav-desktop > a,
 .nav-dd-btn {
