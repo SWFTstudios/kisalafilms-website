@@ -33,6 +33,8 @@ action="https://formsubmit.co/hello@swftstudios.com"
 
 After the first submission, confirm the activation email on that inbox. Leads and subscribe notices land there with table formatting; `_next` redirects users back to the site with `?sent=1` / `?subscribed=1`.
 
+Inquiry wizards submit via FormSubmit’s **Ajax API** so a Cloudflare **524 timeout** on `formsubmit.co` no longer dumps customers on an error page. If send fails, the review step offers **Email this request instead** (`mailto:hello@swftstudios.com` with the full summary) plus copy-to-clipboard. Drafts stay in `localStorage` until a successful send.
+
 ## Lead-gen landing page (`/wrap-quote`)
 
 Purpose-built Meta ad funnel — **not** part of the main marketing IA.
@@ -103,6 +105,45 @@ python3 scripts/build-vinyl-catalog.py
 Sources: `all-vinyl-wrap`, `brake-caliper-wrap`, `light-wrap-film`, `paint-protection-film`. Hex codes are not scraped yet — each result links to the Metro product page.
 
 Client: [`public/js/vinyl-search.js`](./public/js/vinyl-search.js) on `/wrap-quote` and `/contact`.
+
+## Showcase (`/films.html`)
+
+Photo + video gallery at [`public/films.html`](./public/films.html) (the former card Showcase), styled in [`public/css/carsy.css`](./public/css/carsy.css) and driven by [`public/js/gallery.js`](./public/js/gallery.js). `/gallery.html` redirects here.
+
+- **Responsive masonry** via CSS columns (1 → 4 columns by width). Each item is a `<figure class="masonry-item">`.
+- **Filters** reuse the shared `[data-filter-tabs]` logic in [`public/js/site.js`](./public/js/site.js): categories are `all`, `lifestyle`, `automotive`, `bts`. A tile can carry multiple space-separated tags in `data-filter-item`.
+- **Lightbox** (in `gallery.js`) expands photos and videos, with Esc/arrow keys, prev/next across the currently visible tiles, and backdrop-to-close.
+- **Intro animation** plays once per browser session (guarded by `sessionStorage["kfilms-intro"]`) and is skipped for `prefers-reduced-motion`: the logo shows, then a square opens into the hero image.
+- **Say Hello** dropdown (Contact page / Instagram / Email) is in the shared nav on every top-level page; Showcase is the single gallery entry point.
+
+### Adding showcase items
+
+Add a `<figure>` inside `[data-gallery-grid]` on `films.html`.
+
+Photo:
+
+```html
+<figure class="masonry-item" data-filter-item="automotive" data-type="photo"
+        data-full="/images/full-shot.jpg" data-caption="Caption">
+  <button type="button" class="tile" data-lightbox aria-label="Expand: Caption">
+    <img src="/images/thumb-shot.jpg" alt="Describe the shot" loading="lazy">
+  </button>
+</figure>
+```
+
+Video (drop the file in `public/videos/`; `.mp4` with an H.264 codec plays widest):
+
+```html
+<figure class="masonry-item" data-filter-item="lifestyle" data-type="video"
+        data-video="/videos/clip.mp4" data-full="/images/clip-poster.jpg" data-caption="Caption">
+  <button type="button" class="tile is-video" data-lightbox aria-label="Play video: Caption">
+    <img src="/images/clip-poster.jpg" alt="Describe the clip" loading="lazy">
+    <span class="tile-play" aria-hidden="true"></span>
+  </button>
+</figure>
+```
+
+`data-full` is the large image shown in the lightbox (photos) or the video poster; the inner `<img>` is the grid thumbnail. Video tiles may point at paths under `public/videos/` — add the real clips there.
 
 ## Design handoff
 

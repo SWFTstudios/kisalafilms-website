@@ -27,6 +27,13 @@
   const REVIEW = FORM.querySelector("[data-review-summary]");
   const CONFIRM = FORM.querySelector("[data-confirm-send]");
   const LENGTH_INPUT = FORM.querySelector("[name=vinyl_length_ft]");
+  const FALLBACK = FORM.querySelector("[data-submit-fallback]");
+  const FALLBACK_MAIL = FORM.querySelector("[data-fallback-mailto]");
+  const FALLBACK_COPY = FORM.querySelector("[data-fallback-copy]");
+  const FALLBACK_STATUS = FORM.querySelector("[data-fallback-status]");
+  const SUBMIT_BTN = FORM.querySelector(".wiz-submit");
+  const TO_EMAIL = "hello@swftstudios.com";
+  const FORM_SUBMIT_TO = "hello@swftstudios.com";
   const SIZE_HIDDEN = {
     suggest: FORM.querySelector("[data-size-suggest]"),
     stock: FORM.querySelector("[data-size-stock]"),
@@ -604,21 +611,105 @@
     if (STEPS[stepIndex] === "size" || STEPS[stepIndex] === "review") renderSize();
   }, 800);
 
-  FORM.addEventListener("submit", (e) => {
+  function buildSummaryText() {
+    const size = computeSize();
+    const length = Number(LENGTH_INPUT && LENGTH_INPUT.value) || size.stockFt || "";
+    const orderSize = length ? `${size.widthFt || 5}ft x ${length}ft` : "Not set";
+    const parts = selectedParts()
+      .map((p) => (guide && guide.parts[p] ? guide.parts[p].label : p))
+      .join(", ");
+    return [
+      "Kisala Films wrap inquiry",
+      "",
+      `Name: ${val("name")}`,
+      `Phone: ${val("phone")}`,
+      `Email: ${val("email")}`,
+      `Bike: ${[val("year"), val("make"), val("model")].filter(Boolean).join(" ") || val("bike")}`,
+      `Body class: ${val("bike_body_class") || ""}`,
+      `Parts: ${parts}`,
+      `Coverage: ${val("coverage")}`,
+      `Finish: ${val("finish")}`,
+      `Vinyl color: ${val("vinyl_color") || val("vinyl_color_query") || "n/a"}`,
+      `Vinyl URL: ${val("vinyl_url") || "n/a"}`,
+      `Film order: ${orderSize}`,
+      `Size reason: ${val("vinyl_size_reason") || size.reason || ""}`,
+      `Timeline: ${val("timeline")}`,
+      `Notes: ${val("msg") || "(none)"}`,
+    ].join("\n");
+  }
+
+  function buildMailtoHref() {
+    const subjectEl = FORM.querySelector('input[name="_subject"]');
+    const subject = encodeURIComponent((subjectEl && subjectEl.value) || "Kisala Films - wrap inquiry");
+    const body = encodeURIComponent(buildSummaryText());
+    return `mailto:${TO_EMAIL}?subject=${subject}&body=${body}`;
+  }
+
+  function showFallback(message) {
+    if (FALLBACK_MAIL) FALLBACK_MAIL.href = buildMailtoHref();
+    if (FALLBACK) FALLBACK.hidden = false;
+    if (FALLBACK_STATUS) {
+      FALLBACK_STATUS.hidden = false;
+      FALLBACK_STATUS.textContent = message || "Mail service timed out. Use email backup below.";
+    }
+    if (SUBMIT_BTN) {
+      SUBMIT_BTN.classList.remove("is-sending");
+      SUBMIT_BTN.textContent = SUBMIT_BTN.getAttribute("data-default-label") || "Try send again →";
+    }
+  }
+
+  function hideFallback() {
+    if (FALLBACK) FALLBACK.hidden = true;
+    if (FALLBACK_STATUS) FALLBACK_STATUS.hidden = true;
+  }
+
+  async function postViaFormSubmitAjax() {
+    const fd = new FormData(FORM);
+    fd.set("_captcha", "false");
+    fd.set("_template", "table");
+    fd.set("_honey", "");
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 16000);
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${FORM_SUBMIT_TO}`, {
+        method: "POST",
+        body: fd,
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json().catch(() => ({}));
+      if (data.success === "false" || data.success === false) {
+        throw new Error(data.message || "FormSubmit rejected the send");
+      }
+      return true;
+    } catch (err) {
+      clearTimeout(timer);
+      throw err;
+    }
+  }
+
+  FORM.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
     if (STEPS[stepIndex] !== "review") {
-      e.preventDefault();
       goNext();
       return;
     }
-    // Validate every step before email leaves
+
     for (let i = 0; i < STEPS.length; i++) {
       if (!validateStep(STEPS[i])) {
-        e.preventDefault();
         showStep(i);
+        validateStep(STEPS[i]);
         return;
       }
     }
-    // Ensure coverage + size fields filled for email
+
+    const model = FORM.querySelector("[data-bike-model]");
+    if (model && model.disabled) model.disabled = false;
+
     syncCoverageField();
     const size = computeSize();
     writeSizeFields(size);
@@ -638,8 +729,54 @@
     }
     const honey = FORM.querySelector('input[name="_honey"]');
     if (honey) honey.value = "";
-    clearDraft();
+
+    if (SUBMIT_BTN) {
+      if (!SUBMIT_BTN.getAttribute("data-default-label")) {
+        SUBMIT_BTN.setAttribute("data-default-label", SUBMIT_BTN.textContent);
+      }
+      SUBMIT_BTN.classList.add("is-sending");
+      SUBMIT_BTN.textContent = "Sending…";
+    }
+    hideFallback();
+
+    try {
+      await postViaFormSubmitAjax();
+      clearDraft();
+      const nextInput = FORM.querySelector('input[name="_next"]');
+      const next = (nextInput && nextInput.value) || `${location.pathname}?sent=1`;
+      location.href = next;
+    } catch (err) {
+      console.warn("Inquiry send failed", err);
+      const msg =
+        err && err.name === "AbortError"
+          ? "Timed out waiting for FormSubmit (Cloudflare 524). Your draft is saved."
+          : "Couldn’t reach FormSubmit. Your draft is saved — email the request directly.";
+      showFallback(msg);
+    }
   });
+
+  if (FALLBACK_COPY) {
+    FALLBACK_COPY.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(buildSummaryText());
+        if (FALLBACK_STATUS) {
+          FALLBACK_STATUS.hidden = false;
+          FALLBACK_STATUS.textContent = "Summary copied — paste into Mail or Messages.";
+        }
+      } catch (_) {
+        if (FALLBACK_STATUS) {
+          FALLBACK_STATUS.hidden = false;
+          FALLBACK_STATUS.textContent = "Copy failed — use Email this request instead.";
+        }
+      }
+    });
+  }
+
+  if (FALLBACK_MAIL) {
+    FALLBACK_MAIL.addEventListener("click", () => {
+      FALLBACK_MAIL.href = buildMailtoHref();
+    });
+  }
 
   // Clear draft after successful redirect
   if (/[?&]sent=1(?:&|$)/.test(location.search)) {
