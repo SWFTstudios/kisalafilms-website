@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Custom Motorcycle Vinyl Wrap — Free Quote | K Films</title>
+  <link rel="icon" href="/images/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+
   <meta name="description" content="Your motorcycle deserves better than stock. Custom vinyl wrap, premium cast vinyl, paint protection included. Transparent pricing. Get a free quote.">
   <meta name="robots" content="noindex, nofollow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,14 +94,14 @@
       flex-shrink: 0;
     }
     .brand {
-      font-family: var(--font-heading);
-      font-weight: 700;
-      font-size: clamp(2.6rem, 11vw, 4.5rem);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      line-height: 1;
       margin: 0 0 18px;
-      color: var(--c-white);
+      line-height: 0;
+    }
+    .brand img {
+      width: min(72vw, 280px);
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,.45));
     }
     .lede {
       font-size: 1.05rem;
@@ -491,7 +496,7 @@
     </picture>
     <div class="hero-fade" aria-hidden="true"></div>
     <div class="hero-content">
-      <p class="brand">K Films</p>
+      <p class="brand"><img src="/images/k-films-logo-white.png" alt="K Films" width="900" height="480"></p>
       <h1>Your motorcycle deserves better than stock.</h1>
       <p class="lede">Custom vinyl wrap — gloss, satin, matte, or metallic. Premium cast vinyl. Paint protection included. Transparent pricing. Taking on a limited number of builds right now.</p>
       <div class="btn-row">
