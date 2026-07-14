@@ -674,12 +674,11 @@
         <h2>Get My Free Quote</h2>
         <p class="lede">Name, contact, bike, finish. I’ll reply with a clear quote — limited slots right now.</p>
       </div>
-      <form class="form" action="https://formsubmit.co/hello@swftstudios.com" method="POST">
-        <input type="hidden" name="_subject" value="Kisala Films — Meta wrap quote lead">
+      <form class="form" action="https://formsubmit.co/hello@swftstudios.com" method="POST" accept-charset="UTF-8">
+        <input type="hidden" name="_subject" value="Kisala Films - Meta wrap quote lead">
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/wrap-quote/?sent=1">
-        <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
         <div class="fld">
           <label for="name">Name</label>
           <input id="name" name="name" type="text" autocomplete="name" required>
@@ -773,11 +772,12 @@
             <option value="Satin">Satin</option>
             <option value="Matte">Matte</option>
             <option value="Metallic">Metallic</option>
-            <option value="Not sure — want recommendations">Not sure — want recommendations</option>
+            <option value="Not sure - want recommendations">Not sure - want recommendations</option>
             <option value="Custom / other">Custom / other</option>
           </select>
         </div>
         <button class="btn" type="submit">Get My Free Quote</button>
+        <p class="fld-hint" style="margin-top:12px">After you tap submit, complete the quick FormSubmit check, then you’ll come back here.</p>
         <p class="form-note" data-form-note>Got it — I’ll follow up with your quote.</p>
       </form>
     </div>
