@@ -42,6 +42,14 @@ Keep this page off the main nav so paid traffic stays on the funnel. Two common 
 
 Either way, keep `robots noindex` until/unless you intentionally want this page indexed.
 
+### Bike year / make / model index
+
+The quote form typeahead loads [`public/data/motorcycles.json`](./public/data/motorcycles.json) (31 major brands, ~2,000 make+model strings, years 1985–2026). Rebuild from NHTSA:
+
+```bash
+python3 scripts/build-motorcycle-index.py
+```
+
 ## Design handoff
 
 High-fidelity design references and the full design spec live in [`design/`](./design/). Production pages in `public/` were built from that handoff (tokens, copy, and layout).
