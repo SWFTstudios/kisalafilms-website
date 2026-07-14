@@ -1270,14 +1270,12 @@ body.nav-lock { overflow: hidden; }
 }
 .wiz-size-meta,
 .wiz-size-reason,
-.wiz-size-alt,
 .wiz-size-empty {
   margin: 0 0 8px;
   color: #999;
   font-size: .9rem;
   line-height: 1.4;
 }
-.wiz-size-alt strong { color: var(--c-white); }
 .wiz-review {
   display: flex;
   flex-direction: column;
