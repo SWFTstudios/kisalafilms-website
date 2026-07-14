@@ -33,7 +33,7 @@ action="https://formsubmit.co/hello@swftstudios.com"
 
 After the first submission, confirm the activation email on that inbox. Leads and subscribe notices land there with table formatting; `_next` redirects users back to the site with `?sent=1` / `?subscribed=1`.
 
-Inquiry wizards submit via FormSubmit’s **Ajax API** so a Cloudflare **524 timeout** on `formsubmit.co` no longer dumps customers on an error page. If send fails, the review step offers **Email this request instead** (`mailto:hello@kisalafilms.com` with the full summary) plus copy-to-clipboard. Drafts stay in `localStorage` until a successful send.
+Inquiry wizards submit via FormSubmit’s **Ajax API** so a Cloudflare **524 timeout** on `formsubmit.co` no longer dumps customers on an error page. If send fails, the review step offers **Email this request instead** (`mailto:hello@swftstudios.com` with the full summary) plus copy-to-clipboard. Drafts stay in `localStorage` until a successful send.
 
 ## Lead-gen landing page (`/wrap-quote`)
 
