@@ -897,11 +897,27 @@ body.nav-lock { overflow: hidden; }
 .bike-grid {
   display: grid;
   gap: 12px;
+  grid-template-columns: 1fr;
 }
-@media (min-width: 560px) {
+.bike-grid > * {
+  min-width: 0;
+}
+.bike-grid select {
+  min-width: 0;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+@media (min-width: 640px) {
   .bike-grid {
-    grid-template-columns: 110px 1fr 1.2fr;
+    grid-template-columns: 120px minmax(0, 1fr) minmax(0, 1.35fr);
     gap: 12px;
+  }
+}
+@media (min-width: 900px) {
+  .bike-grid {
+    grid-template-columns: 130px minmax(0, 1fr) minmax(0, 1.5fr);
   }
 }
 .fld-hint {
@@ -1060,6 +1076,30 @@ body.nav-lock { overflow: hidden; }
 /* Inquiry wizard (phone-first) */
 .wizard-form {
   gap: 18px;
+  width: 100%;
+  min-width: 0;
+}
+.inquiry-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.inquiry-layout .wizard-form {
+  max-width: 780px;
+}
+.inquiry-intro .p-lg {
+  max-width: 640px;
+}
+@media (max-width: 899px) {
+  .inquiry-layout .wizard-form {
+    order: -1;
+    max-width: none;
+  }
+}
+@media (min-width: 900px) {
+  .inquiry-layout .contact-tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 .wiz-progress {
   display: flex;
@@ -1071,13 +1111,13 @@ body.nav-lock { overflow: hidden; }
 }
 .wiz-progress::-webkit-scrollbar { display: none; }
 .wiz-dot {
-  flex: 1 0 auto;
-  min-width: 64px;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 8px 4px;
+  padding: 8px 2px;
   border: 0;
   background: transparent;
   color: #777;
@@ -1094,12 +1134,16 @@ body.nav-lock { overflow: hidden; }
   font-family: var(--font-heading);
   font-size: .75rem;
   font-weight: 600;
+  flex-shrink: 0;
 }
 .wiz-dot-label {
   font-size: .65rem;
   letter-spacing: .04em;
   text-transform: uppercase;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 .wiz-dot.is-done .wiz-dot-num {
   border-color: var(--c-orange);
@@ -1336,7 +1380,8 @@ body.nav-lock { overflow: hidden; }
     display: flex;
     flex-direction: column;
   }
-  .book-grid > .wizard-form {
+  .book-grid > .wizard-form,
+  .book-grid > form {
     order: -1;
   }
 }
