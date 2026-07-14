@@ -1,4 +1,42 @@
 (() => {
+  const THEME_KEY = "kf-theme";
+
+  const getPreferred = () => {
+    try {
+      const stored = localStorage.getItem(THEME_KEY);
+      if (stored === "day" || stored === "night") return stored;
+    } catch (_) {
+      /* private mode */
+    }
+    return window.matchMedia("(prefers-color-scheme: light)").matches ? "day" : "night";
+  };
+
+  const applyTheme = (theme) => {
+    const next = theme === "day" ? "day" : "night";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch (_) {
+      /* ignore */
+    }
+    document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+      const toDay = next === "night";
+      btn.setAttribute("aria-label", toDay ? "Switch to day mode" : "Switch to night mode");
+      btn.setAttribute("aria-pressed", String(next === "day"));
+    });
+  };
+
+  applyTheme(
+    document.documentElement.getAttribute("data-theme") || getPreferred()
+  );
+
+  document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") || "night";
+      applyTheme(current === "day" ? "night" : "day");
+    });
+  });
+
   const header = document.querySelector(".site-header");
   if (header) {
     const onScroll = () => {

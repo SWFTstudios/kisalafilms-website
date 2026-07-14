@@ -87,7 +87,8 @@ The older Meta wrap-quote funnel still ships at [`public/wrap-quote/index.html`]
 ## Design
 
 Production styles: [`public/css/brand.css`](./public/css/brand.css)  
-Fonts: **Syne** (display) + **Manrope** (body)  
-Palette: near-black cinematic ground, warm off-white type, accent `#e8572a`
+Fonts: **Plus Jakarta Sans** (modern sans for display + body)  
+Palette: near-black cinematic ground / cool day surface, warm off-white or charcoal type, accent `#e8572a`  
+Theme: day/night toggle (persisted in `localStorage` as `kf-theme`, defaults to system preference)
 
 Older Carsy/wrap design references remain under [`design/`](./design/) for historical handoff only.
