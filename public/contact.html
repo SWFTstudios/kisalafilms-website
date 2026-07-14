@@ -326,7 +326,14 @@
           <p class="fld-hint wiz-error" data-confirm-error hidden></p>
           <div data-wizard-submit-wrap hidden>
             <button class="btn btn-primary wiz-submit" type="submit">Confirm &amp; send inquiry →</button>
-            <p class="fld-hint" style="margin-top:12px">After submit you’ll do a quick FormSubmit check, then land back here.</p>
+            <p class="fld-hint" style="margin-top:12px">Stays on this page while sending. If the mail service is down, you’ll get an email-app backup with your full summary.</p>
+            <div class="wiz-fallback" data-submit-fallback hidden>
+              <p class="wiz-fallback-title">Couldn’t reach the mail service</p>
+              <p class="wiz-fallback-copy">FormSubmit timed out (common Cloudflare 524). Your draft is still saved on this phone — send the same request from your email app:</p>
+              <a class="btn btn-primary wiz-fallback-mail" data-fallback-mailto href="mailto:hello@kisalafilms.com">Email this request instead</a>
+              <button type="button" class="btn btn-ghost wiz-fallback-copy-btn" data-fallback-copy>Copy summary</button>
+              <p class="fld-hint" data-fallback-status hidden></p>
+            </div>
           </div>
         </section>
 
