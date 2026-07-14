@@ -1,13 +1,14 @@
 /**
- * Bike year / make / model typeahead + fairing R&R labor metadata for leads.
+ * Bike year / make / model dropdowns + fairing R&R labor metadata.
  * Data: /data/motorcycles.json
  */
 (() => {
-  const YEAR_INPUT = document.querySelector("[data-bike-year]");
-  const BIKE_INPUT = document.querySelector("[data-bike-search]");
-  const LIST = document.querySelector("[data-bike-list]");
-  const FORM = BIKE_INPUT ? BIKE_INPUT.closest("form") : null;
-  if (!YEAR_INPUT || !BIKE_INPUT || !LIST) return;
+  const YEAR = document.querySelector("[data-bike-year]");
+  const MAKE = document.querySelector("[data-bike-make]");
+  const MODEL = document.querySelector("[data-bike-model]");
+  const BIKE_HIDDEN = document.querySelector("[data-bike-label]");
+  const FORM = MAKE ? MAKE.closest("form") : null;
+  if (!YEAR || !MAKE || !MODEL) return;
 
   const META = {
     bodyClass: FORM && FORM.querySelector("[data-bike-body-class]"),
@@ -17,43 +18,23 @@
     laborLabel: FORM && FORM.querySelector("[data-bike-labor-label]"),
   };
 
-  let bikes = [];
+  let byMake = {};
   let laborBands = {};
-  let years = { min: 1985, max: new Date().getFullYear() + 1 };
   let loaded = false;
-  let activeIndex = -1;
-  let results = [];
 
-  const normalize = (s) =>
-    String(s || "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, " ")
-      .trim();
-
-  function fillYears() {
-    const selected = YEAR_INPUT.value;
-    if (YEAR_INPUT.options.length > 2) {
-      if (selected) YEAR_INPUT.value = selected;
-      return;
-    }
-    YEAR_INPUT.innerHTML = "";
-    const blank = document.createElement("option");
-    blank.value = "";
-    blank.textContent = "Year";
-    YEAR_INPUT.appendChild(blank);
-    for (let y = years.max; y >= years.min; y--) {
-      const opt = document.createElement("option");
-      opt.value = String(y);
-      opt.textContent = String(y);
-      YEAR_INPUT.appendChild(opt);
-    }
-    if (selected) YEAR_INPUT.value = selected;
+  function option(value, label, disabled) {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    if (disabled) opt.disabled = true;
+    return opt;
   }
 
   function clearMeta() {
     Object.values(META).forEach((el) => {
       if (el) el.value = "";
     });
+    if (BIKE_HIDDEN) BIKE_HIDDEN.value = "";
   }
 
   function writeMeta(bike) {
@@ -68,11 +49,52 @@
     if (META.hoursLow) META.hoursLow.value = hours.low != null ? String(hours.low) : "";
     if (META.hoursHigh) META.hoursHigh.value = hours.high != null ? String(hours.high) : "";
     if (META.laborLabel) META.laborLabel.value = band.label || "";
+    if (BIKE_HIDDEN) BIKE_HIDDEN.value = bike.l || `${bike.m} ${bike.o}`;
   }
 
-  function findBike(label) {
-    const n = normalize(label);
-    return bikes.find((b) => normalize(b.l) === n) || null;
+  function resetModels(placeholder) {
+    MODEL.innerHTML = "";
+    MODEL.appendChild(option("", placeholder || "Select model", false));
+    MODEL.disabled = true;
+    MODEL.required = true;
+    clearMeta();
+  }
+
+  function fillMakes() {
+    const selected = MAKE.value;
+    const makes = Object.keys(byMake).sort((a, b) => a.localeCompare(b));
+    MAKE.innerHTML = "";
+    MAKE.appendChild(option("", "Select make", false));
+    makes.forEach((make) => MAKE.appendChild(option(make, make)));
+    if (selected && byMake[selected]) MAKE.value = selected;
+  }
+
+  function fillModels(make) {
+    resetModels(make ? "Select model" : "Select make first");
+    if (!make || !byMake[make]) return;
+    const models = byMake[make].slice().sort((a, b) => a.o.localeCompare(b.o));
+    models.forEach((bike) => {
+      const opt = option(bike.o, bike.o);
+      opt.dataset.bodyClass = bike.c;
+      MODEL.appendChild(opt);
+    });
+    MODEL.disabled = false;
+  }
+
+  function onModelChange() {
+    const make = MAKE.value;
+    const model = MODEL.value;
+    if (!make || !model) {
+      clearMeta();
+      return;
+    }
+    const bike = (byMake[make] || []).find((b) => b.o === model) || {
+      l: `${make} ${model}`,
+      m: make,
+      o: model,
+      c: "unknown",
+    };
+    writeMeta(bike);
   }
 
   async function loadData() {
@@ -82,155 +104,33 @@
       const res = await fetch("/data/motorcycles.json", { credentials: "same-origin" });
       if (!res.ok) throw new Error(String(res.status));
       const data = await res.json();
-      years = {
-        min: Number(data.yearMin) || 1985,
-        max: Number(data.yearMax) || new Date().getFullYear() + 1,
-      };
       laborBands = data.laborBands || {};
-      bikes = Array.isArray(data.bikes) ? data.bikes : [];
-      fillYears();
-      const selected = findBike(BIKE_INPUT.value);
-      if (selected) writeMeta(selected);
+      byMake = {};
+      (data.bikes || []).forEach((bike) => {
+        if (!byMake[bike.m]) byMake[bike.m] = [];
+        byMake[bike.m].push(bike);
+      });
+      fillMakes();
+      if (MAKE.value) fillModels(MAKE.value);
     } catch (err) {
       console.warn("Bike index failed to load", err);
-      fillYears();
+      MAKE.innerHTML = "";
+      MAKE.appendChild(option("", "Couldn’t load makes — refresh", true));
+      resetModels("Unavailable");
     }
   }
 
-  function scoreMatch(query, candidate) {
-    const q = normalize(query);
-    const c = normalize(candidate);
-    if (!q) return 0;
-    if (c === q) return 100;
-    if (c.startsWith(q)) return 90;
-    const tokens = q.split(" ").filter(Boolean);
-    if (tokens.every((t) => c.includes(t))) return 70 + Math.min(tokens.length, 10);
-    if (c.includes(q)) return 50;
-    return 0;
-  }
-
-  function queryResults(q) {
-    if (!q || q.length < 1) return [];
-    const ranked = [];
-    for (const bike of bikes) {
-      const score = scoreMatch(q, bike.l);
-      if (score > 0) ranked.push({ bike, score });
-    }
-    ranked.sort((a, b) => b.score - a.score || a.bike.l.localeCompare(b.bike.l));
-    return ranked.slice(0, 8).map((r) => r.bike);
-  }
-
-  function closeList() {
-    LIST.hidden = true;
-    LIST.innerHTML = "";
-    activeIndex = -1;
-    results = [];
-    BIKE_INPUT.setAttribute("aria-expanded", "false");
-  }
-
-  function openList(items) {
-    results = items;
-    activeIndex = items.length ? 0 : -1;
-    LIST.innerHTML = "";
-    if (!items.length) {
-      closeList();
-      return;
-    }
-    items.forEach((bike, i) => {
-      const band = laborBands[bike.c] || {};
-      const hours = band.fairingRrHours || {};
-      const li = document.createElement("li");
-      li.id = `bike-opt-${i}`;
-      li.setAttribute("role", "option");
-      li.setAttribute("aria-selected", i === activeIndex ? "true" : "false");
-      li.innerHTML = `<span class="bike-opt-name"></span><span class="bike-opt-meta"></span>`;
-      li.querySelector(".bike-opt-name").textContent = bike.l;
-      const metaBits = [];
-      if (hours.low != null && hours.high != null) {
-        metaBits.push(`${hours.low}–${hours.high}h fairing R&R`);
-      }
-      if (band.difficulty != null) metaBits.push(`diff ${band.difficulty}/5`);
-      li.querySelector(".bike-opt-meta").textContent = metaBits.join(" · ");
-      li.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        pick(bike);
-      });
-      LIST.appendChild(li);
-    });
-    LIST.hidden = false;
-    BIKE_INPUT.setAttribute("aria-expanded", "true");
-  }
-
-  function highlight() {
-    [...LIST.children].forEach((el, i) => {
-      el.setAttribute("aria-selected", i === activeIndex ? "true" : "false");
-    });
-    const active = LIST.children[activeIndex];
-    if (active) {
-      BIKE_INPUT.setAttribute("aria-activedescendant", active.id);
-      active.scrollIntoView({ block: "nearest" });
-    } else {
-      BIKE_INPUT.removeAttribute("aria-activedescendant");
-    }
-  }
-
-  function pick(bike) {
-    BIKE_INPUT.value = bike.l;
-    writeMeta(bike);
-    closeList();
-    BIKE_INPUT.focus();
-  }
-
-  function refresh() {
-    openList(queryResults(BIKE_INPUT.value));
-  }
-
-  BIKE_INPUT.addEventListener("focus", () => {
-    loadData().then(() => {
-      if (BIKE_INPUT.value.trim()) refresh();
-    });
+  MAKE.addEventListener("change", () => {
+    fillModels(MAKE.value);
   });
 
-  BIKE_INPUT.addEventListener("input", () => {
-    clearMeta();
-    loadData().then(refresh);
-  });
+  MODEL.addEventListener("change", onModelChange);
 
-  BIKE_INPUT.addEventListener("change", () => {
-    const bike = findBike(BIKE_INPUT.value);
-    writeMeta(bike);
-  });
+  MAKE.addEventListener("focus", loadData);
+  MODEL.addEventListener("focus", loadData);
+  YEAR.addEventListener("focus", loadData);
 
-  BIKE_INPUT.addEventListener("keydown", (e) => {
-    if (LIST.hidden) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (!results.length) return;
-      activeIndex = (activeIndex + 1) % results.length;
-      highlight();
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (!results.length) return;
-      activeIndex = (activeIndex - 1 + results.length) % results.length;
-      highlight();
-    } else if (e.key === "Enter") {
-      if (activeIndex >= 0 && results[activeIndex]) {
-        e.preventDefault();
-        pick(results[activeIndex]);
-      }
-    } else if (e.key === "Escape") {
-      closeList();
-    }
-  });
-
-  BIKE_INPUT.addEventListener("blur", () => {
-    setTimeout(() => {
-      closeList();
-      writeMeta(findBike(BIKE_INPUT.value));
-    }, 120);
-  });
-
-  YEAR_INPUT.addEventListener("focus", loadData);
+  resetModels("Select make first");
 
   const quote = document.getElementById("quote");
   if (quote && "IntersectionObserver" in window) {

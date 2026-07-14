@@ -403,58 +403,15 @@
       background-repeat: no-repeat;
       padding-right: 36px;
     }
-    .bike-combo { position: relative; }
     .bike-grid {
       display: grid;
-      gap: 14px;
+      gap: 12px;
     }
-    @media (min-width: 480px) {
+    @media (min-width: 560px) {
       .bike-grid {
-        grid-template-columns: 110px 1fr;
+        grid-template-columns: 110px 1fr 1.2fr;
         gap: 12px;
       }
-    }
-    .bike-list {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: calc(100% + 4px);
-      z-index: 20;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      max-height: 240px;
-      overflow: auto;
-      background: var(--c-dark);
-      border: 1px solid #2a2a2a;
-      box-shadow: 0 12px 28px rgba(0,0,0,.45);
-    }
-    .bike-list li {
-      padding: 12px 14px;
-      cursor: pointer;
-      color: var(--c-white);
-      font-size: .95rem;
-      border-top: 1px solid #242424;
-    }
-    .bike-list li:first-child { border-top: 0; }
-    .bike-list li[aria-selected="true"],
-    .bike-list li:hover {
-      background: #1c1c1c;
-      color: var(--c-orange);
-    }
-    .bike-list li {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .bike-opt-meta {
-      font-size: .78rem;
-      color: var(--c-gray);
-      letter-spacing: .02em;
-    }
-    .bike-list li[aria-selected="true"] .bike-opt-meta,
-    .bike-list li:hover .bike-opt-meta {
-      color: #c8c8c8;
     }
     .fld-hint {
       margin: 8px 0 0;
@@ -731,8 +688,8 @@
           <input id="phone" name="phone" type="tel" autocomplete="tel" required>
         </div>
         <div class="fld">
-          <label for="bike">Bike year / make / model</label>
-          <div class="bike-grid">
+          <label id="bike-label">Bike year / make / model</label>
+          <div class="bike-grid" role="group" aria-labelledby="bike-label">
             <div>
               <label class="visually-hidden" for="year">Year</label>
               <select id="year" name="year" data-bike-year required>
@@ -781,26 +738,21 @@
                 <option value="1985">1985</option>
               </select>
             </div>
-            <div class="bike-combo">
-              <label class="visually-hidden" for="bike">Make and model</label>
-              <input
-                id="bike"
-                name="bike"
-                type="text"
-                placeholder="Start typing make or model"
-                autocomplete="off"
-                spellcheck="false"
-                role="combobox"
-                aria-autocomplete="list"
-                aria-expanded="false"
-                aria-controls="bike-list"
-                data-bike-search
-                required
-              >
-              <ul id="bike-list" class="bike-list" role="listbox" data-bike-list hidden></ul>
+            <div>
+              <label class="visually-hidden" for="make">Make</label>
+              <select id="make" name="make" data-bike-make required>
+                <option value="">Select make</option>
+              </select>
+            </div>
+            <div>
+              <label class="visually-hidden" for="model">Model</label>
+              <select id="model" name="model" data-bike-model required disabled>
+                <option value="">Select make first</option>
+              </select>
             </div>
           </div>
-          <p class="fld-hint">Search 2,000+ motorcycles — e.g. Honda CBR600F4i, Yamaha R1, Harley Sportster</p>
+          <p class="fld-hint">Pick year, make, then model — list covers 2,000+ bikes</p>
+          <input type="hidden" name="bike" value="" data-bike-label>
           <!-- Backend quoting metadata (fairing uninstall/reinstall heuristic bands) -->
           <input type="hidden" name="bike_body_class" value="" data-bike-body-class>
           <input type="hidden" name="bike_difficulty" value="" data-bike-difficulty>
