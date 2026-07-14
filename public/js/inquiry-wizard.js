@@ -610,15 +610,22 @@
       goNext();
       return;
     }
-    // Validate every step before email leaves
+
+    // Show the failing step before reportValidity so mobile browsers can focus it
     for (let i = 0; i < STEPS.length; i++) {
       if (!validateStep(STEPS[i])) {
         e.preventDefault();
         showStep(i);
+        // Re-run validity on the now-visible step for native messaging
+        validateStep(STEPS[i]);
         return;
       }
     }
-    // Ensure coverage + size fields filled for email
+
+    // FormSubmit ignores disabled controls — enable model if needed
+    const model = FORM.querySelector("[data-bike-model]");
+    if (model && model.disabled) model.disabled = false;
+
     syncCoverageField();
     const size = computeSize();
     writeSizeFields(size);
