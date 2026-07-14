@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Custom Motorcycle Vinyl Wrap — Free Quote | K Films</title>
+  <meta name="description" content="Your motorcycle deserves better than stock. Custom vinyl wrap, premium cast vinyl, paint protection included. Transparent pricing. Get a free quote.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Mulish:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c-orange: #ff4d24;
+      --c-white: #ffffff;
+      --c-gray: #a5a5a5;
+      --c-dark: #111111;
+      --c-black: #000000;
+      --font-heading: "Chakra Petch", sans-serif;
+      --font-body: Mulish, sans-serif;
+      --pad: clamp(48px, 10vw, 96px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: auto; }
+    @media (hover: hover) and (pointer: fine) {
+      html { scroll-behavior: smooth; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--c-white);
+      background: var(--c-black);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--c-orange); text-decoration: none; }
+    a:hover { color: var(--c-white); }
+    .wrap {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .wrap-wide {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h1, h2, h3 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      line-height: 1.12;
+      margin: 0 0 .5em;
+      text-transform: uppercase;
+      letter-spacing: -.01em;
+    }
+    h1 { font-size: clamp(1.85rem, 7.5vw, 3.25rem); }
+    h2 { font-size: clamp(1.4rem, 4.5vw, 2.1rem); }
+    h3 { font-size: 1.1rem; letter-spacing: .04em; margin: 0 0 .35em; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-heading);
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--c-white);
+      margin: 0 0 14px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 3px;
+      height: 14px;
+      background: var(--c-orange);
+      flex-shrink: 0;
+    }
+    .brand {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: clamp(2.6rem, 11vw, 4.5rem);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      line-height: 1;
+      margin: 0 0 18px;
+      color: var(--c-white);
+    }
+    .lede {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--c-gray);
+      margin: 0 0 1.25em;
+      max-width: 34em;
+    }
+    .muted { color: var(--c-gray); margin: 0 0 1em; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 28px;
+      font-family: var(--font-heading);
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border: 2px solid var(--c-orange);
+      background: var(--c-orange);
+      color: var(--c-white);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .25s ease, color .25s ease, border-color .25s ease;
+      width: 100%;
+      max-width: 320px;
+    }
+    .btn:hover {
+      background: var(--c-white);
+      border-color: var(--c-white);
+      color: var(--c-black);
+      text-decoration: none;
+    }
+    .btn-row { margin-top: 24px; }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 0 48px;
+      overflow: hidden;
+    }
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 55% 40%;
+      animation: heroIn 1.2s cubic-bezier(.22,1,.36,1) both;
+    }
+    .hero-fade {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.55) 40%, rgba(0,0,0,.92) 100%),
+        radial-gradient(ellipse at 70% 30%, rgba(255,77,36,.18), transparent 55%);
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      padding: 0 20px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .hero-content > * {
+      animation: riseIn .7s cubic-bezier(.22,1,.36,1) both;
+    }
+    .hero-content > *:nth-child(1) { animation-delay: .15s; }
+    .hero-content > *:nth-child(2) { animation-delay: .28s; }
+    .hero-content > *:nth-child(3) { animation-delay: .4s; }
+    .hero-content > *:nth-child(4) { animation-delay: .52s; }
+    @keyframes heroIn {
+      from { transform: scale(1.06); opacity: .6; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    section { padding: var(--pad) 0; }
+    .section-dark { background: var(--c-dark); }
+    .section-head { margin-bottom: 28px; }
+
+    .offer-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0;
+    }
+    .offer-list li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 12px;
+      padding: 18px 0;
+      border-top: 1px solid #242424;
+      color: var(--c-gray);
+      font-size: 1.02rem;
+    }
+    .offer-list li:last-child { border-bottom: 1px solid #242424; }
+    .offer-list strong {
+      color: var(--c-white);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .tick {
+      width: 18px;
+      height: 18px;
+      margin-top: 4px;
+      border: 2px solid var(--c-orange);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .tick::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 0;
+      width: 5px;
+      height: 10px;
+      border: solid var(--c-orange);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .boutique {
+      display: grid;
+      gap: 28px;
+    }
+    @media (min-width: 700px) {
+      .boutique {
+        grid-template-columns: 1fr 1.1fr;
+        align-items: center;
+        gap: 40px;
+      }
+    }
+    .boutique img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      filter: saturate(.92) contrast(1.05);
+    }
+    .boutique-lines p {
+      margin: 0 0 14px;
+      color: var(--c-gray);
+      font-size: 1.05rem;
+    }
+    .boutique-lines p strong { color: var(--c-white); font-weight: 600; }
+
+    .steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      counter-reset: step;
+    }
+    .steps li {
+      counter-increment: step;
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 14px;
+      padding: 20px 0;
+      border-top: 1px solid #242424;
+      align-items: baseline;
+    }
+    .steps li:last-child { border-bottom: 1px solid #242424; }
+    .steps li::before {
+      content: counter(step, decimal-leading-zero);
+      font-family: var(--font-heading);
+      font-weight: 700;
+      color: var(--c-orange);
+      font-size: 1rem;
+      letter-spacing: .06em;
+    }
+    .steps h3 { margin-bottom: 6px; }
+    .steps p { margin: 0; color: var(--c-gray); }
+
+    .mid-cta {
+      text-align: center;
+      padding: 8px 0 0;
+    }
+
+    .price-grid {
+      display: grid;
+      gap: 16px;
+    }
+    @media (min-width: 560px) {
+      .price-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+    }
+    .price-card {
+      border: 1px solid #2a2a2a;
+      padding: 28px 22px;
+      background: var(--c-black);
+    }
+    .price-card.featured {
+      border-color: var(--c-orange);
+    }
+    .price-card .tag {
+      font-family: var(--font-heading);
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--c-orange);
+      margin-bottom: 10px;
+      display: block;
+    }
+    .price-amount {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 8px 0 16px;
+    }
+    .price-card ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .price-card li {
+      color: var(--c-gray);
+      padding: 8px 0;
+      border-top: 1px solid #242424;
+      font-size: .95rem;
+    }
+
+    .faq-list { max-width: 640px; }
+    .faq-item { border-top: 1px solid #242424; }
+    .faq-item:last-child { border-bottom: 1px solid #242424; }
+    .faq-q {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      background: none;
+      border: 0;
+      color: var(--c-white);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      text-align: left;
+      padding: 18px 0;
+      cursor: pointer;
+    }
+    .faq-q .mark { color: var(--c-orange); font-size: 1.2rem; line-height: 1; }
+    .faq-a {
+      display: none;
+      margin: 0 0 18px;
+      color: var(--c-gray);
+      max-width: 36em;
+    }
+    .faq-item.open .faq-a { display: block; }
+
+    .quote {
+      padding-bottom: calc(var(--pad) + 8px);
+    }
+    .form {
+      display: grid;
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .fld label {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      color: var(--c-white);
+    }
+    .fld input {
+      width: 100%;
+      padding: 14px 14px;
+      background: var(--c-black);
+      border: 1px solid #2a2a2a;
+      color: var(--c-white);
+      font-family: var(--font-body);
+      font-size: 1rem;
+    }
+    .fld input:focus {
+      outline: none;
+      border-color: var(--c-orange);
+    }
+    .form-note {
+      display: none;
+      color: var(--c-gray);
+      margin: 4px 0 0;
+      font-size: .95rem;
+    }
+    .form-note.show { display: block; color: #9ad89a; }
+
+    .site-footer {
+      border-top: 1px solid #242424;
+      padding: 28px 20px 40px;
+      text-align: center;
+    }
+    .site-footer p {
+      margin: 0 0 8px;
+      color: var(--c-gray);
+      font-size: .95rem;
+    }
+    .site-footer .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .reveal.is-in {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <picture>
+      <source type="image/webp" srcset="/images/hero-f4i-garage-night-lp.webp">
+      <img
+        class="hero-media"
+        src="/images/hero-f4i-garage-night-lp.jpg"
+        alt="Honda CBR600F4i in the garage at night"
+        width="1200"
+        height="800"
+        fetchpriority="high"
+        decoding="async"
+      >
+    </picture>
+    <div class="hero-fade" aria-hidden="true"></div>
+    <div class="hero-content">
+      <p class="brand">K Films</p>
+      <h1>Your motorcycle deserves better than stock.</h1>
+      <p class="lede">Custom vinyl wrap — gloss, satin, matte, or metallic. Premium cast vinyl. Paint protection included. Transparent pricing. Taking on a limited number of builds right now.</p>
+      <div class="btn-row">
+        <a class="btn" href="#quote">Get My Free Quote</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-dark reveal" id="offer">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The offer</p>
+        <h2>What you get</h2>
+      </div>
+      <ul class="offer-list">
+        <li>
+          <span class="tick" aria-hidden="true"></span>
+          <div>
+            <strong>Custom design</strong>
+            Built for your bike — accents or a full color change, not a one-size vinyl.
+          </div>
+        </li>
+        <li>
+          <span class="tick" aria-hidden="true"></span>
+          <div>
+            <strong>Premium cast vinyl</strong>
+            Gloss, satin, matte, or metallic finishes. Film chosen for stretch, durability, and how it looks on camera.
+          </div>
+        </li>
+        <li>
+          <span class="tick" aria-hidden="true"></span>
+          <div>
+            <strong>Paint protection included</strong>
+            Full transformation includes tank PPF. Vinyl protects what it covers when installed right.
+          </div>
+        </li>
+        <li>
+          <span class="tick" aria-hidden="true"></span>
+          <div>
+            <strong>Transparent pricing</strong>
+            Clear packages up front. You get a clear quote before vinyl lands.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="reveal" id="why">
+    <div class="wrap-wide boutique">
+      <img
+        src="/images/story-elombe-workshop-lp.jpg"
+        alt="Elombe wrapping vinyl in the Jersey City garage"
+        width="800"
+        height="1200"
+        loading="lazy"
+        decoding="async"
+      >
+      <div class="boutique-lines">
+        <p class="eyebrow">One installer</p>
+        <h2>Not a factory line</h2>
+        <p><strong>I’m Elombe.</strong> Solo operator. Jersey City garage. Appointment only.</p>
+        <p>I’m building the portfolio in public — practicing on my own Honda F4i and documenting the process.</p>
+        <p>That’s the point: personal attention, no storefront shortcuts, a real relationship with the person wrapping your bike.</p>
+        <p>Limited builds right now so each one gets the time it needs.</p>
+        <div class="btn-row">
+          <a class="btn" href="#quote">Get My Free Quote</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-dark reveal" id="process">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How it works</p>
+        <h2>Four clear steps</h2>
+      </div>
+      <ol class="steps">
+        <li>
+          <div>
+            <h3>Send details</h3>
+            <p>Bike make and model, desired finish, coverage idea. Takes a minute.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Clear quote</h3>
+            <p>I’ll reply with transparent pricing locked to your bike and film choice.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Wrap + capture</h3>
+            <p>Drop off by appointment. I install. Optional project photos and video if you want them.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Pick up &amp; ride</h3>
+            <p>You get the bike back. Ride it. Feature on Instagram later is optional — never required.</p>
+          </div>
+        </li>
+      </ol>
+      <div class="mid-cta btn-row" style="display:flex;justify-content:center">
+        <a class="btn" href="#quote">Get My Free Quote</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal" id="pricing">
+    <div class="wrap-wide">
+      <div class="section-head">
+        <p class="eyebrow">Pricing</p>
+        <h2>Two clear tiers</h2>
+        <p class="muted">No mystery packages. Final quote depends on bike architecture and coverage.</p>
+      </div>
+      <div class="price-grid">
+        <article class="price-card">
+          <span class="tag">Partial</span>
+          <h3>Accent package</h3>
+          <div class="price-amount">$650+</div>
+          <ul>
+            <li>Partial wrap or stripes</li>
+            <li>Chrome delete option</li>
+            <li>Design consult</li>
+            <li>BTS stills/reel available</li>
+          </ul>
+        </article>
+        <article class="price-card featured">
+          <span class="tag">Full build</span>
+          <h3>Full transformation</h3>
+          <div class="price-amount">$1,800+</div>
+          <ul>
+            <li>Full color-change wrap</li>
+            <li>Tank PPF included</li>
+            <li>Optional project photo/video</li>
+            <li>Optional Instagram feature later</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-dark reveal" id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Straight answers</p>
+        <h2>FAQ</h2>
+      </div>
+      <div class="faq-list" data-faq>
+        <div class="faq-item open">
+          <button class="faq-q" type="button">Will a wrap damage my paint?<span class="mark">–</span></button>
+          <p class="faq-a">Quality cast vinyl protects paint when installed and removed correctly. I will not wrap compromised or oxidized panels without addressing them first.</p>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">How long does a build take?<span class="mark">+</span></button>
+          <p class="faq-a">Depends on coverage and bike architecture. Accents move faster; full transformations take more garage time. I’ll give you a clear timeline with your quote — limited builds mean I don’t overbook.</p>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">Do I have to be filmed?<span class="mark">+</span></button>
+          <p class="faq-a">No. Appearing on Instagram or project film is optional. Tell me what you’re comfortable with when you inquire.</p>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" type="button">How does the garage work?<span class="mark">+</span></button>
+          <p class="faq-a">Jersey City, appointment only. Mon–Fri 10–6, weekends by appointment. No walk-ins — I’ll set a drop-off and pick-up window once we lock the quote.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote reveal" id="quote">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Free quote</p>
+        <h2>Get My Free Quote</h2>
+        <p class="lede">Name, contact, bike, finish. I’ll reply with a clear quote — limited slots right now.</p>
+      </div>
+      <form class="form" data-stub>
+        <div class="fld">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="fld">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="fld">
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" required>
+        </div>
+        <div class="fld">
+          <label for="bike">Bike make / model</label>
+          <input id="bike" name="bike" type="text" placeholder="Honda CBR600F4i" required>
+        </div>
+        <div class="fld">
+          <label for="finish">Desired finish</label>
+          <input id="finish" name="finish" type="text" placeholder="Gloss black, matte red, metallic…" required>
+        </div>
+        <button class="btn" type="submit">Get My Free Quote</button>
+        <p class="form-note">Got it — details captured. I’ll follow up with your quote.</p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="links">
+      <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram @kisalafilms</a>
+      <a href="mailto:hello@kisalafilms.com">hello@kisalafilms.com</a>
+    </div>
+    <p>Jersey City · by appointment</p>
+    <p>© 2026 Kisala Films</p>
+  </footer>
+
+  <script>
+    (() => {
+      document.querySelectorAll("[data-faq] .faq-item").forEach((item) => {
+        const btn = item.querySelector(".faq-q");
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+          const list = item.parentElement;
+          list.querySelectorAll(".faq-item").forEach((el) => {
+            if (el !== item) {
+              el.classList.remove("open");
+              const m = el.querySelector(".mark");
+              if (m) m.textContent = "+";
+            }
+          });
+          const open = item.classList.toggle("open");
+          const mark = item.querySelector(".mark");
+          if (mark) mark.textContent = open ? "–" : "+";
+        });
+      });
+
+      const reveals = document.querySelectorAll(".reveal");
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reveals.length || reduceMotion || !("IntersectionObserver" in window)) {
+        reveals.forEach((el) => el.classList.add("is-in"));
+      } else {
+        const rio = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-in");
+                rio.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.08, rootMargin: "0px 0px -4% 0px" }
+        );
+        reveals.forEach((el) => rio.observe(el));
+      }
+
+      document.querySelectorAll("form[data-stub]").forEach((form) => {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const note = form.querySelector(".form-note");
+          if (note) note.classList.add("show");
+          form.reset();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
