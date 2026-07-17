@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&display=swap");
+
 /* Carsy style guide tokens — Chakra Petch + Mulish, #ff4d24 */
 :root {
   --c-orange: #ff4d24;
@@ -1882,4 +1884,412 @@ body.intro-lock { overflow: hidden; }
 
 @media (min-width: 768px) {
   .gallery-hero { min-height: 68vh; min-height: 68svh; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   K FILMS SPHERE EDITORIAL SYSTEM
+   Shared inner-page skin derived from the interactive collage.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --c-orange: #f2f2ee;
+  --c-white: #f2f2ee;
+  --c-gray: rgba(242, 242, 238, 0.5);
+  --c-dark: #111113;
+  --c-black: #0a0a0b;
+  --font-heading: "Montserrat", Helvetica, Arial, sans-serif;
+  --font-body: "Montserrat", Helvetica, Arial, sans-serif;
+}
+
+body.carsy {
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  background: #0a0a0b;
+}
+
+body.carsy h1,
+body.carsy h2,
+body.carsy h3,
+body.carsy h4,
+body.carsy h5,
+body.carsy h6 {
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  line-height: 1.04;
+}
+
+body.carsy h1,
+body.carsy h2 {
+  letter-spacing: -0.03em;
+}
+
+body.carsy .site-header {
+  position: relative;
+  background: #f7f6f2;
+  border-bottom: 1px solid rgba(17, 17, 18, 0.16);
+}
+
+body.carsy .header-bar {
+  max-width: none;
+  min-height: 90px;
+  padding: 0 34px;
+}
+
+body.carsy .logo {
+  position: relative;
+  color: #111112;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+}
+
+body.carsy .logo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0.34em;
+  bottom: -8px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.34);
+  transform-origin: center;
+  opacity: 0.45;
+}
+
+body.carsy .logo:has(img)::after {
+  display: none;
+}
+
+body.carsy .nav-desktop > a,
+body.carsy .nav-dd-btn {
+  color: #111112;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+
+body.carsy .nav-desktop > a:hover,
+body.carsy .nav-dd-btn:hover {
+  color: rgba(17, 17, 18, 0.48);
+}
+
+body.carsy .nav-desktop .nav-cta {
+  padding: 13px 20px;
+  border: 1px solid #111112;
+  background: #111112;
+  color: #f7f6f2;
+}
+
+body.carsy .nav-dd-menu {
+  top: calc(100% + 30px);
+  background: #0a0a0b;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+body.carsy .nav-toggle {
+  width: 48px;
+  height: 48px;
+  background: transparent;
+}
+
+body.carsy .nav-toggle span {
+  width: 24px;
+  height: 1.5px;
+  background: #111112;
+}
+
+body.carsy .page-hero {
+  padding: 13vw 0 9vw;
+  background: #f7f6f2;
+  color: #111112;
+  border-bottom: 0;
+}
+
+body.carsy .page-hero .container {
+  max-width: 1200px;
+}
+
+body.carsy .page-hero h1 {
+  max-width: 12ch;
+  font-size: clamp(3.2rem, 9vw, 9rem);
+  font-weight: 200;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+}
+
+body.carsy .page-hero .p-lg {
+  max-width: 48ch;
+  margin-top: 38px;
+  color: rgba(17, 17, 18, 0.62);
+}
+
+body.carsy .eyebrow {
+  color: currentColor;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+}
+
+body.carsy .eyebrow::before {
+  width: 20px;
+  height: 1px;
+  background: currentColor;
+}
+
+body.carsy .section,
+body.carsy .section-dark,
+body.carsy .section-muted,
+body.carsy .section-black {
+  background: #0a0a0b;
+  color: #f2f2ee;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+body.carsy .section:nth-of-type(even) {
+  background: #111113;
+}
+
+body.carsy .p,
+body.carsy .p-lg {
+  color: rgba(242, 242, 238, 0.53);
+}
+
+body.carsy .btn {
+  min-height: 50px;
+  border-radius: 0;
+  font-size: 0.67rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+
+body.carsy .btn-primary {
+  background: #f2f2ee;
+  border-color: #f2f2ee;
+  color: #111112;
+}
+
+body.carsy .btn-primary:hover {
+  background: transparent;
+  color: #f2f2ee;
+}
+
+body.carsy .btn-secondary,
+body.carsy .btn-black {
+  background: transparent;
+  border: 1px solid rgba(242, 242, 238, 0.45);
+  color: #f2f2ee;
+}
+
+body.carsy .link-arrow {
+  padding-bottom: 8px;
+  border-bottom: 1px solid currentColor;
+  color: #f2f2ee;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+
+body.carsy .svc-grid,
+body.carsy .values-grid,
+body.carsy .showcase-grid,
+body.carsy .quote-grid,
+body.carsy .price-grid,
+body.carsy .price-grid-3,
+body.carsy .blog-grid,
+body.carsy .contact-tiles {
+  gap: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+body.carsy .svc-card,
+body.carsy .value-card,
+body.carsy .showcase-card,
+body.carsy .quote-card,
+body.carsy .price-card,
+body.carsy .blog-card,
+body.carsy .contact-tile {
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  box-shadow: none;
+}
+
+body.carsy .svc-card,
+body.carsy .value-card,
+body.carsy .quote-card,
+body.carsy .price-card,
+body.carsy .contact-tile {
+  padding: 34px;
+}
+
+body.carsy .svc-card:hover,
+body.carsy .value-card:hover,
+body.carsy .showcase-card:hover,
+body.carsy .quote-card:hover,
+body.carsy .price-card:hover,
+body.carsy .blog-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.035);
+  transform: none;
+  box-shadow: none;
+}
+
+body.carsy .svc-chip,
+body.carsy .price-card .tag,
+body.carsy .showcase-card .tag,
+body.carsy .blog-meta {
+  border: 0;
+  padding: 0;
+  color: rgba(242, 242, 238, 0.48);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+}
+
+body.carsy .showcase-card img,
+body.carsy .blog-card img,
+body.carsy .detail-split img,
+body.carsy .about-split img {
+  border-radius: 3px;
+  filter: saturate(0.82);
+}
+
+body.carsy .filter-tabs button {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: rgba(242, 242, 238, 0.52);
+  background: transparent;
+  font-size: 0.61rem;
+}
+
+body.carsy .filter-tabs button.on,
+body.carsy .filter-tabs button:hover {
+  background: #f2f2ee;
+  border-color: #f2f2ee;
+  color: #111112;
+}
+
+body.carsy .faq-list,
+body.carsy .faq-item {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+body.carsy .faq-q {
+  padding: 28px 0;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+
+body.carsy .faq-q .mark {
+  color: #f2f2ee;
+  font-weight: 200;
+}
+
+body.carsy .form input,
+body.carsy .form textarea,
+body.carsy .fld input,
+body.carsy .fld textarea {
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0;
+  background: transparent;
+  padding: 15px 0;
+}
+
+body.carsy .fld label {
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+}
+
+body.carsy .site-footer {
+  background: #0a0a0b;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+body.carsy .footer-grid h5 {
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+}
+
+body.carsy .footer-links a,
+body.carsy .footer-hours p {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+body.carsy .nav-panel {
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  background: rgba(8, 8, 9, 0.985);
+  border: 0;
+  transform: translateY(-102%);
+}
+
+body.carsy .nav-panel.is-open {
+  transform: translateY(0);
+}
+
+body.carsy .nav-panel-head {
+  min-height: 84px;
+  padding: 18px 22px;
+}
+
+body.carsy .nav-panel-head .logo {
+  color: #f2f2ee;
+}
+
+body.carsy .nav-close {
+  border: 0;
+  font-size: 2rem;
+  font-weight: 200;
+}
+
+body.carsy .nav-panel-body {
+  width: min(100% - 44px, 720px);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px 0 70px;
+}
+
+body.carsy .nav-row,
+body.carsy .nav-acc-btn {
+  padding: 13px 0;
+  border: 0;
+  font-size: clamp(1.75rem, 8vw, 4.5rem);
+  font-weight: 200;
+  letter-spacing: 0.08em;
+}
+
+body.carsy .nav-acc-btn .chev {
+  width: 44px;
+  border: 0;
+  background: none;
+}
+
+body.carsy .nav-acc-panel {
+  border: 0;
+  background: transparent;
+  padding: 5px 0 18px;
+}
+
+body.carsy .nav-acc-panel a {
+  padding: 8px 0 8px 20px;
+  color: rgba(242, 242, 238, 0.52);
+}
+
+body.carsy .nav-panel-cta {
+  width: max-content;
+  margin: 24px 0 0;
+}
+
+@media (max-width: 767px) {
+  body.carsy .header-bar { min-height: 76px; padding: 0 16px; }
+  body.carsy .page-hero { padding: 90px 0 72px; }
+  body.carsy .page-hero h1 { font-size: clamp(2.7rem, 16vw, 5rem); }
+  body.carsy .page-hero .p-lg { margin-top: 26px; }
 }
