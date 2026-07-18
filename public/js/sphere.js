@@ -7,8 +7,6 @@
   const introVeil = document.querySelector("[data-intro-veil]");
   const introLogo = document.querySelector("[data-intro-logo]");
   const introCue = document.querySelector("[data-intro-cue]");
-  const introMedia = document.querySelector("[data-intro-media]");
-  const introTiles = Array.from(document.querySelectorAll("[data-intro-tile]"));
   const header = document.querySelector("[data-sphere-header]");
   const projectPanel = document.querySelector("[data-project-panel]");
   const warpStage = document.querySelector("[data-warp-stage]");
@@ -47,21 +45,6 @@
   const smooth = (value, start, finish) => {
     const t = clamp((value - start) / (finish - start), 0, 1);
     return t * t * (3 - 2 * t);
-  };
-
-  const layoutIntroTiles = () => {
-    const angles = [-158, -126, -91, -48, -14, 27, 72, 137];
-    const distances = [0.92, 0.75, 0.9, 0.72, 0.88, 0.76, 0.86, 0.72];
-    const maxX = Math.max(180, window.innerWidth * (window.innerWidth < 768 ? 0.42 : 0.4));
-    const maxY = Math.max(190, window.innerHeight * (window.innerWidth < 768 ? 0.36 : 0.39));
-
-    introTiles.forEach((tile, index) => {
-      const angle = (angles[index % angles.length] * Math.PI) / 180;
-      const distance = distances[index % distances.length];
-      tile.dataset.introX = String(Math.cos(angle) * maxX * distance);
-      tile.dataset.introY = String(Math.sin(angle) * maxY * distance);
-      tile.dataset.introRotation = String(-12 + ((index * 17) % 25));
-    });
   };
 
   const buildSphere = () => {
@@ -116,7 +99,6 @@
     const logoScale = motionReduced ? 1 : 1 + 64 * zoom;
     // Fade ink ahead of the largest scales so strokes never become solid bars.
     const inkOut = smooth(progress, 0.06, 0.19);
-    const mediaOut = smooth(progress, 0.18, 0.3);
     const reveal = smooth(progress, 0.22, 0.36);
     const columns = smooth(progress, 0.52, 0.86);
 
@@ -130,16 +112,6 @@
       introLogo.style.transform = `translate(${logoX}%, ${logoY}%) scale(${logoScale})`;
       introLogo.style.opacity = String(1 - inkOut);
     }
-    if (introMedia) introMedia.style.opacity = String(1 - mediaOut);
-    introTiles.forEach((tile, index) => {
-      const tileReveal = smooth(progress, 0.05 + index * 0.006, 0.2 + index * 0.005);
-      const x = Number(tile.dataset.introX || 0) * tileReveal;
-      const y = Number(tile.dataset.introY || 0) * tileReveal;
-      const rotation = Number(tile.dataset.introRotation || 0) * tileReveal;
-      const scale = 0.58 + tileReveal * 0.42;
-      tile.style.opacity = String(tileReveal);
-      tile.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale}) rotate(${rotation}deg)`;
-    });
     if (introCue) {
       introCue.style.opacity = String(1 - smooth(progress, 0, 0.07));
       introCue.style.color = veilOut > 0.55 ? "var(--kf-white)" : "var(--kf-ink)";
@@ -406,7 +378,6 @@
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
       buildSphere();
-      layoutIntroTiles();
       measureWarp();
       renderWarp();
     }, 120);
@@ -414,7 +385,6 @@
   window.addEventListener("scroll", applyScroll, { passive: true });
 
   buildSphere();
-  layoutIntroTiles();
   applyScroll();
   requestAnimationFrame(animate);
 })();
