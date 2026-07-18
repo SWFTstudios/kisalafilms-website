@@ -99,14 +99,56 @@ button { font: inherit; }
   position: absolute;
   inset: 0;
   z-index: 40;
-  display: grid;
-  place-items: center;
   background: var(--kf-paper);
   color: var(--kf-ink);
   will-change: opacity;
 }
+.intro-media {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.intro-media-tile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: clamp(92px, 12vw, 176px);
+  aspect-ratio: 4 / 5;
+  translate: -50% -50%;
+  border-radius: 3px;
+  overflow: hidden;
+  opacity: 0;
+  background: #d9d8d3;
+  box-shadow: 0 16px 40px rgba(17, 17, 18, 0.18);
+  will-change: transform, opacity;
+}
+.intro-media-tile:nth-child(3n + 2) { aspect-ratio: 5 / 4; }
+.intro-media-tile:nth-child(4n) { width: clamp(76px, 9vw, 132px); }
+.intro-media-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: introTileFloat 4.8s ease-in-out infinite alternate;
+}
+.intro-media-tile:nth-child(2n) img {
+  animation-delay: -1.7s;
+  animation-duration: 5.6s;
+}
+.intro-media-tile:nth-child(3n) img { animation-delay: -3.1s; }
 .intro-wordmark {
+  --gap-x: 20%;
+  --gap-y: 78%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
   width: min(46vw, 520px);
+  transform: translate(-50%, -50%);
+  transform-origin: var(--gap-x) var(--gap-y);
   will-change: transform, opacity;
 }
 .intro-wordmark img {
@@ -126,6 +168,7 @@ button { font: inherit; }
   font-size: 10px;
   font-weight: 400;
   letter-spacing: 0.4em;
+  z-index: 3;
 }
 .intro-cue::after {
   content: "";
@@ -137,6 +180,10 @@ button { font: inherit; }
 @keyframes scrollPulse {
   0%, 100% { opacity: 0.25; transform: translateY(0); }
   50% { opacity: 1; transform: translateY(8px); }
+}
+@keyframes introTileFloat {
+  from { transform: scale(1.04) translate3d(-1.5%, -1%, 0); }
+  to { transform: scale(1.09) translate3d(1.5%, 1%, 0); }
 }
 
 .sphere-layer {
@@ -607,6 +654,8 @@ button { font: inherit; }
   .project-nav.next { right: 10px; }
   .project-menu-bar { height: 64px; flex-basis: 64px; }
   .project-menu-bar .mini-burger { right: 22px; }
+  .intro-media-tile { width: clamp(72px, 22vw, 116px); }
+  .intro-media-tile:nth-child(4n) { width: clamp(62px, 18vw, 96px); }
   .intro-wordmark { width: min(64vw, 360px); }
   .intro-cue { bottom: 36px; }
   .menu-overlay { display: block; overflow-y: auto; }

@@ -6,6 +6,7 @@
   const intro = document.querySelector("[data-intro]");
   const introLogo = document.querySelector("[data-intro-logo]");
   const introCue = document.querySelector("[data-intro-cue]");
+  const introTiles = Array.from(document.querySelectorAll("[data-intro-tile]"));
   const header = document.querySelector("[data-sphere-header]");
   const projectPanel = document.querySelector("[data-project-panel]");
   const track = document.querySelector("[data-project-track]");
@@ -41,6 +42,21 @@
   const smooth = (value, start, finish) => {
     const t = clamp((value - start) / (finish - start), 0, 1);
     return t * t * (3 - 2 * t);
+  };
+
+  const layoutIntroTiles = () => {
+    const angles = [-158, -126, -91, -48, -14, 27, 72, 137];
+    const distances = [0.92, 0.75, 0.9, 0.72, 0.88, 0.76, 0.86, 0.72];
+    const maxX = Math.max(180, window.innerWidth * (window.innerWidth < 768 ? 0.42 : 0.4));
+    const maxY = Math.max(190, window.innerHeight * (window.innerWidth < 768 ? 0.36 : 0.39));
+
+    introTiles.forEach((tile, index) => {
+      const angle = (angles[index % angles.length] * Math.PI) / 180;
+      const distance = distances[index % distances.length];
+      tile.dataset.introX = String(Math.cos(angle) * maxX * distance);
+      tile.dataset.introY = String(Math.sin(angle) * maxY * distance);
+      tile.dataset.introRotation = String(-12 + ((index * 17) % 25));
+    });
   };
 
   const buildSphere = () => {
@@ -87,20 +103,32 @@
     const distance = scrollRoot.offsetHeight - window.innerHeight;
     const progress = distance > 0 ? clamp(-rect.top / distance, 0, 1) : 0;
 
-    const introOut = smooth(progress, 0.03, 0.22);
-    const logoScale = 1 + 7 * smooth(progress, 0.02, 0.26);
-    const logoOut = smooth(progress, 0.1, 0.26);
-    const reveal = smooth(progress, 0.12, 0.28);
+    const introOut = smooth(progress, 0.24, 0.38);
+    const logoTravel = motionReduced ? 0 : smooth(progress, 0, 0.06);
+    const logoScale = motionReduced ? 1 : 1 + 59 * smooth(progress, 0.055, 0.31);
+    const logoOut = smooth(progress, 0.24, 0.34);
+    const reveal = smooth(progress, 0.3, 0.42);
     const columns = smooth(progress, 0.52, 0.86);
 
     if (intro) {
       intro.style.opacity = String(1 - introOut);
-      intro.style.pointerEvents = progress > 0.22 ? "none" : "auto";
+      intro.style.pointerEvents = progress > 0.38 ? "none" : "auto";
     }
     if (introLogo) {
-      introLogo.style.transform = `scale(${logoScale})`;
+      const logoX = -50 + logoTravel * 30;
+      const logoY = -50 - logoTravel * 28;
+      introLogo.style.transform = `translate(${logoX}%, ${logoY}%) scale(${logoScale})`;
       introLogo.style.opacity = String(1 - logoOut);
     }
+    introTiles.forEach((tile, index) => {
+      const tileReveal = smooth(progress, 0.05 + index * 0.006, 0.23 + index * 0.005);
+      const x = Number(tile.dataset.introX || 0) * tileReveal;
+      const y = Number(tile.dataset.introY || 0) * tileReveal;
+      const rotation = Number(tile.dataset.introRotation || 0) * tileReveal;
+      const scale = 0.58 + tileReveal * 0.42;
+      tile.style.opacity = String(tileReveal);
+      tile.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale}) rotate(${rotation}deg)`;
+    });
     if (introCue) introCue.style.opacity = String(1 - smooth(progress, 0, 0.07));
     if (header) header.classList.toggle("is-revealed", reveal > 0.5);
     if (projectPanel) projectPanel.style.transform = `translateY(${100 - columns * 100}%)`;
@@ -184,11 +212,15 @@
   let resizeTimer = 0;
   window.addEventListener("resize", () => {
     window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(buildSphere, 120);
+    resizeTimer = window.setTimeout(() => {
+      buildSphere();
+      layoutIntroTiles();
+    }, 120);
   });
   window.addEventListener("scroll", applyScroll, { passive: true });
 
   buildSphere();
+  layoutIntroTiles();
   applyScroll();
   requestAnimationFrame(animate);
 })();
