@@ -99,8 +99,14 @@ button { font: inherit; }
   position: absolute;
   inset: 0;
   z-index: 40;
-  background: var(--kf-paper);
   color: var(--kf-ink);
+  pointer-events: none;
+}
+.intro-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--kf-paper);
   will-change: opacity;
 }
 .intro-media {
@@ -149,7 +155,8 @@ button { font: inherit; }
   width: min(46vw, 520px);
   transform: translate(-50%, -50%);
   transform-origin: var(--gap-x) var(--gap-y);
-  will-change: transform, opacity;
+  will-change: transform, opacity, filter;
+  pointer-events: none;
 }
 .intro-wordmark img {
   display: block;

@@ -4,8 +4,10 @@
   const sphereLayer = document.querySelector("[data-sphere-layer]");
   const sphereWrap = document.querySelector("[data-sphere-wrap]");
   const intro = document.querySelector("[data-intro]");
+  const introVeil = document.querySelector("[data-intro-veil]");
   const introLogo = document.querySelector("[data-intro-logo]");
   const introCue = document.querySelector("[data-intro-cue]");
+  const introMedia = document.querySelector("[data-intro-media]");
   const introTiles = Array.from(document.querySelectorAll("[data-intro-tile]"));
   const header = document.querySelector("[data-sphere-header]");
   const projectPanel = document.querySelector("[data-project-panel]");
@@ -106,25 +108,31 @@
     const distance = scrollRoot.offsetHeight - window.innerHeight;
     const progress = distance > 0 ? clamp(-rect.top / distance, 0, 1) : 0;
 
-    const introOut = smooth(progress, 0.24, 0.38);
-    const logoTravel = motionReduced ? 0 : smooth(progress, 0, 0.06);
-    const logoScale = motionReduced ? 1 : 1 + 59 * smooth(progress, 0.055, 0.31);
-    const logoOut = smooth(progress, 0.24, 0.34);
-    const reveal = smooth(progress, 0.3, 0.42);
+    // Paper drops away so the globe opens through the logo gaps first,
+    // then the black ink thins to transparent as the zoom passes through it.
+    const veilOut = smooth(progress, 0.03, 0.14);
+    const logoTravel = motionReduced ? 0 : smooth(progress, 0, 0.05);
+    const zoom = motionReduced ? 0 : smooth(progress, 0.04, 0.3);
+    const logoScale = motionReduced ? 1 : 1 + 64 * zoom;
+    // Fade ink ahead of the largest scales so strokes never become solid bars.
+    const inkOut = smooth(progress, 0.06, 0.19);
+    const mediaOut = smooth(progress, 0.18, 0.3);
+    const reveal = smooth(progress, 0.22, 0.36);
     const columns = smooth(progress, 0.52, 0.86);
 
     if (intro) {
-      intro.style.opacity = String(1 - introOut);
-      intro.style.pointerEvents = progress > 0.38 ? "none" : "auto";
+      intro.style.pointerEvents = progress > 0.34 ? "none" : "auto";
     }
+    if (introVeil) introVeil.style.opacity = String(1 - veilOut);
     if (introLogo) {
       const logoX = -50 + logoTravel * 30;
       const logoY = -50 - logoTravel * 28;
       introLogo.style.transform = `translate(${logoX}%, ${logoY}%) scale(${logoScale})`;
-      introLogo.style.opacity = String(1 - logoOut);
+      introLogo.style.opacity = String(1 - inkOut);
     }
+    if (introMedia) introMedia.style.opacity = String(1 - mediaOut);
     introTiles.forEach((tile, index) => {
-      const tileReveal = smooth(progress, 0.05 + index * 0.006, 0.23 + index * 0.005);
+      const tileReveal = smooth(progress, 0.05 + index * 0.006, 0.2 + index * 0.005);
       const x = Number(tile.dataset.introX || 0) * tileReveal;
       const y = Number(tile.dataset.introY || 0) * tileReveal;
       const rotation = Number(tile.dataset.introRotation || 0) * tileReveal;
@@ -132,8 +140,11 @@
       tile.style.opacity = String(tileReveal);
       tile.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale}) rotate(${rotation}deg)`;
     });
-    if (introCue) introCue.style.opacity = String(1 - smooth(progress, 0, 0.07));
-    if (header) header.classList.toggle("is-revealed", reveal > 0.5);
+    if (introCue) {
+      introCue.style.opacity = String(1 - smooth(progress, 0, 0.07));
+      introCue.style.color = veilOut > 0.55 ? "var(--kf-white)" : "var(--kf-ink)";
+    }
+    if (header) header.classList.toggle("is-revealed", veilOut > 0.6 || reveal > 0.5);
     if (projectPanel) projectPanel.style.transform = `translateY(${100 - columns * 100}%)`;
   };
 
