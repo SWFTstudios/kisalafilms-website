@@ -192,17 +192,24 @@
     };
   }
 
+  function orderLengthFt(size) {
+    // Safer stock length for shop suggested order (email only — not shown as a tip).
+    return size.safeFt || size.stockFt || 0;
+  }
+
   function writeSizeFields(size) {
+    const orderFt = orderLengthFt(size);
     if (SIZE_HIDDEN.suggest) SIZE_HIDDEN.suggest.value = size.suggestFt ? String(size.suggestFt) : "";
-    if (SIZE_HIDDEN.stock) SIZE_HIDDEN.stock.value = size.stockFt ? `${size.widthFt || 5}ft x ${size.stockFt}ft` : "";
+    if (SIZE_HIDDEN.stock) SIZE_HIDDEN.stock.value = orderFt ? `${size.widthFt || 5}ft x ${orderFt}ft` : "";
     if (SIZE_HIDDEN.reason) SIZE_HIDDEN.reason.value = size.reason || "";
-    if (SIZE_HIDDEN.sqft) SIZE_HIDDEN.sqft.value = size.sqft ? String(size.sqft) : "";
+    if (SIZE_HIDDEN.sqft) SIZE_HIDDEN.sqft.value = orderFt ? String(Math.round(orderFt * (size.widthFt || 5))) : "";
   }
 
   function renderSize() {
     const size = computeSize();
     writeSizeFields(size);
 
+    // Prefill the length the user orders from the base stock calc (no "safer buffer" tip).
     if (LENGTH_INPUT && document.activeElement !== LENGTH_INPUT) {
       if (size.stockFt) LENGTH_INPUT.value = String(size.stockFt);
       else if (!LENGTH_INPUT.value) LENGTH_INPUT.value = "";
@@ -223,7 +230,6 @@
         <p class="wiz-size-hero">${escapeHtml(orderLabel)}</p>
         <p class="wiz-size-meta">~${sq} sq ft · difficulty ${size.difficulty}/5 · ${escapeHtml(size.filmLabel)}</p>
         <p class="wiz-size-reason">${escapeHtml(size.reason)}</p>
-        <p class="wiz-size-alt">Safer buffer if you're new to this film: <strong>${size.widthFt || 5}ft × ${size.safeFt}ft</strong></p>
       </div>`;
   }
 
@@ -615,6 +621,9 @@
     const size = computeSize();
     const length = Number(LENGTH_INPUT && LENGTH_INPUT.value) || size.stockFt || "";
     const orderSize = length ? `${size.widthFt || 5}ft x ${length}ft` : "Not set";
+    const suggestOrder = orderLengthFt(size)
+      ? `${size.widthFt || 5}ft x ${orderLengthFt(size)}ft`
+      : "Not set";
     const parts = selectedParts()
       .map((p) => (guide && guide.parts[p] ? guide.parts[p].label : p))
       .join(", ");
@@ -631,6 +640,7 @@
       `Finish: ${val("finish")}`,
       `Vinyl color: ${val("vinyl_color") || val("vinyl_color_query") || "n/a"}`,
       `Vinyl URL: ${val("vinyl_url") || "n/a"}`,
+      `Suggested order size: ${suggestOrder}`,
       `Film order: ${orderSize}`,
       `Size reason: ${val("vinyl_size_reason") || size.reason || ""}`,
       `Timeline: ${val("timeline")}`,
@@ -719,14 +729,8 @@
         .map((p) => (guide && guide.parts[p] ? guide.parts[p].label : p))
         .join(", ");
     }
-    if (LENGTH_INPUT && LENGTH_INPUT.value) {
-      if (SIZE_HIDDEN.stock) {
-        SIZE_HIDDEN.stock.value = `${size.widthFt || 5}ft x ${LENGTH_INPUT.value}ft`;
-      }
-      if (SIZE_HIDDEN.sqft) {
-        SIZE_HIDDEN.sqft.value = String(Math.round(Number(LENGTH_INPUT.value) * (size.widthFt || 5)));
-      }
-    }
+    // Keep vinyl_size_order as the shop suggested size (safer buffer).
+    // User-entered length still posts via vinyl_length_ft.
     const honey = FORM.querySelector('input[name="_honey"]');
     if (honey) honey.value = "";
 
