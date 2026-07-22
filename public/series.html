@@ -1,21 +1,11 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-F2BXR858CL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-F2BXR858CL');
-</script>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="About Elombe Kisala — filmmaker, rider, and the person behind Kisala Films.">
+  <meta name="description" content="Kisala Films series tape crate — Roller Reels, Lost Tapes, Exit Unknown, Passenger Seat, Family Films.">
   <meta name="theme-color" content="#090a08">
-  <title>About — Elombe Kisala / Kisala Films</title>
+  <title>Series — Kisala Films</title>
   <link rel="icon" href="/images/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
@@ -49,68 +39,73 @@
 
   <main>
     <section class="page-hero">
-      <span class="eyebrow">CREATED BY ELOMBE KISALA</span>
-      <h1>LIFE THROUGH<br><em>MY LENS.</em></h1>
-      <p class="lede">Filmmaker. Rider. Host. The connective thread across the tapes.</p>
+      <span class="eyebrow">THE FOOTAGE CRATE</span>
+      <h1>SELECT<br><em>A TAPE.</em></h1>
+      <p class="lede">3D tape slider — swipe, arrow keys, or tap an index. Each tape links out to the film.</p>
     </section>
+
+    <div class="ticker" aria-hidden="true">
+      <div>KEEP THE TAPE ROLLING — NO GPS — MEET AFTER DARK — KEEP THE TAPE ROLLING — NO GPS — MEET AFTER DARK —</div>
+    </div>
 
     <section class="section section--paper">
-      <div class="about-split mt-0">
-        <figure>
-          <img src="/images/story-elombe-workshop.jpg" alt="Elombe Kisala in the workshop with tools and light" width="900" height="1125" loading="eager">
-          <figcaption>Jersey City · Workshop</figcaption>
-        </figure>
-        <div>
-          <p class="body-copy">I’m Elombe. I document people, machines, travel, friendship, cities, and life in motion — usually from a motorcycle seat or a garage floor after midnight.</p>
-          <p class="body-copy">Kisala Films is my public creator brand. It’s personal on purpose. The wraps I install, the films I cut, and the rides I take are the same story told through different formats.</p>
-          <p class="body-copy">I don’t sell “premium visual storytelling solutions.” I roll tape, keep the machine honest, and try to leave something that feels lived-in.</p>
+      <div class="tape-crate" data-tape-slider>
+        <div class="tape-stage">
+          <div class="tape-track" data-tape-track></div>
+          <div class="tape-nav">
+            <button type="button" data-tape-prev>←</button>
+            <button type="button" data-tape-next>→</button>
+          </div>
         </div>
+        <div class="tape-index" data-tape-index role="tablist" aria-label="Series index"></div>
+        <div class="tape-detail" data-tape-detail></div>
       </div>
-    </section>
 
-    <section class="section section--dark" id="values">
-      <div class="section-head">
+      <div class="section-head" style="margin-top:80px">
         <div>
-          <span class="eyebrow">HOW I WORK</span>
-          <h2>CAMERA.<br>BIKE.<br><em>PEOPLE.</em></h2>
+          <span class="eyebrow">SERIES INDEX</span>
+          <h2>FIVE<br>STACKS.</h2>
         </div>
-        <p>THREE THINGS THAT<br>STAY CONNECTED.</p>
+        <p>PREVIOUS PROJECTS BECOME<br>SERIES — NOT SEPARATE BRANDS.</p>
       </div>
+
       <div class="service-list">
         <article>
           <span class="num">01</span>
           <div>
-            <h3>Observe first</h3>
-            <p>I follow the sound of the meet, the light in the garage, the quiet between cities. The film comes from paying attention.</p>
+            <h3>Roller Reels</h3>
+            <p>Cinematic films about cars, bikes, and their owners. Still lives at <a href="https://rollerreels.com" rel="noopener" target="_blank">rollerreels.com</a> for photo/video-only work.</p>
           </div>
         </article>
         <article>
           <span class="num">02</span>
           <div>
-            <h3>Machines as characters</h3>
-            <p>Bikes and cars aren’t props. They’re the reason people gather — and the reason I keep the camera rolling.</p>
+            <h3>Lost Tapes</h3>
+            <p>Raw meet footage, old cameras, experiments, and recovered moments.</p>
           </div>
         </article>
         <article>
           <span class="num">03</span>
           <div>
-            <h3>Ride responsibly</h3>
-            <p>Action on public roads is documented, not taught. No endorsement of dangerous riding — just the feeling of being out there.</p>
+            <h3>Exit Unknown</h3>
+            <p>Motorcycle adventures and travel without a rigid destination.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num">04</span>
+          <div>
+            <h3>Passenger Seat</h3>
+            <p>Conversations with riders, builders, filmmakers, and friends.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num">05</span>
+          <div>
+            <h3>Family Films</h3>
+            <p>Intimate travel and life documentation from the road between places.</p>
           </div>
         </article>
       </div>
-      <p style="margin-top:40px"><a class="cta-primary" href="/work-with-me.html">WORK WITH ELOMBE <span>↗</span></a></p>
-    </section>
-
-    <section class="section section--orange" style="padding:80px var(--pad)">
-      <div class="section-head" style="border-color:#090a08">
-        <div>
-          <span class="eyebrow" style="background:#090a08;color:#e8e4d7">BASE</span>
-          <h2>JERSEY<br>CITY.</h2>
-        </div>
-        <p>APPOINTMENT ONLY.<br>MOST DAYS START IN THE GARAGE.</p>
-      </div>
-      <p class="body-copy" style="margin-top:28px">Mon–Fri 10–6 · Weekends by appointment · <a href="mailto:hello@swftstudios.com">hello@swftstudios.com</a></p>
     </section>
   </main>
 

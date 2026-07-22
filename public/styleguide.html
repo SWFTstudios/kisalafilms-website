@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -13,201 +13,27 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Style Guide — K Films</title>
-  <meta name="description" content="Carsy-derived design tokens for Kisala Films.">
+  <meta name="robots" content="noindex">
+  <title>Styleguide — Kisala Films VHS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="/images/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
-  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/carsy.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/vhs.css">
 </head>
-<body class="carsy">
-
-  <header class="site-header">
-    <div class="container header-bar">
-      <a class="logo" href="/"><img src="/images/k-films-logo-brand.png" alt="K Films" width="900" height="497"></a>
-      <nav class="nav-desktop" aria-label="Primary">
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
-          <div class="nav-dd-menu">
-            <a href="/services.html">All Services</a>
-            <a href="/services/full-wraps.html">Full Wraps</a>
-            <a href="/services/accent-package.html">Partial &amp; Accents</a>
-            <a href="/services/transformation-film.html">Transformation Film</a>
-            <a href="/services.html#protect">Tank / PPF</a>
-            <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
-          </div>
-        </div>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
-          <div class="nav-dd-menu">
-            <a href="/about.html">Who I Am</a>
-            <a href="/about.html#values">Craft &amp; Values</a>
-            <a href="/films.html">Showcase</a>
-            <a href="/testimonials.html">Testimonials</a>
-            <a href="/faq.html">FAQ</a>
-            <a href="/locations.html">Location</a>
-          </div>
-        </div>
-        <a href="/films.html">Showcase</a>
-        <a href="/pricing.html">Pricing</a>
-        <a href="/journal.html">Journal</a>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Say Hello</button>
-          <div class="nav-dd-menu">
-            <a href="/contact.html">Contact page</a>
-            <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
-            <a href="mailto:hello@swftstudios.com">Email</a>
-          </div>
-        </div>
-        <a class="btn btn-primary nav-cta" href="/contact.html">Get in touch</a>
-      </nav>
-      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span>
-      </button>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <main class="section section--paper">
+    <span class="eyebrow">INTERNAL</span>
+    <h2 class="display">VHS<br>TOKENS.</h2>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:40px 0">
+      <div style="background:#090a08;color:#e8e4d7;padding:24px;font:700 11px monospace">INK<br>#090a08</div>
+      <div style="background:#e8e4d7;color:#090a08;padding:24px;font:700 11px monospace">PAPER<br>#e8e4d7</div>
+      <div style="background:#d8ff36;color:#090a08;padding:24px;font:700 11px monospace">LIME<br>#d8ff36</div>
+      <div style="background:#ff3b27;color:#fff;padding:24px;font:700 11px monospace">RED<br>#ff3b27</div>
+      <div style="background:#ff6a29;color:#090a08;padding:24px;font:700 11px monospace">ORANGE<br>#ff6a29</div>
     </div>
-  </header>
-  <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
-  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
-    <div class="nav-panel-head">
-      <a class="logo" href="/"><img src="/images/k-films-logo-brand.png" alt="K Films" width="900" height="497"></a>
-      <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
-    </div>
-    <nav class="nav-panel-body">
-      <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">▼</span></button>
-        <div class="nav-acc-panel">
-          <a href="/services.html">All Services</a>
-          <a href="/services/full-wraps.html">Full Wraps</a>
-          <a href="/services/accent-package.html">Partial &amp; Accents</a>
-          <a href="/services/transformation-film.html">Transformation Film</a>
-          <a href="/services.html#protect">Tank / PPF</a>
-          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
-        </div>
-      </div>
-      <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">▼</span></button>
-        <div class="nav-acc-panel">
-          <a href="/about.html">Who I Am</a>
-          <a href="/about.html#values">Craft &amp; Values</a>
-          <a href="/films.html">Showcase</a>
-          <a href="/testimonials.html">Testimonials</a>
-          <a href="/faq.html">FAQ</a>
-          <a href="/locations.html">Location</a>
-        </div>
-      </div>
-      <a class="nav-row" href="/films.html">Showcase</a>
-      <a class="nav-row" href="/pricing.html">Pricing</a>
-      <a class="nav-row" href="/journal.html">Journal</a>
-      <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Say Hello</span><span class="chev">▼</span></button>
-        <div class="nav-acc-panel">
-          <a href="/contact.html">Contact page</a>
-          <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
-          <a href="mailto:hello@swftstudios.com">Email</a>
-        </div>
-      </div>
-      <a class="btn btn-primary nav-panel-cta" href="/contact.html">Get in touch</a>
-    </nav>
-  </aside>
-
-  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow">System</p>
-      <h1>Style Guide</h1>
-      <p class="p-lg">Interactive collage system — Montserrat, restrained monochrome, cinematic media, and precise editorial spacing.</p>
-    </div>
-  </section>
-  <section class="section reveal">
-    <div class="container">
-      <h2>Color Palette</h2>
-      <div class="sg-swatch-row">
-        <div class="sg-swatch" style="background:#f7f6f2;color:#111112">PAPER · #f7f6f2</div>
-        <div class="sg-swatch" style="background:#f2f2ee;color:#111112">WHITE · #f2f2ee</div>
-        <div class="sg-swatch" style="background:#111113;color:#f2f2ee">SURFACE · #111113</div>
-        <div class="sg-swatch" style="background:#0a0a0b;color:#f2f2ee">BLACK · #0a0a0b</div>
-      </div>
-      <h2>Typography</h2>
-      <h1>Heading 1</h1><h2>Heading 2</h2><h3>Heading 3</h3><h4>Heading 4</h4><h5>Heading 5</h5><h6>Heading 6</h6>
-      <p class="p-lg">Paragraph large — Montserrat 300 for quiet, cinematic leads.</p>
-      <p class="p">Paragraph — restrained secondary copy at reduced contrast.</p>
-      <h2>Buttons</h2>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="#">Primary</a>
-        <a class="btn btn-black" href="#">Primary Black</a>
-        <a class="btn btn-secondary" href="#">Secondary</a>
-      </div>
-      <h2 style="margin-top:48px">Spacing</h2>
-      <table class="sg-table">
-        <thead><tr><th>Breakpoint</th><th>Section pad</th><th>Inner pad</th><th>Container</th></tr></thead>
-        <tbody>
-          <tr><td>≥992px</td><td>140px</td><td>64px</td><td>1280px</td></tr>
-          <tr><td>&lt;992px</td><td>90px</td><td>40px</td><td>100%</td></tr>
-          <tr><td>&lt;767px</td><td>72px</td><td>32px</td><td>100%</td></tr>
-        </tbody>
-      </table>
-      <div class="sg-nav">
-        <a class="link-arrow" href="/">Home →</a>
-        <a class="link-arrow" href="/services.html">Services →</a>
-        <a class="link-arrow" href="/films.html">Showcase →</a>
-      </div>
-    </div>
-  </section>
-
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <h5>Explore</h5>
-        <div class="footer-links">
-          <a href="/about.html">Who I am</a>
-          <a href="/services.html">What I offer</a>
-          <a href="/pricing.html">Pricing</a>
-          <a href="/films.html">Films</a>
-          <a href="/journal.html">Journal</a>
-        </div>
-      </div>
-      <div>
-        <h5>Reach me</h5>
-        <div class="footer-links">
-          <a href="/contact.html">Start an inquiry</a>
-          <a href="/locations.html">Jersey City garage</a>
-          <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram @kisalafilms</a>
-          <a href="#">YouTube</a>
-          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
-          <a href="mailto:hello@kisalafilms.com">hello@kisalafilms.com</a>
-        </div>
-      </div>
-      <div>
-        <h5>Stay updated</h5>
-        <p class="p">Follow Instagram for garage drops and ride posts while the channel fills in.</p>
-        <form class="form" action="https://formsubmit.co/hello@swftstudios.com" method="POST" accept-charset="UTF-8">
-          <input type="hidden" name="_subject" value="Kisala Films - email subscribe">
-          <input type="hidden" name="_template" value="table">
-          <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/?subscribed=1">
-          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
-          <div class="fld"><input type="email" name="email" placeholder="Email address" aria-label="Email" required></div>
-          <button class="btn btn-primary" type="submit">Subscribe</button>
-          <p class="form-note">Thanks — you’re on the list.</p>
-        </form>
-      </div>
-      <div class="footer-hours">
-        <h5>The garage</h5>
-        <p>Jersey City, NJ · by appointment</p>
-        <p>Kisala Films garage — one installer</p>
-        <p>Monday to Friday: 10:00 AM – 6:00 PM</p>
-        <p>Saturday/Sunday: By appointment</p>
-      </div>
-    </div>
-    <div class="container footer-bottom">
-      <span>© 2026 Kisala Films - Jersey City, NJ. Film means vinyl — and cinema.</span>
-      <a href="/styleguide.html">Style Guide</a>
-    </div>
-  </footer>
-  <script src="/js/nav.js"></script>
-  <script src="/js/site.js"></script>
-
+    <p class="body-copy">Display: Archivo Black · Body: IBM Plex Sans · Meta: IBM Plex Mono · Accent: Georgia italic.</p>
+    <p style="margin-top:24px"><a class="cta-primary" href="/">BACK TO ARCHIVE</a></p>
+  </main>
 </body>
 </html>
