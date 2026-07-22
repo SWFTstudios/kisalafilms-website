@@ -1,12 +1,17 @@
 # Kisala Films website
 
-Creator-led film and lifestyle platform for **Elombe Kisala** — people, machines, and life in motion. Visual language: VHS / street-archive (inspired by the LOST//FOUND prototype).
+Creator-led film and lifestyle platform for **Elombe Kisala** — *a world traveler with a camcorder.* Automotive video magazines, cinematic brand edits, life vlogs and cinematic travel films. Visual language: early-2000s VHS travel documentary, night-themed, with a real-time 3D globe and 3D VHS tapes.
 
 ## Stack
 
 - Static multi-page site in `public/`
 - Single design system: [`public/css/vhs.css`](./public/css/vhs.css)
-- Vanilla JS: nav, 3D tape slider ([`public/js/vhs.js`](./public/js/vhs.js)), inquiry wizard
+- Vanilla JS: nav, lightbox + CSS tape slider ([`public/js/vhs.js`](./public/js/vhs.js)), inquiry wizard
+- Real-time 3D (WebGL) via **Three.js**, vendored at [`public/js/vendor/three.module.js`](./public/js/vendor/three.module.js) and loaded through an ES-module import map:
+  - [`public/js/globe.js`](./public/js/globe.js) — dot-matrix travel globe with city pins + arcs
+  - [`public/js/tape3d.js`](./public/js/tape3d.js) — 3D VHS cassette stage (home) and tape wall (watch)
+  - [`public/js/scene-boot.js`](./public/js/scene-boot.js) — capability detection + lazy load; falls back to the CSS crate / static grid when WebGL is unavailable or `prefers-reduced-motion` is set
+- Film catalog: [`public/data/films.json`](./public/data/films.json) (category, city, lat/lng, Vimeo id)
 - Deployed as a Cloudflare Worker with [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
 - Auto-deploys on push to `main` → https://kisalafilms-website.elombe.workers.dev
 
@@ -27,12 +32,16 @@ Worker `name` in `wrangler.jsonc` must stay `kisalafilms-website` to match the C
 
 ## Information architecture
 
+Primary nav: **Home · Watch · About · Shop · Contact** (+ Instagram / YouTube socials). Series and Dispatches remain reachable from the footer.
+
 | Route | Purpose |
 | --- | --- |
-| `/` | Transmission homepage + 3D tape crate |
-| `/watch.html` | All films |
-| `/series.html` | Series tape slider |
-| `/about.html` | Elombe’s story |
+| `/` | 3D globe hero + layered sections (pillars, crate, about/shop teasers) |
+| `/watch.html` | 3D tape wall with category filters + grid fallback |
+| `/about.html` | Elombe’s story — world traveler with a camcorder |
+| `/shop.html` | Kiosk — VHS/merch placeholder storefront (drop soon) |
+| `/contact.html` | Contact form (FormSubmit) + socials |
+| `/series.html` | Series tape slider (CSS crate) |
 | `/dispatches.html` | Field notes |
 | `/work-with-me.html` | Partnerships + wrap inquiry wizard |
 | `/faq.html` · `/locations.html` | Secondary |
