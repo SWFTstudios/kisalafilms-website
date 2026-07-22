@@ -14,73 +14,73 @@
     window.setInterval(tick, 1000);
   }
 
-  /* —— Series / film tape data —— */
+  /* —— Series / film tape data (fallback CSS crate; 3D scene uses /data/films.json) —— */
   const SERIES = [
     {
-      id: "roller-reels",
-      code: "RR-001",
-      label: "ROLLER REELS",
-      short: "ROLLER REELS",
+      id: "lost-tapes-v1",
+      code: "LT-001",
+      label: "LOST TAPES",
+      short: "LOST TAPES",
+      title: "L0ST TAPES V1",
+      time: "12:04",
+      tone: "lime",
+      format: "1080P / RAW",
+      blurb: "Raw nights, old cameras, experiments — a life vlog shot on the camcorder in Los Angeles.",
+      vimeo: "1066971784",
+      thumb: "/images/thumb-shop-bts.jpg",
+    },
+    {
+      id: "own-machine",
+      code: "AM-001",
+      label: "OWN MACHINE",
+      short: "OWN MACHINE",
       title: "OWN MACHINE",
-      time: "—:—",
+      time: "08:41",
       tone: "red",
-      format: "Hi8 / DIGI",
-      blurb: "Cars, bikes, and the people who keep them alive — cinematic chapters from the machine world.",
+      format: "HI8 / DIGI",
+      blurb: "An automotive video magazine issue from Tokyo — a build, a driver, and the streets that made it.",
       /* PLACEHOLDER: no Vimeo yet */
       vimeo: null,
       thumb: "/images/thumb-f4i-reveal.jpg",
     },
     {
-      id: "lost-tapes",
-      code: "LT-001",
-      label: "LOST TAPES",
-      short: "LOST TAPES",
-      title: "L0ST TAPES V1",
-      time: "—:—",
-      tone: "lime",
-      format: "1080P / RAW",
-      blurb: "Raw garage nights, old cameras, experiments — the footage that proves I was there.",
-      vimeo: "1066971784",
-      thumb: "/images/thumb-shop-bts.jpg",
-    },
-    {
-      id: "exit-unknown",
-      code: "EU-012",
-      label: "EXIT UNKNOWN",
-      short: "EXIT UNK.",
+      id: "night-run",
+      code: "TR-012",
+      label: "NIGHT RUN",
+      short: "NIGHT RUN",
       title: "NIGHT RUN",
-      time: "—:—",
+      time: "06:18",
       tone: "orange",
       format: "HELMET CAM",
-      blurb: "Motorcycle travel without a rigid destination — exits missed on purpose.",
+      blurb: "Cinematic travel through Lisbon after dark — coast roads, exits missed on purpose.",
       /* PLACEHOLDER: no Vimeo yet */
       vimeo: null,
       thumb: "/images/thumb-night-pov.jpg",
     },
     {
-      id: "passenger-seat",
-      code: "PS-007",
-      label: "PASSENGER SEAT",
-      short: "PASSENGER",
+      id: "shop-talk",
+      code: "BR-007",
+      label: "SHOP TALK",
+      short: "SHOP TALK",
       title: "SHOP TALK",
-      time: "—:—",
+      time: "03:52",
       tone: "blue",
       format: "STEREO",
-      blurb: "Conversations with riders, builders, filmmakers, and friends met along the way.",
+      blurb: "A cinematic brand edit from London built around a conversation with the makers.",
       /* PLACEHOLDER: no Vimeo yet */
       vimeo: null,
       thumb: "/images/thumb-customer-interview.jpg",
     },
     {
-      id: "family-films",
-      code: "FF-003",
-      label: "FAMILY FILMS",
-      short: "FAMILY",
+      id: "between-places",
+      code: "TR-003",
+      label: "BETWEEN PLACES",
+      short: "BETWEEN",
       title: "BETWEEN PLACES",
-      time: "—:—",
+      time: "09:27",
       tone: "cream",
       format: "HOME VIDEO",
-      blurb: "Intimate travel and life documentation from the road between places.",
+      blurb: "Intimate cinematic travel from Nairobi — people, light, and the road between places.",
       /* PLACEHOLDER: no Vimeo yet */
       vimeo: null,
       thumb: "/images/story-elombe-workshop.jpg",
@@ -438,4 +438,25 @@
       el.style.animationPlayState = paused ? "paused" : "running";
     });
   });
+
+  /* —— Scroll reveal —— */
+  const revealEls = document.querySelectorAll("[data-reveal]");
+  if (revealEls.length) {
+    if (prefersReduced || !("IntersectionObserver" in window)) {
+      revealEls.forEach((el) => el.classList.add("is-in"));
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-in");
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: "0px 0px -10% 0px", threshold: 0.08 }
+      );
+      revealEls.forEach((el) => io.observe(el));
+    }
+  }
 })();
