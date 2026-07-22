@@ -1,191 +1,78 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Locations — K Films</title>
-  <meta name="description" content="My garage in Jersey City, NJ — motorcycle wraps by appointment.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="Kisala Films location — Jersey City garage, appointment only.">
+  <meta name="theme-color" content="#090a08">
+  <title>Location — Kisala Films</title>
   <link rel="icon" href="/images/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/carsy.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/vhs.css">
 </head>
-<body class="carsy">
-
-  <header class="site-header">
-    <div class="container header-bar">
-      <a class="logo" href="/"><img src="/images/k-films-logo-brand.png" alt="K Films" width="900" height="497"></a>
-      <nav class="nav-desktop" aria-label="Primary">
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
-          <div class="nav-dd-menu">
-            <a href="/services.html">All Services</a>
-            <a href="/services/full-wraps.html">Full Wraps</a>
-            <a href="/services/accent-package.html">Partial &amp; Accents</a>
-            <a href="/services/transformation-film.html">Transformation Film</a>
-            <a href="/services.html#protect">Tank / PPF</a>
-            <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
-          </div>
-        </div>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
-          <div class="nav-dd-menu">
-            <a href="/about.html">Who I Am</a>
-            <a href="/about.html#values">Craft &amp; Values</a>
-            <a href="/films.html">Showcase</a>
-            <a href="/testimonials.html">Testimonials</a>
-            <a href="/faq.html">FAQ</a>
-            <a href="/locations.html">Location</a>
-          </div>
-        </div>
-        <a href="/films.html">Showcase</a>
-        <a href="/pricing.html">Pricing</a>
-        <a href="/journal.html">Journal</a>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Say Hello</button>
-          <div class="nav-dd-menu">
-            <a href="/contact.html">Contact page</a>
-            <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
-            <a href="mailto:hello@swftstudios.com">Email</a>
-          </div>
-        </div>
-        <a class="btn btn-primary nav-cta" href="/contact.html">Get in touch</a>
-      </nav>
-      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span>
-      </button>
-    </div>
-  </header>
-  <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
-  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
-    <div class="nav-panel-head">
-      <a class="logo" href="/"><img src="/images/k-films-logo-brand.png" alt="K Films" width="900" height="497"></a>
-      <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
-    </div>
-    <nav class="nav-panel-body">
-      <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">▼</span></button>
-        <div class="nav-acc-panel">
-          <a href="/services.html">All Services</a>
-          <a href="/services/full-wraps.html">Full Wraps</a>
-          <a href="/services/accent-package.html">Partial &amp; Accents</a>
-          <a href="/services/transformation-film.html">Transformation Film</a>
-          <a href="/services.html#protect">Tank / PPF</a>
-          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
-        </div>
-      </div>
-      <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">▼</span></button>
-        <div class="nav-acc-panel">
-          <a href="/about.html">Who I Am</a>
-          <a href="/about.html#values">Craft &amp; Values</a>
-          <a href="/films.html">Showcase</a>
-          <a href="/testimonials.html">Testimonials</a>
-          <a href="/faq.html">FAQ</a>
-          <a href="/locations.html">Location</a>
-        </div>
-      </div>
-      <a class="nav-row" href="/films.html">Showcase</a>
-      <a class="nav-row" href="/pricing.html">Pricing</a>
-      <a class="nav-row" href="/journal.html">Journal</a>
-      <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Say Hello</span><span class="chev">▼</span></button>
-        <div class="nav-acc-panel">
-          <a href="/contact.html">Contact page</a>
-          <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
-          <a href="mailto:hello@swftstudios.com">Email</a>
-        </div>
-      </div>
-      <a class="btn btn-primary nav-panel-cta" href="/contact.html">Get in touch</a>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="site-header is-solid">
+    <a class="mark" href="/">KISALA FILMS <span>ARCHIVE</span></a>
+    <nav class="nav-desktop" aria-label="Primary">
+      <a href="/watch.html">WATCH</a>
+      <a href="/series.html">SERIES</a>
+      <a href="/about.html">ABOUT</a>
+      <a href="/dispatches.html">DISPATCHES</a>
+      <a href="/work-with-me.html">WORK WITH ME</a>
     </nav>
-  </aside>
+    <div class="header-meta"><span>LIVE INDEX</span><i aria-hidden="true"></i> <span data-live-clock>00:00:00</span></div>
+    <button class="menu-button" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-menu">MENU +</button>
+  </header>
+  <div class="mobile-menu" id="mobile-menu" data-mobile-menu aria-hidden="true">
+    <a href="/watch.html">WATCH</a>
+    <a href="/series.html">SERIES</a>
+    <a href="/about.html">ABOUT</a>
+    <a href="/dispatches.html">DISPATCHES</a>
+    <a href="/work-with-me.html">WORK WITH ME</a>
+  </div>
 
-  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow">Where I work</p>
-      <h1>Jersey City garage</h1>
-      <p class="p-lg">Appointment-only. Drop-off and pick-up scheduled around your wrap window.</p>
-    </div>
-  </section>
-  <section class="section reveal">
-    <div class="container detail-split">
-      <div class="map-box">
+  <main>
+    <section class="page-hero">
+      <span class="eyebrow">BASE OF OPERATIONS</span>
+      <h1>JERSEY<br><em>CITY.</em></h1>
+      <p class="lede">Garage-based. Appointment only. Bring the bike when we say the bay is clear.</p>
+    </section>
+    <section class="section section--paper">
+      <div class="work-grid">
         <div>
-          <strong>Jersey City, NJ</strong>
-          My garage — Kisala Films<br>By appointment only<br><br>
-          <a class="link-arrow" href="/contact.html#inquiry">Book a visit →</a>
+          <p class="body-copy">I work out of Jersey City, NJ. Exact address goes out after we lock a time — keeps the garage focused on booked jobs.</p>
+          <div class="contact-tiles">
+            <div class="contact-tile"><h6>Hours</h6><p>Mon–Fri 10–6<br>Weekends by appointment</p></div>
+            <div class="contact-tile"><h6>Email</h6><a href="mailto:hello@swftstudios.com">hello@swftstudios.com</a></div>
+            <div class="contact-tile"><h6>Instagram</h6><a href="https://www.instagram.com/kisalafilms/" target="_blank" rel="noopener">@kisalafilms</a></div>
+            <div class="contact-tile"><h6>Booking</h6><a href="/work-with-me.html#inquiry">Start an inquiry</a></div>
+          </div>
         </div>
+        <figure style="margin:0;border:2px solid;overflow:hidden">
+          <img src="/images/hero-f4i-garage-night.jpg" alt="Night garage with motorcycle" loading="lazy" style="width:100%;aspect-ratio:4/3;object-fit:cover;filter:saturate(.7) contrast(1.12)">
+        </figure>
       </div>
-      <div>
-        <h2>Hours</h2>
-        <p class="p">Monday to Friday: 10:00 AM – 6:00 PM</p>
-        <p class="p">Saturday / Sunday: By appointment</p>
-        <h6 style="margin-top:28px">What to expect</h6>
-        <ul class="include-list">
-          <li>Confirmed drop-off window after we talk</li>
-          <li>Secure bay while I wrap your bike</li>
-          <li>Pick-up with reveal + film timeline</li>
-        </ul>
-        <a class="btn btn-primary" href="/contact.html#inquiry">Schedule with me</a>
-      </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
   <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <h5>Explore</h5>
-        <div class="footer-links">
-          <a href="/about.html">Who I am</a>
-          <a href="/services.html">What I offer</a>
-          <a href="/pricing.html">Pricing</a>
-          <a href="/films.html">Films</a>
-          <a href="/journal.html">Journal</a>
-        </div>
-      </div>
-      <div>
-        <h5>Reach me</h5>
-        <div class="footer-links">
-          <a href="/contact.html">Start an inquiry</a>
-          <a href="/locations.html">Jersey City garage</a>
-          <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram @kisalafilms</a>
-          <a href="#">YouTube</a>
-          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
-          <a href="mailto:hello@kisalafilms.com">hello@kisalafilms.com</a>
-        </div>
-      </div>
-      <div>
-        <h5>Stay updated</h5>
-        <p class="p">Follow Instagram for garage drops and ride posts while the channel fills in.</p>
-        <form class="form" action="https://formsubmit.co/hello@swftstudios.com" method="POST" accept-charset="UTF-8">
-          <input type="hidden" name="_subject" value="Kisala Films - email subscribe">
-          <input type="hidden" name="_template" value="table">
-          <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/?subscribed=1">
-          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
-          <div class="fld"><input type="email" name="email" placeholder="Email address" aria-label="Email" required></div>
-          <button class="btn btn-primary" type="submit">Subscribe</button>
-          <p class="form-note">Thanks — you’re on the list.</p>
-        </form>
-      </div>
-      <div class="footer-hours">
-        <h5>The garage</h5>
-        <p>Jersey City, NJ · by appointment</p>
-        <p>Kisala Films garage — one installer</p>
-        <p>Monday to Friday: 10:00 AM – 6:00 PM</p>
-        <p>Saturday/Sunday: By appointment</p>
-      </div>
+    <div class="footer-mark">KISALA<br><i>FILMS</i></div>
+    <p class="footer-tag">GO SOMEWHERE<br>YOU CAN'T EXPLAIN.</p>
+    <div class="footer-nav">
+      <a href="/watch.html">WATCH</a>
+      <a href="/series.html">SERIES</a>
+      <a href="/about.html">ABOUT</a>
+      <a href="/dispatches.html">DISPATCHES</a>
+      <a href="/work-with-me.html">WORK WITH ME</a>
     </div>
-    <div class="container footer-bottom">
-      <span>© 2026 Kisala Films - Jersey City, NJ. Film means vinyl — and cinema.</span>
-      <a href="/styleguide.html">Style Guide</a>
-    </div>
+    <small>© 2026 — MADE BETWEEN EXITS · JERSEY CITY<br>CREATED BY ELOMBE KISALA</small>
   </footer>
-  <script src="/js/nav.js"></script>
-  <script src="/js/site.js"></script>
-
+  <script src="/js/nav.js" defer></script>
+  <script src="/js/vhs.js" defer></script>
 </body>
 </html>
