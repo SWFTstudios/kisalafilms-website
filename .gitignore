@@ -5,3 +5,6 @@ node_modules/
 *.log
 __pycache__/
 *.pyc
+
+# Local oversized media (Workers asset limit is 25 MiB)
+local-media/

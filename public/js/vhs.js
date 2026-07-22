@@ -14,7 +14,7 @@
     window.setInterval(tick, 1000);
   }
 
-  /* —— Series / film tape data (PLACEHOLDER titles & video URLs until real films are wired) —— */
+  /* —— Series / film tape data —— */
   const SERIES = [
     {
       id: "roller-reels",
@@ -26,22 +26,21 @@
       tone: "red",
       format: "Hi8 / DIGI",
       blurb: "Cinematic films about cars, bikes, and the people who keep them alive.",
-      /* PLACEHOLDER: replace with real YouTube / hosted video URL */
-      video: "https://www.instagram.com/kisalafilms/",
+      /* PLACEHOLDER: no Vimeo yet */
+      vimeo: null,
       thumb: "/images/thumb-f4i-reveal.jpg",
     },
     {
       id: "lost-tapes",
-      code: "LT-004",
+      code: "LT-001",
       label: "LOST TAPES",
       short: "LOST TAPES",
-      title: "GARAGE NIGHT",
+      title: "L0ST TAPES V1",
       time: "—:—",
       tone: "lime",
-      format: "PHONE / RAW",
+      format: "1080P / RAW",
       blurb: "Raw meet footage, old cameras, experiments, and recovered moments.",
-      /* PLACEHOLDER: replace with real YouTube / hosted video URL */
-      video: "https://www.instagram.com/kisalafilms/",
+      vimeo: "1066971784",
       thumb: "/images/thumb-shop-bts.jpg",
     },
     {
@@ -54,8 +53,8 @@
       tone: "orange",
       format: "HELMET CAM",
       blurb: "Motorcycle adventures and travel without a rigid destination.",
-      /* PLACEHOLDER: replace with real YouTube / hosted video URL */
-      video: "https://www.instagram.com/kisalafilms/",
+      /* PLACEHOLDER: no Vimeo yet */
+      vimeo: null,
       thumb: "/images/thumb-night-pov.jpg",
     },
     {
@@ -68,8 +67,8 @@
       tone: "blue",
       format: "STEREO",
       blurb: "Conversations with riders, builders, filmmakers, and friends.",
-      /* PLACEHOLDER: replace with real YouTube / hosted video URL */
-      video: "https://www.instagram.com/kisalafilms/",
+      /* PLACEHOLDER: no Vimeo yet */
+      vimeo: null,
       thumb: "/images/thumb-customer-interview.jpg",
     },
     {
@@ -82,13 +81,94 @@
       tone: "cream",
       format: "HOME VIDEO",
       blurb: "Intimate travel and life documentation from the road between places.",
-      /* PLACEHOLDER: replace with real YouTube / hosted video URL */
-      video: "https://www.instagram.com/kisalafilms/",
+      /* PLACEHOLDER: no Vimeo yet */
+      vimeo: null,
       thumb: "/images/story-elombe-workshop.jpg",
     },
   ];
 
   window.KISALA_SERIES = SERIES;
+
+  const VIMEO_PLAYER = "https://player.vimeo.com/video/";
+
+  function vimeoEmbedUrl(id, { background = false } = {}) {
+    if (background) {
+      return `${VIMEO_PLAYER}${id}?background=1&autoplay=1&muted=1&loop=1&autopause=0&badge=0&player_id=0&app_id=58479`;
+    }
+    return `${VIMEO_PLAYER}${id}?badge=0&autopause=0&autoplay=1&player_id=0&app_id=58479`;
+  }
+
+  /* —— Lightbox —— */
+  function ensureLightbox() {
+    let box = document.querySelector("[data-film-lightbox]");
+    if (box) return box;
+
+    box = document.createElement("dialog");
+    box.className = "film-lightbox";
+    box.setAttribute("data-film-lightbox", "");
+    box.setAttribute("aria-label", "Film player");
+    box.innerHTML = `
+      <div class="film-lightbox-inner">
+        <button type="button" class="film-lightbox-close" data-lightbox-close aria-label="Close film">CLOSE ✕</button>
+        <div class="film-lightbox-frame" data-lightbox-frame></div>
+        <p class="film-lightbox-title" data-lightbox-title></p>
+      </div>
+    `;
+    document.body.appendChild(box);
+
+    const close = () => closeLightbox();
+    box.querySelector("[data-lightbox-close]")?.addEventListener("click", close);
+    box.addEventListener("click", (e) => {
+      if (e.target === box) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && box.classList.contains("is-open")) close();
+    });
+
+    return box;
+  }
+
+  function openLightbox({ vimeo, title }) {
+    if (!vimeo) return;
+    const box = ensureLightbox();
+    const frame = box.querySelector("[data-lightbox-frame]");
+    const titleEl = box.querySelector("[data-lightbox-title]");
+    if (frame) {
+      frame.innerHTML = `<iframe src="${vimeoEmbedUrl(vimeo)}" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" title="${title || "Kisala Films"}"></iframe>`;
+    }
+    if (titleEl) titleEl.textContent = title || "";
+    if (typeof box.showModal === "function") {
+      try {
+        box.showModal();
+      } catch (_) {
+        box.setAttribute("open", "");
+      }
+    } else {
+      box.setAttribute("open", "");
+    }
+    box.classList.add("is-open");
+    document.body.classList.add("lightbox-lock");
+  }
+
+  function closeLightbox() {
+    const box = document.querySelector("[data-film-lightbox]");
+    if (!box) return;
+    const frame = box.querySelector("[data-lightbox-frame]");
+    if (frame) frame.innerHTML = "";
+    box.classList.remove("is-open");
+    document.body.classList.remove("lightbox-lock");
+    if (typeof box.close === "function" && box.open) {
+      try {
+        box.close();
+      } catch (_) {
+        box.removeAttribute("open");
+      }
+    } else {
+      box.removeAttribute("open");
+    }
+  }
+
+  window.KisalaLightbox = { open: openLightbox, close: closeLightbox };
 
   function initTapeSlider(root) {
     if (!root) return;
@@ -102,53 +182,102 @@
 
     let active = 0;
     let startX = 0;
+    let startY = 0;
     let deltaX = 0;
     let swiping = false;
+    let axis = null;
+    let suppressClick = false;
 
-    const render = () => {
-      track.innerHTML = SERIES.map((tape, i) => {
-        let state = "";
-        if (i === active) state = "is-active";
-        else if (i === (active - 1 + SERIES.length) % SERIES.length) state = "is-prev";
-        else if (i === (active + 1) % SERIES.length) state = "is-next";
-        else state = "is-hidden";
+    /* Build once — class toggles animate */
+    track.innerHTML = SERIES.map((tape, i) => {
+      const playAttrs = tape.vimeo
+        ? `href="#" data-lightbox-open data-vimeo="${tape.vimeo}" data-title="${tape.label}: ${tape.title}"`
+        : `href="/watch.html"`;
 
-        return `
-          <article class="tape ${tape.tone} ${state}" data-tape-card data-index="${i}" style="${state === "is-hidden" ? "opacity:0;pointer-events:none;transform:translate3d(0,0,-200px) scale(.7)" : ""}">
-            <div class="tape-top"><span>KF—${tape.code}</span><b>${tape.short}</b><span>${tape.format}</span></div>
-            <div class="reels" aria-hidden="true"><i></i><i></i></div>
-            <div class="tape-label">
-              <small>KISALA FILMS SERIES</small>
-              <strong>${tape.title}</strong>
-              <span>${tape.time} / COLOR</span>
-            </div>
-            <a class="tape-link" href="${tape.video}" target="_blank" rel="noopener" aria-label="Play ${tape.label}: ${tape.title}"></a>
-          </article>
-        `;
-      }).join("");
+      return `
+        <article class="tape ${tape.tone}" data-tape-card data-index="${i}">
+          <div class="tape-top"><span>KF—${tape.code}</span><b>${tape.short}</b><span>${tape.format}</span></div>
+          <div class="reels" aria-hidden="true"><i></i><i></i></div>
+          <div class="tape-label">
+            <small>KISALA FILMS SERIES</small>
+            <strong>${tape.title}</strong>
+            <span>${tape.time} / COLOR</span>
+          </div>
+          <a class="tape-link" ${playAttrs} aria-label="Play ${tape.label}: ${tape.title}"></a>
+        </article>
+      `;
+    }).join("");
+
+    if (indexEl) {
+      indexEl.innerHTML = SERIES.map(
+        (tape, i) =>
+          `<button type="button" data-tape-goto="${i}" aria-label="${tape.label}"><span>0${i + 1}</span>${tape.short}</button>`
+      ).join("");
+    }
+
+    const cards = () => [...track.querySelectorAll("[data-tape-card]")];
+
+    const clearDrag = () => {
+      track.classList.remove("is-dragging");
+      track.style.setProperty("--drag", "0");
+    };
+
+    const updateUI = () => {
+      const n = SERIES.length;
+      cards().forEach((card) => {
+        const i = Number(card.getAttribute("data-index"));
+        card.classList.remove("is-active", "is-prev", "is-next", "is-hidden");
+        if (i === active) card.classList.add("is-active");
+        else if (i === (active - 1 + n) % n) card.classList.add("is-prev");
+        else if (i === (active + 1) % n) card.classList.add("is-next");
+        else card.classList.add("is-hidden");
+      });
 
       if (indexEl) {
-        indexEl.innerHTML = SERIES.map(
-          (tape, i) =>
-            `<button type="button" class="${i === active ? "active" : ""}" data-tape-goto="${i}" aria-pressed="${i === active}" aria-label="${tape.label}"><span>0${i + 1}</span>${tape.short}</button>`
-        ).join("");
+        indexEl.querySelectorAll("[data-tape-goto]").forEach((btn) => {
+          const i = Number(btn.getAttribute("data-tape-goto"));
+          const on = i === active;
+          btn.classList.toggle("active", on);
+          btn.setAttribute("aria-pressed", String(on));
+        });
       }
 
       if (detailEl) {
         const tape = SERIES[active];
+        const note = tape.vimeo
+          ? ""
+          : `<br><span class="placeholder-note">PLACEHOLDER: film not uploaded yet — lightbox wires when a Vimeo ID is set.</span>`;
+        const cta = tape.vimeo
+          ? `<a class="cta-primary" href="#" data-lightbox-open data-vimeo="${tape.vimeo}" data-title="${tape.label}: ${tape.title}">PLAY THIS TAPE <span>↗</span></a>`
+          : `<a class="cta-primary" href="/watch.html">BROWSE WATCH <span>↘</span></a>`;
         detailEl.innerHTML = `
-          <p><strong>${tape.label}</strong> — ${tape.blurb}<br><span class="placeholder-note">PLACEHOLDER: tape links to Instagram until the real film URL is set.</span></p>
-          <a class="cta-primary" href="${tape.video}" target="_blank" rel="noopener">PLAY THIS TAPE <span>↗</span></a>
+          <p><strong>${tape.label}</strong> — ${tape.blurb}${note}</p>
+          ${cta}
         `;
       }
     };
 
     const setActive = (next) => {
+      clearDrag();
       active = (next + SERIES.length) % SERIES.length;
-      render();
+      updateUI();
     };
 
     root.addEventListener("click", (e) => {
+      if (suppressClick) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      const light = e.target.closest("[data-lightbox-open]");
+      if (light) {
+        e.preventDefault();
+        openLightbox({
+          vimeo: light.getAttribute("data-vimeo"),
+          title: light.getAttribute("data-title"),
+        });
+        return;
+      }
       const goto = e.target.closest("[data-tape-goto]");
       if (goto) {
         setActive(Number(goto.getAttribute("data-tape-goto")));
@@ -170,36 +299,89 @@
       }
     });
 
-    /* Swipe */
-    const onStart = (x) => {
+    const onStart = (x, y) => {
       swiping = true;
+      axis = null;
       startX = x;
+      startY = y;
       deltaX = 0;
     };
-    const onMove = (x) => {
+
+    const onMove = (x, y, event) => {
       if (!swiping) return;
-      deltaX = x - startX;
+      const dx = x - startX;
+      const dy = y - startY;
+      if (!axis) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+        if (axis === "x") track.classList.add("is-dragging");
+      }
+      if (axis !== "x") return;
+      if (event && event.cancelable) event.preventDefault();
+      deltaX = dx;
+      if (!prefersReduced) {
+        track.style.setProperty("--drag", String(Math.max(-180, Math.min(180, dx))));
+      }
     };
+
     const onEnd = () => {
       if (!swiping) return;
       swiping = false;
-      if (Math.abs(deltaX) > 50) setActive(active + (deltaX < 0 ? 1 : -1));
+      const wasX = axis === "x";
+      axis = null;
+      const dx = deltaX;
+      deltaX = 0;
+
+      if (!wasX) {
+        clearDrag();
+        return;
+      }
+
+      const threshold = Math.min(72, Math.max(48, track.clientWidth * 0.14));
+      if (Math.abs(dx) > threshold) {
+        suppressClick = true;
+        setActive(active + (dx < 0 ? 1 : -1));
+        window.setTimeout(() => {
+          suppressClick = false;
+        }, 320);
+      } else {
+        clearDrag();
+        updateUI();
+      }
     };
 
     track.addEventListener(
       "touchstart",
-      (e) => onStart(e.changedTouches[0].clientX),
+      (e) => onStart(e.changedTouches[0].clientX, e.changedTouches[0].clientY),
       { passive: true }
     );
     track.addEventListener(
       "touchmove",
-      (e) => onMove(e.changedTouches[0].clientX),
-      { passive: true }
+      (e) => onMove(e.changedTouches[0].clientX, e.changedTouches[0].clientY, e),
+      { passive: false }
     );
     track.addEventListener("touchend", onEnd);
-    track.addEventListener("mousedown", (e) => onStart(e.clientX));
-    window.addEventListener("mousemove", (e) => onMove(e.clientX));
-    window.addEventListener("mouseup", onEnd);
+    track.addEventListener("touchcancel", onEnd);
+
+    track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "touch") return;
+      if (e.button !== 0) return;
+      if (e.target.closest("a, button")) return;
+      track.setPointerCapture?.(e.pointerId);
+      onStart(e.clientX, e.clientY);
+    });
+    track.addEventListener("pointermove", (e) => {
+      if (e.pointerType === "touch") return;
+      onMove(e.clientX, e.clientY, e);
+    });
+    track.addEventListener("pointerup", (e) => {
+      if (e.pointerType === "touch") return;
+      onEnd();
+    });
+    track.addEventListener("pointercancel", (e) => {
+      if (e.pointerType === "touch") return;
+      onEnd();
+    });
 
     if (prevBtn) prevBtn.setAttribute("aria-label", "Previous tape");
     if (nextBtn) nextBtn.setAttribute("aria-label", "Next tape");
@@ -207,7 +389,7 @@
     root.setAttribute("aria-roledescription", "carousel");
     root.setAttribute("aria-label", "Series tape crate");
 
-    render();
+    updateUI();
 
     if (prefersReduced) {
       document.querySelectorAll(".reels i").forEach((el) => {
@@ -218,7 +400,32 @@
 
   document.querySelectorAll("[data-tape-slider]").forEach(initTapeSlider);
 
-  /* Pause continuous motion when tab hidden */
+  /* Global lightbox triggers (latest film CTAs, watch cards, etc.) */
+  document.addEventListener("click", (e) => {
+    const light = e.target.closest("[data-lightbox-open]");
+    if (!light || light.closest("[data-tape-slider]")) return;
+    e.preventDefault();
+    openLightbox({
+      vimeo: light.getAttribute("data-vimeo"),
+      title: light.getAttribute("data-title"),
+    });
+  });
+
+  /* Hero Vimeo background — skip when reduced motion */
+  const hero = document.querySelector("[data-hero-vimeo]");
+  if (hero && !prefersReduced) {
+    const id = hero.getAttribute("data-hero-vimeo");
+    const mount = hero.querySelector("[data-hero-media]");
+    if (id && mount) {
+      mount.innerHTML = `<iframe src="${vimeoEmbedUrl(id, { background: true })}" allow="autoplay; fullscreen; picture-in-picture" title="L0ST TAPES background" tabindex="-1"></iframe>`;
+      hero.classList.add("has-video");
+      const script = document.createElement("script");
+      script.src = "https://player.vimeo.com/api/player.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }
+
   document.addEventListener("visibilitychange", () => {
     const paused = document.hidden;
     document.querySelectorAll(".ticker div, .rec b, .header-meta i, .reels i").forEach((el) => {
