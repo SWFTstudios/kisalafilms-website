@@ -2,21 +2,21 @@
    Dark Mercer-inspired life film. Shadow side of Elombe Kisala. */
 
 :root {
-  --ink: #070807;
-  --charcoal: #0c0d0b;
-  --panel: #121310;
-  --paper: #e8e4d7;
-  --lime: #d8ff36;
-  --red: #ff3b27;
-  --orange: #ff6a29;
-  --muted: rgba(232, 228, 215, 0.55);
-  --line: rgba(255, 255, 255, 0.16);
-  /* Night-travel depth palette */
-  --midnight: #050a14;
-  --midnight-2: #08101f;
-  --deep: #030507;
-  --phosphor: #37e0d0;
-  --signal: #2ea6ff;
+  --ink: #050505;
+  --charcoal: #0d0d0d;
+  --panel: #151515;
+  --paper: #ededed;
+  --lime: #ffffff;
+  --red: #9a9a9a;
+  --orange: #bcbcbc;
+  --muted: rgba(237, 237, 237, 0.55);
+  --line: rgba(255, 255, 255, 0.18);
+  /* Retro black & white depth palette */
+  --midnight: #0a0a0a;
+  --midnight-2: #101010;
+  --deep: #000000;
+  --phosphor: #d4d4d4;
+  --signal: #8f8f8f;
   --font-display: "Archivo Black", "Arial Narrow", Arial, sans-serif;
   --font-body: "IBM Plex Sans", Arial, Helvetica, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -34,8 +34,8 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background:
-    radial-gradient(120% 80% at 50% -10%, rgba(46, 166, 255, 0.14), transparent 55%),
-    radial-gradient(90% 60% at 85% 110%, rgba(55, 224, 208, 0.08), transparent 60%),
+    radial-gradient(120% 80% at 50% -10%, rgba(255, 255, 255, 0.07), transparent 55%),
+    radial-gradient(90% 60% at 85% 110%, rgba(255, 255, 255, 0.04), transparent 60%),
     linear-gradient(180deg, var(--midnight-2) 0%, var(--ink) 40%, var(--deep) 100%);
   background-attachment: fixed;
   color: var(--paper);
@@ -253,7 +253,7 @@ body.nav-lock { overflow: hidden; }
   min-width: 177.78vh; /* 16:9 cover */
   transform: translate(-50%, -50%);
   border: 0;
-  filter: saturate(0.7) contrast(1.16);
+  filter: grayscale(1) contrast(1.2);
 }
 
 .hero-image {
@@ -263,7 +263,7 @@ body.nav-lock { overflow: hidden; }
     linear-gradient(90deg, rgba(0, 0, 0, 0.55), transparent 58%),
     linear-gradient(0deg, rgba(0, 0, 0, 0.45), transparent 55%),
     url("/images/hero-f4i-garage-night.jpg") center / cover;
-  filter: saturate(0.7) contrast(1.16);
+  filter: grayscale(1) contrast(1.2);
   transform: scale(1.01);
 }
 
@@ -559,7 +559,7 @@ body.nav-lock { overflow: hidden; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.75) contrast(1.12);
+  filter: grayscale(1) contrast(1.15);
 }
 
 .film-stage .play-badge {
@@ -638,7 +638,7 @@ body.nav-lock { overflow: hidden; }
 }
 
 .tape {
-  --tape: #ef3d29;
+  --tape: #cfcfcf;
   position: absolute;
   inset: 0;
   margin: auto;
@@ -741,11 +741,11 @@ body.nav-lock { overflow: hidden; }
   opacity: 0;
 }
 
-.tape.red { --tape: #ef3d29; }
-.tape.lime { --tape: #d8ff36; }
-.tape.orange { --tape: #ff7b29; }
-.tape.blue { --tape: #5d7cff; }
-.tape.cream { --tape: #e8e4d7; }
+.tape.red { --tape: #b9b9b9; }
+.tape.lime { --tape: #ffffff; }
+.tape.orange { --tape: #d2d2d2; }
+.tape.blue { --tape: #9a9a9a; }
+.tape.cream { --tape: #e8e8e8; }
 
 .tape-top {
   position: relative;
@@ -813,7 +813,7 @@ body.nav-lock { overflow: hidden; }
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: saturate(0.65) contrast(1.15) brightness(0.92);
+  filter: grayscale(1) contrast(1.18) brightness(0.92);
 }
 
 .tape-thumb::after {
@@ -984,7 +984,7 @@ body.nav-lock { overflow: hidden; }
   width: 100%;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  filter: saturate(0.72) contrast(1.12);
+  filter: grayscale(1) contrast(1.15);
 }
 
 .about-split figcaption {
@@ -1313,7 +1313,7 @@ body.nav-lock { overflow: hidden; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.7) contrast(1.12);
+  filter: grayscale(1) contrast(1.15);
 }
 
 .film-card h3 {
@@ -2008,8 +2008,8 @@ body.lightbox-lock { overflow: hidden; }
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(5, 10, 20, 0.55) 0%, transparent 22%, transparent 60%, rgba(3, 5, 7, 0.85) 100%),
-    linear-gradient(90deg, rgba(3, 5, 7, 0.7) 0%, transparent 40%);
+    linear-gradient(180deg, rgba(5, 5, 5, 0.55) 0%, transparent 22%, transparent 60%, rgba(0, 0, 0, 0.85) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, transparent 40%);
 }
 
 .globe-copy {
@@ -2040,7 +2040,7 @@ body.lightbox-lock { overflow: hidden; }
   text-transform: uppercase;
   transform: scaleY(1.06);
   transform-origin: left bottom;
-  text-shadow: 0 0 30px rgba(46, 166, 255, 0.25);
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.22);
 }
 
 .globe-copy h1 em {
@@ -2082,7 +2082,7 @@ body.lightbox-lock { overflow: hidden; }
   flex-direction: column;
   gap: 10px;
   padding: 18px;
-  background: rgba(5, 10, 20, 0.72);
+  background: rgba(8, 8, 8, 0.72);
   backdrop-filter: blur(8px);
   border: 1px solid var(--line);
   border-left: 3px solid var(--phosphor);
@@ -2131,8 +2131,9 @@ body.lightbox-lock { overflow: hidden; }
   display: grid;
   align-items: end;
   background:
-    linear-gradient(0deg, rgba(3, 5, 7, 0.85), rgba(5, 10, 20, 0.35)),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.85), rgba(5, 5, 5, 0.35)),
     url("/images/hero-f4i-garage-night.jpg") center / cover;
+  filter: grayscale(1);
 }
 
 /* —— Timecode overlay —— */
@@ -2164,7 +2165,7 @@ body.lightbox-lock { overflow: hidden; }
 .pillar {
   position: relative;
   padding: 30px 22px 26px;
-  background: rgba(8, 16, 31, 0.5);
+  background: rgba(255, 255, 255, 0.035);
   border: 1px solid transparent;
   overflow: hidden;
   transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
@@ -2184,7 +2185,7 @@ body.lightbox-lock { overflow: hidden; }
 }
 
 .pillar:hover {
-  background: rgba(46, 166, 255, 0.08);
+  background: rgba(255, 255, 255, 0.09);
   border-color: var(--accent, var(--lime));
   transform: translateY(-3px);
 }
@@ -2247,7 +2248,7 @@ body.lightbox-lock { overflow: hidden; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--paper);
-  background: rgba(8, 16, 31, 0.5);
+  background: rgba(255, 255, 255, 0.035);
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -2277,7 +2278,7 @@ body.lightbox-lock { overflow: hidden; }
 .product-card {
   position: relative;
   border: 1px solid var(--line);
-  background: rgba(8, 16, 31, 0.45);
+  background: rgba(255, 255, 255, 0.03);
   overflow: hidden;
   transition: transform 0.3s ease, border-color 0.3s ease;
 }
@@ -2287,13 +2288,13 @@ body.lightbox-lock { overflow: hidden; }
 .product-figure {
   position: relative;
   aspect-ratio: 4 / 5;
-  background: linear-gradient(135deg, #0a1524, #0c0d0b 60%, #12202f);
+  background: linear-gradient(135deg, #1c1c1c, #0c0d0b 60%, #202020);
   display: grid;
   place-items: center;
   overflow: hidden;
 }
 
-.product-figure img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.7) contrast(1.1); }
+.product-figure img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.15); }
 
 .product-figure .glyph {
   font-family: var(--font-display);
@@ -2358,11 +2359,11 @@ body.lightbox-lock { overflow: hidden; }
   border: 1px solid var(--line);
   border-left: 3px solid var(--phosphor);
   padding: 16px;
-  background: rgba(8, 16, 31, 0.45);
+  background: rgba(255, 255, 255, 0.03);
   transition: background 0.25s ease, transform 0.25s ease;
 }
 
-.social-card:hover { background: rgba(46, 166, 255, 0.08); transform: translateY(-2px); }
+.social-card:hover { background: rgba(255, 255, 255, 0.09); transform: translateY(-2px); }
 
 .social-card .plat {
   font: 800 10px/1 var(--font-mono);

@@ -4,13 +4,13 @@ import * as THREE from "three";
    Exports createTapeStage (single hero tape) and createTapeWall (watch grid). */
 
 const TONE_HEX = {
-  red: "#ff3b27",
-  lime: "#d8ff36",
-  orange: "#ff7b29",
-  blue: "#5d7cff",
-  cream: "#e8e4d7",
+  red: "#b9b9b9",
+  lime: "#ffffff",
+  orange: "#d2d2d2",
+  blue: "#9a9a9a",
+  cream: "#e8e8e8",
 };
-const TONE_INT = { red: 0xff3b27, lime: 0xd8ff36, orange: 0xff7b29, blue: 0x5d7cff, cream: 0xe8e4d7 };
+const TONE_INT = { red: 0xb9b9b9, lime: 0xffffff, orange: 0xd2d2d2, blue: 0x9a9a9a, cream: 0xe8e8e8 };
 
 const TAPE_W = 1.85;
 const TAPE_H = 1.05;
@@ -21,9 +21,9 @@ function makeLabelTexture(film) {
   c.width = 768;
   c.height = 448;
   const ctx = c.getContext("2d");
-  const tone = TONE_HEX[film.tone] || "#d8ff36";
+  const tone = TONE_HEX[film.tone] || "#ffffff";
 
-  ctx.fillStyle = "#e8e4d7";
+  ctx.fillStyle = "#ededed";
   ctx.fillRect(0, 0, c.width, c.height);
   // subtle paper noise lines
   ctx.strokeStyle = "rgba(0,0,0,0.05)";
@@ -84,7 +84,7 @@ function makeLabelTexture(film) {
 
 export function buildTapeMesh(film) {
   const group = new THREE.Group();
-  const toneInt = TONE_INT[film.tone] || 0xd8ff36;
+  const toneInt = TONE_INT[film.tone] || 0xffffff;
 
   const body = new THREE.Mesh(
     new THREE.BoxGeometry(TAPE_W, TAPE_H, TAPE_D),
@@ -110,7 +110,7 @@ export function buildTapeMesh(film) {
 
   // two spinning reels
   const reels = [];
-  const reelMat = new THREE.MeshStandardMaterial({ color: 0xdedcd0, roughness: 0.6 });
+  const reelMat = new THREE.MeshStandardMaterial({ color: 0xdedede, roughness: 0.6 });
   const hubMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
   [-1, 1].forEach((side) => {
     const reel = new THREE.Group();
@@ -160,11 +160,11 @@ function baseScene(container) {
   renderer.domElement.style.height = "100%";
   container.appendChild(renderer.domElement);
 
-  scene.add(new THREE.AmbientLight(0x6a7a90, 1.15));
+  scene.add(new THREE.AmbientLight(0x777777, 1.15));
   const key = new THREE.DirectionalLight(0xffffff, 1.35);
   key.position.set(2, 3, 4);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x3aa0ff, 0.8);
+  const rim = new THREE.DirectionalLight(0x999999, 0.8);
   rim.position.set(-3, -1, -2);
   scene.add(rim);
 
@@ -176,7 +176,7 @@ export function createTapeStage({ container, onPlay }) {
   const { scene, camera, renderer } = baseScene(container);
   camera.position.set(0, 0, 4.2);
 
-  const glow = new THREE.PointLight(0xd8ff36, 0, 6, 2);
+  const glow = new THREE.PointLight(0xffffff, 0, 6, 2);
   glow.position.set(0, 0, 2);
   scene.add(glow);
 

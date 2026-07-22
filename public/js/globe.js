@@ -17,11 +17,11 @@ function latLngToVec3(lat, lng, radius) {
 }
 
 const TONE_COLORS = {
-  red: 0xff3b27,
-  lime: 0xd8ff36,
-  orange: 0xff7b29,
-  blue: 0x5d7cff,
-  cream: 0xe8e4d7,
+  red: 0xb9b9b9,
+  lime: 0xffffff,
+  orange: 0xd2d2d2,
+  blue: 0x9a9a9a,
+  cream: 0xe8e8e8,
 };
 
 export function createGlobe({ container, films = [], onSelect, onHover }) {
@@ -43,8 +43,8 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   renderer.domElement.setAttribute("aria-hidden", "true");
 
   /* Lights */
-  scene.add(new THREE.AmbientLight(0x3b4a66, 1.1));
-  const key = new THREE.DirectionalLight(0x9fd8ff, 1.2);
+  scene.add(new THREE.AmbientLight(0x555555, 1.1));
+  const key = new THREE.DirectionalLight(0xffffff, 1.2);
   key.position.set(-2, 1.5, 2);
   scene.add(key);
 
@@ -68,7 +68,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   }
   dotGeo.setAttribute("position", new THREE.Float32BufferAttribute(dotPos, 3));
   const dotMat = new THREE.PointsMaterial({
-    color: 0x37e0d0,
+    color: 0xdedede,
     size: 0.018,
     sizeAttenuation: true,
     transparent: true,
@@ -78,7 +78,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
 
   /* Solid inner sphere so back dots are occluded (reads as a real globe) */
   const coreMat = new THREE.MeshStandardMaterial({
-    color: 0x061019,
+    color: 0x080808,
     roughness: 1,
     metalness: 0,
     transparent: true,
@@ -89,7 +89,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   /* Wireframe latitude/longitude cage */
   const cage = new THREE.LineSegments(
     new THREE.WireframeGeometry(new THREE.SphereGeometry(RADIUS * 1.002, 24, 16)),
-    new THREE.LineBasicMaterial({ color: 0x1a3550, transparent: true, opacity: 0.14 })
+    new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.16 })
   );
   world.add(cage);
 
@@ -100,7 +100,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
       transparent: true,
       side: THREE.BackSide,
       blending: THREE.AdditiveBlending,
-      uniforms: { glow: { value: new THREE.Color(0x2ea6ff) } },
+      uniforms: { glow: { value: new THREE.Color(0xcccccc) } },
       vertexShader: `
         varying float vI;
         void main() {
@@ -136,7 +136,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
   const stars = new THREE.Points(
     starGeo,
-    new THREE.PointsMaterial({ color: 0x9fb6cc, size: 0.06, transparent: true, opacity: 0.7 })
+    new THREE.PointsMaterial({ color: 0xbcbcbc, size: 0.06, transparent: true, opacity: 0.7 })
   );
   scene.add(stars);
 
@@ -147,7 +147,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   const withCoords = films.filter((f) => typeof f.lat === "number" && typeof f.lng === "number");
 
   withCoords.forEach((film) => {
-    const color = TONE_COLORS[film.tone] || 0xd8ff36;
+    const color = TONE_COLORS[film.tone] || 0xffffff;
     const pos = latLngToVec3(film.lat, film.lng, RADIUS * 1.01);
 
     const beam = new THREE.Mesh(
@@ -194,9 +194,9 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     const pts = curve.getPoints(48);
     const geo = new THREE.BufferGeometry().setFromPoints(pts);
     const mat = new THREE.LineBasicMaterial({
-      color: 0x37e0d0,
+      color: 0xcccccc,
       transparent: true,
-      opacity: 0.28,
+      opacity: 0.3,
       blending: THREE.AdditiveBlending,
     });
     const line = new THREE.Line(geo, mat);
