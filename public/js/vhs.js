@@ -25,7 +25,7 @@
       time: "—:—",
       tone: "red",
       format: "Hi8 / DIGI",
-      blurb: "Cinematic films about cars, bikes, and the people who keep them alive.",
+      blurb: "Cars, bikes, and the people who keep them alive — cinematic chapters from the machine world.",
       /* PLACEHOLDER: no Vimeo yet */
       vimeo: null,
       thumb: "/images/thumb-f4i-reveal.jpg",
@@ -39,7 +39,7 @@
       time: "—:—",
       tone: "lime",
       format: "1080P / RAW",
-      blurb: "Raw meet footage, old cameras, experiments, and recovered moments.",
+      blurb: "Raw garage nights, old cameras, experiments — the footage that proves I was there.",
       vimeo: "1066971784",
       thumb: "/images/thumb-shop-bts.jpg",
     },
@@ -52,7 +52,7 @@
       time: "—:—",
       tone: "orange",
       format: "HELMET CAM",
-      blurb: "Motorcycle adventures and travel without a rigid destination.",
+      blurb: "Motorcycle travel without a rigid destination — exits missed on purpose.",
       /* PLACEHOLDER: no Vimeo yet */
       vimeo: null,
       thumb: "/images/thumb-night-pov.jpg",
@@ -66,7 +66,7 @@
       time: "—:—",
       tone: "blue",
       format: "STEREO",
-      blurb: "Conversations with riders, builders, filmmakers, and friends.",
+      blurb: "Conversations with riders, builders, filmmakers, and friends met along the way.",
       /* PLACEHOLDER: no Vimeo yet */
       vimeo: null,
       thumb: "/images/thumb-customer-interview.jpg",
@@ -197,7 +197,13 @@
       return `
         <article class="tape ${tape.tone}" data-tape-card data-index="${i}">
           <div class="tape-top"><span>KF—${tape.code}</span><b>${tape.short}</b><span>${tape.format}</span></div>
-          <div class="reels" aria-hidden="true"><i></i><i></i></div>
+          <div class="reels" aria-hidden="true">
+            <i></i>
+            <div class="tape-thumb${tape.thumb ? "" : " is-empty"}">
+              ${tape.thumb ? `<img src="${tape.thumb}" alt="" loading="lazy" width="320" height="180">` : ""}
+            </div>
+            <i></i>
+          </div>
           <div class="tape-label">
             <small>KISALA FILMS SERIES</small>
             <strong>${tape.title}</strong>

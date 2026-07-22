@@ -1,14 +1,16 @@
 /* Kisala Films — VHS archive design system
-   Inspired by LOST//FOUND street archive. No Carsy. */
+   Dark Mercer-inspired life film. Shadow side of Elombe Kisala. */
 
 :root {
-  --ink: #090a08;
+  --ink: #070807;
+  --charcoal: #0c0d0b;
+  --panel: #121310;
   --paper: #e8e4d7;
   --lime: #d8ff36;
   --red: #ff3b27;
   --orange: #ff6a29;
   --muted: rgba(232, 228, 215, 0.55);
-  --line: rgba(255, 255, 255, 0.28);
+  --line: rgba(255, 255, 255, 0.16);
   --font-display: "Archivo Black", "Arial Narrow", Arial, sans-serif;
   --font-body: "IBM Plex Sans", Arial, Helvetica, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -434,24 +436,28 @@ body.nav-lock { overflow: hidden; }
   padding: 100px var(--pad) 80px;
 }
 
-.section--paper {
-  background: var(--paper);
-  color: var(--ink);
+.section--paper,
+.section--charcoal {
+  background: var(--charcoal);
+  color: var(--paper);
 }
 
-.section--orange {
-  background: var(--orange);
-  color: var(--ink);
+.section--orange,
+.section--panel {
+  background: var(--panel);
+  color: var(--paper);
   padding: 0;
 }
 
 .section--dark {
-  background: #121310;
+  background: var(--panel);
+  color: var(--paper);
 }
 
 .section--lime {
-  background: var(--lime);
-  color: var(--ink);
+  background: var(--panel);
+  color: var(--paper);
+  border-block: 1px solid var(--line);
 }
 
 .section-head {
@@ -459,7 +465,7 @@ body.nav-lock { overflow: hidden; }
   justify-content: space-between;
   align-items: end;
   gap: 24px;
-  border-bottom: 2px solid currentColor;
+  border-bottom: 2px solid var(--line);
   padding-bottom: 22px;
 }
 
@@ -482,6 +488,7 @@ body.nav-lock { overflow: hidden; }
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
+  color: var(--lime);
 }
 
 .section-head p,
@@ -491,32 +498,32 @@ body.nav-lock { overflow: hidden; }
   text-transform: uppercase;
   margin: 0;
   max-width: 28ch;
+  color: var(--muted);
 }
 
 .eyebrow {
   font: 800 11px/1 var(--font-mono);
   letter-spacing: 0.15em;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--lime);
+  color: var(--ink);
   padding: 5px 8px;
   text-transform: uppercase;
 }
 
 .section--dark .eyebrow,
-.section--lime .eyebrow {
+.section--lime .eyebrow,
+.section--paper .eyebrow,
+.section--charcoal .eyebrow,
+.section--panel .eyebrow {
   background: var(--lime);
   color: var(--ink);
-}
-
-.section--paper .eyebrow {
-  background: var(--ink);
-  color: var(--paper);
 }
 
 .body-copy {
   font-size: 1.05rem;
   line-height: 1.65;
   max-width: 58ch;
+  color: var(--muted);
 }
 
 .body-copy + .body-copy { margin-top: 1em; }
@@ -534,7 +541,7 @@ body.nav-lock { overflow: hidden; }
   position: relative;
   aspect-ratio: 16 / 9;
   background: #111;
-  border: 2px solid var(--ink);
+  border: 1px solid var(--line);
   overflow: hidden;
 }
 
@@ -587,11 +594,12 @@ body.nav-lock { overflow: hidden; }
 .placeholder-note {
   border-left: 3px solid var(--red);
   padding-left: 10px;
-  color: #666;
+  color: var(--muted);
   font-size: 10px;
 }
 
-.section--paper .placeholder-note { color: #555; }
+.section--paper .placeholder-note,
+.section--charcoal .placeholder-note { color: var(--muted); }
 
 /* —— 3D Tape slider —— */
 .tape-crate {
@@ -750,25 +758,75 @@ body.nav-lock { overflow: hidden; }
   height: 46%;
   margin: 14px auto;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  padding: 0 18px;
   background: #0c0d0b;
   border-radius: 40px;
+  position: relative;
+  overflow: hidden;
 }
 
-.reels i {
-  width: clamp(70px, 14vw, 115px);
+.reels > i {
+  flex: 0 0 auto;
+  width: clamp(56px, 11vw, 96px);
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 18px dotted #deddd4;
+  border: 14px dotted #deddd4;
   background: #111;
-  box-shadow: 0 0 0 12px #333;
+  box-shadow: 0 0 0 10px #333;
   animation: reel-spin 8s linear infinite;
   animation-play-state: paused;
+  z-index: 2;
 }
 
-.tape.is-active .reels i { animation-play-state: running; }
-.reels i:nth-child(2) { animation-direction: reverse; }
+.tape.is-active .reels > i { animation-play-state: running; }
+.reels > i:last-of-type { animation-direction: reverse; }
+
+.tape-thumb {
+  flex: 1 1 auto;
+  position: relative;
+  height: 72%;
+  max-width: 42%;
+  margin: 0 auto;
+  border: 2px solid #2a2b28;
+  background:
+    linear-gradient(135deg, #1a1b18 0%, #2e2f2b 50%, #151612 100%);
+  box-shadow: inset 0 0 0 1px #000, 0 0 0 3px #0a0b09;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.tape-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.65) contrast(1.15) brightness(0.92);
+}
+
+.tape-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 30%, rgba(0, 0, 0, 0.35)),
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, 0.12) 3px);
+  pointer-events: none;
+}
+
+.tape-thumb.is-empty::before {
+  content: "THUMB";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 800 9px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  color: #666;
+  z-index: 1;
+}
 
 @keyframes reel-spin {
   to { transform: rotate(360deg); }
@@ -826,18 +884,19 @@ body.nav-lock { overflow: hidden; }
 
 .tape-nav button {
   pointer-events: auto;
-  border: 1px solid var(--ink);
-  background: var(--paper);
+  border: 1px solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
   width: 54px;
   height: 54px;
   border-radius: 50%;
   font-size: 22px;
-  color: var(--ink);
 }
 
 .tape-nav button:hover {
-  background: var(--ink);
-  color: var(--lime);
+  background: var(--lime);
+  color: var(--ink);
+  border-color: var(--lime);
 }
 
 .tape-index {
@@ -935,13 +994,14 @@ body.nav-lock { overflow: hidden; }
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
   min-height: 720px;
-  background: var(--orange);
-  color: var(--ink);
+  background: var(--panel);
+  color: var(--paper);
+  border-block: 1px solid var(--line);
 }
 
 .dispatch-title {
   padding: 100px var(--pad);
-  border-right: 2px solid;
+  border-right: 1px solid var(--line);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -952,6 +1012,7 @@ body.nav-lock { overflow: hidden; }
   font: 900 11px/1 var(--font-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  color: var(--lime);
 }
 
 .stories a {
@@ -960,11 +1021,14 @@ body.nav-lock { overflow: hidden; }
   gap: 20px;
   align-items: center;
   padding: 28px var(--pad);
-  border-bottom: 2px solid;
+  border-bottom: 1px solid var(--line);
   min-height: 220px;
 }
 
-.stories a:hover { background: var(--lime); }
+.stories a:hover {
+  background: var(--lime);
+  color: var(--ink);
+}
 
 .stories a > span {
   font: 12px/1 var(--font-mono);
@@ -1015,7 +1079,7 @@ body.nav-lock { overflow: hidden; }
   border-bottom: 2px solid currentColor;
 }
 
-.dispatch-grid a:hover { background: rgba(0, 0, 0, 0.06); }
+.dispatch-grid a:hover { background: rgba(216, 255, 54, 0.08); }
 
 /* —— Partnerships —— */
 .partner-block {
@@ -1104,12 +1168,13 @@ body.nav-lock { overflow: hidden; }
 .site-footer {
   min-height: 420px;
   padding: 70px var(--pad) 35px;
-  background: var(--lime);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   align-items: start;
   gap: 30px;
+  border-top: 1px solid var(--line);
 }
 
 .footer-mark {
@@ -1125,6 +1190,7 @@ body.nav-lock { overflow: hidden; }
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
+  color: var(--lime);
 }
 
 .footer-tag {
@@ -1132,6 +1198,7 @@ body.nav-lock { overflow: hidden; }
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin: 0;
+  color: var(--muted);
 }
 
 .footer-nav {
@@ -1143,7 +1210,7 @@ body.nav-lock { overflow: hidden; }
   text-transform: uppercase;
 }
 
-.footer-nav a:hover { text-decoration: underline; }
+.footer-nav a:hover { color: var(--lime); }
 
 .site-footer small {
   grid-column: 2 / 4;
@@ -1151,6 +1218,62 @@ body.nav-lock { overflow: hidden; }
   font: 9px/1.5 var(--font-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: var(--muted);
+}
+
+.footer-counterpart {
+  margin-top: 18px;
+  font: 700 10px/1.5 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.footer-counterpart a {
+  color: var(--lime);
+  border-bottom: 1px solid var(--lime);
+}
+
+/* Theme / life chapters grid */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2px;
+  margin-top: 40px;
+  border: 1px solid var(--line);
+}
+
+.theme-grid article {
+  padding: 28px 20px;
+  background: var(--charcoal);
+  border: 1px solid transparent;
+}
+
+.theme-grid article:hover {
+  border-color: var(--lime);
+}
+
+.theme-grid .num {
+  font: 800 10px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  color: var(--lime);
+  margin-bottom: 14px;
+}
+
+.theme-grid h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: -0.04em;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.theme-grid p {
+  margin: 0;
+  font: 600 12px/1.45 var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 /* —— Film / watch grid —— */
@@ -1162,7 +1285,7 @@ body.nav-lock { overflow: hidden; }
 }
 
 .film-card {
-  border: 1px solid currentColor;
+  border: 1px solid var(--line);
   padding: 10px;
   background: transparent;
   color: inherit;
@@ -1239,14 +1362,18 @@ body.nav-lock { overflow: hidden; }
 
 .wizard-form,
 .form {
-  border: 2px solid currentColor;
+  border: 1px solid var(--line);
   padding: 22px;
-  background: rgba(9, 10, 8, 0.04);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .section--paper .wizard-form,
-.section--paper .form {
-  background: #fff8;
+.section--paper .form,
+.section--charcoal .wizard-form,
+.section--charcoal .form,
+.section--dark .wizard-form,
+.section--dark .form {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .fld { margin-bottom: 16px; }
@@ -1264,9 +1391,9 @@ body.nav-lock { overflow: hidden; }
 .fld select {
   width: 100%;
   min-height: 48px;
-  border: 1.5px solid currentColor;
-  background: var(--paper);
-  color: var(--ink);
+  border: 1.5px solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
   padding: 10px 12px;
   font: 500 16px/1.3 var(--font-body);
 }
@@ -1298,14 +1425,16 @@ body.nav-lock { overflow: hidden; }
 }
 
 .form-note.show { display: block; color: var(--lime); }
-.section--paper .form-note.show { color: #2a5a00; }
+.section--paper .form-note.show,
+.section--charcoal .form-note.show,
+.section--dark .form-note.show { color: var(--lime); }
 
 .vinyl-results {
   max-height: 220px;
   overflow: auto;
-  border: 1px solid currentColor;
+  border: 1px solid var(--line);
   margin-top: 8px;
-  background: var(--paper);
+  background: var(--ink);
 }
 
 .vinyl-result {
@@ -1638,7 +1767,8 @@ body.nav-lock { overflow: hidden; }
   .tape.is-prev { transform: translate3d(-28%, 0, -80px) rotateY(18deg) scale(0.8); }
   .tape.is-next { transform: translate3d(28%, 0, -80px) rotateY(-18deg) scale(0.8); }
   .tape-top b { font-size: 20px; }
-  .reels i { width: 64px; border-width: 12px; box-shadow: 0 0 0 8px #333; }
+  .reels > i { width: 48px; border-width: 10px; box-shadow: 0 0 0 6px #333; }
+  .tape-thumb { height: 64%; max-width: 38%; }
   .tape-label { grid-template-columns: 1fr; }
   .tape-label small,
   .tape-label span { display: none; }
