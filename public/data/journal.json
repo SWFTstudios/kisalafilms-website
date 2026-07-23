@@ -38,13 +38,13 @@
       "title": "Automotive video magazine",
       "year": 2020,
       "date": "21 FEB 2020",
-      "place": "Tokyo, Japan",
-      "lat": 35.6762,
-      "lng": 139.6503,
+      "place": "Los Angeles, USA",
+      "lat": 34.0522,
+      "lng": -118.2437,
       "media": "video",
-      "cover": "/images/thumb-f4i-reveal.jpg",
+      "cover": "/images/thumb-andy-q50.jpg",
       "blocks": [
-        { "type": "video", "vimeo": "1066971784", "caption": "Issue 001 — a build, a driver, and the streets that made it." },
+        { "type": "video", "vimeo": "1174158034?h=c80e23ac22", "caption": "ANDY Q50 — a build, a driver, and the streets that made it." },
         { "type": "text", "value": "Cars and bikes deserved their own recurring format — not a highlight reel, an issue. Each one profiles a machine and the people keeping it alive." },
         { "type": "gallery", "images": [
           { "src": "/images/thumb-panel-lines.jpg", "alt": "Panel detail" },
@@ -119,10 +119,11 @@
         { "type": "text", "value": "Every pin on the globe, every tape in the crate, every entry in this journal — one archive of a life in motion. This is where it all lives now." },
         { "type": "gallery", "images": [
           { "src": "/images/thumb-shop-bts.jpg", "alt": "Archive still 1" },
-          { "src": "/images/thumb-f4i-reveal.jpg", "alt": "Archive still 2" },
-          { "src": "/images/thumb-customer-interview-2.jpg", "alt": "Archive still 3" }
+          { "src": "/images/thumb-andy-q50.jpg", "alt": "Archive still 2" },
+          { "src": "/images/thumb-lost-tapes.jpg", "alt": "Archive still 3" }
         ] },
-        { "type": "video", "vimeo": "1066971784", "caption": "The archive, in motion." },
+        { "type": "video", "vimeo": "1066971784", "caption": "L0ST TAPES — the archive, in motion." },
+        { "type": "video", "vimeo": "1174158034?h=c80e23ac22", "caption": "ANDY Q50 — the second tape on the crate." },
         { "type": "quote", "value": "Go somewhere you can't explain — then come back with the tape." }
       ]
     }

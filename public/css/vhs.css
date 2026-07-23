@@ -548,6 +548,26 @@ body.nav-lock { overflow: hidden; }
   align-items: start;
 }
 
+/* Two live cuts (L0ST TAPES + ANDY Q50) */
+.featured-cuts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 50px;
+}
+.featured-cuts .featured-cut {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+.featured-cuts .film-meta {
+  display: grid;
+  gap: 10px;
+}
+.featured-cuts .film-meta p {
+  margin: 0;
+}
+
 .film-stage {
   position: relative;
   aspect-ratio: 16 / 9;
@@ -1788,6 +1808,7 @@ body.nav-lock { overflow: hidden; }
   .cta-secondary { text-align: center; justify-content: center; }
 
   .latest-film,
+  .featured-cuts,
   .about-split,
   .partner-block,
   .end-grid,
@@ -3306,37 +3327,210 @@ body.lightbox-lock { overflow: hidden; }
   color: var(--signal);
 }
 
-.inspo-spin {
-  font: 700 11px/1 var(--font-mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 10px 18px;
-  border: 1px solid var(--lime);
-  color: var(--ink);
-  background: var(--lime);
-  cursor: pointer;
-}
-
-.inspo-spin:hover:not(:disabled) {
-  background: var(--phosphor);
-  border-color: var(--phosphor);
-}
-
-.inspo-spin:disabled,
-.inspo-spin.is-busy {
-  opacity: 0.45;
-  cursor: not-allowed;
-  background: transparent;
-  color: var(--muted);
-  border-color: var(--line);
-}
-
 .inspo-spin-hint {
   margin: 10px 0 0;
   max-width: 48ch;
   font: 500 11px/1.45 var(--font-mono);
   letter-spacing: 0.05em;
   color: var(--muted);
+}
+
+.inspo-slot-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 10px;
+  align-items: stretch;
+  max-width: 100%;
+}
+
+/* —— 3D slot lever (right side) —— */
+.inspo-lever {
+  position: relative;
+  align-self: center;
+  width: 78px;
+  height: clamp(280px, 58vh, 520px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  perspective: 520px;
+  perspective-origin: 50% 52%;
+  transform-style: preserve-3d;
+}
+
+.inspo-lever:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: 12px;
+}
+
+.inspo-lever-hub {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, #f2eee6 0%, #c8c0b4 38%, #7a746c 72%, #3a3732 100%);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  transform: translateZ(8px);
+}
+
+.inspo-lever-hub::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #ddd6cb 0%, #8a847a 55%, #2e2b27 100%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.inspo-lever-arm {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  z-index: 1;
+  width: 18px;
+  height: 46%;
+  margin-left: -9px;
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
+  transform: translateY(-100%) translateZ(28px) rotateX(0deg);
+  will-change: transform;
+}
+
+@keyframes inspo-lever-pull {
+  0% {
+    transform: translateY(-100%) translateZ(28px) rotateX(0deg);
+  }
+  16% {
+    /* reach toward the user */
+    transform: translateY(-100%) translateZ(56px) rotateX(14deg);
+  }
+  40% {
+    /* slam down */
+    transform: translateY(-100%) translateZ(-36px) rotateX(88deg);
+  }
+  48% {
+    transform: translateY(-100%) translateZ(-36px) rotateX(88deg);
+  }
+  100% {
+    /* snap home */
+    transform: translateY(-100%) translateZ(28px) rotateX(0deg);
+  }
+}
+
+.inspo-lever.is-pulling .inspo-lever-arm {
+  animation: inspo-lever-pull 0.36s cubic-bezier(0.2, 0.05, 0.15, 1) forwards;
+}
+
+.inspo-lever-rod {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 10px;
+  height: calc(100% - 28px);
+  margin-left: -5px;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      #6d6860 0%,
+      #b8b0a4 18%,
+      #f0ebe3 42%,
+      #9e968c 62%,
+      #5c5750 100%
+    );
+  box-shadow:
+    2px 0 4px rgba(0, 0, 0, 0.35),
+    inset 1px 0 1px rgba(255, 255, 255, 0.5),
+    inset -1px 0 2px rgba(0, 0, 0, 0.35);
+  transform: translateZ(2px);
+}
+
+.inspo-lever-knob {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  margin-left: -18px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, #ff6b5c 0%, #e1241b 42%, #8a0e0a 78%, #3d0504 100%);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(80, 10, 8, 0.35),
+    inset 0 3px 6px rgba(255, 255, 255, 0.35),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.35);
+  transform: translateZ(12px);
+}
+
+.inspo-lever-knob::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  width: 11px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(0.5px);
+  transform: rotate(-18deg);
+}
+
+.inspo-lever-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  font: 700 9px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-align: center;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.inspo-lever:hover:not(:disabled) .inspo-lever-knob {
+  filter: brightness(1.06);
+}
+
+.inspo-lever:hover:not(:disabled):not(.is-pulling) .inspo-lever-arm {
+  transform: translateY(-100%) translateZ(40px) rotateX(6deg);
+  transition: transform 0.12s ease-out;
+}
+
+.inspo-lever:disabled,
+.inspo-lever.is-busy {
+  cursor: not-allowed;
+}
+
+.inspo-lever.is-busy .inspo-lever-caption {
+  color: var(--signal);
+}
+
+.inspo-lever.is-busy .inspo-lever-caption::after {
+  content: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inspo-lever.is-pulling .inspo-lever-arm {
+    animation: none;
+  }
+  .inspo-lever:hover:not(:disabled):not(.is-pulling) .inspo-lever-arm {
+    transition: none;
+  }
 }
 
 /* —— Slot-machine reels (JS physics) —— */
@@ -3735,5 +3929,28 @@ body.inspo-room-open { overflow: hidden; }
   .inspo-col-track { gap: 10px; padding: 10px 8px; }
   .inspo-card-frame { border-radius: 12px; }
   .inspo-card-meta strong { font-size: 12px; }
-  .inspo-spin { width: 100%; text-align: center; }
+  .inspo-slot-stage {
+    grid-template-columns: minmax(0, 1fr) 56px;
+    gap: 4px;
+  }
+  .inspo-lever {
+    width: 56px;
+    height: clamp(220px, 52vh, 400px);
+  }
+  .inspo-lever-knob {
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+  }
+  .inspo-lever-hub {
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+  }
+  .inspo-lever-hub::after { inset: 5px; }
+  .inspo-lever-rod {
+    width: 8px;
+    margin-left: -4px;
+    height: calc(100% - 22px);
+  }
 }

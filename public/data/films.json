@@ -25,6 +25,24 @@
       "thumb": "/images/thumb-lost-tapes.jpg"
     },
     {
+      "id": "andy-q50",
+      "code": "AM-002",
+      "category": "auto-mag",
+      "label": "ANDY Q50",
+      "short": "ANDY Q50",
+      "title": "ANDY Q50",
+      "time": "02:15",
+      "tone": "red",
+      "format": "1080P / DIGI",
+      "city": "Los Angeles",
+      "country": "USA",
+      "lat": 34.0522,
+      "lng": -118.2437,
+      "blurb": "An automotive magazine cut — Andy and the Infiniti Q50, framed for the crate.",
+      "vimeo": "1174158034?h=c80e23ac22",
+      "thumb": "/images/thumb-andy-q50.jpg"
+    },
+    {
       "id": "own-machine",
       "code": "AM-001",
       "category": "auto-mag",
