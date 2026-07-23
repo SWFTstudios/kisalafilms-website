@@ -13,7 +13,7 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Watch Kisala Films — a 3D tape wall of automotive video magazines, cinematic brand edits, life vlogs and cinematic travel films by Elombe Kisala.">
+  <meta name="description" content="Watch Kisala Films — automotive video magazines, cinematic brand edits, life vlogs and cinematic travel films by Elombe Kisala.">
   <meta name="theme-color" content="#070605">
   <title>Watch — Kisala Films</title>
   <link rel="icon" href="/images/favicon.ico" sizes="any">
@@ -59,7 +59,7 @@
     <section class="page-hero">
       <span class="eyebrow">THE TAPE WALL</span>
       <h1>WATCH<br><em>THE TAPE.</em></h1>
-      <p class="lede">Grab a cassette off the wall. L0ST TAPES and ANDY Q50 are live — the rest stay marked until each cut is wired.</p>
+      <p class="lede">Browse the crate. L0ST TAPES and ANDY Q50 are live — the rest stay marked until each cut is wired.</p>
     </section>
 
     <div class="ticker" aria-hidden="true">
@@ -67,21 +67,30 @@
     </div>
 
     <section class="section section--charcoal">
-      <div class="tape-wall scene-root" data-watch-scene>
+      <div class="tape-wall" data-watch-scene>
         <div class="tape-wall-bg" data-tape-wall-bg aria-hidden="true">
           <div class="tape-wall-bg__layer is-back"></div>
           <div class="tape-wall-bg__layer is-front"></div>
           <div class="tape-wall-bg__veil"></div>
         </div>
-        <div class="wall-filters scene-3d">
+        <div class="wall-filters">
           <button type="button" data-wall-filter="all" class="is-active">ALL</button>
           <button type="button" data-wall-filter="auto-mag">AUTO MAG</button>
           <button type="button" data-wall-filter="brand-edit">BRAND</button>
           <button type="button" data-wall-filter="vlog">LIFE</button>
           <button type="button" data-wall-filter="travel">TRAVEL</button>
         </div>
-        <div class="tape-wall-mount scene-3d" data-tape-wall></div>
-        <p class="wall-hint scene-3d">&#9673; DRAG TO TILT &middot; HOVER TO PREVIEW &middot; CLICK TO PLAY</p>
+        <div class="tape-shelf" data-tape-shelf>
+          <div class="tape-shelf-track" data-tape-shelf-track role="list"></div>
+          <div class="tape-shelf-nav">
+            <button type="button" data-shelf-prev aria-label="Previous tapes">&#8592;</button>
+            <button type="button" data-shelf-next aria-label="Next tapes">&#8594;</button>
+          </div>
+        </div>
+        <p class="wall-hint">
+          <span class="wall-hint--mobile">&#9673; SWIPE TO BROWSE &middot; TAP TO PLAY</span>
+          <span class="wall-hint--desktop">&#9673; HOVER TO PREVIEW &middot; CLICK TO PLAY</span>
+        </p>
       </div>
 
       <div class="section-head" style="margin-top:60px" data-reveal>
