@@ -87,7 +87,8 @@
       spinBtn.disabled = busy;
       spinBtn.classList.toggle("is-busy", busy);
       spinBtn.setAttribute("aria-busy", busy ? "true" : "false");
-      spinBtn.textContent = busy ? "SPINNING…" : "SPIN";
+      const caption = spinBtn.querySelector(".inspo-lever-caption");
+      if (caption) caption.textContent = busy ? "HOLD" : "PULL";
     }
     gridEl?.classList.toggle("is-spinning", busy);
   }
@@ -244,8 +245,10 @@
 
   function spinAll() {
     if (!spinBtn || spinActive || roomOpen) return;
-    if (!engines.length && !reduceMotion) return;
-    if (!filterList().length) return;
+    if ((!engines.length && !reduceMotion) || !filterList().length) {
+      spinBtn.classList.remove("is-pulling");
+      return;
+    }
 
     if (reduceMotion) {
       setSpinUi(true);
@@ -677,7 +680,23 @@
     renderGrid();
   });
 
-  spinBtn?.addEventListener("click", () => spinAll());
+  const LEVER_PULL_MS = 140;
+  const LEVER_CYCLE_MS = 360;
+
+  spinBtn?.addEventListener("click", () => {
+    if (!spinBtn || spinActive || roomOpen || spinBtn.disabled) return;
+    if (spinBtn.classList.contains("is-pulling")) return;
+
+    spinBtn.classList.remove("is-pulling");
+    void spinBtn.offsetWidth;
+    spinBtn.classList.add("is-pulling");
+
+    const fireAt = reduceMotion ? 0 : LEVER_PULL_MS;
+    const clearAt = reduceMotion ? 0 : LEVER_CYCLE_MS;
+
+    window.setTimeout(() => spinAll(), fireAt);
+    window.setTimeout(() => spinBtn.classList.remove("is-pulling"), clearAt);
+  });
 
   let resizeTimer = 0;
   window.addEventListener("resize", () => {

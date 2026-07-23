@@ -63,18 +63,27 @@
       <h1>INSPO<br><em>MUSEUM.</em></h1>
       <p class="lede" data-inspo-lede>Loading the dossier&hellip;</p>
       <p class="inspo-disclaimer">Personal moodboard only — third-party stills remain with their owners. Not a commercial gallery.</p>
-      <p class="inspo-spin-hint">Pull to land a random frame in each reel.</p>
+      <p class="inspo-spin-hint">Pull the lever to land a random frame in each reel.</p>
     </section>
 
     <div class="inspo-toolbar">
       <div class="inspo-wings" data-inspo-wings role="tablist" aria-label="Museum wings"></div>
       <div class="inspo-toolbar-actions">
-        <button type="button" class="inspo-spin" data-inspo-spin>SPIN</button>
         <span class="inspo-count" data-inspo-count></span>
       </div>
     </div>
 
-    <div class="inspo-marquee" data-inspo-grid aria-label="Slot reels"></div>
+    <div class="inspo-slot-stage">
+      <div class="inspo-marquee" data-inspo-grid aria-label="Slot reels"></div>
+      <button type="button" class="inspo-lever" data-inspo-spin aria-label="Pull lever to spin reels">
+        <span class="inspo-lever-hub" aria-hidden="true"></span>
+        <span class="inspo-lever-arm" aria-hidden="true">
+          <span class="inspo-lever-rod"></span>
+          <span class="inspo-lever-knob"></span>
+        </span>
+        <span class="inspo-lever-caption">PULL</span>
+      </button>
+    </div>
   </main>
 
   <div class="inspo-room" data-inspo-room hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Reading room">

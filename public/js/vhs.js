@@ -30,6 +30,19 @@
       thumb: "/images/thumb-lost-tapes.jpg",
     },
     {
+      id: "andy-q50",
+      code: "AM-002",
+      label: "ANDY Q50",
+      short: "ANDY Q50",
+      title: "ANDY Q50",
+      time: "02:15",
+      tone: "red",
+      format: "1080P / DIGI",
+      blurb: "An automotive magazine cut — Andy and the Infiniti Q50, framed for the crate.",
+      vimeo: "1174158034?h=c80e23ac22",
+      thumb: "/images/thumb-andy-q50.jpg",
+    },
+    {
       id: "own-machine",
       code: "AM-001",
       label: "OWN MACHINE",
@@ -92,10 +105,13 @@
   const VIMEO_PLAYER = "https://player.vimeo.com/video/";
 
   function vimeoEmbedUrl(id, { background = false } = {}) {
+    /* Support plain ids and privacy-hash forms: "123" or "123?h=abc" */
+    const raw = String(id || "");
+    const join = raw.includes("?") ? "&" : "?";
     if (background) {
-      return `${VIMEO_PLAYER}${id}?background=1&autoplay=1&muted=1&loop=1&autopause=0&badge=0&player_id=0&app_id=58479`;
+      return `${VIMEO_PLAYER}${raw}${join}background=1&autoplay=1&muted=1&loop=1&autopause=0&badge=0&player_id=0&app_id=58479`;
     }
-    return `${VIMEO_PLAYER}${id}?badge=0&autopause=0&autoplay=1&player_id=0&app_id=58479`;
+    return `${VIMEO_PLAYER}${raw}${join}badge=0&autopause=0&autoplay=1&player_id=0&app_id=58479`;
   }
 
   /* —— Lightbox —— */

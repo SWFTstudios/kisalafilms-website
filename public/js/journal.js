@@ -49,12 +49,15 @@
               )}" loading="lazy"></span></figure>`
           )
           .join("")}</div>`;
-      case "video":
+      case "video": {
+        const raw = String(b.vimeo || "");
+        const join = raw.includes("?") ? "&" : "?";
         return `<figure class="jr-figure"><div class="jr-video jr-shot"><iframe src="https://player.vimeo.com/video/${esc(
-          b.vimeo
-        )}?title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" title="${esc(
+          raw
+        )}${join}title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" title="${esc(
           b.caption || "Journal video"
         )}"></iframe></div>${b.caption ? `<figcaption>${esc(b.caption)}</figcaption>` : ""}</figure>`;
+      }
       case "audio":
         if (b.src) {
           return `<figure class="jr-figure"><div class="jr-audio"><span class="jr-audio-title">${esc(
