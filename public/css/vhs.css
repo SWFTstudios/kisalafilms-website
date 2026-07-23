@@ -2773,8 +2773,8 @@ body.lightbox-lock { overflow: hidden; }
   position: absolute;
   inset: 0;
   background: var(--cover) center / cover no-repeat;
-  filter: grayscale(1) contrast(1.05) brightness(0.32);
-  opacity: 0.5;
+  filter: saturate(1.05) contrast(1.03) brightness(0.5);
+  opacity: 0.7;
   z-index: -2;
 }
 
@@ -2782,8 +2782,10 @@ body.lightbox-lock { overflow: hidden; }
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(5, 5, 5, 0.55), var(--ink));
   z-index: -1;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 1px, rgba(255, 255, 255, 0.02) 1px 2px, transparent 2px 3px),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.35) 30%, var(--ink));
 }
 
 .jr-head-inner { max-width: 900px; }
@@ -2855,9 +2857,58 @@ body.lightbox-lock { overflow: hidden; }
   width: 100%;
   height: auto;
   display: block;
-  border: 1px solid var(--line);
-  filter: grayscale(1) contrast(1.03);
 }
+
+/* Full-colour media under a VHS overlay that clears on hover / focus */
+.jr-shot {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #0a0a0a;
+  outline: none;
+}
+.jr-shot img {
+  transition: transform 0.6s ease, filter 0.4s ease;
+  filter: saturate(1.06) contrast(1.03);
+}
+.jr-shot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 1px, rgba(255, 255, 255, 0.025) 1px 2px, transparent 2px 3px),
+    linear-gradient(90deg, rgba(255, 40, 40, 0.1), transparent 6%, transparent 94%, rgba(40, 170, 255, 0.1)),
+    linear-gradient(180deg, rgba(28, 14, 56, 0.16), rgba(0, 0, 0, 0.22));
+}
+.jr-shot::before {
+  content: "\25CF SP";
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  z-index: 3;
+  font: 700 10px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+  opacity: 0.9;
+  transition: opacity 0.45s ease;
+}
+.jr-shot:focus-visible,
+.jr-shot:focus-within { box-shadow: 0 0 0 2px var(--lime); }
+.jr-shot:hover img,
+.jr-shot:focus img,
+.jr-shot:focus-within img { transform: scale(1.02); filter: saturate(1.12) contrast(1.05); }
+.jr-shot:hover::after,
+.jr-shot:focus::after,
+.jr-shot:focus-within::after,
+.jr-shot:hover::before,
+.jr-shot:focus::before,
+.jr-shot:focus-within::before { opacity: 0; }
 .jr-figure figcaption {
   margin-top: 8px;
   font: 600 11px/1.4 var(--font-mono);
@@ -2964,12 +3015,27 @@ body.lightbox-lock { overflow: hidden; }
 }
 .jr-card:hover { background: rgba(255, 255, 255, 0.07); border-color: var(--lime); transform: translateY(-3px); }
 .jr-card-cover {
+  position: relative;
   display: block;
   aspect-ratio: 16 / 10;
   background: #111 center / cover no-repeat;
-  filter: grayscale(1) contrast(1.05) brightness(0.8);
   border-bottom: 1px solid var(--line);
+  overflow: hidden;
 }
+.jr-card-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 1px, rgba(255, 255, 255, 0.025) 1px 2px, transparent 2px 3px),
+    linear-gradient(90deg, rgba(255, 40, 40, 0.1), transparent 6%, transparent 94%, rgba(40, 170, 255, 0.1)),
+    linear-gradient(180deg, rgba(28, 14, 56, 0.14), rgba(0, 0, 0, 0.2));
+}
+.jr-card:hover .jr-card-cover::after,
+.jr-card:focus-visible .jr-card-cover::after { opacity: 0; }
 .jr-card-body { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px 20px; }
 .jr-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .jr-card-year { font: 800 13px/1 var(--font-mono); letter-spacing: 0.08em; color: var(--phosphor); }

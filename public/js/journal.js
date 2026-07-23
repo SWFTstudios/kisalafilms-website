@@ -37,15 +37,20 @@
       case "quote":
         return `<blockquote class="jr-quote">${esc(b.value)}</blockquote>`;
       case "image":
-        return `<figure class="jr-figure"><img src="${esc(b.src)}" alt="${esc(b.alt || "")}" loading="lazy">${
-          b.caption ? `<figcaption>${esc(b.caption)}</figcaption>` : ""
-        }</figure>`;
+        return `<figure class="jr-figure"><span class="jr-shot" tabindex="0"><img src="${esc(b.src)}" alt="${esc(
+          b.alt || ""
+        )}" loading="lazy"></span>${b.caption ? `<figcaption>${esc(b.caption)}</figcaption>` : ""}</figure>`;
       case "gallery":
         return `<div class="jr-gallery">${(b.images || [])
-          .map((im) => `<figure class="jr-figure"><img src="${esc(im.src)}" alt="${esc(im.alt || "")}" loading="lazy"></figure>`)
+          .map(
+            (im) =>
+              `<figure class="jr-figure"><span class="jr-shot" tabindex="0"><img src="${esc(im.src)}" alt="${esc(
+                im.alt || ""
+              )}" loading="lazy"></span></figure>`
+          )
           .join("")}</div>`;
       case "video":
-        return `<figure class="jr-figure"><div class="jr-video"><iframe src="https://player.vimeo.com/video/${esc(
+        return `<figure class="jr-figure"><div class="jr-video jr-shot"><iframe src="https://player.vimeo.com/video/${esc(
           b.vimeo
         )}?title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" title="${esc(
           b.caption || "Journal video"
