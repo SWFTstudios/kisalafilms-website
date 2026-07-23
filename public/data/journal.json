@@ -1,0 +1,130 @@
+{
+  "entries": [
+    {
+      "slug": "first-camcorder",
+      "title": "First camcorder",
+      "year": 2016,
+      "date": "12 JUN 2016",
+      "place": "Los Angeles, USA",
+      "lat": 34.0522,
+      "lng": -118.2437,
+      "media": "mixed",
+      "cover": "/images/thumb-shop-bts.jpg",
+      "blocks": [
+        { "type": "text", "value": "It started with a beat-up tape camera and no plan. I filmed everything — the drive, the light, the people who happened to be around. None of it was for anyone. It just felt like the only honest way to hold onto a day." },
+        { "type": "image", "src": "/images/story-elombe-workshop.jpg", "alt": "Behind the scenes, early days", "caption": "The first rig — barely working, always rolling." },
+        { "type": "text", "value": "Looking back, this is the whole thesis of Kisala Films in one clip: point the camera at your real life and let it become something cinematic later." },
+        { "type": "video", "vimeo": "1066971784", "caption": "L0ST TAPES — the earliest surviving footage." },
+        { "type": "quote", "value": "You don't need a reason to press record. You need a reason to stop." }
+      ]
+    },
+    {
+      "slug": "first-road-film",
+      "title": "First road film",
+      "year": 2018,
+      "date": "03 SEP 2018",
+      "place": "Lisbon, Portugal",
+      "lat": 38.7223,
+      "lng": -9.1393,
+      "media": "video",
+      "cover": "/images/thumb-night-pov.jpg",
+      "blocks": [
+        { "type": "video", "vimeo": "1066971784", "caption": "Coast roads after dark — the first real edit." },
+        { "type": "text", "value": "A trip with no rigid destination turned into the first film I actually cut for other people. Travel and filmmaking stopped being two hobbies and became one practice." }
+      ]
+    },
+    {
+      "slug": "automotive-magazine",
+      "title": "Automotive video magazine",
+      "year": 2020,
+      "date": "21 FEB 2020",
+      "place": "Tokyo, Japan",
+      "lat": 35.6762,
+      "lng": 139.6503,
+      "media": "video",
+      "cover": "/images/thumb-f4i-reveal.jpg",
+      "blocks": [
+        { "type": "video", "vimeo": "1066971784", "caption": "Issue 001 — a build, a driver, and the streets that made it." },
+        { "type": "text", "value": "Cars and bikes deserved their own recurring format — not a highlight reel, an issue. Each one profiles a machine and the people keeping it alive." },
+        { "type": "gallery", "images": [
+          { "src": "/images/thumb-panel-lines.jpg", "alt": "Panel detail" },
+          { "src": "/images/thumb-wrap-process.jpg", "alt": "Process" },
+          { "src": "/images/thumb-before-strip.jpg", "alt": "Before" }
+        ] }
+      ]
+    },
+    {
+      "slug": "first-brand-edit",
+      "title": "First brand edit",
+      "year": 2022,
+      "date": "08 NOV 2022",
+      "place": "London, UK",
+      "lat": 51.5072,
+      "lng": -0.1276,
+      "media": "mixed",
+      "cover": "/images/thumb-customer-interview.jpg",
+      "blocks": [
+        { "type": "text", "value": "The first commissioned piece. The brief was simple; the standard wasn't. I shot it like short cinema — product, place, and motion, cut to breathe." },
+        { "type": "image", "src": "/images/thumb-panel-lines.jpg", "alt": "Macro product detail", "caption": "Macro passes — the detail that earns the frame." },
+        { "type": "text", "value": "It proved a brand film doesn't have to look like an ad. It can look like something you'd actually want to watch." },
+        { "type": "video", "vimeo": "1066971784", "caption": "The delivered cut." }
+      ]
+    },
+    {
+      "slug": "life-vlogs",
+      "title": "Life vlogs on the road",
+      "year": 2023,
+      "date": "17 APR 2023",
+      "place": "Nairobi, Kenya",
+      "lat": -1.2921,
+      "lng": 36.8219,
+      "media": "audio",
+      "cover": "/images/story-elombe-workshop.jpg",
+      "blocks": [
+        { "type": "audio", "src": "", "title": "Field audio — Nairobi mornings", "caption": "Audio diary. Player wires in when the file is uploaded." },
+        { "type": "text", "value": "Some days don't want a camera. They want a microphone and a walk. The life vlogs are the hours between the big shoots — raw, unpolished, honest." },
+        { "type": "image", "src": "/images/thumb-transformation-mid.jpg", "alt": "On the road", "caption": "Between departures." }
+      ]
+    },
+    {
+      "slug": "cinematic-travel",
+      "title": "Cinematic travel series",
+      "year": 2024,
+      "date": "29 JUL 2024",
+      "place": "Rio de Janeiro, Brazil",
+      "lat": -22.9068,
+      "lng": -43.1729,
+      "media": "video",
+      "cover": "/images/thumb-transformation-mid.jpg",
+      "blocks": [
+        { "type": "video", "vimeo": "1066971784", "caption": "Cities found, exits missed, no GPS required." },
+        { "type": "text", "value": "The travel series is the world through a camcorder — graded and cut like film, but shot like a diary. This is the format I'll keep making forever." },
+        { "type": "gallery", "images": [
+          { "src": "/images/thumb-night-pov.jpg", "alt": "Night" },
+          { "src": "/images/thumb-timelapse-shop.jpg", "alt": "Timelapse" }
+        ] }
+      ]
+    },
+    {
+      "slug": "kisala-archive",
+      "title": "Kisala Films archive",
+      "year": 2026,
+      "date": "05 JAN 2026",
+      "place": "Berlin, Germany",
+      "lat": 52.52,
+      "lng": 13.405,
+      "media": "mixed",
+      "cover": "/images/thumb-timelapse-shop.jpg",
+      "blocks": [
+        { "type": "text", "value": "Every pin on the globe, every tape in the crate, every entry in this journal — one archive of a life in motion. This is where it all lives now." },
+        { "type": "gallery", "images": [
+          { "src": "/images/thumb-shop-bts.jpg", "alt": "Archive still 1" },
+          { "src": "/images/thumb-f4i-reveal.jpg", "alt": "Archive still 2" },
+          { "src": "/images/thumb-customer-interview-2.jpg", "alt": "Archive still 3" }
+        ] },
+        { "type": "video", "vimeo": "1066971784", "caption": "The archive, in motion." },
+        { "type": "quote", "value": "Go somewhere you can't explain — then come back with the tape." }
+      ]
+    }
+  ]
+}

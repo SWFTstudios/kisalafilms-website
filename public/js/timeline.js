@@ -3,24 +3,52 @@
   if (!root) return;
 
   const scroller = root.querySelector(".z-scroll");
+  const stage = root.querySelector(".z-stage");
   const track = root.querySelector("[data-z-track]");
   const items = track ? [...track.querySelectorAll(".z-item")] : [];
   const rail = root.querySelector("[data-z-rail]");
   const count = root.querySelector("[data-z-count]");
-  if (!scroller || !items.length) return;
+  if (!scroller || !stage || !items.length) return;
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  /* Reduced motion / no support: leave the plain stacked fallback in place. */
+  /* Reduced motion / no support: keep the stacked CSS fallback (rail + dots). */
   if (prefersReduced) return;
 
   const N = items.length;
-  const SPACING = 640; // px of z-depth between chapters
+  const SPACING = 560; // z-depth between chapters
+  const NODE_Y = 150; // path sits below the floating cards
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-  /* Tall scroll area: one viewport of scroll per chapter (plus lead-in/out). */
   scroller.style.height = `${(N + 1) * 100}vh`;
   root.classList.add("is-3d");
+
+  /* Build the connecting path (nodes + segments) in the shared 3D space so it
+     travels with the cards. Everything is a child of the track, positioned at
+     base depth -i*SPACING; the whole track is pushed forward as you scroll. */
+  const path = document.createElement("div");
+  path.className = "z-path";
+  const nodes = [];
+  for (let i = 0; i < N; i++) {
+    const node = document.createElement("span");
+    node.className = "z-node";
+    node.style.transform = `translate(-50%, -50%) translateY(${NODE_Y}px) translateZ(${(-i * SPACING).toFixed(1)}px)`;
+    path.appendChild(node);
+    nodes.push(node);
+
+    if (i < N - 1) {
+      const seg = document.createElement("span");
+      seg.className = "z-seg";
+      seg.style.height = `${SPACING}px`;
+      seg.style.transform = `translate(-50%, -50%) translateY(${NODE_Y}px) translateZ(${(-(i + 0.5) * SPACING).toFixed(1)}px) rotateX(90deg)`;
+      path.appendChild(seg);
+    }
+  }
+  track.insertBefore(path, track.firstChild);
+
+  /* Cards sit at fixed base depth; only the track moves in Z. */
+  items.forEach((el, i) => {
+    el.style.transform = `translate(-50%, -50%) translateZ(${(-i * SPACING).toFixed(1)}px)`;
+  });
 
   const pad2 = (n) => String(n).padStart(3, "0");
   let ticking = false;
@@ -33,31 +61,30 @@
     const distance = rect.height - stageH;
     if (distance <= 0) return;
 
-    // progress 0..1 across the pinned range
     const p = clamp(-rect.top / distance, 0, 1);
     const active = p * (N - 1);
 
+    // Push the whole world forward so the active chapter reaches the camera.
+    track.style.transform = `translateZ(${(active * SPACING).toFixed(1)}px)`;
+
     for (let i = 0; i < N; i++) {
-      const el = items[i];
-      const delta = i - active; // >0 future (far), 0 focus, <0 past (toward camera)
-      const z = -delta * SPACING;
-
+      const delta = i - active; // >0 ahead (deep), 0 focus, <0 passed
       let opacity;
-      if (delta >= 0) {
-        opacity = clamp(1 - (delta - 0.35) / 1.5, 0, 1);
-      } else {
-        opacity = clamp(1 + delta / 0.55, 0, 1);
-      }
+      if (delta >= 0) opacity = clamp(1 - (delta - 0.35) / 1.6, 0, 1);
+      else opacity = clamp(1 + delta / 0.5, 0, 1);
 
-      const y = delta * 26; // subtle vertical drift for depth
-      const blur = clamp((Math.abs(delta) - 0.4) * 2.4, 0, 6);
-
-      el.style.transform = `translate(-50%, -50%) translateZ(${z.toFixed(1)}px) translateY(${y.toFixed(1)}px)`;
+      const el = items[i];
+      const blur = clamp((Math.abs(delta) - 0.5) * 2.2, 0, 5);
+      const focus = Math.abs(delta) < 0.5;
       el.style.opacity = opacity.toFixed(3);
       el.style.filter = blur > 0.15 ? `blur(${blur.toFixed(2)}px)` : "none";
       el.style.zIndex = String(1000 - Math.round(Math.abs(delta) * 10));
-      el.classList.toggle("is-focus", Math.abs(delta) < 0.5);
-      el.style.pointerEvents = Math.abs(delta) < 0.5 ? "auto" : "none";
+      el.classList.toggle("is-focus", focus);
+      el.style.pointerEvents = focus ? "auto" : "none";
+
+      const node = nodes[i];
+      node.style.opacity = clamp(opacity + 0.15, 0, 1).toFixed(3);
+      node.classList.toggle("is-focus", focus);
     }
 
     if (rail) rail.style.transform = `scaleX(${p.toFixed(4)})`;
@@ -79,7 +106,4 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll, { passive: true });
   render();
-
-  /* Keyboard: let arrows nudge the page when the timeline is on screen. */
-  root.setAttribute("tabindex", "-1");
 })();
