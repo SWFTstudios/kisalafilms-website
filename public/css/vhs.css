@@ -2,15 +2,21 @@
    Dark Mercer-inspired life film. Shadow side of Elombe Kisala. */
 
 :root {
-  --ink: #070807;
-  --charcoal: #0c0d0b;
-  --panel: #121310;
-  --paper: #e8e4d7;
-  --lime: #d8ff36;
-  --red: #ff3b27;
-  --orange: #ff6a29;
-  --muted: rgba(232, 228, 215, 0.55);
-  --line: rgba(255, 255, 255, 0.16);
+  --ink: #050505;
+  --charcoal: #0d0d0d;
+  --panel: #151515;
+  --paper: #ededed;
+  --lime: #ffffff;
+  --red: #9a9a9a;
+  --orange: #bcbcbc;
+  --muted: rgba(237, 237, 237, 0.55);
+  --line: rgba(255, 255, 255, 0.18);
+  /* Retro black & white depth palette */
+  --midnight: #0a0a0a;
+  --midnight-2: #101010;
+  --deep: #000000;
+  --phosphor: #d4d4d4;
+  --signal: #8f8f8f;
   --font-display: "Archivo Black", "Arial Narrow", Arial, sans-serif;
   --font-body: "IBM Plex Sans", Arial, Helvetica, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -27,7 +33,11 @@ html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  background: var(--ink);
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255, 255, 255, 0.07), transparent 55%),
+    radial-gradient(90% 60% at 85% 110%, rgba(255, 255, 255, 0.04), transparent 60%),
+    linear-gradient(180deg, var(--midnight-2) 0%, var(--ink) 40%, var(--deep) 100%);
+  background-attachment: fixed;
   color: var(--paper);
   font-family: var(--font-body);
   font-size: 16px;
@@ -243,7 +253,7 @@ body.nav-lock { overflow: hidden; }
   min-width: 177.78vh; /* 16:9 cover */
   transform: translate(-50%, -50%);
   border: 0;
-  filter: saturate(0.7) contrast(1.16);
+  filter: grayscale(1) contrast(1.2);
 }
 
 .hero-image {
@@ -253,7 +263,7 @@ body.nav-lock { overflow: hidden; }
     linear-gradient(90deg, rgba(0, 0, 0, 0.55), transparent 58%),
     linear-gradient(0deg, rgba(0, 0, 0, 0.45), transparent 55%),
     url("/images/hero-f4i-garage-night.jpg") center / cover;
-  filter: saturate(0.7) contrast(1.16);
+  filter: grayscale(1) contrast(1.2);
   transform: scale(1.01);
 }
 
@@ -549,7 +559,7 @@ body.nav-lock { overflow: hidden; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.75) contrast(1.12);
+  filter: grayscale(1) contrast(1.15);
 }
 
 .film-stage .play-badge {
@@ -628,7 +638,7 @@ body.nav-lock { overflow: hidden; }
 }
 
 .tape {
-  --tape: #ef3d29;
+  --tape: #cfcfcf;
   position: absolute;
   inset: 0;
   margin: auto;
@@ -731,11 +741,11 @@ body.nav-lock { overflow: hidden; }
   opacity: 0;
 }
 
-.tape.red { --tape: #ef3d29; }
-.tape.lime { --tape: #d8ff36; }
-.tape.orange { --tape: #ff7b29; }
-.tape.blue { --tape: #5d7cff; }
-.tape.cream { --tape: #e8e4d7; }
+.tape.red { --tape: #b9b9b9; }
+.tape.lime { --tape: #ffffff; }
+.tape.orange { --tape: #d2d2d2; }
+.tape.blue { --tape: #9a9a9a; }
+.tape.cream { --tape: #e8e8e8; }
 
 .tape-top {
   position: relative;
@@ -803,7 +813,7 @@ body.nav-lock { overflow: hidden; }
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: saturate(0.65) contrast(1.15) brightness(0.92);
+  filter: grayscale(1) contrast(1.18) brightness(0.92);
 }
 
 .tape-thumb::after {
@@ -974,7 +984,7 @@ body.nav-lock { overflow: hidden; }
   width: 100%;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  filter: saturate(0.72) contrast(1.12);
+  filter: grayscale(1) contrast(1.15);
 }
 
 .about-split figcaption {
@@ -1303,7 +1313,7 @@ body.nav-lock { overflow: hidden; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.7) contrast(1.12);
+  filter: grayscale(1) contrast(1.15);
 }
 
 .film-card h3 {
@@ -1916,4 +1926,526 @@ body.lightbox-lock { overflow: hidden; }
   .tape.is-next {
     transition: none;
   }
+}
+
+/* ============================================================
+   VHS TRAVEL DOC — night depth, 3D globe, tapes, new pages
+   ============================================================ */
+
+/* —— Global CRT / vignette layer —— */
+.crt {
+  position: fixed;
+  inset: 0;
+  z-index: 41;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 120% at 50% 50%, transparent 58%, rgba(0, 0, 0, 0.55) 100%),
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, 0.06) 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+}
+
+/* —— Header socials cluster —— */
+.header-socials {
+  display: inline-flex;
+  gap: 12px;
+  margin-left: 18px;
+}
+
+.header-socials a {
+  font: 800 10px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.header-socials a:hover { color: var(--phosphor); }
+
+.nav-desktop a.is-active,
+.nav-desktop a:hover { color: var(--lime); }
+
+/* —— Scene visibility (3D vs fallback) —— */
+.scene-3d { display: none; }
+.scene-root.is-live .scene-fallback { display: none; }
+.scene-root.is-live .globe-mount,
+.scene-root.is-live .tape-mount,
+.scene-root.is-live .tape-wall-mount { display: block; }
+.scene-root.is-live .globe-detail { display: flex; }
+
+/* —— Globe hero —— */
+.globe-hero {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  min-height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
+  border-bottom: 1px solid var(--line);
+}
+
+.globe-mount {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.globe-mount canvas { position: absolute; inset: 0; }
+
+.tape-mount {
+  position: absolute;
+  z-index: 2;
+  right: 3vw;
+  bottom: 14vh;
+  width: min(420px, 42vw);
+  height: min(300px, 34vh);
+  pointer-events: auto;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.6));
+}
+
+.globe-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 5, 0.55) 0%, transparent 22%, transparent 60%, rgba(0, 0, 0, 0.85) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, transparent 40%);
+}
+
+.globe-copy {
+  position: absolute;
+  z-index: 3;
+  left: var(--pad);
+  bottom: 9vh;
+  max-width: 60ch;
+  pointer-events: none;
+}
+
+.globe-copy .kicker {
+  font: 700 11px/1.5 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-left: 5px solid var(--phosphor);
+  padding-left: 12px;
+  margin: 0 0 14px;
+  color: var(--paper);
+}
+
+.globe-copy h1 {
+  font-family: var(--font-display);
+  font-size: clamp(64px, 12vw, 190px);
+  line-height: 0.72;
+  letter-spacing: -0.07em;
+  margin: 0;
+  text-transform: uppercase;
+  transform: scaleY(1.06);
+  transform-origin: left bottom;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.22);
+}
+
+.globe-copy h1 em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--lime);
+}
+
+.globe-copy .globe-sub {
+  margin: 18px 0 0;
+  font: 700 12px/1.5 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  max-width: 46ch;
+}
+
+.globe-hint {
+  position: absolute;
+  z-index: 3;
+  left: var(--pad);
+  bottom: 3.5vh;
+  font: 700 10px/1.4 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--phosphor);
+  pointer-events: none;
+  animation: blink 2.4s steps(1) infinite;
+}
+
+/* —— Globe detail panel —— */
+.globe-detail {
+  position: absolute;
+  z-index: 3;
+  right: var(--pad);
+  top: 120px;
+  width: min(340px, 80vw);
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  background: rgba(8, 8, 8, 0.72);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--phosphor);
+  pointer-events: auto;
+}
+
+.globe-detail-cat {
+  font: 800 10px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--phosphor);
+}
+
+.globe-detail h3 {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.4vw, 40px);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.globe-detail-loc {
+  margin: 0;
+  font: 700 10px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.globe-detail-blurb {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--paper);
+}
+
+.globe-detail-cta { margin-top: 6px; }
+.globe-detail-cta .cta-primary { border: 0; }
+
+/* —— Globe fallback (no WebGL / reduced motion) —— */
+.globe-fallback {
+  position: relative;
+  min-height: 82svh;
+  min-height: 82vh;
+  display: grid;
+  align-items: end;
+  background:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.85), rgba(5, 5, 5, 0.35)),
+    url("/images/hero-f4i-garage-night.jpg") center / cover;
+  filter: grayscale(1);
+}
+
+/* —— Timecode overlay —— */
+.timecode {
+  position: absolute;
+  z-index: 3;
+  top: 112px;
+  right: var(--pad);
+  font: 12px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: right;
+  text-shadow: 1px 1px #000;
+  color: var(--paper);
+  pointer-events: none;
+}
+
+.timecode b { color: var(--phosphor); }
+
+/* —— Content pillars —— */
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2px;
+  margin-top: 44px;
+  border: 1px solid var(--line);
+}
+
+.pillar {
+  position: relative;
+  padding: 30px 22px 26px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid transparent;
+  overflow: hidden;
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.pillar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent, var(--lime));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+
+.pillar:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--accent, var(--lime));
+  transform: translateY(-3px);
+}
+
+.pillar:hover::after { transform: scaleX(1); }
+
+.pillar .num {
+  font: 800 10px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  color: var(--accent, var(--lime));
+  margin-bottom: 16px;
+}
+
+.pillar h3 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: -0.04em;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.pillar p {
+  margin: 0;
+  font: 600 12px/1.5 var(--font-mono);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pillar.red { --accent: var(--red); }
+.pillar.lime { --accent: var(--lime); }
+.pillar.orange { --accent: var(--orange); }
+.pillar.blue { --accent: var(--signal); }
+
+/* —— Watch: 3D tape wall —— */
+.tape-wall {
+  position: relative;
+  margin-top: 40px;
+}
+
+.tape-wall-mount {
+  width: 100%;
+  height: clamp(360px, 52vh, 620px);
+  position: relative;
+}
+
+.tape-wall-mount canvas { position: absolute; inset: 0; }
+
+.wall-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.wall-filters button {
+  border: 1.5px solid var(--line);
+  padding: 10px 14px;
+  font: 800 10px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: rgba(255, 255, 255, 0.035);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.wall-filters button:hover,
+.wall-filters button.is-active {
+  background: var(--lime);
+  color: var(--ink);
+  border-color: var(--lime);
+}
+
+.wall-hint {
+  margin-top: 14px;
+  font: 700 10px/1.4 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phosphor);
+}
+
+/* —— Shop —— */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 44px;
+}
+
+.product-card {
+  position: relative;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.product-card:hover { transform: translateY(-4px); border-color: var(--phosphor); }
+
+.product-figure {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(135deg, #1c1c1c, #0c0d0b 60%, #202020);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.product-figure img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.15); }
+
+.product-figure .glyph {
+  font-family: var(--font-display);
+  font-size: 64px;
+  color: rgba(216, 255, 54, 0.25);
+  letter-spacing: -0.05em;
+}
+
+.product-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--lime);
+  color: var(--ink);
+  font: 800 9px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  padding: 5px 7px;
+  text-transform: uppercase;
+}
+
+.product-body { padding: 16px; }
+
+.product-body h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: -0.03em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.product-body p {
+  margin: 0 0 12px;
+  font: 700 10px/1.5 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.product-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 800 12px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.product-price .btn { min-height: 40px; padding: 0 14px; }
+
+/* —— Socials list (contact / footer) —— */
+.socials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.social-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--phosphor);
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.social-card:hover { background: rgba(255, 255, 255, 0.09); transform: translateY(-2px); }
+
+.social-card .plat {
+  font: 800 10px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--phosphor);
+}
+
+.social-card .handle {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  margin-top: 44px;
+  align-items: start;
+}
+
+/* —— Toast —— */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translate(-50%, 20px);
+  z-index: 120;
+  background: var(--ink);
+  color: var(--lime);
+  border: 1.5px solid var(--lime);
+  box-shadow: 5px 5px 0 var(--red);
+  padding: 12px 18px;
+  font: 800 11px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* —— Scroll reveal —— */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+[data-reveal].is-in { opacity: 1; transform: none; }
+
+/* —— Responsive additions —— */
+@media (max-width: 900px) {
+  .header-socials { display: none; }
+
+  .tape-mount {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 20vh;
+    width: min(300px, 76vw);
+    height: 210px;
+  }
+
+  .globe-detail {
+    top: auto;
+    bottom: 4vh;
+    right: 50%;
+    transform: translateX(50%);
+    width: min(420px, calc(100% - 2 * var(--pad)));
+  }
+
+  .globe-copy { bottom: auto; top: 96px; }
+  .globe-copy h1 { font-size: 17vw; }
+  .globe-hint { display: none; }
+  .contact-layout { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .globe-hint { animation: none; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
 }

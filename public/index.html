@@ -13,8 +13,8 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Kisala Films — the film of Elombe Kisala’s life outside work. Life through the lens. Recorded and directed by Elombe Kisala.">
-  <meta name="theme-color" content="#070807">
+  <meta name="description" content="Kisala Films — Elombe Kisala, a world traveler with a camcorder. Automotive video magazines, cinematic brand edits, life vlogs, and cinematic travel films. Life through my lens.">
+  <meta name="theme-color" content="#000000">
   <title>Kisala Films — Life Through My Lens</title>
   <link rel="icon" href="/images/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
@@ -27,91 +27,141 @@
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
+  <div class="crt" aria-hidden="true"></div>
 
   <header class="site-header">
-    <a class="mark" href="/">KISALA FILMS <span>ARCHIVE</span></a>
+    <a class="mark" href="/">KISALA FILMS <span>FIELD DISPATCH</span></a>
     <nav class="nav-desktop" aria-label="Primary">
+      <a href="/">HOME</a>
       <a href="/watch.html">WATCH</a>
-      <a href="/series.html">SERIES</a>
       <a href="/about.html">ABOUT</a>
-      <a href="/dispatches.html">DISPATCHES</a>
-      <a href="/work-with-me.html">COLLABS</a>
+      <a href="/shop.html">SHOP</a>
+      <a href="/contact.html">CONTACT</a>
     </nav>
-    <div class="header-meta"><span>LIVE INDEX</span><i aria-hidden="true"></i> <span data-live-clock>00:00:00</span></div>
+    <div class="header-meta">
+      <i aria-hidden="true"></i> <span data-live-clock>00:00:00</span>
+      <span class="header-socials">
+        <a href="https://www.instagram.com/kisalafilms/" target="_blank" rel="noopener">IG</a>
+        <!-- PLACEHOLDER: YouTube channel handle not confirmed -->
+        <a href="https://www.youtube.com/@kisalafilms" target="_blank" rel="noopener">YT</a>
+      </span>
+    </div>
     <button class="menu-button" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-menu">MENU +</button>
   </header>
   <div class="mobile-menu" id="mobile-menu" data-mobile-menu aria-hidden="true">
+    <a href="/">HOME</a>
     <a href="/watch.html">WATCH</a>
-    <a href="/series.html">SERIES</a>
     <a href="/about.html">ABOUT</a>
-    <a href="/dispatches.html">DISPATCHES</a>
-    <a href="/work-with-me.html">COLLABS</a>
+    <a href="/shop.html">SHOP</a>
+    <a href="/contact.html">CONTACT</a>
+    <a href="https://www.instagram.com/kisalafilms/" target="_blank" rel="noopener">INSTAGRAM &#8599;</a>
+    <a href="https://www.youtube.com/@kisalafilms" target="_blank" rel="noopener">YOUTUBE &#8599;</a>
   </div>
 
   <main>
-    <section class="hero" aria-label="Opening transmission" data-hero-vimeo="1066971784">
-      <div class="hero-media" data-hero-media aria-hidden="true"></div>
-      <div class="hero-image is-fallback" role="img" aria-label="Night motorcycle ride still"></div>
-      <div class="hero-overlay" aria-hidden="true"></div>
+    <section class="globe-hero scene-root" data-home-scene aria-label="World travel archive globe">
+      <div class="globe-mount scene-3d" data-globe-scene></div>
+      <div class="globe-hero-overlay" aria-hidden="true"></div>
       <div class="scanline" aria-hidden="true"></div>
-      <div class="rec"><b aria-hidden="true"></b> REC &nbsp; LP</div>
-      <div class="counter">TAPE 001<br>L0ST TAPES</div>
-      <div class="hero-copy">
-        <p>RECORDED &amp; DIRECTED BY ELOMBE KISALA<br>LIFE THROUGH MY LENS</p>
-        <h1>KISALA<br><em>FILMS.</em></h1>
-        <div class="hero-bottom">
-          <span>THE FILM OF A LIFE OUTSIDE WORK</span>
-          <span>GLOBAL / WORLDWIDE</span>
+
+      <div class="globe-fallback scene-fallback">
+        <div class="globe-copy" style="position:static;padding:0 var(--pad) 9vh">
+          <p class="kicker">RECORDED &amp; DIRECTED BY ELOMBE KISALA</p>
+          <h1>KISALA<br><em>FILMS.</em></h1>
+          <p class="globe-sub">A world traveler with a camcorder. Automotive video magazines, cinematic brand edits, life vlogs and travel films — life through my lens.</p>
         </div>
       </div>
-      <div class="hero-actions">
-        <a class="cta-primary" href="#" data-lightbox-open data-vimeo="1066971784" data-title="LOST TAPES: L0ST TAPES V1">WATCH THE LATEST <span>↘</span></a>
-        <a class="cta-secondary" href="#series">ENTER THE ARCHIVE</a>
+
+      <div class="rec"><b aria-hidden="true"></b> REC &nbsp; LP</div>
+      <div class="timecode">TAPE 001 &middot; FIELD DISPATCH<br><b data-live-clock>00:00:00</b></div>
+
+      <div class="globe-copy scene-3d">
+        <p class="kicker">RECORDED &amp; DIRECTED BY ELOMBE KISALA</p>
+        <h1>KISALA<br><em>FILMS.</em></h1>
+        <p class="globe-sub">A world traveler with a camcorder — life through my lens.</p>
       </div>
+
+      <div class="tape-mount scene-3d" data-tape-scene aria-hidden="true"></div>
+      <aside class="globe-detail scene-3d" data-globe-detail aria-live="polite"></aside>
+
+      <div class="globe-hint scene-3d">&#9673; DRAG THE GLOBE &middot; CLICK A GLOWING PIN TO PULL A TAPE</div>
     </section>
 
     <div class="ticker" aria-hidden="true">
-      <div>TRAVEL — MOTORCYCLE — CARS — WEEKEND BUILDS — STUDIO — PEOPLE — DISCOVERY — NO GPS — LIFE THROUGH MY LENS — TRAVEL — MOTORCYCLE — CARS — WEEKEND BUILDS — STUDIO — PEOPLE — DISCOVERY — NO GPS — LIFE THROUGH MY LENS —</div>
+      <div>TRAVEL — AUTOMOTIVE — BRAND EDITS — LIFE VLOGS — CINEMATIC — NO GPS — LIFE THROUGH MY LENS — TRAVEL — AUTOMOTIVE — BRAND EDITS — LIFE VLOGS — CINEMATIC — NO GPS — LIFE THROUGH MY LENS —</div>
     </div>
 
     <section class="section section--charcoal" id="latest">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <div>
           <span class="eyebrow">LATEST TRANSMISSION</span>
           <h2>WATCH<br>THIS.</h2>
         </div>
-        <p>ONE CUT FROM THE LIFE FILM.<br>THE REST LIVE IN THE CRATE.</p>
+        <p>ONE CUT FROM THE ROAD.<br>THE REST LIVE ON THE GLOBE.</p>
       </div>
-      <div class="latest-film">
+      <div class="latest-film" data-reveal>
         <a class="film-stage" href="#" data-lightbox-open data-vimeo="1066971784" data-title="LOST TAPES: L0ST TAPES V1" aria-label="Play L0ST TAPES V1">
           <img src="/images/thumb-shop-bts.jpg" alt="Still from L0ST TAPES" width="1280" height="720" loading="eager">
-          <span class="play-badge">▶ PLAY FILM</span>
+          <span class="play-badge">&#9654; PLAY FILM</span>
         </a>
         <div class="film-meta">
-          <span class="stamp">LOST TAPES · V1</span>
+          <span class="stamp">LIFE VLOG &middot; LOS ANGELES</span>
           <h3>L0ST TAPES</h3>
-          <p>Chapter — Lost Tapes<br>Life documentation<br>Format — 1080p · Vimeo</p>
-          <p>Raw tape from the garage and the night — documenting the build, the machine, and the hours after work when the real film starts.</p>
-          <a class="cta-primary" href="#" data-lightbox-open data-vimeo="1066971784" data-title="LOST TAPES: L0ST TAPES V1">OPEN IN PLAYER <span>↗</span></a>
+          <p>Chapter — Lost Tapes<br>Life documentation<br>Format — 1080p &middot; Vimeo</p>
+          <p>Raw tape from the road and the night — documenting the hours between the big shoots, camcorder always rolling.</p>
+          <a class="cta-primary" href="#" data-lightbox-open data-vimeo="1066971784" data-title="LOST TAPES: L0ST TAPES V1">OPEN IN PLAYER <span>&#8599;</span></a>
         </div>
       </div>
     </section>
 
-    <section class="section section--charcoal" id="series" style="padding-top:0">
-      <div class="section-head">
+    <section class="section section--dark" id="pillars">
+      <div class="section-head" data-reveal>
+        <div>
+          <span class="eyebrow">WHAT YOU'LL FIND</span>
+          <h2>FOUR<br><em>REELS.</em></h2>
+        </div>
+        <p>ONE CAMCORDER.<br>FOUR WAYS I POINT IT.</p>
+      </div>
+      <div class="pillars" data-reveal>
+        <article class="pillar red">
+          <div class="num">01 / AUTO MAG</div>
+          <h3>Automotive Video Magazines</h3>
+          <p>Cars, bikes, and the people who keep them alive — cinematic magazine issues from the machine world.</p>
+        </article>
+        <article class="pillar lime">
+          <div class="num">02 / BRAND</div>
+          <h3>Cinematic Brand Edits</h3>
+          <p>Commissioned brand films shot like short cinema — product, place, and motion.</p>
+        </article>
+        <article class="pillar orange">
+          <div class="num">03 / LIFE</div>
+          <h3>Life Vlogs</h3>
+          <p>Raw days on camcorder — the hours between the big shoots, documented as they happen.</p>
+        </article>
+        <article class="pillar blue">
+          <div class="num">04 / TRAVEL</div>
+          <h3>Cinematic Travel</h3>
+          <p>The world through a camcorder — cities found, exits missed, no GPS required.</p>
+        </article>
+      </div>
+      <p style="margin-top:34px" data-reveal><a class="cta-primary" href="/watch.html">ENTER THE TAPE WALL <span>&#8599;</span></a></p>
+    </section>
+
+    <section class="section section--charcoal" id="series">
+      <div class="section-head" data-reveal>
         <div>
           <span class="eyebrow">THE FOOTAGE CRATE</span>
           <h2>SELECT<br>A TAPE</h2>
         </div>
-        <p>LIFE CHAPTERS ON TAPE.<br>SWIPE TO CHANGE THE REEL.</p>
+        <p>FILMED CHAPTERS ON TAPE.<br>SWIPE TO CHANGE THE REEL.</p>
       </div>
 
-      <div class="tape-crate" data-tape-slider>
+      <div class="tape-crate" data-tape-slider data-reveal>
         <div class="tape-stage">
           <div class="tape-track" data-tape-track></div>
           <div class="tape-nav">
-            <button type="button" data-tape-prev aria-label="Previous tape">←</button>
-            <button type="button" data-tape-next aria-label="Next tape">→</button>
+            <button type="button" data-tape-prev aria-label="Previous tape">&#8592;</button>
+            <button type="button" data-tape-next aria-label="Next tape">&#8594;</button>
           </div>
         </div>
         <div class="tape-index" data-tape-index role="tablist" aria-label="Series index"></div>
@@ -120,107 +170,49 @@
     </section>
 
     <section class="section section--dark" id="about-elombe">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <div>
-          <span class="eyebrow">ARTIST STATEMENT</span>
-          <h2>THE<br><em>SHADOW.</em></h2>
+          <span class="eyebrow">BEHIND THE LENS</span>
+          <h2>THE<br><em>TRAVELER.</em></h2>
         </div>
-        <p>NOT THE WHITE COLLAR PAGE.<br>THIS IS WHERE I’M LIVING.</p>
+        <p>ELOMBE KISALA.<br>A CAMCORDER AND A PASSPORT.</p>
       </div>
-      <div class="about-split">
+      <div class="about-split" data-reveal>
         <figure>
-          <img src="/images/story-elombe-workshop.jpg" alt="Elombe Kisala in the workshop" width="900" height="1125" loading="lazy">
-          <figcaption>Behind the scenes</figcaption>
+          <img src="/images/story-elombe-workshop.jpg" alt="Elombe Kisala on location" width="900" height="1125" loading="lazy">
+          <figcaption>On location</figcaption>
         </figure>
         <div>
-          <p class="body-copy">I’m Elombe Kisala. Kisala Films is the true film of my life outside work — travel, motorcycles, cars, weekend builds, a one-man digital creative studio, new people, new places, and the skill sets I’m stacking in public.</p>
-          <p class="body-copy">My professional page lives at <a href="https://elombekisala.com" rel="noopener" style="color:var(--lime);border-bottom:1px solid var(--lime)">elombekisala.com</a>. This archive is the shadow side: life through my lens, recorded and directed by me.</p>
-          <p style="margin-top:28px"><a class="cta-primary" href="/about.html">READ THE FULL STORY <span>↘</span></a></p>
+          <p class="body-copy">I'm Elombe Kisala. Kisala Films is life through my lens — a world traveler with a camcorder, making automotive video magazines, cinematic brand edits, life vlogs and travel films from wherever the road goes next.</p>
+          <p class="body-copy">Every glowing pin on the globe is a place I've pointed the camera. Spin it, pick a city, pull the tape.</p>
+          <p style="margin-top:28px"><a class="cta-primary" href="/about.html">READ THE FULL STORY <span>&#8600;</span></a></p>
         </div>
       </div>
     </section>
 
-    <section class="section section--charcoal" id="themes">
-      <div class="section-head">
+    <section class="section section--charcoal" id="shop-teaser">
+      <div class="section-head" data-reveal>
         <div>
-          <span class="eyebrow">WHAT YOU’LL FIND</span>
-          <h2>LIFE<br>CHAPTERS.</h2>
+          <span class="eyebrow">THE KIOSK</span>
+          <h2>SHOP<br>THE<br><em>ARCHIVE.</em></h2>
         </div>
-        <p>CINEMATIC VLOGS.<br>MACHINES. PEOPLE. DISCOVERY.</p>
+        <p>TAPES, PRINTS &amp; MERCH<br>FOR GETTING LOST ON PURPOSE.</p>
       </div>
-      <div class="theme-grid">
-        <article>
-          <div class="num">01</div>
-          <h3>Cinematic vlogs</h3>
-          <p>YouTube docs of what I’m actually doing — not a highlight reel for hire.</p>
-        </article>
-        <article>
-          <div class="num">02</div>
-          <h3>Machines</h3>
-          <p>Motorcycles, cars, garage nights, and getting the bike together.</p>
-        </article>
-        <article>
-          <div class="num">03</div>
-          <h3>Travel</h3>
-          <p>Global frames — exits missed, cities found, no GPS required.</p>
-        </article>
-        <article>
-          <div class="num">04</div>
-          <h3>Studio builds</h3>
-          <p>One-man digital creative studio. Skills stacked in the open.</p>
-        </article>
-        <article>
-          <div class="num">05</div>
-          <h3>People &amp; nights</h3>
-          <p>New faces, meets, and the hours after the day job ends.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section section--dark" id="collabs">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">SPONSORS &amp; COLLABS</span>
-          <h2>RIDE<br>WITH<br><em>ME.</em></h2>
-        </div>
-        <p>ACTION SPORTS &amp; LIFESTYLE<br>BRANDS THAT FIT THE HOBBIES.</p>
-      </div>
-      <div class="partner-block">
-        <div>
-          <p class="body-copy">I’m building a YouTube practice around exploration — machines, travel, and the projects that pull me out of the office. Brands that live in that world: let’s talk.</p>
-          <p class="partner-list" style="margin-top:20px">
-            Action sports &amp; moto<br>
-            Travel / self-discovery<br>
-            Tools, film, and garage gear<br>
-            <!-- PLACEHOLDER: no invented sponsor logos -->
-          </p>
-        </div>
-        <a class="cta-primary" href="/work-with-me.html">START A COLLAB <span>↗</span></a>
-      </div>
-    </section>
-
-    <section class="section section--charcoal" id="kiosk">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">KIOSK</span>
-          <h2>MERCH<br><em>SOON.</em></h2>
-        </div>
-        <p>TRAVEL &amp; SELF-DISCOVERY<br>WHEN THE DROP IS REAL.</p>
-      </div>
-      <p class="body-copy" style="margin-top:28px">No fake storefront. When Kisala drops exist — pieces that inspire getting lost on purpose — they’ll land here.</p>
+      <p class="body-copy" style="margin-top:28px" data-reveal>Limited VHS-inspired drops, travel prints and field gear. First run is loading now.</p>
+      <p style="margin-top:24px" data-reveal><a class="cta-primary" href="/shop.html">VISIT THE SHOP <span>&#8599;</span></a></p>
     </section>
 
     <section class="section section--dark" id="end">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <div>
           <span class="eyebrow">END TRANSMISSION</span>
           <h2>STAY IN<br>THE LOOP.</h2>
         </div>
         <p>NEW TAPES. FIELD NOTES.<br>NO CORPORATE NEWSLETTER ENERGY.</p>
       </div>
-      <div class="end-grid">
+      <div class="end-grid" data-reveal>
         <div>
-          <p class="body-copy">Drop your email for new cuts and dispatches from the life film.</p>
+          <p class="body-copy">Drop your email for new cuts and dispatches from the road.</p>
           <form class="newsletter" action="https://formsubmit.co/hello@swftstudios.com" method="POST" accept-charset="UTF-8">
             <input type="hidden" name="_subject" value="Kisala Films — archive subscribe">
             <input type="hidden" name="_template" value="table">
@@ -230,12 +222,12 @@
             <input id="home-email" type="email" name="email" required placeholder="YOU@EMAIL.COM" autocomplete="email">
             <button type="submit">SUBSCRIBE</button>
           </form>
-          <p class="footer-counterpart">White collar → <a href="https://elombekisala.com" rel="noopener">elombekisala.com</a></p>
+          <p class="footer-counterpart">White collar &rarr; <a href="https://elombekisala.com" rel="noopener">elombekisala.com</a></p>
         </div>
         <div class="footer-nav" style="gap:16px">
-          <!-- PLACEHOLDER: YouTube channel URL not set yet -->
-          <a href="https://www.instagram.com/kisalafilms/" target="_blank" rel="noopener">INSTAGRAM ↗</a>
-          <a href="/work-with-me.html">COLLABS</a>
+          <a href="https://www.instagram.com/kisalafilms/" target="_blank" rel="noopener">INSTAGRAM &#8599;</a>
+          <a href="https://www.youtube.com/@kisalafilms" target="_blank" rel="noopener">YOUTUBE &#8599;</a>
+          <a href="/contact.html">CONTACT</a>
           <a href="mailto:hello@swftstudios.com">HELLO@SWFTSTUDIOS.COM</a>
         </div>
       </div>
@@ -246,17 +238,23 @@
     <div class="footer-mark">KISALA<br><i>FILMS</i></div>
     <p class="footer-tag">GO SOMEWHERE<br>YOU CAN'T EXPLAIN.</p>
     <div class="footer-nav">
+      <a href="/">HOME</a>
       <a href="/watch.html">WATCH</a>
       <a href="/series.html">SERIES</a>
       <a href="/about.html">ABOUT</a>
       <a href="/dispatches.html">DISPATCHES</a>
-      <a href="/work-with-me.html">COLLABS</a>
+      <a href="/shop.html">SHOP</a>
+      <a href="/contact.html">CONTACT</a>
       <a href="https://elombekisala.com" rel="noopener">ELOMBEKISALA.COM</a>
     </div>
-    <small>© 2026 — RECORDED &amp; DIRECTED BY ELOMBE KISALA<br>THE FILM OF A LIFE OUTSIDE WORK</small>
+    <small>&copy; 2026 — RECORDED &amp; DIRECTED BY ELOMBE KISALA<br>LIFE THROUGH MY LENS</small>
   </footer>
 
+  <script type="importmap">
+  { "imports": { "three": "/js/vendor/three.module.js" } }
+  </script>
   <script src="/js/nav.js" defer></script>
   <script src="/js/vhs.js" defer></script>
+  <script type="module" src="/js/scene-boot.js"></script>
 </body>
 </html>
