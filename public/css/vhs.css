@@ -563,9 +563,28 @@ body.nav-lock { overflow: hidden; }
   filter: contrast(1.05) saturate(1.05);
 }
 
+.film-stage-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #111;
+}
+.film-stage-media iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.film-stage.has-preview img { opacity: 0; }
+
 .film-stage .play-badge {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.28);
@@ -573,6 +592,13 @@ body.nav-lock { overflow: hidden; }
   letter-spacing: 0.12em;
   color: var(--lime);
   text-transform: uppercase;
+  transition: background 0.25s ease;
+}
+.film-stage:hover .play-badge { background: rgba(0, 0, 0, 0.14); }
+
+@media (prefers-reduced-motion: reduce) {
+  .film-stage-media { display: none; }
+  .film-stage.has-preview img { opacity: 1; }
 }
 
 .film-meta {

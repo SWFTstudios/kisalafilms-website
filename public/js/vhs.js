@@ -417,6 +417,27 @@
     });
   });
 
+  /* Inline Vimeo previews (e.g. featured film thumbnail) — muted, looping */
+  let vimeoApiLoaded = false;
+  function loadVimeoApi() {
+    if (vimeoApiLoaded) return;
+    vimeoApiLoaded = true;
+    const script = document.createElement("script");
+    script.src = "https://player.vimeo.com/api/player.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }
+  if (!prefersReduced) {
+    document.querySelectorAll("[data-vimeo-preview]").forEach((el) => {
+      const id = el.getAttribute("data-vimeo-preview");
+      const mount = el.querySelector("[data-preview-media]");
+      if (!id || !mount) return;
+      mount.innerHTML = `<iframe src="${vimeoEmbedUrl(id, { background: true })}" allow="autoplay; fullscreen; picture-in-picture" title="Preview" tabindex="-1"></iframe>`;
+      el.classList.add("has-preview");
+      loadVimeoApi();
+    });
+  }
+
   /* Hero Vimeo background — skip when reduced motion */
   const hero = document.querySelector("[data-hero-vimeo]");
   if (hero && !prefersReduced) {
