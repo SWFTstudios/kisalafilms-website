@@ -1605,16 +1605,42 @@ body.nav-lock { overflow: hidden; }
 
 .film-card figure {
   margin: 0 0 12px;
+  position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
   background: #111;
 }
 
+.film-card-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #111;
+}
+.film-card-media iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 .film-card img {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: sepia(0.18) saturate(0.82) contrast(1.08) brightness(0.96);
+}
+
+.film-card.has-preview img { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .film-card-media { display: none; }
+  .film-card.has-preview img { opacity: 1; }
 }
 
 .film-card h3 {
