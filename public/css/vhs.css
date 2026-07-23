@@ -2701,6 +2701,8 @@ body.lightbox-lock { overflow: hidden; }
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
   pointer-events: none;
 }

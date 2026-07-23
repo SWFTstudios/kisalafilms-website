@@ -16,7 +16,7 @@
 
   const N = items.length;
   const SPACING = 560; // z-depth between chapters
-  const NODE_Y = 150; // path sits below the floating cards
+  const BOTTOM_PAD = 76; // gap between the path line and the bottom of the stage
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
   scroller.style.height = `${(N + 1) * 100}vh`;
@@ -24,14 +24,16 @@
 
   /* Build the connecting path (nodes + segments) in the shared 3D space so it
      travels with the cards. Everything is a child of the track, positioned at
-     base depth -i*SPACING; the whole track is pushed forward as you scroll. */
+     base depth -i*SPACING; the whole track is pushed forward as you scroll.
+     The path's vertical offset lives on the container so it can be re-centered
+     to the bottom of the stage on resize. */
   const path = document.createElement("div");
   path.className = "z-path";
   const nodes = [];
   for (let i = 0; i < N; i++) {
     const node = document.createElement("span");
     node.className = "z-node";
-    node.style.transform = `translate(-50%, -50%) translateY(${NODE_Y}px) translateZ(${(-i * SPACING).toFixed(1)}px)`;
+    node.style.transform = `translate(-50%, -50%) translateZ(${(-i * SPACING).toFixed(1)}px)`;
     path.appendChild(node);
     nodes.push(node);
 
@@ -39,11 +41,17 @@
       const seg = document.createElement("span");
       seg.className = "z-seg";
       seg.style.height = `${SPACING}px`;
-      seg.style.transform = `translate(-50%, -50%) translateY(${NODE_Y}px) translateZ(${(-(i + 0.5) * SPACING).toFixed(1)}px) rotateX(90deg)`;
+      seg.style.transform = `translate(-50%, -50%) translateZ(${(-(i + 0.5) * SPACING).toFixed(1)}px) rotateX(90deg)`;
       path.appendChild(seg);
     }
   }
   track.insertBefore(path, track.firstChild);
+
+  /* Push the path toward the bottom of the sticky stage (centered on X). */
+  function positionPath(stageH) {
+    const offsetY = Math.max(120, stageH / 2 - BOTTOM_PAD);
+    path.style.transform = `translateY(${offsetY.toFixed(1)}px)`;
+  }
 
   /* Cards sit at fixed base depth; only the track moves in Z. */
   items.forEach((el, i) => {
@@ -63,6 +71,8 @@
 
     const p = clamp(-rect.top / distance, 0, 1);
     const active = p * (N - 1);
+
+    positionPath(stageH);
 
     // Push the whole world forward so the active chapter reaches the camera.
     track.style.transform = `translateZ(${(active * SPACING).toFixed(1)}px)`;
