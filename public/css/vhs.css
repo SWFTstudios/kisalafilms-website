@@ -2928,6 +2928,15 @@ body.lightbox-lock { overflow: hidden; }
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .shelf-tape,
+  .shelf-tape.is-active,
+  .shelf-tape:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
 /* —— Shop —— */
 .shop-grid {
   display: grid;
