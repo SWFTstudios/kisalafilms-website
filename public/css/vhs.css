@@ -314,6 +314,7 @@ body.nav-lock { overflow: hidden; }
   letter-spacing: 0.08em;
   text-shadow: 1px 1px #000;
   text-transform: uppercase;
+  pointer-events: none;
 }
 
 .rec { left: var(--pad); }
@@ -1987,9 +1988,10 @@ body.lightbox-lock { overflow: hidden; }
   position: absolute;
   inset: 0;
   z-index: 0;
+  touch-action: none;
 }
 
-.globe-mount canvas { position: absolute; inset: 0; }
+.globe-mount canvas { position: absolute; inset: 0; touch-action: none; }
 
 .tape-mount {
   position: absolute;
