@@ -454,19 +454,17 @@
     });
   }
 
-  /* Hero Vimeo background — skip when reduced motion */
-  const hero = document.querySelector("[data-hero-vimeo]");
-  if (hero && !prefersReduced) {
-    const id = hero.getAttribute("data-hero-vimeo");
-    const mount = hero.querySelector("[data-hero-media]");
-    if (id && mount) {
-      mount.innerHTML = `<iframe src="${vimeoEmbedUrl(id, { background: true })}" allow="autoplay; fullscreen; picture-in-picture" title="L0ST TAPES background" tabindex="-1"></iframe>`;
+  /* Hero / page-hero Vimeo backgrounds — skip when reduced motion */
+  if (!prefersReduced) {
+    document.querySelectorAll("[data-hero-vimeo]").forEach((hero) => {
+      const id = hero.getAttribute("data-hero-vimeo");
+      const mount = hero.querySelector("[data-hero-media]");
+      if (!id || !mount) return;
+      const title = hero.getAttribute("data-hero-title") || "Video background";
+      mount.innerHTML = `<iframe src="${vimeoEmbedUrl(id, { background: true })}" allow="autoplay; fullscreen; picture-in-picture" title="${title}" tabindex="-1"></iframe>`;
       hero.classList.add("has-video");
-      const script = document.createElement("script");
-      script.src = "https://player.vimeo.com/api/player.js";
-      script.async = true;
-      document.body.appendChild(script);
-    }
+      loadVimeoApi();
+    });
   }
 
   document.addEventListener("visibilitychange", () => {
