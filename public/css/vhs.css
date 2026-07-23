@@ -1254,16 +1254,50 @@ body.nav-lock { overflow: hidden; }
   filter: contrast(1.05) saturate(1.05);
 }
 
+.about-split .intro-thumb {
+  margin-top: 0;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: none;
+  border: 0;
+}
+
+.about-split .intro-thumb-media iframe {
+  top: 50%;
+  left: 50%;
+  width: 177.78%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 56.25%;
+  transform: translate(-50%, -50%);
+}
+
+.about-split .intro-thumb-fallback {
+  aspect-ratio: auto;
+  filter: sepia(0.28) saturate(0.72) contrast(1.14) brightness(0.92);
+}
+
+.about-split .intro-thumb-chrome {
+  grid-template-rows: auto 1fr;
+  padding: 14px;
+}
+
+.about-split .intro-thumb-label {
+  font-size: 10px;
+}
+
 .about-split figcaption {
   position: absolute;
   left: 12px;
   bottom: 12px;
+  z-index: 3;
   font: 700 10px/1 var(--font-mono);
   letter-spacing: 0.12em;
   background: var(--lime);
   color: var(--ink);
   padding: 6px 8px;
   text-transform: uppercase;
+  pointer-events: none;
 }
 
 /* —— Dispatches —— */
