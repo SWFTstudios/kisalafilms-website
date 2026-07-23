@@ -220,9 +220,17 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   let velX = 0;
   let moved = false;
 
+  /* External (scroll-driven) rotation target. When set, the globe eases toward
+     these angles instead of idle-spinning; a user drag temporarily disables it. */
+  let externalMode = false;
+  let externalY = 0;
+  let externalX = 0;
+  const normAngle = (a) => ((a + Math.PI) % (Math.PI * 2)) - Math.PI;
+
   const onDown = (e) => {
     dragging = true;
     moved = false;
+    externalMode = false; // let the user free-spin; scroll re-engages it
     lastX = e.clientX;
     lastY = e.clientY;
     velY = 0;
@@ -306,6 +314,15 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     animateRotation(targetY, targetX);
   }
 
+  /* Point the globe at a lat/lng and keep it there (scroll-driven). */
+  function setFocusLatLng(lat, lng) {
+    if (typeof lat !== "number" || typeof lng !== "number") return;
+    externalY = -(lng + 180) * DEG2RAD - Math.PI / 2;
+    externalX = THREE.MathUtils.clamp(lat * DEG2RAD * 0.7, -0.8, 1.0);
+    externalMode = true;
+    rotAnim = null;
+  }
+
   let rotAnim = null;
   function animateRotation(ty, tx) {
     const sy = world.rotation.y;
@@ -348,10 +365,16 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     if (rotAnim) {
       rotAnim(performance.now());
     } else if (!dragging) {
-      world.rotation.y += velY;
-      world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + velX, -0.9, 1.2);
-      velY += (0.0016 - velY) * 0.02;
-      velX *= 0.9;
+      if (externalMode) {
+        // Ease toward the scroll-driven target (shortest way around Y).
+        world.rotation.y += normAngle(externalY - world.rotation.y) * 0.09;
+        world.rotation.x += (externalX - world.rotation.x) * 0.09;
+      } else {
+        world.rotation.y += velY;
+        world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + velX, -0.9, 1.2);
+        velY += (0.0016 - velY) * 0.02;
+        velX *= 0.9;
+      }
     }
 
     stars.rotation.y += 0.0004;
@@ -394,5 +417,5 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     renderer.domElement.remove();
   }
 
-  return { focusFilm, pause, resume, dispose };
+  return { focusFilm, setFocusLatLng, pause, resume, dispose };
 }

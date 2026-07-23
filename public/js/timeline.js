@@ -19,6 +19,22 @@
   const BOTTOM_PAD = 76; // gap between the path line and the bottom of the stage
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
+  /* Per-card coordinates + the globe it drives (published by scene-boot). */
+  const coords = items.map((el) => ({
+    lat: parseFloat(el.getAttribute("data-lat")),
+    lng: parseFloat(el.getAttribute("data-lng")),
+  }));
+  const hasCoords = coords.every((c) => Number.isFinite(c.lat) && Number.isFinite(c.lng));
+  let aboutGlobe = window.KisalaAboutGlobe || null;
+  window.addEventListener("kisala:about-globe-ready", (e) => {
+    aboutGlobe = e.detail;
+  });
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const lerpLng = (a, b, t) => {
+    let d = ((b - a + 540) % 360) - 180; // shortest way around the globe
+    return a + d * t;
+  };
+
   scroller.style.height = `${(N + 1) * 100}vh`;
   root.classList.add("is-3d");
 
@@ -76,6 +92,14 @@
 
     // Push the whole world forward so the active chapter reaches the camera.
     track.style.transform = `translateZ(${(active * SPACING).toFixed(1)}px)`;
+
+    // Spin the globe to the location between the current and next chapter.
+    if (aboutGlobe && hasCoords) {
+      const i0 = clamp(Math.floor(active), 0, N - 1);
+      const i1 = clamp(i0 + 1, 0, N - 1);
+      const f = active - i0;
+      aboutGlobe.setFocusLatLng(lerp(coords[i0].lat, coords[i1].lat, f), lerpLng(coords[i0].lng, coords[i1].lng, f));
+    }
 
     for (let i = 0; i < N; i++) {
       const delta = i - active; // >0 ahead (deep), 0 focus, <0 passed

@@ -2204,6 +2204,24 @@ body.lightbox-lock { overflow: hidden; }
   .about-globe-stage .globe-hint { display: none; }
 }
 
+/* —— Globe as a scroll-driven backdrop inside the timeline stage —— */
+.z-globe { display: none; }
+.z-timeline.is-3d .z-track { z-index: 1; }
+.scene-root.is-live .z-globe {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.6;
+  pointer-events: none; /* scroll-driven only; let swipes scroll the timeline */
+}
+/* Cards carry the metadata; the globe here is purely the moving backdrop. */
+.z-timeline .globe-detail,
+.z-timeline .globe-fallback { display: none; }
+@media (max-width: 900px) {
+  .scene-root.is-live .z-globe { opacity: 0.46; }
+}
+
 /* —— Globe fallback (no WebGL / reduced motion) —— */
 .globe-fallback {
   position: relative;

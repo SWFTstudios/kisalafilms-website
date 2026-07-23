@@ -76,35 +76,18 @@
       </div>
     </section>
 
-    <section class="section section--dark about-globe scene-root" data-about-scene id="map" aria-label="Map of filmed locations">
-      <div class="section-head" data-reveal>
-        <div>
-          <span class="eyebrow">EVERY PIN, A PLACE I'VE ROLLED</span>
-          <h2>THE<br><em>MAP.</em></h2>
-        </div>
-        <p>SPIN THE GLOBE.<br>PICK A CITY. OPEN THE ENTRY.</p>
-      </div>
-      <div class="about-globe-stage" data-reveal>
-        <div class="globe-mount scene-3d" data-globe-scene></div>
-        <aside class="globe-detail scene-3d" data-globe-detail aria-live="polite"></aside>
-        <div class="globe-hint scene-3d">&#9673; DRAG TO SPIN &middot; TAP A GLOWING PIN TO OPEN ITS JOURNAL ENTRY</div>
-        <div class="globe-fallback scene-fallback">
-          <p class="globe-fallback-note">Interactive globe needs WebGL. Here's the route instead:</p>
-          <ul class="globe-loc-list" data-globe-list></ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="z-timeline" id="timeline" data-z-timeline aria-label="Timeline — scroll to fly through the tape log">
+    <section class="z-timeline scene-root" id="timeline" data-z-timeline data-about-scene aria-label="Timeline — scroll to fly the globe through the tape log">
       <div class="z-intro">
-        <span class="eyebrow">THE TAPE LOG</span>
+        <span class="eyebrow">THE TAPE LOG &middot; EVERY PIN, A PLACE I'VE ROLLED</span>
         <h2 class="display">SCROLL<br><em>THE YEARS.</em></h2>
-        <p class="z-intro-note">SCROLL TO FLY THROUGH THE TIMELINE &#8595; &nbsp;&middot;&nbsp; OPEN ANY NODE FOR ITS JOURNAL ENTRY</p>
+        <p class="z-intro-note">SCROLL &#8595; THE GLOBE SPINS TO EACH STOP &nbsp;&middot;&nbsp; OPEN ANY NODE FOR ITS JOURNAL ENTRY</p>
       </div>
       <div class="z-scroll">
         <div class="z-stage">
+          <div class="z-globe scene-3d" data-globe-scene aria-hidden="true"></div>
+          <aside class="globe-detail scene-3d" data-globe-detail aria-live="polite"></aside>
           <div class="z-track" data-z-track>
-            <a class="z-item" href="/journal.html?e=first-camcorder" data-media="mixed">
+            <a class="z-item" href="/journal.html?e=first-camcorder" data-media="mixed" data-lat="34.0522" data-lng="-118.2437">
               <span class="z-dot" aria-hidden="true"></span>
               <span class="z-year">2016</span>
               <span class="z-meta"><span class="z-date">12 JUN 2016</span><span class="z-coord">34.0522&deg;, -118.2437&deg;</span></span>
@@ -112,7 +95,7 @@
               <p>Picked up an old tape camera and never gave it back. The habit of always rolling starts here.</p>
               <span class="z-foot"><span class="z-media">&#9635; MIXED MEDIA</span><span class="z-open">OPEN ENTRY &#8599;</span></span>
             </a>
-            <a class="z-item" href="/journal.html?e=first-road-film" data-media="video">
+            <a class="z-item" href="/journal.html?e=first-road-film" data-media="video" data-lat="38.7223" data-lng="-9.1393">
               <span class="z-dot" aria-hidden="true"></span>
               <span class="z-year">2018</span>
               <span class="z-meta"><span class="z-date">03 SEP 2018</span><span class="z-coord">38.7223&deg;, -9.1393&deg;</span></span>
@@ -120,7 +103,7 @@
               <p>A trip with no rigid plan becomes the first real edit. Travel and film fuse into one thing.</p>
               <span class="z-foot"><span class="z-media">&#9654; VIDEO</span><span class="z-open">OPEN ENTRY &#8599;</span></span>
             </a>
-            <a class="z-item" href="/journal.html?e=automotive-magazine" data-media="video">
+            <a class="z-item" href="/journal.html?e=automotive-magazine" data-media="video" data-lat="35.6762" data-lng="139.6503">
               <span class="z-dot" aria-hidden="true"></span>
               <span class="z-year">2020</span>
               <span class="z-meta"><span class="z-date">21 FEB 2020</span><span class="z-coord">35.6762&deg;, 139.6503&deg;</span></span>
@@ -128,7 +111,7 @@
               <p>Cars, bikes, and the people who keep them alive get their own recurring cinematic issue.</p>
               <span class="z-foot"><span class="z-media">&#9654; VIDEO</span><span class="z-open">OPEN ENTRY &#8599;</span></span>
             </a>
-            <a class="z-item" href="/journal.html?e=first-brand-edit" data-media="mixed">
+            <a class="z-item" href="/journal.html?e=first-brand-edit" data-media="mixed" data-lat="51.5072" data-lng="-0.1276">
               <span class="z-dot" aria-hidden="true"></span>
               <span class="z-year">2022</span>
               <span class="z-meta"><span class="z-date">08 NOV 2022</span><span class="z-coord">51.5072&deg;, -0.1276&deg;</span></span>
@@ -136,7 +119,7 @@
               <p>The first commissioned piece shot like short cinema — product, place, and motion.</p>
               <span class="z-foot"><span class="z-media">&#9635; MIXED MEDIA</span><span class="z-open">OPEN ENTRY &#8599;</span></span>
             </a>
-            <a class="z-item" href="/journal.html?e=life-vlogs" data-media="audio">
+            <a class="z-item" href="/journal.html?e=life-vlogs" data-media="audio" data-lat="-1.2921" data-lng="36.8219">
               <span class="z-dot" aria-hidden="true"></span>
               <span class="z-year">2023</span>
               <span class="z-meta"><span class="z-date">17 APR 2023</span><span class="z-coord">-1.2921&deg;, 36.8219&deg;</span></span>
@@ -144,7 +127,7 @@
               <p>The hours between the big shoots become their own reel — raw days, documented as they happen.</p>
               <span class="z-foot"><span class="z-media">&#9679; AUDIO</span><span class="z-open">OPEN ENTRY &#8599;</span></span>
             </a>
-            <a class="z-item" href="/journal.html?e=cinematic-travel" data-media="video">
+            <a class="z-item" href="/journal.html?e=cinematic-travel" data-media="video" data-lat="-22.9068" data-lng="-43.1729">
               <span class="z-dot" aria-hidden="true"></span>
               <span class="z-year">2024</span>
               <span class="z-meta"><span class="z-date">29 JUL 2024</span><span class="z-coord">-22.9068&deg;, -43.1729&deg;</span></span>
@@ -152,7 +135,7 @@
               <p>Cities found, exits missed, no GPS required. The world through a camcorder, graded and cut.</p>
               <span class="z-foot"><span class="z-media">&#9654; VIDEO</span><span class="z-open">OPEN ENTRY &#8599;</span></span>
             </a>
-            <a class="z-item" href="/journal.html?e=kisala-archive" data-media="mixed">
+            <a class="z-item" href="/journal.html?e=kisala-archive" data-media="mixed" data-lat="52.5200" data-lng="13.4050">
               <span class="z-dot" aria-hidden="true"></span>
               <span class="z-year">2026</span>
               <span class="z-meta"><span class="z-date">05 JAN 2026</span><span class="z-coord">52.5200&deg;, 13.4050&deg;</span></span>
@@ -166,6 +149,9 @@
             <span class="z-hud-count" data-z-count>001 / 007</span>
           </div>
           <div class="z-rail" aria-hidden="true"><span class="z-rail-fill" data-z-rail></span></div>
+          <div class="globe-fallback scene-fallback">
+            <ul class="globe-loc-list" data-globe-list></ul>
+          </div>
         </div>
       </div>
     </section>

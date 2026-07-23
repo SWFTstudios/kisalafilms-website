@@ -163,6 +163,10 @@ async function initAbout(root) {
   });
 
   renderDetail(entries[0]);
+
+  /* Publish for timeline.js so scrolling the tape log spins the globe. */
+  window.KisalaAboutGlobe = globe;
+  window.dispatchEvent(new CustomEvent("kisala:about-globe-ready", { detail: globe }));
 }
 
 /* —— Watch: 3D tape wall —— */
