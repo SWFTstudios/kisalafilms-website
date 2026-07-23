@@ -41,7 +41,7 @@
     if (!viewer || !product) return;
     const shots = [
       { key: "hero", src: product.images.hero, label: "Hero" },
-      { key: "detail01", src: product.images.detail01, label: "Print" },
+      { key: "detail01", src: product.images.detail01, label: "Shoulder" },
       { key: "detail02", src: product.images.detail02, label: "Build" },
     ];
     const active = shots.find((s) => s.key === activeKey) || shots[0];
