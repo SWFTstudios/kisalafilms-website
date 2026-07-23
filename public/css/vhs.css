@@ -2296,10 +2296,7 @@ body.lightbox-lock { overflow: hidden; }
 .scene-3d { display: none; }
 .scene-root.is-live .scene-fallback { display: none; }
 .scene-root.is-live .globe-mount,
-.scene-root.is-live .tape-mount,
-.scene-root.is-live .tape-wall-mount { display: block; }
-.scene-root.is-live .wall-filters { display: flex; }
-.scene-root.is-live .wall-hint { display: block; }
+.scene-root.is-live .tape-mount { display: block; }
 .scene-root.is-live .globe-detail { display: flex; }
 
 /* —— Globe hero —— */
@@ -2648,7 +2645,7 @@ body.lightbox-lock { overflow: hidden; }
 .pillar.orange { --accent: var(--orange); }
 .pillar.blue { --accent: var(--signal); }
 
-/* —— Watch: 3D tape wall —— */
+/* —— Watch: tape shelf (slider mobile / grid desktop) —— */
 .tape-wall {
   position: relative;
   margin-top: 40px;
@@ -2705,15 +2702,6 @@ body.lightbox-lock { overflow: hidden; }
   }
 }
 
-.tape-wall-mount {
-  width: 100%;
-  height: clamp(360px, 52vh, 620px);
-  position: relative;
-  z-index: 1;
-}
-
-.tape-wall-mount canvas { position: absolute; inset: 0; }
-
 .wall-filters {
   display: flex;
   flex-wrap: wrap;
@@ -2742,6 +2730,162 @@ body.lightbox-lock { overflow: hidden; }
   border-color: var(--lime);
 }
 
+.tape-shelf {
+  position: relative;
+  z-index: 1;
+  margin-top: 22px;
+}
+
+.tape-shelf-track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 4px 18px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--lime) transparent;
+}
+
+.tape-shelf-track::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tape-shelf-track::-webkit-scrollbar-thumb {
+  background: var(--lime);
+}
+
+.shelf-tape {
+  --tape: #d4c4a8;
+  position: relative;
+  flex: 0 0 min(78vw, 280px);
+  scroll-snap-align: center;
+  color: #eee;
+  transition: transform 0.35s ease, filter 0.35s ease, opacity 0.25s ease;
+}
+
+.shelf-tape.is-filtered-out,
+.shelf-tape[hidden] {
+  display: none;
+}
+
+.shelf-tape-shell {
+  position: relative;
+  background: #161714;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  box-shadow:
+    0 18px 36px #0007,
+    inset 0 0 0 5px #242522;
+  min-height: 100%;
+}
+
+.shelf-tape-shell::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1.5px solid #080908;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.shelf-tape-window {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #0a0a09;
+  border: 1px solid #2a2a26;
+  border-radius: 4px;
+}
+
+.shelf-tape-window img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.18) saturate(0.82) contrast(1.08) brightness(0.96);
+  display: block;
+}
+
+.shelf-tape-label {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--tape);
+  color: #1a1612;
+  display: grid;
+  gap: 4px;
+  border-radius: 2px;
+}
+
+.shelf-tape-label small,
+.shelf-tape-label span {
+  font: 700 9px/1.2 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.shelf-tape-label strong {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 4.5vw, 22px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.shelf-tape-link {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 16px;
+}
+
+.shelf-tape-link:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.shelf-tape.red { --tape: #b89272; }
+.shelf-tape.lime { --tape: #d4b57a; }
+.shelf-tape.orange { --tape: #c4a070; }
+.shelf-tape.blue { --tape: #9a8870; }
+.shelf-tape.cream { --tape: #e0d2b8; }
+
+.shelf-tape.is-active {
+  transform: translateY(-4px);
+  filter: brightness(1.05);
+}
+
+.shelf-tape:hover {
+  transform: translateY(-6px);
+}
+
+.tape-shelf-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tape-shelf-nav button {
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid var(--line);
+  background: rgba(18, 16, 14, 0.55);
+  color: var(--paper);
+  font-size: 18px;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.tape-shelf-nav button:hover {
+  background: var(--lime);
+  color: var(--ink);
+  border-color: var(--lime);
+}
+
 .wall-hint {
   margin-top: 14px;
   font: 700 10px/1.4 var(--font-mono);
@@ -2750,6 +2894,47 @@ body.lightbox-lock { overflow: hidden; }
   color: var(--phosphor);
   position: relative;
   z-index: 1;
+}
+
+.wall-hint--desktop { display: none; }
+
+@media (min-width: 900px) {
+  .tape-shelf-track {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    overflow: visible;
+    scroll-snap-type: none;
+    padding: 12px 0 8px;
+  }
+
+  .shelf-tape {
+    flex: none;
+    width: auto;
+    scroll-snap-align: unset;
+  }
+
+  .tape-shelf-nav {
+    display: none;
+  }
+
+  .wall-hint--mobile { display: none; }
+  .wall-hint--desktop { display: inline; }
+}
+
+@media (min-width: 1200px) {
+  .tape-shelf-track {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shelf-tape,
+  .shelf-tape.is-active,
+  .shelf-tape:hover {
+    transition: none;
+    transform: none;
+  }
 }
 
 /* —— Shop —— */

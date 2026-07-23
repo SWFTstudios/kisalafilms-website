@@ -236,34 +236,142 @@ function createWallBackdrop(root, films) {
   return { set };
 }
 
-/* —— Watch: 3D tape wall —— */
-async function initWall(root, films, categories) {
-  const wallEl = root.querySelector("[data-tape-wall]");
-  if (!wallEl) return;
+/* —— Watch: 2D tape shelf (slider mobile / grid desktop) —— */
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
-  const { createTapeWall } = await import("/js/tape3d.js");
-  root.classList.add("is-live");
+function initTapeShelf(root, films) {
+  const track = root.querySelector("[data-tape-shelf-track]");
+  if (!track || !films.length) return;
 
   const backdrop = createWallBackdrop(root, films);
+  let activeFilter = "all";
+  let activeId = films.find((f) => f.vimeo)?.id || films[0].id;
 
-  const wall = createTapeWall({
-    container: wallEl,
-    films,
-    onPlay: playFilm,
-    onActiveChange: (film) => {
-      const url = film?.thumb || "";
-      if (url) backdrop.set(url);
-    },
-  });
+  function cardHtml(film) {
+    const title = escapeHtml(film.title);
+    const short = escapeHtml(film.short || film.label || film.title);
+    const code = escapeHtml(film.code || "");
+    const cat = escapeHtml(film.categoryLabel || film.category || "");
+    const tone = escapeHtml(film.tone || "cream");
+    const thumb = escapeHtml(film.thumb || "");
+    const playAttrs = film.vimeo
+      ? `href="#" data-lightbox-open data-vimeo="${escapeHtml(film.vimeo)}" data-title="${escapeHtml(film.label)}: ${title}"`
+      : `href="#" data-shelf-placeholder aria-disabled="true"`;
+
+    return `
+      <article
+        class="shelf-tape ${tone}"
+        role="listitem"
+        data-shelf-card
+        data-film-id="${escapeHtml(film.id)}"
+        data-category="${escapeHtml(film.category)}"
+      >
+        <div class="shelf-tape-shell" aria-hidden="true">
+          <div class="shelf-tape-window">
+            ${thumb ? `<img src="${thumb}" alt="" loading="lazy" width="320" height="180">` : ""}
+          </div>
+          <div class="shelf-tape-label">
+            <small>${cat}</small>
+            <strong>${short}</strong>
+            <span>${code}</span>
+          </div>
+        </div>
+        <a class="shelf-tape-link" ${playAttrs} aria-label="${film.vimeo ? "Play" : "Unavailable"} ${title}"></a>
+      </article>
+    `;
+  }
+
+  track.innerHTML = films.map(cardHtml).join("");
+
+  function cards() {
+    return [...track.querySelectorAll("[data-shelf-card]")];
+  }
+
+  function setActive(film) {
+    if (!film) return;
+    activeId = film.id;
+    cards().forEach((card) => {
+      card.classList.toggle("is-active", card.getAttribute("data-film-id") === activeId);
+    });
+    if (film.thumb) backdrop.set(film.thumb);
+  }
+
+  function applyFilter(categoryId) {
+    activeFilter = categoryId || "all";
+    const visible = [];
+    cards().forEach((card) => {
+      const match =
+        activeFilter === "all" || card.getAttribute("data-category") === activeFilter;
+      card.hidden = !match;
+      card.classList.toggle("is-filtered-out", !match);
+      if (match) visible.push(card);
+    });
+
+    const activeCard = visible.find((c) => c.getAttribute("data-film-id") === activeId);
+    const nextCard = activeCard || visible[0];
+    const nextFilm = nextCard
+      ? films.find((f) => f.id === nextCard.getAttribute("data-film-id"))
+      : null;
+    if (nextFilm) setActive(nextFilm);
+
+    track.scrollTo({ left: 0, behavior: "smooth" });
+  }
 
   root.querySelectorAll("[data-wall-filter]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const cat = btn.getAttribute("data-wall-filter");
-      wall.filter(cat);
+      const cat = btn.getAttribute("data-wall-filter") || "all";
+      applyFilter(cat);
       root.querySelectorAll("[data-wall-filter]").forEach((b) => b.classList.remove("is-active"));
       btn.classList.add("is-active");
     });
   });
+
+  track.addEventListener("pointerover", (e) => {
+    const card = e.target.closest("[data-shelf-card]");
+    if (!card || card.hidden) return;
+    const film = films.find((f) => f.id === card.getAttribute("data-film-id"));
+    if (film) setActive(film);
+  });
+
+  track.addEventListener("focusin", (e) => {
+    const card = e.target.closest("[data-shelf-card]");
+    if (!card || card.hidden) return;
+    const film = films.find((f) => f.id === card.getAttribute("data-film-id"));
+    if (film) setActive(film);
+  });
+
+  track.addEventListener("click", (e) => {
+    const placeholder = e.target.closest("[data-shelf-placeholder]");
+    if (placeholder) {
+      e.preventDefault();
+      showToast("TAPE NOT UPLOADED YET");
+      return;
+    }
+    const card = e.target.closest("[data-shelf-card]");
+    if (!card || card.hidden) return;
+    const film = films.find((f) => f.id === card.getAttribute("data-film-id"));
+    if (film) setActive(film);
+  });
+
+  const prevBtn = root.querySelector("[data-shelf-prev]");
+  const nextBtn = root.querySelector("[data-shelf-next]");
+  const scrollByCard = (dir) => {
+    const card = track.querySelector("[data-shelf-card]:not([hidden])");
+    const amount = card ? card.getBoundingClientRect().width + 14 : track.clientWidth * 0.8;
+    track.scrollBy({ left: dir * amount, behavior: "smooth" });
+  };
+  if (prevBtn) prevBtn.addEventListener("click", () => scrollByCard(-1));
+  if (nextBtn) nextBtn.addEventListener("click", () => scrollByCard(1));
+
+  const featured = films.find((f) => f.id === activeId) || films[0];
+  setActive(featured);
+  applyFilter("all");
 }
 
 async function boot() {
@@ -272,9 +380,18 @@ async function boot() {
   const about = document.querySelector("[data-about-scene]");
   if (!home && !wall && !about) return;
 
+  /* Watch shelf is CSS/HTML — always boot it, even without WebGL. */
+  if (wall) {
+    try {
+      const { films } = await loadFilms();
+      initTapeShelf(wall, films);
+    } catch (err) {
+      console.error("[Kisala] watch shelf failed", err);
+    }
+  }
+
   if (!webglSupported() || prefersReduced) {
     document.body.classList.add("no-3d");
-    // Still populate the About fallback list from journal data.
     if (about) {
       try {
         const entries = await loadJournal();
@@ -295,10 +412,9 @@ async function boot() {
   }
 
   try {
-    if (home || wall) {
-      const { films, categories } = await loadFilms();
-      if (home) await initHome(home, films);
-      if (wall) await initWall(wall, films, categories);
+    if (home) {
+      const { films } = await loadFilms();
+      await initHome(home, films);
     }
     if (about) await initAbout(about);
   } catch (err) {
