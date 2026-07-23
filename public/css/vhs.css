@@ -1997,6 +1997,8 @@ body.lightbox-lock { overflow: hidden; }
 .scene-root.is-live .globe-mount,
 .scene-root.is-live .tape-mount,
 .scene-root.is-live .tape-wall-mount { display: block; }
+.scene-root.is-live .wall-filters { display: flex; }
+.scene-root.is-live .wall-hint { display: block; }
 .scene-root.is-live .globe-detail { display: flex; }
 
 /* —— Globe hero —— */
@@ -2349,12 +2351,64 @@ body.lightbox-lock { overflow: hidden; }
 .tape-wall {
   position: relative;
   margin-top: 40px;
+  overflow: hidden;
+  padding: 28px 20px 24px;
+  background: var(--charcoal);
+}
+
+.tape-wall-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tape-wall-bg__layer {
+  position: absolute;
+  inset: 0;
+  background-color: var(--charcoal);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  filter: saturate(0.72) contrast(1.12);
+  transform: scale(1.04);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  will-change: opacity;
+}
+
+.tape-wall-bg__layer.is-front {
+  opacity: 1;
+  z-index: 1;
+}
+
+.tape-wall-bg__layer.is-back {
+  opacity: 0;
+  z-index: 0;
+}
+
+.tape-wall-bg__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(90deg, rgba(18, 16, 14, 0.72) 0%, rgba(18, 16, 14, 0.28) 42%, rgba(18, 16, 14, 0.45) 100%),
+    linear-gradient(0deg, rgba(18, 16, 14, 0.78) 0%, rgba(18, 16, 14, 0.22) 40%, rgba(18, 16, 14, 0.55) 100%),
+    linear-gradient(180deg, rgba(18, 16, 14, 0.5) 0%, transparent 30%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tape-wall-bg__layer {
+    transition: none;
+  }
 }
 
 .tape-wall-mount {
   width: 100%;
   height: clamp(360px, 52vh, 620px);
   position: relative;
+  z-index: 1;
 }
 
 .tape-wall-mount canvas { position: absolute; inset: 0; }
@@ -2363,7 +2417,9 @@ body.lightbox-lock { overflow: hidden; }
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 24px;
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .wall-filters button {
@@ -2373,7 +2429,8 @@ body.lightbox-lock { overflow: hidden; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--paper);
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(18, 16, 14, 0.55);
+  backdrop-filter: blur(6px);
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -2390,6 +2447,8 @@ body.lightbox-lock { overflow: hidden; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--phosphor);
+  position: relative;
+  z-index: 1;
 }
 
 /* —— Shop —— */

@@ -169,6 +169,73 @@ async function initAbout(root) {
   window.dispatchEvent(new CustomEvent("kisala:about-globe-ready", { detail: globe }));
 }
 
+/* —— Watch: dual-layer backdrop for tape wall —— */
+function createWallBackdrop(root, films) {
+  const bg = root.querySelector("[data-tape-wall-bg]");
+  if (!bg) {
+    return { set: () => {} };
+  }
+
+  let front = bg.querySelector(".tape-wall-bg__layer.is-front");
+  let back = bg.querySelector(".tape-wall-bg__layer.is-back");
+  if (!front || !back) {
+    return { set: () => {} };
+  }
+
+  const cache = new Map();
+  let currentUrl = "";
+  let swapping = false;
+
+  function preload(url) {
+    if (!url || cache.has(url)) return cache.get(url) || Promise.resolve();
+    const p = new Promise((resolve) => {
+      const img = new Image();
+      img.onload = img.onerror = () => resolve();
+      img.src = url;
+    });
+    cache.set(url, p);
+    return p;
+  }
+
+  films.forEach((f) => {
+    if (f.thumb) preload(f.thumb);
+  });
+
+  async function set(url) {
+    if (!url || url === currentUrl) return;
+    await preload(url);
+    if (url === currentUrl) return;
+
+    if (swapping) {
+      front.style.backgroundImage = `url("${url}")`;
+      currentUrl = url;
+      return;
+    }
+
+    swapping = true;
+    back.style.backgroundImage = `url("${url}")`;
+    // Force layout so the incoming layer paints before the opacity swap
+    void back.offsetWidth;
+    front.classList.remove("is-front");
+    front.classList.add("is-back");
+    back.classList.remove("is-back");
+    back.classList.add("is-front");
+    const prev = front;
+    front = back;
+    back = prev;
+    currentUrl = url;
+
+    const done = () => {
+      swapping = false;
+      front.removeEventListener("transitionend", done);
+    };
+    front.addEventListener("transitionend", done);
+    window.setTimeout(done, 600);
+  }
+
+  return { set };
+}
+
 /* —— Watch: 3D tape wall —— */
 async function initWall(root, films, categories) {
   const wallEl = root.querySelector("[data-tape-wall]");
@@ -177,7 +244,17 @@ async function initWall(root, films, categories) {
   const { createTapeWall } = await import("/js/tape3d.js");
   root.classList.add("is-live");
 
-  const wall = createTapeWall({ container: wallEl, films, onPlay: playFilm });
+  const backdrop = createWallBackdrop(root, films);
+
+  const wall = createTapeWall({
+    container: wallEl,
+    films,
+    onPlay: playFilm,
+    onActiveChange: (film) => {
+      const url = film?.thumb || "";
+      if (url) backdrop.set(url);
+    },
+  });
 
   root.querySelectorAll("[data-wall-filter]").forEach((btn) => {
     btn.addEventListener("click", () => {

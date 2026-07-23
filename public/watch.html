@@ -68,6 +68,11 @@
 
     <section class="section section--charcoal">
       <div class="tape-wall scene-root" data-watch-scene>
+        <div class="tape-wall-bg" data-tape-wall-bg aria-hidden="true">
+          <div class="tape-wall-bg__layer is-back"></div>
+          <div class="tape-wall-bg__layer is-front"></div>
+          <div class="tape-wall-bg__veil"></div>
+        </div>
         <div class="wall-filters scene-3d">
           <button type="button" data-wall-filter="all" class="is-active">ALL</button>
           <button type="button" data-wall-filter="auto-mag">AUTO MAG</button>
@@ -76,7 +81,7 @@
           <button type="button" data-wall-filter="travel">TRAVEL</button>
         </div>
         <div class="tape-wall-mount scene-3d" data-tape-wall></div>
-        <p class="wall-hint scene-3d">&#9673; DRAG TO TILT THE WALL &middot; CLICK A TAPE TO PLAY</p>
+        <p class="wall-hint scene-3d">&#9673; DRAG TO TILT &middot; HOVER TO PREVIEW &middot; CLICK TO PLAY</p>
       </div>
 
       <div class="section-head" style="margin-top:60px" data-reveal>

@@ -276,7 +276,7 @@ export function createTapeStage({ container, onPlay }) {
   return { setTape, pause, resume };
 }
 
-export function createTapeWall({ container, films = [], onPlay }) {
+export function createTapeWall({ container, films = [], onPlay, onActiveChange }) {
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const { scene, camera, renderer } = baseScene(container);
   camera.position.set(0, 0, 9);
@@ -313,10 +313,31 @@ export function createTapeWall({ container, films = [], onPlay }) {
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2(-2, -2);
   let hovered = null;
+  let selected = tapes[0] || null;
+  let lastActiveId = null;
   let dragging = false;
   let lastX = 0;
   let moved = false;
   let targetRotY = 0;
+
+  function firstVisible() {
+    return tapes.find((m) => m.userData.visible) || null;
+  }
+
+  function resolveActive() {
+    if (hovered?.userData?.visible) return hovered;
+    if (selected?.userData?.visible) return selected;
+    return firstVisible();
+  }
+
+  function emitActive() {
+    if (!onActiveChange) return;
+    const active = resolveActive();
+    const id = active?.userData?.film?.id ?? null;
+    if (id === lastActiveId) return;
+    lastActiveId = id;
+    onActiveChange(active?.userData?.film || null);
+  }
 
   const onMove = (e) => {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -333,7 +354,10 @@ export function createTapeWall({ container, films = [], onPlay }) {
   const onUp = () => { dragging = false; };
   const onClick = () => {
     if (moved) return;
-    if (hovered?.userData?.film && onPlay) onPlay(hovered.userData.film);
+    if (!hovered?.userData?.film) return;
+    selected = hovered;
+    emitActive();
+    if (onPlay) onPlay(hovered.userData.film);
   };
   renderer.domElement.addEventListener("pointerdown", onDown);
   window.addEventListener("pointermove", onMove);
@@ -345,6 +369,8 @@ export function createTapeWall({ container, films = [], onPlay }) {
       const match = !categoryId || categoryId === "all" || mesh.userData.film.category === categoryId;
       mesh.userData.visible = match;
     });
+    if (!selected?.userData?.visible) selected = firstVisible();
+    emitActive();
   }
 
   function resize() {
@@ -380,18 +406,22 @@ export function createTapeWall({ container, films = [], onPlay }) {
       while (o && !o.userData.film) o = o.parent;
       hitTop = o;
     }
-    hovered = hitTop;
+    if (hitTop !== hovered) {
+      hovered = hitTop;
+      emitActive();
+    }
     renderer.domElement.style.cursor = hovered ? "pointer" : dragging ? "grabbing" : "grab";
 
     tapes.forEach((mesh) => {
       const vis = mesh.userData.visible;
       const home = mesh.userData.home;
-      const targetScale = vis ? (mesh === hovered ? 1.02 : 0.82) : 0.2;
+      const isLit = mesh === hovered || mesh === selected;
+      const targetScale = vis ? (isLit ? 1.02 : 0.82) : 0.2;
       mesh.scale.x += (targetScale - mesh.scale.x) * 0.15;
       mesh.scale.y += (targetScale - mesh.scale.y) * 0.15;
       mesh.scale.z += (targetScale - mesh.scale.z) * 0.15;
 
-      const targetZ = vis ? (mesh === hovered ? 1.4 : 0) : -4;
+      const targetZ = vis ? (isLit ? 1.4 : 0) : -4;
       const bob = prefersReduced || !vis ? 0 : Math.sin(el * 1.2 + mesh.userData.phase) * 0.12;
       mesh.position.x += (home.x - mesh.position.x) * 0.12;
       mesh.position.y += (home.y + bob - mesh.position.y) * 0.12;
@@ -399,7 +429,7 @@ export function createTapeWall({ container, films = [], onPlay }) {
 
       mesh.visible = mesh.scale.x > 0.24 || vis;
 
-      const targetRot = mesh === hovered ? 0 : -0.12;
+      const targetRot = isLit ? 0 : -0.12;
       mesh.rotation.y += (targetRot - mesh.rotation.y) * 0.1;
 
       mesh.userData.reels.forEach((r, i) => {
@@ -410,6 +440,7 @@ export function createTapeWall({ container, films = [], onPlay }) {
     renderer.render(scene, camera);
   }
   frame();
+  emitActive();
 
   function pause() { running = false; cancelAnimationFrame(raf); }
   function resume() { if (running) return; running = true; clock.getDelta(); frame(); }
