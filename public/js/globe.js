@@ -40,6 +40,10 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   renderer.domElement.style.width = "100%";
   renderer.domElement.style.height = "100%";
   renderer.domElement.style.cursor = "grab";
+  /* Let the canvas own touch gestures so dragging spins instead of scrolling. */
+  renderer.domElement.style.touchAction = "none";
+  renderer.domElement.style.userSelect = "none";
+  renderer.domElement.style.webkitUserSelect = "none";
   renderer.domElement.setAttribute("aria-hidden", "true");
 
   /* Lights */
@@ -216,12 +220,28 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   let velX = 0;
   let moved = false;
 
+  /* External (scroll-driven) rotation target. When set, the globe eases toward
+     these angles instead of idle-spinning; a user drag temporarily disables it. */
+  let externalMode = false;
+  let externalY = 0;
+  let externalX = 0;
+  const normAngle = (a) => ((a + Math.PI) % (Math.PI * 2)) - Math.PI;
+
   const onDown = (e) => {
     dragging = true;
     moved = false;
+    externalMode = false; // let the user free-spin; scroll re-engages it
     lastX = e.clientX;
     lastY = e.clientY;
+    velY = 0;
+    velX = 0;
     renderer.domElement.style.cursor = "grabbing";
+    if (e.pointerId != null && renderer.domElement.setPointerCapture) {
+      try {
+        renderer.domElement.setPointerCapture(e.pointerId);
+      } catch (_) {}
+    }
+    if (e.cancelable) e.preventDefault();
   };
   const onMove = (e) => {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -233,15 +253,22 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
       if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
       lastX = e.clientX;
       lastY = e.clientY;
-      world.rotation.y += dx * 0.005;
-      world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + dy * 0.005, -0.9, 1.2);
-      velY = dx * 0.005;
-      velX = dy * 0.005;
+      world.rotation.y += dx * 0.006;
+      world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + dy * 0.006, -0.9, 1.2);
+      velY = dx * 0.006;
+      velX = dy * 0.006;
+      if (e.cancelable) e.preventDefault();
     }
   };
-  const onUp = () => {
+  const onUp = (e) => {
+    if (!dragging) return;
     dragging = false;
     renderer.domElement.style.cursor = "grab";
+    if (e && e.pointerId != null && renderer.domElement.releasePointerCapture) {
+      try {
+        renderer.domElement.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+    }
   };
   const onClick = () => {
     if (moved) return;
@@ -255,9 +282,10 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     }
   };
 
-  renderer.domElement.addEventListener("pointerdown", onDown);
-  window.addEventListener("pointermove", onMove);
+  renderer.domElement.addEventListener("pointerdown", onDown, { passive: false });
+  window.addEventListener("pointermove", onMove, { passive: false });
   window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
   renderer.domElement.addEventListener("click", onClick);
 
   /* Hover feedback */
@@ -284,6 +312,15 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     const targetY = -(lng + 180) * DEG2RAD - Math.PI / 2;
     const targetX = THREE.MathUtils.clamp(lat * DEG2RAD * 0.7, -0.8, 1.0);
     animateRotation(targetY, targetX);
+  }
+
+  /* Point the globe at a lat/lng and keep it there (scroll-driven). */
+  function setFocusLatLng(lat, lng) {
+    if (typeof lat !== "number" || typeof lng !== "number") return;
+    externalY = -(lng + 180) * DEG2RAD - Math.PI / 2;
+    externalX = THREE.MathUtils.clamp(lat * DEG2RAD * 0.7, -0.8, 1.0);
+    externalMode = true;
+    rotAnim = null;
   }
 
   let rotAnim = null;
@@ -328,10 +365,16 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     if (rotAnim) {
       rotAnim(performance.now());
     } else if (!dragging) {
-      world.rotation.y += velY;
-      world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + velX, -0.9, 1.2);
-      velY += (0.0016 - velY) * 0.02;
-      velX *= 0.9;
+      if (externalMode) {
+        // Ease toward the scroll-driven target (shortest way around Y).
+        world.rotation.y += normAngle(externalY - world.rotation.y) * 0.09;
+        world.rotation.x += (externalX - world.rotation.x) * 0.09;
+      } else {
+        world.rotation.y += velY;
+        world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + velX, -0.9, 1.2);
+        velY += (0.0016 - velY) * 0.02;
+        velX *= 0.9;
+      }
     }
 
     stars.rotation.y += 0.0004;
@@ -368,10 +411,11 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     renderer.domElement.removeEventListener("pointerdown", onDown);
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
     renderer.domElement.removeEventListener("click", onClick);
     renderer.dispose();
     renderer.domElement.remove();
   }
 
-  return { focusFilm, pause, resume, dispose };
+  return { focusFilm, setFocusLatLng, pause, resume, dispose };
 }
