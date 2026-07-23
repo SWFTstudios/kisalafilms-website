@@ -1,0 +1,125 @@
+{
+  "drop": "WLG QUOTES — FIRST RUN",
+  "products": [
+    {
+      "id": "wlg-lucky-fail-tee",
+      "kind": "tee",
+      "title": "Lucky Fail Tee",
+      "quote": "Don't call me lucky. I failed more times than you tried.",
+      "color": "Washed Black",
+      "colorHex": "#1a1816",
+      "price": 38,
+      "blurb": "Heavyweight cotton · white serif chest print",
+      "images": {
+        "hero": "/images/shop/wlg-lucky-fail-tee-hero.jpg",
+        "detail01": "/images/shop/wlg-lucky-fail-tee-detail-01.jpg",
+        "detail02": "/images/shop/wlg-lucky-fail-tee-detail-02.jpg"
+      }
+    },
+    {
+      "id": "wlg-exist-first-tee",
+      "kind": "tee",
+      "title": "Exist First Tee",
+      "quote": "Just make it EXIST first. You can make it GOOD later.",
+      "color": "Bone",
+      "colorHex": "#e8e0d4",
+      "price": 38,
+      "blurb": "Heavyweight cotton · hand-marker black print",
+      "images": {
+        "hero": "/images/shop/wlg-exist-first-tee-hero.jpg",
+        "detail01": "/images/shop/wlg-exist-first-tee-detail-01.jpg",
+        "detail02": "/images/shop/wlg-exist-first-tee-detail-02.jpg"
+      }
+    },
+    {
+      "id": "wlg-rule-four-tee",
+      "kind": "tee",
+      "title": "Rule Four Tee",
+      "quote": "RULE FOUR: Consider everything an experiment.",
+      "color": "Ash Grey",
+      "colorHex": "#9a9590",
+      "price": 38,
+      "blurb": "Heavyweight cotton · editorial sans + italic serif",
+      "images": {
+        "hero": "/images/shop/wlg-rule-four-tee-hero.jpg",
+        "detail01": "/images/shop/wlg-rule-four-tee-detail-01.jpg",
+        "detail02": "/images/shop/wlg-rule-four-tee-detail-02.jpg"
+      }
+    },
+    {
+      "id": "wlg-no-prime-tee",
+      "kind": "tee",
+      "title": "No Prime Tee",
+      "quote": "I have no prime. I will evolve until I die.",
+      "color": "Crisp White",
+      "colorHex": "#f4f1ec",
+      "price": 38,
+      "blurb": "Heavyweight cotton · tight black sans print",
+      "images": {
+        "hero": "/images/shop/wlg-no-prime-tee-hero.jpg",
+        "detail01": "/images/shop/wlg-no-prime-tee-detail-01.jpg",
+        "detail02": "/images/shop/wlg-no-prime-tee-detail-02.jpg"
+      }
+    },
+    {
+      "id": "wlg-glitch-tee",
+      "kind": "tee",
+      "title": "Glitch Matrix Tee",
+      "quote": "BE THE GLITCH YOU WANT TO SEE IN THE MATRIX",
+      "color": "True Black",
+      "colorHex": "#0a0a0a",
+      "price": 38,
+      "blurb": "Heavyweight cotton · white glitch chromatic type",
+      "images": {
+        "hero": "/images/shop/wlg-glitch-tee-hero.jpg",
+        "detail01": "/images/shop/wlg-glitch-tee-detail-01.jpg",
+        "detail02": "/images/shop/wlg-glitch-tee-detail-02.jpg"
+      }
+    },
+    {
+      "id": "wlg-eighty-tee",
+      "kind": "tee",
+      "title": "80 Year Old You Tee",
+      "quote": "DO IT FOR 80 YEAR OLD YOU THAT IS SITTING THERE THINKING I'M SO GLAD I DID THAT",
+      "color": "Natural",
+      "colorHex": "#d9d0c0",
+      "price": 38,
+      "blurb": "Heavyweight unbleached cotton · marker all-caps",
+      "images": {
+        "hero": "/images/shop/wlg-eighty-tee-hero.jpg",
+        "detail01": "/images/shop/wlg-eighty-tee-detail-01.jpg",
+        "detail02": "/images/shop/wlg-eighty-tee-detail-02.jpg"
+      }
+    },
+    {
+      "id": "wlg-different-path-hoodie",
+      "kind": "hoodie",
+      "title": "Different Path Hoodie",
+      "quote": "It's Okay To Live A Life Others Don't Understand.",
+      "color": "Cream",
+      "colorHex": "#e6dcc8",
+      "price": 68,
+      "blurb": "Midweight fleece · serif chest print",
+      "images": {
+        "hero": "/images/shop/wlg-different-path-hoodie-hero.jpg",
+        "detail01": "/images/shop/wlg-different-path-hoodie-detail-01.jpg",
+        "detail02": "/images/shop/wlg-different-path-hoodie-detail-02.jpg"
+      }
+    },
+    {
+      "id": "wlg-direction-hoodie",
+      "kind": "hoodie",
+      "title": "Direction Hoodie",
+      "quote": "Focus On Direction, Not Speed.",
+      "color": "Sand",
+      "colorHex": "#c4b59a",
+      "price": 68,
+      "blurb": "Midweight fleece · serif print + supporting line",
+      "images": {
+        "hero": "/images/shop/wlg-direction-hoodie-hero.jpg",
+        "detail01": "/images/shop/wlg-direction-hoodie-detail-01.jpg",
+        "detail02": "/images/shop/wlg-direction-hoodie-detail-02.jpg"
+      }
+    }
+  ]
+}
