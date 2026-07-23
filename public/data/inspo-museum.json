@@ -1,0 +1,165 @@
+{
+  "title": "Inspo Museum",
+  "lede": "A recovered dossier of stills, posters, and fragments — the worlds that taught this archive how to look like lost data.",
+  "wings": [
+    { "id": "all", "label": "ALL" },
+    { "id": "amber", "label": "AMBER" },
+    { "id": "noir", "label": "NOIR" },
+    { "id": "neon", "label": "NEON" },
+    { "id": "terminal", "label": "TERMINAL" },
+    { "id": "poster", "label": "POSTER" },
+    { "id": "motion", "label": "MOTION" }
+  ],
+  "exhibits": [
+    {
+      "id": "br2049-amber-hive",
+      "title": "Amber hive fields",
+      "work": "Blade Runner 2049",
+      "wing": "amber",
+      "credit": "Warner Bros. / Alcon Entertainment",
+      "note": "Monochrome amber haze — depth through dust, not saturation.",
+      "src": "/images/inspo/br2049-amber-hive.jpg",
+      "href": "https://www.imdb.com/title/tt1856101/"
+    },
+    {
+      "id": "br2049-teal-amber",
+      "title": "Teal streets / amber dunes",
+      "work": "Blade Runner 2049",
+      "wing": "noir",
+      "credit": "Warner Bros. / Alcon Entertainment",
+      "note": "Cool noir against warm desolation — two temperatures, one archive.",
+      "src": "/images/inspo/br2049-teal-amber.jpg",
+      "href": "https://www.imdb.com/title/tt1856101/"
+    },
+    {
+      "id": "br1982-neon-rain",
+      "title": "Rain neon skyline",
+      "work": "Blade Runner (1982)",
+      "wing": "neon",
+      "credit": "Warner Bros.",
+      "note": "Lived-in future — dense greebles, wet streets, diegetic glow.",
+      "src": "/images/inspo/br1982-neon-rain.jpg",
+      "href": "https://www.imdb.com/title/tt0083658/"
+    },
+    {
+      "id": "crt-workstation",
+      "title": "CRT night desk",
+      "work": "Lo-fi workstation still",
+      "wing": "terminal",
+      "credit": "Source unknown — local archive",
+      "note": "Exhaustion at the terminal — a life lived in the glow of screens.",
+      "src": "/images/inspo/crt-workstation.jpg",
+      "href": null
+    },
+    {
+      "id": "matrix-terminal-collage",
+      "title": "Terminal scrapbook",
+      "work": "Matrix / early-web collage",
+      "wing": "terminal",
+      "credit": "Source unknown — local archive",
+      "note": "HUD debris and phosphor icons — found data, not polished UI.",
+      "src": "/images/inspo/matrix-terminal-collage.jpg",
+      "href": "https://www.imdb.com/title/tt0133093/"
+    },
+    {
+      "id": "interstellar-poster",
+      "title": "Gravity well dossier",
+      "work": "Interstellar",
+      "wing": "poster",
+      "credit": "Paramount / Warner Bros.",
+      "note": "Technical diagrams as poetry — archive as navigation chart.",
+      "src": "/images/inspo/interstellar-poster.jpg",
+      "href": "https://www.imdb.com/title/tt0816692/"
+    },
+    {
+      "id": "akira-dossier",
+      "title": "Neo-Tokyo dossier",
+      "work": "Akira",
+      "wing": "poster",
+      "credit": "TMS / Akira Committee",
+      "note": "Monochrome-on-black panels — grain, modules, recovered print.",
+      "src": "/images/inspo/akira-dossier.jpg",
+      "href": "https://www.imdb.com/title/tt0094625/"
+    },
+    {
+      "id": "akira-new-tokyo",
+      "title": "New Tokyo archive",
+      "work": "Akira",
+      "wing": "poster",
+      "credit": "TMS / Akira Committee",
+      "note": "Red-on-black dossier — distressed print, manga panels, recovered scrapbook.",
+      "src": "/images/inspo/akira-new-tokyo.jpg",
+      "href": "https://www.imdb.com/title/tt0094625/"
+    },
+    {
+      "id": "akira-rebirth",
+      "title": "Rebirth / Neo Tokyo",
+      "work": "Akira",
+      "wing": "poster",
+      "credit": "TMS / Akira Committee",
+      "note": "Singularity over the city — grid, wireframes, the end as beginning.",
+      "src": "/images/inspo/akira-rebirth.jpg",
+      "href": "https://www.imdb.com/title/tt0094625/"
+    },
+    {
+      "id": "moto-amber-headlights",
+      "title": "Amber headlights",
+      "work": "Night motorcycle still",
+      "wing": "motion",
+      "credit": "Source unknown — local archive",
+      "note": "Warm bloom against cold road streaks — motion as archive.",
+      "src": "/images/inspo/moto-amber-headlights.jpg",
+      "href": null
+    },
+    {
+      "id": "pov-cyber-highway",
+      "title": "Highway POV chase",
+      "work": "Cyberpunk highway still",
+      "wing": "neon",
+      "credit": "Source unknown — local archive",
+      "note": "Dash readout + neon canyon — speed as digital footprint.",
+      "src": "/images/inspo/pov-cyber-highway.jpg",
+      "href": null
+    },
+    {
+      "id": "wireframe-crt-hand",
+      "title": "Wireframe touch",
+      "work": "CRT / wireframe illustration",
+      "wing": "terminal",
+      "credit": "Source unknown — local archive",
+      "note": "Digital hand meeting flesh — the archive reaching back.",
+      "src": "/images/inspo/wireframe-crt-hand.jpg",
+      "href": null
+    },
+    {
+      "id": "bebop-dossier",
+      "title": "Crew dossier",
+      "work": "Cowboy Bebop",
+      "wing": "poster",
+      "credit": "Sunrise / Bandai Visual",
+      "note": "Color-coded panels on charcoal — museum as character file.",
+      "src": "/images/inspo/bebop-dossier.jpg",
+      "href": "https://www.imdb.com/title/tt0213338/"
+    },
+    {
+      "id": "bebop-see-you",
+      "title": "See you, space cowboy",
+      "work": "Cowboy Bebop",
+      "wing": "poster",
+      "credit": "Sunrise / Bandai Visual",
+      "note": "Halftone amber profile — desaturated color blocking as age.",
+      "src": "/images/inspo/bebop-see-you.jpg",
+      "href": "https://www.imdb.com/title/tt0213338/"
+    },
+    {
+      "id": "pool-hustler",
+      "title": "Table hustle",
+      "work": "Analog illustration still",
+      "wing": "noir",
+      "credit": "Source unknown — local archive",
+      "note": "Analog artifact in the digital stack — grit, gold, teal felt.",
+      "src": "/images/inspo/pool-hustler.jpg",
+      "href": null
+    }
+  ]
+}

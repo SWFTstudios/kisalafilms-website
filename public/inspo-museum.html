@@ -1,11 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F2BXR858CL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-F2BXR858CL');
+</script>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Kisala Films dispatches — field notes from the life film. Travel, garage, people, discovery.">
-  <meta name="theme-color" content="#000000">
-  <title>Dispatches — Kisala Films</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Kisala Films Inspo Museum — a personal reference archive of cinematic stills and posters.">
+  <meta name="theme-color" content="#070605">
+  <title>Inspo Museum — Kisala Films</title>
   <link rel="icon" href="/images/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
@@ -41,63 +52,40 @@
     <a href="/about.html">ABOUT</a>
     <a href="/shop.html">SHOP</a>
     <a href="/contact.html">CONTACT</a>
+    <a href="/inspo-museum.html">INSPO MUSEUM</a>
     <a href="https://www.instagram.com/kisalafilms/" target="_blank" rel="noopener">INSTAGRAM &#8599;</a>
     <a href="https://www.youtube.com/@kisalafilms" target="_blank" rel="noopener">YOUTUBE &#8599;</a>
   </div>
 
-  <main>
-    <section class="page-hero">
-      <span class="eyebrow">FIELD NOTES / VOL. 01</span>
-      <h1>THE<br><em>DISPATCH.</em></h1>
-      <p class="lede">Notes from the life film — garage, travel, people, discovery. Location · category · time.</p>
+  <main class="inspo-hall" data-inspo>
+    <section class="page-hero inspo-hero">
+      <span class="eyebrow">REFERENCE ARCHIVE</span>
+      <h1>INSPO<br><em>MUSEUM.</em></h1>
+      <p class="lede" data-inspo-lede>Loading the dossier&hellip;</p>
+      <p class="inspo-disclaimer">Personal moodboard only — third-party stills remain with their owners. Not a commercial gallery.</p>
+      <p class="inspo-spin-hint">Pull to land a random frame in each reel.</p>
     </section>
 
-    <section class="dispatches" aria-label="Dispatches">
-      <div class="dispatch-title">
-        <span>FROM THE ROAD</span>
-        <h2>READ<br><i>THIS.</i></h2>
-        <p>SHORT ENTRIES WHILE<br>LONGER CUTS GROW.</p>
+    <div class="inspo-toolbar">
+      <div class="inspo-wings" data-inspo-wings role="tablist" aria-label="Museum wings"></div>
+      <div class="inspo-toolbar-actions">
+        <button type="button" class="inspo-spin" data-inspo-spin>SPIN</button>
+        <span class="inspo-count" data-inspo-count></span>
       </div>
-      <div class="stories">
-        <a href="/watch.html">
-          <span>01</span>
-          <div class="story-image" style="background-image:url('/images/thumb-f4i-reveal.jpg')"></div>
-          <div>
-            <h3>WEEKEND BUILD — OWN MACHINE</h3>
-            <p>Garage · Machines · ~4 min</p>
-          </div>
-          <b>↗</b>
-        </a>
-        <a href="/watch.html">
-          <span>02</span>
-          <div class="story-image" style="background-image:url('/images/thumb-wrap-process.jpg')"></div>
-          <div>
-            <h3>PROCESS NOTES AFTER HOURS</h3>
-            <p>Studio · BTS · ~3 min</p>
-          </div>
-          <b>↗</b>
-        </a>
-        <a href="/watch.html">
-          <span>03</span>
-          <div class="story-image" style="background-image:url('/images/thumb-night-pov.jpg')"></div>
-          <div>
-            <h3>NIGHT RUN — AFTER THE DAY JOB</h3>
-            <p>Road · Adventure · ~2 min</p>
-          </div>
-          <b>↗</b>
-        </a>
-        <a href="https://www.instagram.com/kisalafilms/" target="_blank" rel="noopener">
-          <span>04</span>
-          <div class="story-image" style="background-image:url('/images/story-elombe-workshop.jpg')"></div>
-          <div>
-            <h3>FOLLOW THE LIFE FILM LIVE</h3>
-            <p>@kisalafilms · Connect · Ongoing</p>
-          </div>
-          <b>↗</b>
-        </a>
-      </div>
-    </section>
+    </div>
+
+    <div class="inspo-marquee" data-inspo-grid aria-label="Slot reels"></div>
   </main>
+
+  <div class="inspo-room" data-inspo-room hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Reading room">
+    <button type="button" class="inspo-room-close" data-inspo-room-close aria-label="Close">CLOSE &#10005;</button>
+    <button type="button" class="inspo-room-nav inspo-room-prev" data-inspo-room-prev aria-label="Previous">&#8592;</button>
+    <button type="button" class="inspo-room-nav inspo-room-next" data-inspo-room-next aria-label="Next">&#8594;</button>
+    <div class="inspo-room-inner">
+      <figure class="inspo-room-figure" data-inspo-room-figure></figure>
+      <div class="inspo-room-meta" data-inspo-room-meta></div>
+    </div>
+  </div>
 
   <footer class="site-footer">
     <div class="footer-mark">KISALA<br><i>FILMS</i></div>
@@ -107,15 +95,18 @@
       <a href="/watch.html">WATCH</a>
       <a href="/series.html">SERIES</a>
       <a href="/about.html">ABOUT</a>
+      <a href="/journal.html">JOURNAL</a>
       <a href="/dispatches.html">DISPATCHES</a>
       <a href="/inspo-museum.html">INSPO MUSEUM</a>
       <a href="/shop.html">SHOP</a>
       <a href="/contact.html">CONTACT</a>
       <a href="https://elombekisala.com" rel="noopener">ELOMBEKISALA.COM</a>
     </div>
-    <small>© 2026 — RECORDED &amp; DIRECTED BY ELOMBE KISALA<br>THE FILM OF A LIFE OUTSIDE WORK</small>
+    <small>&copy; 2026 — RECORDED &amp; DIRECTED BY ELOMBE KISALA<br>LIFE THROUGH MY LENS</small>
   </footer>
+
   <script src="/js/nav.js" defer></script>
   <script src="/js/vhs.js" defer></script>
+  <script src="/js/inspo-museum.js" defer></script>
 </body>
 </html>

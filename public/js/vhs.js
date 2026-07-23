@@ -27,7 +27,7 @@
       format: "1080P / RAW",
       blurb: "Raw nights, old cameras, experiments — a life vlog shot on the camcorder in Los Angeles.",
       vimeo: "1066971784",
-      thumb: "/images/thumb-shop-bts.jpg",
+      thumb: "/images/thumb-lost-tapes.jpg",
     },
     {
       id: "own-machine",
