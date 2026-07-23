@@ -25,7 +25,7 @@
       time: "12:04",
       tone: "lime",
       format: "1080P / RAW",
-      blurb: "Raw nights, old cameras, experiments — a life vlog shot on the camcorder in Los Angeles.",
+      blurb: "Raw nights, old cameras, experiments — a life vlog shot on the camcorder in New York City.",
       vimeo: "1066971784",
       thumb: "/images/thumb-lost-tapes.jpg",
     },
