@@ -76,6 +76,25 @@
       </div>
     </section>
 
+    <section class="section section--dark about-globe scene-root" data-about-scene id="map" aria-label="Map of filmed locations">
+      <div class="section-head" data-reveal>
+        <div>
+          <span class="eyebrow">EVERY PIN, A PLACE I'VE ROLLED</span>
+          <h2>THE<br><em>MAP.</em></h2>
+        </div>
+        <p>SPIN THE GLOBE.<br>PICK A CITY. OPEN THE ENTRY.</p>
+      </div>
+      <div class="about-globe-stage" data-reveal>
+        <div class="globe-mount scene-3d" data-globe-scene></div>
+        <aside class="globe-detail scene-3d" data-globe-detail aria-live="polite"></aside>
+        <div class="globe-hint scene-3d">&#9673; DRAG TO SPIN &middot; TAP A GLOWING PIN TO OPEN ITS JOURNAL ENTRY</div>
+        <div class="globe-fallback scene-fallback">
+          <p class="globe-fallback-note">Interactive globe needs WebGL. Here's the route instead:</p>
+          <ul class="globe-loc-list" data-globe-list></ul>
+        </div>
+      </div>
+    </section>
+
     <section class="z-timeline" id="timeline" data-z-timeline aria-label="Timeline — scroll to fly through the tape log">
       <div class="z-intro">
         <span class="eyebrow">THE TAPE LOG</span>
@@ -209,8 +228,12 @@
     </div>
     <small>&copy; 2026 — RECORDED &amp; DIRECTED BY ELOMBE KISALA<br>LIFE THROUGH MY LENS</small>
   </footer>
+  <script type="importmap">
+  { "imports": { "three": "/js/vendor/three.module.js" } }
+  </script>
   <script src="/js/nav.js" defer></script>
   <script src="/js/vhs.js" defer></script>
   <script src="/js/timeline.js" defer></script>
+  <script type="module" src="/js/scene-boot.js"></script>
 </body>
 </html>
