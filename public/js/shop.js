@@ -40,9 +40,9 @@
   function setViewer(product, activeKey = "hero") {
     if (!viewer || !product) return;
     const shots = [
-      { key: "hero", src: product.images.hero, label: "Hero" },
-      { key: "detail01", src: product.images.detail01, label: "Shoulder" },
-      { key: "detail02", src: product.images.detail02, label: "Build" },
+      { key: "hero", src: product.images.hero, label: "Front" },
+      { key: "detail01", src: product.images.detail01, label: "Back" },
+      { key: "detail02", src: product.images.detail02, label: "Logo" },
     ];
     const active = shots.find((s) => s.key === activeKey) || shots[0];
     viewer.hidden = false;
