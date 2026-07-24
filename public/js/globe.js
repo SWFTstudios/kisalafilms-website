@@ -236,6 +236,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   let externalY = 0;
   let externalX = 0;
   let focusedFilmId = null;
+  let focusedFilm = null;
   const normAngle = (a) => ((a + Math.PI) % (Math.PI * 2)) - Math.PI;
 
   function setPointerFromEvent(e) {
@@ -267,6 +268,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     rotAnim = null;
     externalMode = false; // let the user free-spin; scroll / select re-engages hold
     focusedFilmId = null;
+    focusedFilm = null;
     lastX = e.clientX;
     lastY = e.clientY;
     setPointerFromEvent(e);
@@ -329,23 +331,36 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     }
   }
 
-  /* Rotate so a lat/lng faces the camera (slightly above center for the detail card). */
+  /* Screen aim for a selected pin: just above the detail card. */
+  function focusAimDirection() {
+    const w = container.clientWidth || 1;
+    const mobile = w <= 900;
+    if (mobile) {
+      /* Bottom-centered card — park the pin in the lower third, above it. */
+      return new THREE.Vector3(0, -0.52, 1).normalize();
+    }
+    /* Desktop card sits on the right — bias the pin mid-right, slightly low. */
+    return new THREE.Vector3(0.32, -0.12, 1).normalize();
+  }
+
+  /* Rotate so a lat/lng sits just above the detail card in camera view. */
   function focusAnglesForLatLng(lat, lng) {
     const localDir = latLngToVec3(lat, lng, 1).normalize();
-    const aim = new THREE.Vector3(0, 0.22, 1).normalize();
+    const aim = focusAimDirection();
     const q = new THREE.Quaternion().setFromUnitVectors(localDir, aim);
     const e = new THREE.Euler().setFromQuaternion(q, world.rotation.order);
     return {
       y: e.y,
-      x: THREE.MathUtils.clamp(e.x, -0.85, 1.05),
+      x: THREE.MathUtils.clamp(e.x, -1.05, 1.15),
     };
   }
 
-  /* Focus a pin: rotate world so it faces the camera, then hold until the user drags. */
+  /* Focus a pin: rotate world so it sits above the detail card, then hold. */
   function focusFilm(film) {
     if (typeof film?.lat !== "number" || typeof film?.lng !== "number") return;
-    const { y: targetY, x: targetX } = focusAnglesForLatLng(film.lat, film.lng);
     focusedFilmId = film.id || null;
+    focusedFilm = film;
+    const { y: targetY, x: targetX } = focusAnglesForLatLng(film.lat, film.lng);
     velY = 0;
     velX = 0;
     externalMode = false;
@@ -364,6 +379,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     externalX = x;
     externalMode = true;
     focusedFilmId = filmId;
+    focusedFilm = { id: filmId, lat, lng };
     rotAnim = null;
     velY = 0;
     velX = 0;
@@ -396,6 +412,12 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    /* Keep a held pin parked above the detail card after layout changes. */
+    if (externalMode && focusedFilm && typeof focusedFilm.lat === "number") {
+      const { y, x } = focusAnglesForLatLng(focusedFilm.lat, focusedFilm.lng);
+      externalY = y;
+      externalX = x;
+    }
   }
   const ro = new ResizeObserver(resize);
   ro.observe(container);
