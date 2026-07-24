@@ -74,11 +74,16 @@ async function initHome(root, films) {
       <p class="globe-detail-blurb">${film.blurb || ""}</p>
       <div class="globe-detail-cta">${note}</div>
     `;
+    detailEl.dataset.filmId = film.id || "";
+    detailEl.classList.remove("is-fresh");
+    void detailEl.offsetWidth;
+    detailEl.classList.add("is-fresh");
     const btn = detailEl.querySelector("[data-play]");
     if (btn) btn.addEventListener("click", () => playFilm(film));
   }
 
   function selectFilm(film) {
+    if (!film) return;
     if (tape) tape.setTape(film);
     renderDetail(film);
     globe.focusFilm(film);
@@ -151,12 +156,17 @@ async function initAbout(root) {
       <p class="globe-detail-blurb">${film.blurb || ""}</p>
       <div class="globe-detail-cta"><a class="cta-primary" href="/journal.html?e=${film.slug}">OPEN ENTRY <span>&#8599;</span></a></div>
     `;
+    detailEl.dataset.filmId = film.id || film.slug || "";
+    detailEl.classList.remove("is-fresh");
+    void detailEl.offsetWidth;
+    detailEl.classList.add("is-fresh");
   }
 
   const globe = createGlobe({
     container: globeEl,
     films: entries,
     onSelect: (film) => {
+      if (!film) return;
       renderDetail(film);
       globe.focusFilm(film);
     },

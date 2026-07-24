@@ -166,6 +166,11 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
       new THREE.SphereGeometry(0.05, 16, 16),
       new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending })
     );
+    /* Larger invisible sphere so taps register on phones. */
+    const hit = new THREE.Mesh(
+      new THREE.SphereGeometry(0.11, 12, 12),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
 
     const up = pos.clone().normalize();
     const pin = new THREE.Group();
@@ -173,11 +178,13 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), up);
     head.position.copy(up.clone().multiplyScalar(0.16));
     halo.position.copy(head.position);
-    pin.add(beam, head, halo);
+    hit.position.copy(head.position);
+    pin.add(beam, head, halo, hit);
     pin.position.copy(pos);
     pin.userData.film = film;
     pin.userData.head = head;
     pin.userData.halo = halo;
+    pin.userData.hit = hit;
     pin.userData.baseColor = color;
     pinGroup.add(pin);
     pins.push(pin);
@@ -219,6 +226,9 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   let velY = 0.0016;
   let velX = 0;
   let moved = false;
+  let activePointerId = null;
+  /* Finger jitter on phones often exceeds 3px; keep taps selectable. */
+  const TAP_SLOP_PX = 14;
 
   /* External (scroll-driven) rotation target. When set, the globe eases toward
      these angles instead of idle-spinning; a user drag temporarily disables it. */
@@ -227,12 +237,36 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   let externalX = 0;
   const normAngle = (a) => ((a + Math.PI) % (Math.PI * 2)) - Math.PI;
 
+  function setPointerFromEvent(e) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  }
+
+  function pickPin() {
+    raycaster.setFromCamera(pointer, camera);
+    world.updateMatrixWorld();
+    const targets = pins.map((p) => p.userData.hit || p.userData.head);
+    const hits = raycaster.intersectObjects(targets, false);
+    if (!hits.length) return null;
+    return hits[0].object.parent || null;
+  }
+
+  function selectPinAtPointer() {
+    const pin = pickPin();
+    if (pin?.userData?.film && onSelect) onSelect(pin.userData.film, pin);
+    return !!pin;
+  }
+
   const onDown = (e) => {
     dragging = true;
     moved = false;
+    activePointerId = e.pointerId ?? null;
     externalMode = false; // let the user free-spin; scroll re-engages it
     lastX = e.clientX;
     lastY = e.clientY;
+    setPointerFromEvent(e);
     velY = 0;
     velX = 0;
     renderer.domElement.style.cursor = "grabbing";
@@ -244,13 +278,11 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     if (e.cancelable) e.preventDefault();
   };
   const onMove = (e) => {
-    const rect = renderer.domElement.getBoundingClientRect();
-    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    setPointerFromEvent(e);
     if (dragging) {
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
-      if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+      if (Math.abs(dx) + Math.abs(dy) > TAP_SLOP_PX) moved = true;
       lastX = e.clientX;
       lastY = e.clientY;
       world.rotation.y += dx * 0.006;
@@ -262,6 +294,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   };
   const onUp = (e) => {
     if (!dragging) return;
+    if (activePointerId != null && e.pointerId != null && e.pointerId !== activePointerId) return;
     dragging = false;
     renderer.domElement.style.cursor = "grab";
     if (e && e.pointerId != null && renderer.domElement.releasePointerCapture) {
@@ -269,33 +302,23 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
         renderer.domElement.releasePointerCapture(e.pointerId);
       } catch (_) {}
     }
-  };
-  const onClick = () => {
-    if (moved) return;
-    raycaster.setFromCamera(pointer, camera);
-    world.updateMatrixWorld();
-    const targets = pins.map((p) => p.userData.head);
-    const hits = raycaster.intersectObjects(targets, false);
-    if (hits.length) {
-      const pin = hits[0].object.parent;
-      if (pin?.userData?.film && onSelect) onSelect(pin.userData.film, pin);
+    /* Select on pointerup (not click) so mobile taps aren't dropped after preventDefault. */
+    if (!moved) {
+      setPointerFromEvent(e);
+      selectPinAtPointer();
     }
+    activePointerId = null;
   };
 
   renderer.domElement.addEventListener("pointerdown", onDown, { passive: false });
   window.addEventListener("pointermove", onMove, { passive: false });
   window.addEventListener("pointerup", onUp);
   window.addEventListener("pointercancel", onUp);
-  renderer.domElement.addEventListener("click", onClick);
 
   /* Hover feedback */
   let hovered = null;
   function updateHover() {
-    raycaster.setFromCamera(pointer, camera);
-    world.updateMatrixWorld();
-    const targets = pins.map((p) => p.userData.head);
-    const hits = raycaster.intersectObjects(targets, false);
-    const next = hits.length ? hits[0].object.parent : null;
+    const next = pickPin();
     if (next !== hovered) {
       hovered = next;
       renderer.domElement.style.cursor = next ? "pointer" : dragging ? "grabbing" : "grab";
@@ -412,7 +435,6 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("pointerup", onUp);
     window.removeEventListener("pointercancel", onUp);
-    renderer.domElement.removeEventListener("click", onClick);
     renderer.dispose();
     renderer.domElement.remove();
   }
