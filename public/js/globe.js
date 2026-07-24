@@ -387,7 +387,6 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   }
 
   let rotAnim = null;
-  const externalQ = new THREE.Quaternion();
   function animateFocusQuaternion(targetQ, onDone) {
     const startQ = world.quaternion.clone();
     const endQ = targetQ.clone();
@@ -454,9 +453,12 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     pins.forEach((pin, i) => {
       const isFocused = focusedFilmId && pin.userData.film?.id === focusedFilmId;
       const pulse = 0.5 + 0.5 * Math.sin(el * 2.2 + i);
-      const boost = isFocused ? 1.35 : 1;
+      const boost = isFocused ? 1.7 : 1;
       pin.userData.halo.scale.setScalar((1 + pulse * 0.6) * boost);
-      pin.userData.halo.material.opacity = (0.16 + pulse * 0.22) * (isFocused ? 1.45 : 1);
+      pin.userData.halo.material.opacity = (0.16 + pulse * 0.22) * (isFocused ? 1.8 : 1);
+      if (pin.userData.head?.scale) {
+        pin.userData.head.scale.setScalar(isFocused ? 1.35 : 1);
+      }
     });
 
     updateHover();
