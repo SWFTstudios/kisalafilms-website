@@ -235,6 +235,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   let externalMode = false;
   let externalY = 0;
   let externalX = 0;
+  let focusedFilmId = null;
   const normAngle = (a) => ((a + Math.PI) % (Math.PI * 2)) - Math.PI;
 
   function setPointerFromEvent(e) {
@@ -263,7 +264,9 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     dragging = true;
     moved = false;
     activePointerId = e.pointerId ?? null;
-    externalMode = false; // let the user free-spin; scroll re-engages it
+    rotAnim = null;
+    externalMode = false; // let the user free-spin; scroll / select re-engages hold
+    focusedFilmId = null;
     lastX = e.clientX;
     lastY = e.clientY;
     setPointerFromEvent(e);
@@ -326,32 +329,52 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     }
   }
 
-  /* Focus a pin: rotate world so it faces the camera */
+  /* Rotate so a lat/lng faces the camera (slightly above center for the detail card). */
+  function focusAnglesForLatLng(lat, lng) {
+    const localDir = latLngToVec3(lat, lng, 1).normalize();
+    const aim = new THREE.Vector3(0, 0.22, 1).normalize();
+    const q = new THREE.Quaternion().setFromUnitVectors(localDir, aim);
+    const e = new THREE.Euler().setFromQuaternion(q, world.rotation.order);
+    return {
+      y: e.y,
+      x: THREE.MathUtils.clamp(e.x, -0.85, 1.05),
+    };
+  }
+
+  /* Focus a pin: rotate world so it faces the camera, then hold until the user drags. */
   function focusFilm(film) {
-    const pin = pins.find((p) => p.userData.film?.id === film.id);
-    if (!pin) return;
-    const lat = film.lat;
-    const lng = film.lng;
-    const targetY = -(lng + 180) * DEG2RAD - Math.PI / 2;
-    const targetX = THREE.MathUtils.clamp(lat * DEG2RAD * 0.7, -0.8, 1.0);
-    animateRotation(targetY, targetX);
+    if (typeof film?.lat !== "number" || typeof film?.lng !== "number") return;
+    const { y: targetY, x: targetX } = focusAnglesForLatLng(film.lat, film.lng);
+    focusedFilmId = film.id || null;
+    velY = 0;
+    velX = 0;
+    externalMode = false;
+    animateRotation(targetY, targetX, () => {
+      externalY = world.rotation.y;
+      externalX = world.rotation.x;
+      externalMode = true;
+    });
   }
 
   /* Point the globe at a lat/lng and keep it there (scroll-driven). */
-  function setFocusLatLng(lat, lng) {
+  function setFocusLatLng(lat, lng, filmId = null) {
     if (typeof lat !== "number" || typeof lng !== "number") return;
-    externalY = -(lng + 180) * DEG2RAD - Math.PI / 2;
-    externalX = THREE.MathUtils.clamp(lat * DEG2RAD * 0.7, -0.8, 1.0);
+    const { y, x } = focusAnglesForLatLng(lat, lng);
+    externalY = y;
+    externalX = x;
     externalMode = true;
+    focusedFilmId = filmId;
     rotAnim = null;
+    velY = 0;
+    velX = 0;
   }
 
   let rotAnim = null;
-  function animateRotation(ty, tx) {
+  function animateRotation(ty, tx, onDone) {
     const sy = world.rotation.y;
     const sx = world.rotation.x;
-    // normalize target near current
-    let dy = ((ty - sy + Math.PI) % (Math.PI * 2)) - Math.PI;
+    // Shortest path around Y
+    const dy = ((ty - sy + Math.PI) % (Math.PI * 2)) - Math.PI;
     const start = performance.now();
     const dur = prefersReduced ? 1 : 900;
     rotAnim = (now) => {
@@ -359,7 +382,10 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
       const e = 1 - Math.pow(1 - t, 3);
       world.rotation.y = sy + dy * e;
       world.rotation.x = sx + (tx - sx) * e;
-      if (t >= 1) rotAnim = null;
+      if (t >= 1) {
+        rotAnim = null;
+        if (onDone) onDone();
+      }
     };
   }
 
@@ -403,9 +429,11 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     stars.rotation.y += 0.0004;
 
     pins.forEach((pin, i) => {
+      const isFocused = focusedFilmId && pin.userData.film?.id === focusedFilmId;
       const pulse = 0.5 + 0.5 * Math.sin(el * 2.2 + i);
-      pin.userData.halo.scale.setScalar(1 + pulse * 0.6);
-      pin.userData.halo.material.opacity = 0.16 + pulse * 0.22;
+      const boost = isFocused ? 1.35 : 1;
+      pin.userData.halo.scale.setScalar((1 + pulse * 0.6) * boost);
+      pin.userData.halo.material.opacity = (0.16 + pulse * 0.22) * (isFocused ? 1.45 : 1);
     });
 
     updateHover();

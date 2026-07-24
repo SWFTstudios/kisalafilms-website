@@ -99,6 +99,7 @@ async function initHome(root, films) {
   if (featured) {
     if (tape) tape.setTape(featured);
     renderDetail(featured);
+    globe.focusFilm(featured);
   }
 }
 
@@ -173,6 +174,7 @@ async function initAbout(root) {
   });
 
   renderDetail(entries[0]);
+  globe.focusFilm(entries[0]);
 
   /* Publish for timeline.js so scrolling the tape log spins the globe. */
   window.KisalaAboutGlobe = globe;
