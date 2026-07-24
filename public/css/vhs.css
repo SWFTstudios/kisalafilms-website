@@ -2451,6 +2451,21 @@ body.lightbox-lock { overflow: hidden; }
 .globe-detail-cta { margin-top: 6px; }
 .globe-detail-cta .cta-primary { border: 0; }
 
+.globe-detail.is-fresh {
+  animation: globe-detail-in 0.35s ease;
+}
+
+@keyframes globe-detail-in {
+  from {
+    opacity: 0.35;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Show the drag hint once the live scene is running */
 .scene-root.is-live .globe-hint { display: block; }
 
@@ -3281,6 +3296,8 @@ body.lightbox-lock { overflow: hidden; }
     bottom: 20vh;
     width: min(300px, 76vw);
     height: 210px;
+    /* Let pin taps reach the globe canvas; play lives on the detail CTA. */
+    pointer-events: none;
   }
 
   .globe-detail {
@@ -3291,6 +3308,21 @@ body.lightbox-lock { overflow: hidden; }
     width: min(420px, calc(100% - 2 * var(--pad)));
   }
 
+  .globe-detail.is-fresh {
+    animation-name: globe-detail-in-mobile;
+  }
+
+  @keyframes globe-detail-in-mobile {
+    from {
+      opacity: 0.35;
+      transform: translateX(50%) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(50%);
+    }
+  }
+
   .globe-copy { bottom: auto; top: 96px; }
   .globe-copy h1 { font-size: 17vw; }
   .globe-hint { display: none; }
@@ -3299,6 +3331,7 @@ body.lightbox-lock { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .globe-hint { animation: none; }
+  .globe-detail.is-fresh { animation: none; }
   [data-reveal] { opacity: 1; transform: none; transition: none; }
 }
 
