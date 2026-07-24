@@ -3331,6 +3331,7 @@ body.lightbox-lock { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .globe-hint { animation: none; }
+  .globe-detail.is-fresh { animation: none; }
   [data-reveal] { opacity: 1; transform: none; transition: none; }
 }
 
