@@ -244,13 +244,31 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
   }
 
+  /* Front-facing / limb pins are interactive; back-side occluded pins are not. */
+  const VISIBLE_DOT = 0.08;
+  const _pinWorld = new THREE.Vector3();
+  const _globeOrigin = new THREE.Vector3();
+  const _camDir = new THREE.Vector3();
+
+  function isPinFacingCamera(pin) {
+    pin.getWorldPosition(_pinWorld);
+    world.getWorldPosition(_globeOrigin);
+    /* Surface normal ≈ direction from globe center to pin. */
+    _pinWorld.sub(_globeOrigin).normalize();
+    _camDir.copy(camera.position).sub(_globeOrigin).normalize();
+    return _pinWorld.dot(_camDir) > VISIBLE_DOT;
+  }
+
   function pickPin() {
     raycaster.setFromCamera(pointer, camera);
     world.updateMatrixWorld();
     const targets = pins.map((p) => p.userData.hit || p.userData.head);
     const hits = raycaster.intersectObjects(targets, false);
-    if (!hits.length) return null;
-    return hits[0].object.parent || null;
+    for (const hit of hits) {
+      const pin = hit.object.parent || null;
+      if (pin && isPinFacingCamera(pin)) return pin;
+    }
+    return null;
   }
 
   function selectPinAtPointer() {
@@ -331,19 +349,12 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     }
   }
 
-  /* Screen aim for a selected pin: just above the detail card. */
+  /* Dead center of the camera viewport on the globe (optical axis → sphere). */
   function focusAimDirection() {
-    const w = container.clientWidth || 1;
-    const mobile = w <= 900;
-    if (mobile) {
-      /* Bottom-centered card — park the pin in the lower third, above it. */
-      return new THREE.Vector3(0, -0.52, 1).normalize();
-    }
-    /* Desktop card sits on the right — bias the pin mid-right, slightly low. */
-    return new THREE.Vector3(0.32, -0.12, 1).normalize();
+    return camera.position.clone().normalize();
   }
 
-  /* Full quaternion that maps a lat/lng pin onto the aim direction (keeps Z). */
+  /* Full quaternion that maps a lat/lng pin onto the viewport-center aim. */
   function focusQuaternionForLatLng(lat, lng) {
     const localDir = latLngToVec3(lat, lng, 1).normalize();
     const aim = focusAimDirection();
@@ -354,7 +365,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     world.rotation.setFromQuaternion(world.quaternion, world.rotation.order);
   }
 
-  /* Focus a pin: rotate world so it sits above the detail card, then hold. */
+  /* Focus a pin: rotate world so it sits at viewport center, then hold. */
   function focusFilm(film) {
     if (typeof film?.lat !== "number" || typeof film?.lng !== "number") return;
     focusedFilmId = film.id || null;
@@ -412,7 +423,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    /* Keep a held pin parked above the detail card after layout changes. */
+    /* Keep a held pin parked at viewport center after layout changes. */
     if (externalMode && focusedFilm && typeof focusedFilm.lat === "number") {
       const targetQ = focusQuaternionForLatLng(focusedFilm.lat, focusedFilm.lng);
       externalQ.copy(targetQ);
@@ -438,7 +449,7 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
       rotAnim(performance.now());
     } else if (!dragging) {
       if (externalMode) {
-        // Hold the focused pin above the detail card.
+        // Hold the focused pin at viewport center.
         world.quaternion.slerp(externalQ, 0.18);
       } else {
         world.rotation.y += velY;
