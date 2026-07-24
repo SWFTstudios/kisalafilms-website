@@ -233,11 +233,9 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   /* External (scroll-driven) rotation target. When set, the globe eases toward
      these angles instead of idle-spinning; a user drag temporarily disables it. */
   let externalMode = false;
-  let externalY = 0;
-  let externalX = 0;
   let focusedFilmId = null;
   let focusedFilm = null;
-  const normAngle = (a) => ((a + Math.PI) % (Math.PI * 2)) - Math.PI;
+  const externalQ = new THREE.Quaternion();
 
   function setPointerFromEvent(e) {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -266,6 +264,8 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     moved = false;
     activePointerId = e.pointerId ?? null;
     rotAnim = null;
+    /* Quaternion focus leaves euler stale — sync before drag mutates rotation.x/y. */
+    syncEulerFromQuaternion();
     externalMode = false; // let the user free-spin; scroll / select re-engages hold
     focusedFilmId = null;
     focusedFilm = null;
@@ -343,16 +343,15 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     return new THREE.Vector3(0.32, -0.12, 1).normalize();
   }
 
-  /* Rotate so a lat/lng sits just above the detail card in camera view. */
-  function focusAnglesForLatLng(lat, lng) {
+  /* Full quaternion that maps a lat/lng pin onto the aim direction (keeps Z). */
+  function focusQuaternionForLatLng(lat, lng) {
     const localDir = latLngToVec3(lat, lng, 1).normalize();
     const aim = focusAimDirection();
-    const q = new THREE.Quaternion().setFromUnitVectors(localDir, aim);
-    const e = new THREE.Euler().setFromQuaternion(q, world.rotation.order);
-    return {
-      y: e.y,
-      x: THREE.MathUtils.clamp(e.x, -1.05, 1.15),
-    };
+    return new THREE.Quaternion().setFromUnitVectors(localDir, aim);
+  }
+
+  function syncEulerFromQuaternion() {
+    world.rotation.setFromQuaternion(world.quaternion, world.rotation.order);
   }
 
   /* Focus a pin: rotate world so it sits above the detail card, then hold. */
@@ -360,13 +359,14 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     if (typeof film?.lat !== "number" || typeof film?.lng !== "number") return;
     focusedFilmId = film.id || null;
     focusedFilm = film;
-    const { y: targetY, x: targetX } = focusAnglesForLatLng(film.lat, film.lng);
     velY = 0;
     velX = 0;
     externalMode = false;
-    animateRotation(targetY, targetX, () => {
-      externalY = world.rotation.y;
-      externalX = world.rotation.x;
+    const targetQ = focusQuaternionForLatLng(film.lat, film.lng);
+    animateFocusQuaternion(targetQ, () => {
+      world.quaternion.copy(targetQ);
+      syncEulerFromQuaternion();
+      externalQ.copy(targetQ);
       externalMode = true;
     });
   }
@@ -374,9 +374,10 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   /* Point the globe at a lat/lng and keep it there (scroll-driven). */
   function setFocusLatLng(lat, lng, filmId = null) {
     if (typeof lat !== "number" || typeof lng !== "number") return;
-    const { y, x } = focusAnglesForLatLng(lat, lng);
-    externalY = y;
-    externalX = x;
+    const targetQ = focusQuaternionForLatLng(lat, lng);
+    world.quaternion.copy(targetQ);
+    syncEulerFromQuaternion();
+    externalQ.copy(targetQ);
     externalMode = true;
     focusedFilmId = filmId;
     focusedFilm = { id: filmId, lat, lng };
@@ -386,20 +387,20 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
   }
 
   let rotAnim = null;
-  function animateRotation(ty, tx, onDone) {
-    const sy = world.rotation.y;
-    const sx = world.rotation.x;
-    // Shortest path around Y
-    const dy = ((ty - sy + Math.PI) % (Math.PI * 2)) - Math.PI;
+  const externalQ = new THREE.Quaternion();
+  function animateFocusQuaternion(targetQ, onDone) {
+    const startQ = world.quaternion.clone();
+    const endQ = targetQ.clone();
     const start = performance.now();
     const dur = prefersReduced ? 1 : 900;
     rotAnim = (now) => {
       const t = Math.min(1, (now - start) / dur);
       const e = 1 - Math.pow(1 - t, 3);
-      world.rotation.y = sy + dy * e;
-      world.rotation.x = sx + (tx - sx) * e;
+      world.quaternion.slerpQuaternions(startQ, endQ, e);
       if (t >= 1) {
         rotAnim = null;
+        world.quaternion.copy(endQ);
+        syncEulerFromQuaternion();
         if (onDone) onDone();
       }
     };
@@ -414,9 +415,10 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
     camera.updateProjectionMatrix();
     /* Keep a held pin parked above the detail card after layout changes. */
     if (externalMode && focusedFilm && typeof focusedFilm.lat === "number") {
-      const { y, x } = focusAnglesForLatLng(focusedFilm.lat, focusedFilm.lng);
-      externalY = y;
-      externalX = x;
+      const targetQ = focusQuaternionForLatLng(focusedFilm.lat, focusedFilm.lng);
+      externalQ.copy(targetQ);
+      world.quaternion.copy(targetQ);
+      syncEulerFromQuaternion();
     }
   }
   const ro = new ResizeObserver(resize);
@@ -437,9 +439,8 @@ export function createGlobe({ container, films = [], onSelect, onHover }) {
       rotAnim(performance.now());
     } else if (!dragging) {
       if (externalMode) {
-        // Ease toward the scroll-driven target (shortest way around Y).
-        world.rotation.y += normAngle(externalY - world.rotation.y) * 0.09;
-        world.rotation.x += (externalX - world.rotation.x) * 0.09;
+        // Hold the focused pin above the detail card.
+        world.quaternion.slerp(externalQ, 0.18);
       } else {
         world.rotation.y += velY;
         world.rotation.x = THREE.MathUtils.clamp(world.rotation.x + velX, -0.9, 1.2);
