@@ -1,40 +1,188 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-F2BXR858CL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-F2BXR858CL');
-</script>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
-  <title>Styleguide — Kisala Films VHS</title>
+  <title>Style Guide — Kisala Films</title>
+  <meta name="description" content="Carsy-derived design tokens for Kisala Films.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/vhs.css">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="/images/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/carsy.css">
 </head>
-<body>
-  <div class="noise" aria-hidden="true"></div>
-  <div class="crt" aria-hidden="true"></div>
-  <main class="section section--paper">
-    <span class="eyebrow">INTERNAL</span>
-    <h2 class="display">VHS<br>TOKENS.</h2>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:40px 0">
-      <div style="background:#090a08;color:#e8e4d7;padding:24px;font:700 11px monospace">INK<br>#090a08</div>
-      <div style="background:#e8e4d7;color:#090a08;padding:24px;font:700 11px monospace">PAPER<br>#e8e4d7</div>
-      <div style="background:#d8ff36;color:#090a08;padding:24px;font:700 11px monospace">LIME<br>#d8ff36</div>
-      <div style="background:#ff3b27;color:#fff;padding:24px;font:700 11px monospace">RED<br>#ff3b27</div>
-      <div style="background:#ff6a29;color:#090a08;padding:24px;font:700 11px monospace">ORANGE<br>#ff6a29</div>
+<body class="carsy">
+
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="900" height="497"></a>
+      <nav class="nav-desktop" aria-label="Primary">
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
+          <div class="nav-dd-menu">
+      <a href="/services.html">All services</a>
+      <a href="/services/full-wraps.html">Full colour-change wraps</a>
+      <a href="/services/accent-package.html">Partial &amp; accents</a>
+      <a href="/services.html#chrome">Chrome delete</a>
+      <a href="/services.html#protect">Tank guard &amp; PPF</a>
+      <a href="/services/transformation-film.html">Transformation film</a>
+          </div>
+        </div>
+        <a href="/gallery.html">Gallery</a>
+        <a href="/pricing.html">Pricing</a>
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
+          <div class="nav-dd-menu">
+      <a href="/about.html">Who I am</a>
+      <a href="/journal.html">Journal</a>
+      <a href="/testimonials.html">Rider notes</a>
+      <a href="/faq.html">FAQ</a>
+      <a href="/locations.html">The garage</a>
+          </div>
+        </div>
+        <a href="/contact.html">Contact</a>
+        <a class="btn btn-primary nav-cta" href="/wrap-studio.html">Build your wrap</a>
+      </nav>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </div>
-    <p class="body-copy">Display: Archivo Black · Body: IBM Plex Sans · Meta: IBM Plex Mono · Accent: Georgia italic.</p>
-    <p style="margin-top:24px"><a class="cta-primary" href="/">BACK TO ARCHIVE</a></p>
-  </main>
+  </header>
+  <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
+  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
+    <div class="nav-panel-head">
+      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="900" height="497"></a>
+      <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
+    </div>
+    <nav class="nav-panel-body">
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">&#9660;</span></button>
+        <div class="nav-acc-panel">
+      <a href="/services.html">All services</a>
+      <a href="/services/full-wraps.html">Full colour-change wraps</a>
+      <a href="/services/accent-package.html">Partial &amp; accents</a>
+      <a href="/services.html#chrome">Chrome delete</a>
+      <a href="/services.html#protect">Tank guard &amp; PPF</a>
+      <a href="/services/transformation-film.html">Transformation film</a>
+        </div>
+      </div>
+      <a class="nav-row" href="/wrap-studio.html">Wrap Studio</a>
+      <a class="nav-row" href="/gallery.html">Gallery</a>
+      <a class="nav-row" href="/pricing.html">Pricing</a>
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">&#9660;</span></button>
+        <div class="nav-acc-panel">
+      <a href="/about.html">Who I am</a>
+      <a href="/journal.html">Journal</a>
+      <a href="/testimonials.html">Rider notes</a>
+      <a href="/faq.html">FAQ</a>
+      <a href="/locations.html">The garage</a>
+        </div>
+      </div>
+      <a class="nav-row" href="/contact.html">Contact</a>
+      <a class="btn btn-primary nav-panel-cta" href="/wrap-studio.html">Build your wrap</a>
+    </nav>
+  </aside>
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">System</p>
+      <h1>Style Guide</h1>
+      <p class="p-lg">Carsy tokens adapted for Kisala Films — Chakra Petch, Mulish, #ff4d24.</p>
+    </div>
+  </section>
+  <section class="section reveal">
+    <div class="container">
+      <h2>Color Palette</h2>
+      <div class="sg-swatch-row">
+        <div class="sg-swatch" style="background:#ff4d24;color:#fff">#ff4d24</div>
+        <div class="sg-swatch" style="background:#fff;color:#000">#ffffff</div>
+        <div class="sg-swatch" style="background:#a5a5a5;color:#000">#a5a5a5</div>
+        <div class="sg-swatch" style="background:#111;color:#fff">#111111</div>
+        <div class="sg-swatch" style="background:#000;color:#fff">#000000</div>
+      </div>
+      <h2>Typography</h2>
+      <h1>Heading 1</h1><h2>Heading 2</h2><h3>Heading 3</h3><h4>Heading 4</h4><h5>Heading 5</h5><h6>Heading 6</h6>
+      <p class="p-lg">Paragraph large — Mulish body copy for readable leads.</p>
+      <p class="p">Paragraph — secondary body in gray.</p>
+      <h2>Buttons</h2>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#">Primary</a>
+        <a class="btn btn-black" href="#">Primary Black</a>
+        <a class="btn btn-secondary" href="#">Secondary</a>
+      </div>
+      <h2 style="margin-top:48px">Spacing</h2>
+      <table class="sg-table">
+        <thead><tr><th>Breakpoint</th><th>Section pad</th><th>Inner pad</th><th>Container</th></tr></thead>
+        <tbody>
+          <tr><td>≥992px</td><td>130px</td><td>60px</td><td>1200px</td></tr>
+          <tr><td>&lt;992px</td><td>80px</td><td>40px</td><td>100%</td></tr>
+          <tr><td>&lt;767px</td><td>60px</td><td>40px</td><td>100%</td></tr>
+        </tbody>
+      </table>
+      <div class="sg-nav">
+        <a class="link-arrow" href="/">Home →</a>
+        <a class="link-arrow" href="/services.html">Services →</a>
+        <a class="link-arrow" href="/gallery.html">Showcase →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h5>Wrap</h5>
+        <div class="footer-links">
+          <a href="/services/full-wraps.html">Full colour-change</a>
+          <a href="/services/accent-package.html">Partial &amp; accents</a>
+          <a href="/services.html#protect">Tank guard &amp; PPF</a>
+          <a href="/pricing.html">Pricing</a>
+          <a href="/wrap-studio.html">Build your wrap</a>
+        </div>
+      </div>
+      <div>
+        <h5>Film</h5>
+        <div class="footer-links">
+          <a href="/gallery.html">Gallery</a>
+          <a href="/services/transformation-film.html">Transformation film</a>
+          <a href="/journal.html">Journal</a>
+          <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
+          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+        </div>
+      </div>
+      <div>
+        <h5>Stay on the list</h5>
+        <p class="p">Build drops, new finishes, and the films that come out of the garage.</p>
+        <form class="form" action="https://formsubmit.co/elombe@swftstudios.com" method="POST" accept-charset="UTF-8">
+          <input type="hidden" name="_subject" value="Kisala Films - email subscribe">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/?subscribed=1">
+          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
+          <div class="fld"><input type="email" name="email" placeholder="Email address" aria-label="Email" required></div>
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-note">Thanks — you&rsquo;re on the list.</p>
+        </form>
+      </div>
+      <div class="footer-hours">
+        <h5>The garage</h5>
+        <p>Jersey City, NJ &middot; by appointment</p>
+        <p><a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a></p>
+        <p>Monday to Friday: 10:00 AM &ndash; 6:00 PM</p>
+        <p>Saturday/Sunday: by appointment</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>&copy; 2026 Kisala Films &middot; Jersey City, NJ &middot; Film means vinyl &mdash; and cinema.</span>
+      <a href="/styleguide.html">Style guide</a>
+    </div>
+  </footer>
+  <script src="/js/nav.js"></script>
+  <script src="/js/site.js"></script>
+
 </body>
 </html>

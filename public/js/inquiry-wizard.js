@@ -32,8 +32,8 @@
   const FALLBACK_COPY = FORM.querySelector("[data-fallback-copy]");
   const FALLBACK_STATUS = FORM.querySelector("[data-fallback-status]");
   const SUBMIT_BTN = FORM.querySelector(".wiz-submit");
-  const TO_EMAIL = "hello@swftstudios.com";
-  const FORM_SUBMIT_TO = "hello@swftstudios.com";
+  const TO_EMAIL = "elombe@swftstudios.com";
+  const FORM_SUBMIT_TO = "elombe@swftstudios.com";
   const SIZE_HIDDEN = {
     suggest: FORM.querySelector("[data-size-suggest]"),
     stock: FORM.querySelector("[data-size-stock]"),
