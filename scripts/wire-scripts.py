@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""One-shot: wire the shared config / analytics / hydration scripts into every page.
+
+Chrome is duplicated per page rather than templated, so this walks the HTML and
+inserts the three tags in the only order that works:
+
+  <head>  kisala-config.js   synchronous, defines the numbers
+  <head>  analytics.js       registers gtag + the delegated click layer
+  </body> config-apply.js    FIRST of the body scripts, so it writes the price
+                             attributes before wrap-studio.js reads them
+
+Idempotent — running it twice changes nothing. Kept in the repo because the same
+insertion has to be repeated by hand on any new page.
+
+Usage:
+  python3 scripts/wire-scripts.py
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+PUBLIC = ROOT / "public"
+
+HEAD_TAGS = (
+    '  <script src="/js/kisala-config.js"></script>\n'
+    '  <script src="/js/analytics.js"></script>\n'
+)
+BODY_TAG = '  <script src="/js/config-apply.js"></script>\n'
+
+# The ads landing page carries its own inline gtag and its own stylesheet fork;
+# double-tagging it would split its numbers across two configs.
+SKIP = {"wrap-quote/index.html"}
+
+STYLESHEET = '  <link rel="stylesheet" href="/css/carsy.css">\n'
+
+
+def is_redirect_stub(html: str) -> bool:
+    return "http-equiv" in html and 'content="0;' in html.replace("'", '"')
+
+
+def wire(path: Path) -> str:
+    rel = path.relative_to(PUBLIC).as_posix()
+    if rel in SKIP:
+        return "skipped (own tag)"
+
+    html = path.read_text(encoding="utf-8")
+    if is_redirect_stub(html):
+        return "skipped (redirect stub)"
+
+    changed = False
+
+    if "/js/kisala-config.js" not in html:
+        if STYLESHEET in html:
+            html = html.replace(STYLESHEET, STYLESHEET + HEAD_TAGS, 1)
+        elif "</head>" in html:
+            html = html.replace("</head>", HEAD_TAGS + "</head>", 1)
+        else:
+            return "FAILED (no <head>)"
+        changed = True
+
+    if "/js/config-apply.js" not in html:
+        marker = '  <script src="/js/nav.js"></script>\n'
+        if marker in html:
+            html = html.replace(marker, BODY_TAG + marker, 1)
+        elif "</body>" in html:
+            html = html.replace("</body>", BODY_TAG + "</body>", 1)
+        else:
+            return "FAILED (no </body>)"
+        changed = True
+
+    if changed:
+        path.write_text(html, encoding="utf-8")
+        return "wired"
+    return "already wired"
+
+
+def main() -> None:
+    for path in sorted(PUBLIC.rglob("*.html")):
+        print(f"{path.relative_to(PUBLIC).as_posix():34} {wire(path)}")
+
+
+if __name__ == "__main__":
+    main()
