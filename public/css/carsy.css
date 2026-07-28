@@ -603,6 +603,10 @@ body.nav-lock { overflow: hidden; }
 }
 .svc-chip {
   display: inline-flex;
+  /* The chips now wrap a config-driven price in its own span, and inline-flex
+     discards the whitespace between items — "Pickup from" + "$75" rendered as
+     "PICKUP FROM$75". */
+  gap: .35em;
   align-self: flex-start;
   font-family: var(--font-heading);
   font-size: .75rem;
@@ -2118,7 +2122,10 @@ h1, .h1 { font-weight: 800; }
   font-weight: 800;
   letter-spacing: -.01em;
 }
-.trust-row span {
+/* Direct child only: this styles the sub-label under each figure. As a
+   descendant selector it also caught the config-driven price span nested inside
+   the <strong>, shrinking "$75" to caption size mid-headline. */
+.trust-row > div > span {
   font-size: .72rem;
   letter-spacing: .16em;
   text-transform: uppercase;

@@ -115,15 +115,26 @@ const browser = await puppeteer.launch({
   args: ["--no-sandbox", "--disable-dev-shm-usage"],
 });
 
-/** A page that fails the run on any uncaught error or console error. */
+/**
+ * A page that fails the run on any uncaught error or console error.
+ *
+ * Errors are recorded on the page as `page.scriptErrors` as well as in the run's
+ * failures, so a caller can assert on this page's errors specifically rather
+ * than on a global count that other checks also move.
+ */
 async function open(path, { mode } = {}) {
   const page = await browser.newPage();
+  page.scriptErrors = [];
+  const record = (message) => {
+    page.scriptErrors.push(message);
+    failures.push(message);
+  };
   // A desktop viewport: the default 800x600 is short enough that scrolling a
   // control to the top puts it under the 85px sticky header.
   await page.setViewport({ width: 1280, height: 900 });
-  page.on("pageerror", (e) => failures.push(`page error on ${path}: ${e.message}`));
+  page.on("pageerror", (e) => record(`page error on ${path}: ${e.message}`));
   page.on("console", (m) => {
-    if (m.type() === "error") failures.push(`console error on ${path}: ${m.text()}`);
+    if (m.type() === "error") record(`console error on ${path}: ${m.text()}`);
   });
 
   if (mode) {
@@ -562,9 +573,59 @@ try {
       "/wrap-quote/",
     ];
 
+    // Dropping a <span data-cfg> into existing copy inherits whatever the
+    // surrounding CSS says about spans, and flex parents discard the whitespace
+    // around it. Both were live bugs: "$75" rendered at caption size mid-headline
+    // in the trust band, and a chip read "PICKUP FROM$75".
+    const styleOfSlots = (p) =>
+      p.evaluate(() =>
+        [...document.querySelectorAll("[data-cfg]")]
+          // Only slots dropped into a run of text, like "Pickup from <span>$75".
+          // A slot that is a styled element in its own right — .opt-price is
+          // deliberately small, red and uppercase — is not inheriting anything
+          // by accident and has no whitespace to lose.
+          .filter((el) =>
+            [...(el.parentElement?.childNodes || [])].some(
+              (n) => n.nodeType === 3 && n.textContent.trim()
+            )
+          )
+          .map((el) => {
+            const own = getComputedStyle(el);
+            const parent = getComputedStyle(el.parentElement);
+            return {
+              cfg: el.dataset.cfg,
+              parentClass: el.parentElement.className || el.parentElement.tagName,
+              size: parseFloat(own.fontSize),
+              parentSize: parseFloat(parent.fontSize),
+              // A flex or grid parent drops whitespace-only nodes between items.
+              parentDisplay: parent.display,
+              parentGap: parent.gap === "normal" ? 0 : parseFloat(parent.gap) || 0,
+            };
+          })
+      );
+
     for (const route of routes) {
-      const before = failures.length;
       const p = await open(route);
+
+      const slots = await styleOfSlots(p);
+      await check(`${route} renders its config prices in the surrounding type`, () => {
+        slots.forEach((s) => {
+          assert(
+            s.size >= s.parentSize * 0.9,
+            `${s.cfg} renders at ${s.size}px inside ${s.parentClass} at ${s.parentSize}px`
+          );
+        });
+      });
+      await check(`${route} keeps a space before each inline price`, () => {
+        slots
+          .filter((s) => /flex|grid/.test(s.parentDisplay))
+          .forEach((s) =>
+            assert(
+              s.parentGap > 0,
+              `${s.parentClass} is ${s.parentDisplay} with no gap, so the space before ${s.cfg} is dropped`
+            )
+          );
+      });
       const state = await p.evaluate(() => ({
         config: !!window.KISALA_CONFIG,
         applied: !!window.KisalaConfig,
@@ -578,8 +639,9 @@ try {
       }));
       await p.close();
 
+      const scriptErrors = p.scriptErrors.slice();
       await check(`${route} loads without script errors`, () => {
-        assertEqual(failures.length, before, "errors were logged above");
+        assertEqual(scriptErrors.length, 0, scriptErrors.join("; "));
         assert(state.config, "kisala-config.js did not load");
         assert(state.applied, "config-apply.js did not run");
         assertEqual(state.stale, 0, "unhydrated data-cfg slots");
