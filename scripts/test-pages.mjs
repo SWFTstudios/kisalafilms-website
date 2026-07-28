@@ -547,6 +547,117 @@ function fire(win, el, type) {
   });
 }
 
+/* ---- Local landing pages ----------------------------------------------- */
+{
+  const CITY_PAGES = [
+    ["locations/jersey-city.html", "jersey-city", "Jersey City"],
+    ["locations/brooklyn.html", "brooklyn", "Brooklyn"],
+    ["locations/new-york-city.html", "nyc", "New York City"],
+  ];
+
+  const bodies = new Map();
+
+  for (const [page, zone, city] of CITY_PAGES) {
+    const win = load(page);
+    bodies.set(page, win.document.querySelector("main, body").textContent.replace(/\s+/g, " "));
+
+    check(`${city} page is a distinct page, not a template fill`, () => {
+      assertEqual(win.document.querySelectorAll("h1").length, 1, "one h1");
+      assert(new RegExp(city.split(" ")[0], "i").test(win.document.querySelector("h1").textContent), "h1 should name the city");
+      assertEqual(win.document.querySelector("[data-local-zone]")?.getAttribute("data-local-zone"), zone, "zone marker");
+      assert(win.document.querySelectorAll(".faq-item").length >= 3, "needs its own FAQ");
+    });
+
+    check(`${city} page hydrates its pickup fee from config`, () => {
+      const fee = win.document.querySelector(`[data-cfg="zones.${zone}.pickupFrom"]`);
+      assert(fee, "no zone-specific pickup figure");
+      assertEqual(fee.textContent, "$75", "pickup figure");
+    });
+
+    check(`${city} page carries canonical and social tags`, () => {
+      const canonical = win.document.querySelector("link[rel=canonical]")?.getAttribute("href");
+      assertEqual(canonical, `https://kisalafilms-website.elombe.workers.dev/${page}`, "canonical");
+      ["og:url", "og:title", "og:description", "og:image"].forEach((p) =>
+        assert(win.document.querySelector(`meta[property="${p}"]`), `missing ${p}`)
+      );
+      assert(win.document.querySelector('meta[name="twitter:card"]'), "missing twitter:card");
+    });
+
+    check(`${city} page JSON-LD parses and claims nothing unverifiable`, () => {
+      const blocks = [...win.document.querySelectorAll('script[type="application/ld+json"]')];
+      assert(blocks.length > 0, "no JSON-LD");
+      const graph = blocks.flatMap((b) => JSON.parse(b.textContent)["@graph"] || []);
+      const types = graph.map((n) => n["@type"]);
+      ["AutoBodyShop", "BreadcrumbList", "FAQPage"].forEach((t) =>
+        assert(types.includes(t), `missing ${t}`)
+      );
+
+      const raw = JSON.stringify(graph);
+      ["aggregateRating", "review", "ratingValue", "streetAddress", "telephone"].forEach((banned) =>
+        assert(!raw.includes(banned), `JSON-LD asserts "${banned}"`)
+      );
+
+      const shop = graph.find((n) => n["@type"] === "AutoBodyShop");
+      assertEqual(shop.address.addressLocality, "Jersey City", "the garage stays in Jersey City");
+      assertEqual(shop.areaServed.length, 3, "three served areas");
+    });
+
+    check(`${city} page links the other two`, () => {
+      const links = [...win.document.querySelectorAll('a[href^="/locations/"]')].map((a) =>
+        a.getAttribute("href")
+      );
+      const others = CITY_PAGES.filter(([p]) => p !== page).map(([p]) => `/${p}`);
+      others.forEach((href) => assert(links.includes(href), `no link to ${href}`));
+    });
+
+    if (zone !== "jersey-city") {
+      check(`${city} page does not imply a second shop`, () => {
+        const text = bodies.get(page);
+        assert(/Jersey City/.test(text), "should still name where the work happens");
+        assert(
+          /no (Kisala Films )?(shop|bay)|One garage|no second shop|isn.t in the city/i.test(text),
+          "should state plainly that there is no shop in this city"
+        );
+      });
+    }
+  }
+
+  check("the three city pages are genuinely different copy", () => {
+    const texts = [...bodies.values()];
+    for (let i = 0; i < texts.length; i += 1) {
+      for (let j = i + 1; j < texts.length; j += 1) {
+        // Compare the distinctive words rather than the shared chrome.
+        const words = (s) => new Set(s.toLowerCase().match(/[a-z']{5,}/g) || []);
+        const a = words(texts[i]);
+        const b = words(texts[j]);
+        const shared = [...a].filter((w) => b.has(w)).length;
+        const overlap = shared / Math.min(a.size, b.size);
+        assert(overlap < 0.75, `pages ${i} and ${j} share ${Math.round(overlap * 100)}% of their vocabulary`);
+      }
+    }
+  });
+
+  check("the locations hub links all three", () => {
+    const win = load("locations.html");
+    ["jersey-city", "brooklyn", "new-york-city"].forEach((slug) =>
+      assert(
+        win.document.querySelector(`a[href="/locations/${slug}.html"]`),
+        `hub does not link ${slug}`
+      )
+    );
+  });
+
+  check("the home page carries the local section", () => {
+    const win = load("index.html");
+    ["jersey-city", "brooklyn", "new-york-city"].forEach((slug) =>
+      assert(
+        win.document.querySelector(`a[href="/locations/${slug}.html"]`),
+        `home page does not link ${slug}`
+      )
+    );
+  });
+}
+
 /* ---- Report ------------------------------------------------------------ */
 console.log(`${passed} passed, ${failures.length} failed`);
 if (failures.length) {
