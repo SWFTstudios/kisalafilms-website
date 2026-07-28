@@ -2554,6 +2554,28 @@ h1, .h1 { font-weight: 800; }
 }
 .summary-value { text-align: right; color: var(--c-white); min-width: 0; word-break: break-word; }
 .summary-value.is-empty { color: #5a5a5a; }
+.summary-estimate {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid rgba(232, 39, 31, .45);
+  background: linear-gradient(180deg, rgba(232,39,31,.12), rgba(232,39,31,.02));
+}
+.summary-estimate .summary-label { display: block; margin-bottom: 6px; }
+.summary-estimate-value {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+}
+.summary-estimate-note {
+  margin: 10px 0 0;
+  font-size: .76rem;
+  line-height: 1.55;
+  color: var(--c-gray);
+}
+
 .summary-foot {
   margin-top: 22px;
   padding-top: 18px;

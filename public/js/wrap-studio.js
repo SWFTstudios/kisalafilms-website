@@ -173,6 +173,97 @@
     });
   }
 
+  /* ---- Deep links -------------------------------------------------------
+     The home page finish tiles and service cards link straight in with the
+     choice already made, e.g. /wrap-studio.html?finish=Matte             */
+  const params = new URLSearchParams(window.location.search);
+
+  const preselectFinish = params.get("finish");
+  if (preselectFinish) {
+    const select = form.querySelector('[name="finish"]');
+    if (select && Array.from(select.options).some((o) => o.value === preselectFinish)) {
+      select.value = preselectFinish;
+    }
+  }
+
+  const preselectService = params.get("service");
+  if (preselectService) {
+    const radio = form.querySelector(`input[name="service"][value="${CSS.escape(preselectService)}"]`);
+    if (radio) radio.checked = true;
+  }
+
+  /* ---- Ballpark estimate ------------------------------------------------ */
+  const estimateOut = document.querySelector("[data-estimate-out]");
+  const estimateNote = document.querySelector("[data-estimate-note]");
+  const estimateField = document.querySelector("[data-estimate-field]");
+
+  const money = (n) => "$" + (Math.round(n / 25) * 25).toLocaleString("en-US");
+
+  function estimate() {
+    const service = form.querySelector('input[name="service"]:checked');
+    if (!service) return null;
+
+    let low = Number(service.dataset.priceLow || 0);
+    let high = Number(service.dataset.priceHigh || 0);
+    if (!low || !high) return null;
+
+    // Prices are quoted for a mid-complexity bike. Stripping a full touring
+    // fairing is a different job from wrapping a naked tank, so scale the
+    // body-dependent services by the difficulty band the bike index reports.
+    const difficulty = Number(form.querySelector("[data-bike-difficulty]")?.value || 0);
+    let scaled = false;
+    if (service.dataset.priceScales === "1" && difficulty) {
+      const factor = 1 + 0.18 * (difficulty - 3);
+      low *= factor;
+      high *= factor;
+      scaled = true;
+    }
+
+    const addons = Array.from(form.querySelectorAll('input[name="addons"]:checked')).reduce(
+      (sum, el) => sum + Number(el.dataset.price || 0),
+      0
+    );
+
+    return { low: low + addons, high: high + addons, addons, scaled, difficulty };
+  }
+
+  function renderEstimate() {
+    if (!estimateOut) return;
+    const result = estimate();
+
+    if (!result) {
+      estimateOut.textContent = "Pick a service";
+      if (estimateNote) {
+        estimateNote.textContent = "Scales with how much bodywork your bike has to come apart.";
+      }
+      if (estimateField) estimateField.value = "";
+      return;
+    }
+
+    const range = `${money(result.low)}–${money(result.high)}`;
+    estimateOut.textContent = range;
+
+    if (estimateNote) {
+      const parts = [];
+      if (result.scaled) {
+        parts.push(
+          result.difficulty >= 4
+            ? "Adjusted up for your bike's bodywork."
+            : result.difficulty <= 2
+              ? "Adjusted down for your bike's bodywork."
+              : "Adjusted for your bike's bodywork."
+        );
+      } else if (!result.difficulty) {
+        parts.push("Pick your bike to sharpen this.");
+      }
+      if (result.addons) parts.push(`Includes ${money(result.addons)} of add-ons.`);
+      parts.push("A ballpark, not a quote — photos decide the real number.");
+      estimateNote.textContent = parts.join(" ");
+    }
+
+    if (estimateField) estimateField.value = range;
+  }
+
   /* ---- Live build summary ----------------------------------------------- */
   const outs = {};
   document.querySelectorAll("[data-summary-out]").forEach((el) => {
@@ -211,6 +302,8 @@
       "photos",
       photos.length ? `${photos.length} attached · ${mb(total())} MB` : ""
     );
+
+    renderEstimate();
   }
 
   // The vinyl picker writes its hidden field programmatically, which fires no
