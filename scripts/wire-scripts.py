@@ -29,9 +29,11 @@ HEAD_TAGS = (
 )
 BODY_TAG = '  <script src="/js/config-apply.js"></script>\n'
 
-# The ads landing page carries its own inline gtag and its own stylesheet fork;
-# double-tagging it would split its numbers across two configs.
-SKIP = {"wrap-quote/index.html"}
+# /wrap-quote/ forks its own stylesheet and used to inline its own gtag, so it
+# was skipped here. Its GA4 tag now comes from analytics.js like everywhere else,
+# and it quotes prices — which without config-apply.js were never hydrated, so it
+# would have gone on advertising the founding rate after a switch to standard.
+# It is wired like any other page; only the redirect stubs are skipped.
 
 STYLESHEET = '  <link rel="stylesheet" href="/css/carsy.css">\n'
 
@@ -41,10 +43,6 @@ def is_redirect_stub(html: str) -> bool:
 
 
 def wire(path: Path) -> str:
-    rel = path.relative_to(PUBLIC).as_posix()
-    if rel in SKIP:
-        return "skipped (own tag)"
-
     html = path.read_text(encoding="utf-8")
     if is_redirect_stub(html):
         return "skipped (redirect stub)"

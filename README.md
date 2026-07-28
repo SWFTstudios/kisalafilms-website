@@ -137,6 +137,8 @@ Two different mechanisms, and the difference matters:
 - **Wrap Studio** posts natively as `multipart/form-data`, because that is the only endpoint that delivers the photo attachments. Anything added to that form has to be a plain form field.
 - **`/wrap-quote/`** posts through `fetch` to FormSubmit's AJAX endpoint via `inquiry-wizard.js`. It has no attachments, so it can stay on the page.
 
+`/wrap-quote/` forks its own stylesheet and its own markup, which makes it easy to forget. It is still on the shared config, so its two tier prices move with `pricingMode` like everywhere else — worth keeping that way, since it is the page paid traffic lands on and the last place you'd want to advertise a rate you've stopped honouring. `npm test` fails if a price there loses its `data-cfg`.
+
 ## Build
 
 There is no bundler and no compile step — the HTML in `public/` is what ships. But because the chrome is copy-pasted into every page, the parts that must agree across all 28 of them are generated rather than hand-edited:

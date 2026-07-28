@@ -1139,6 +1139,27 @@ function fire(win, el, type) {
     }
   });
 
+  check("every headline price is backed by the config", () => {
+    // The ads landing page is the one that matters here: paid traffic lands on
+    // it, and it forked its own chrome, so it is the easiest page to leave
+    // advertising a founding rate the rest of the site has stopped honouring.
+    // Checked statically — this page's inline wizard does not need to be run.
+    for (const rel of ["wrap-quote/index.html", "pricing.html", "index.html"]) {
+      const html = readFileSync(join(PUBLIC, rel), "utf8");
+      assert(/\/js\/config-apply\.js/.test(html), `${rel} never hydrates the config`);
+
+      // Any element whose own text is just a price: the tier and card amounts.
+      for (const [, attrs, body] of html.matchAll(
+        /<(?:div|span|strong|p)([^>]*)>(\s*\$[\d,]+\+?\s*)<\/(?:div|span|strong|p)>/g
+      )) {
+        assert(
+          /data-cfg=/.test(attrs),
+          `${rel} hardcodes ${body.trim()} with no data-cfg behind it`
+        );
+      }
+    }
+  });
+
   check("the founding slot count is one number from the config", () => {
     const raw = readFileSync(join(PUBLIC, "js/kisala-config.js"), "utf8");
     const remaining = Number(raw.match(/slotsRemaining:\s*(\d+)/)[1]);

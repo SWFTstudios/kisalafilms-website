@@ -517,6 +517,61 @@ try {
     });
     await standard.close();
   }
+
+  /* ---- 6. Every page loads clean ----------------------------------------- */
+  console.log("\nEvery page");
+  {
+    const routes = [
+      "/",
+      "/wrap-studio",
+      "/pricing",
+      "/services",
+      "/services/full-wraps",
+      "/services/accent-package",
+      "/services/transformation-film",
+      "/gallery",
+      "/shop",
+      "/about",
+      "/journal",
+      "/testimonials",
+      "/faq",
+      "/locations",
+      "/locations/jersey-city",
+      "/locations/brooklyn",
+      "/locations/new-york-city",
+      "/contact",
+      "/thanks",
+      "/wrap-quote/",
+    ];
+
+    for (const route of routes) {
+      const before = failures.length;
+      const p = await open(route);
+      const state = await p.evaluate(() => ({
+        config: !!window.KISALA_CONFIG,
+        applied: !!window.KisalaConfig,
+        ga: typeof window.gtag === "function",
+        // A slot the config never filled in would show up as literal junk.
+        stale: [...document.querySelectorAll("[data-cfg]")]
+          .map((el) => el.textContent.trim())
+          .filter((t) => !t || /undefined|NaN|\{\{/.test(t)).length,
+        h1: document.querySelectorAll("h1").length,
+        title: document.title,
+      }));
+      await p.close();
+
+      await check(`${route} loads without script errors`, () => {
+        assertEqual(failures.length, before, "errors were logged above");
+        assert(state.config, "kisala-config.js did not load");
+        assert(state.applied, "config-apply.js did not run");
+        assertEqual(state.stale, 0, "unhydrated data-cfg slots");
+        assertEqual(state.h1, 1, "exactly one h1");
+        assert(state.title.length > 10, `thin title: "${state.title}"`);
+        // /wrap-quote/ is the standalone ads page and keeps its own inline tag.
+        assert(state.ga, "no GA4 tag");
+      });
+    }
+  }
 } finally {
   await browser.close();
   sink.close();
