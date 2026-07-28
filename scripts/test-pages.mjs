@@ -483,6 +483,70 @@ function fire(win, el, type) {
   })();
 }
 
+/* ---- Pricing across the site ------------------------------------------- */
+{
+  const PRICED = ["index.html", "pricing.html", "services.html"];
+
+  for (const page of PRICED) {
+    const founding = load(page);
+    const standard = load(page, {
+      mutateConfig: (w) => {
+        w.KISALA_CONFIG.pricingMode = "standard";
+      },
+    });
+
+    check(`${page} quotes the pickup floor from config`, () => {
+      const nodes = [...founding.document.querySelectorAll('[data-cfg$="pickupFrom"], [data-cfg="transport.pickup.from"]')];
+      assert(nodes.length > 0, "no pickup figure on the page");
+      nodes.forEach((el) => assertEqual(el.textContent, "$75", "pickup figure"));
+    });
+
+    check(`${page} has no hardcoded price left behind`, () => {
+      // Anything still reading $1,650 in standard mode is a number the owner
+      // cannot move from the config.
+      const stale = [...standard.document.querySelectorAll("body *")].filter(
+        (el) => el.children.length === 0 && /\$1,650|\$575\b/.test(el.textContent)
+      );
+      assertEqual(stale.length, 0, `stale prices: ${stale.map((el) => el.textContent.trim()).join(" / ")}`);
+    });
+
+    check(`${page} moves every price when the mode flips`, () => {
+      const read = (win) =>
+        [...win.document.querySelectorAll('[data-cfg^="services."]')].map((el) => el.textContent);
+      const a = read(founding);
+      const b = read(standard);
+      if (!a.length) return; // services.html quotes no service prices
+      assert(a.join() !== b.join(), "prices did not move with the mode");
+    });
+  }
+
+  check("the founding band is gated on the pricing mode", () => {
+    const founding = load("pricing.html");
+    const standard = load("pricing.html", {
+      mutateConfig: (w) => {
+        w.KISALA_CONFIG.pricingMode = "standard";
+      },
+    });
+    assert(
+      founding.document.body.textContent.includes("Founding riders"),
+      "founding band missing in founding mode"
+    );
+    assert(
+      !standard.document.body.textContent.includes("Founding riders"),
+      "founding band should not render in standard mode"
+    );
+  });
+
+  check("no page anchors a founding price against a struck-through one", () => {
+    // A discount claim would depend on the unreviewed standard column.
+    for (const page of PRICED) {
+      const win = load(page);
+      const struck = win.document.querySelectorAll("s, del, .was-price, [data-cfg-was]");
+      assertEqual(struck.length, 0, `${page} shows a struck-through price`);
+    }
+  });
+}
+
 /* ---- Report ------------------------------------------------------------ */
 console.log(`${passed} passed, ${failures.length} failed`);
 if (failures.length) {

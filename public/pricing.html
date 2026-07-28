@@ -96,35 +96,87 @@
     <div class="container">
       <p class="eyebrow">Packages</p>
       <h1>Straightforward pricing</h1>
-      <p class="p-lg">Clear tiers. Custom quotes when the bike or graphics call for it. Minimum turnaround: 2–3 days.</p>
+      <p class="p-lg">Clear tiers. Custom quotes when the bike or graphics call for it. Minimum turnaround: 2&ndash;3 days. Motorcycle pickup across Jersey City, Brooklyn and NYC starts at <span data-cfg="transport.pickup.from">$75</span>.</p>
     </div>
   </section>
+
+  <section class="section reveal" data-cfg-show="founding">
+    <div class="container">
+      <div class="rr-banner">
+        <div>
+          <p class="eyebrow">Founding riders</p>
+          <h2 class="h3">The first <span data-cfg="founding.slotsTotal" data-cfg-format="integer">8</span> builds set the rate.</h2>
+          <p class="p" style="margin:0;max-width:640px">Every price on this page is a founding-rider rate. I&rsquo;m building the portfolio, and these are the numbers I&rsquo;m holding while I do it &mdash; <strong class="metal-text"><span data-cfg="founding.slotsRemaining" data-cfg-format="integer">6</span> of <span data-cfg="founding.slotsTotal" data-cfg-format="integer">8</span> still open</strong>. Same cast film, same panels-off install, same camera running. What you&rsquo;re trading is being early.</p>
+        </div>
+        <a class="btn btn-primary" href="/wrap-studio.html" data-track="cta_click" data-track-label="pricing-founding">Take a founding slot</a>
+      </div>
+    </div>
+  </section>
+
   <section class="section reveal">
     <div class="container">
       <div class="price-grid-3">
         <article class="price-card featured">
-          <span class="tag">Full build</span>
+          <span class="tag" data-cfg-show="founding">Founding rate</span>
+          <span class="tag" data-cfg-show="standard">Full build</span>
           <h2 class="h6">Full transformation</h2>
-          <div class="price-amount">$1,650+</div>
+          <div class="price-amount" data-cfg="services.fullWrap.from" data-cfg-format="money-plus">$1,650+</div>
           <ul class="price-list"><li>Full color-change wrap</li><li>Tank PPF included</li><li>Project photos/video available</li><li>Optional channel / site feature</li></ul>
-          <a class="btn btn-primary" href="/wrap-studio.html">Build this wrap</a>
+          <a class="btn btn-primary" href="/wrap-studio.html" data-track="cta_click" data-track-label="pricing-full">Build this wrap</a>
         </article>
         <article class="price-card">
-          <span class="tag">Partial</span>
+          <span class="tag" data-cfg-show="founding">Founding rate</span>
+          <span class="tag" data-cfg-show="standard">Partial</span>
           <h2 class="h6">Accent package</h2>
-          <div class="price-amount">$575+</div>
+          <div class="price-amount" data-cfg="services.partialWrap.from" data-cfg-format="money-plus">$575+</div>
           <ul class="price-list"><li>Partial wrap or stripes</li><li>Chrome delete option</li><li>BTS stills/reel available</li><li>Design consult</li></ul>
-          <a class="btn btn-black" href="/wrap-studio.html">Build this wrap</a>
+          <a class="btn btn-black" href="/wrap-studio.html" data-track="cta_click" data-track-label="pricing-accent">Build this wrap</a>
         </article>
         <article class="price-card">
           <span class="tag">Protect</span>
           <h2 class="h6">Protection add-ons</h2>
           <div class="price-amount">Custom</div>
           <ul class="price-list"><li>Tank protection</li><li>Paint protection film</li><li>Quoted per panel</li><li>Pairs with any wrap</li></ul>
-          <a class="btn btn-black" href="/wrap-studio.html">Get it quoted</a>
+          <a class="btn btn-black" href="/wrap-studio.html" data-track="cta_click" data-track-label="pricing-protection">Get it quoted</a>
         </article>
       </div>
       <p class="p" style="margin-top:32px;max-width:640px">Pricing varies by bike architecture, coverage, and film choice. Builds need at least 2&ndash;3 days in the garage. Photo/video-only shoots are booked via <a href="https://rollerreels.com">Roller Reels</a>.</p>
+    </div>
+  </section>
+
+  <section class="section section-dark reveal" id="pickup">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Getting the bike here</p>
+        <h2>You don&rsquo;t have to ride it over.</h2>
+        <p class="p-lg">The garage is in Jersey City, but the bike doesn&rsquo;t have to start there. Pickup is quoted with the build, never charged up front &mdash; and if it isn&rsquo;t running, that changes how I load it, not whether I come.</p>
+      </div>
+      <div class="svc-grid">
+        <article class="svc-card">
+          <span class="svc-chip">No charge</span>
+          <h3>Ride it in</h3>
+          <p class="p">Jersey City garage, by appointment. Drop-off and pick-up windows locked once we agree the quote.</p>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">From <span data-cfg="transport.pickup.from">$75</span></span>
+          <h3>Motorcycle pickup</h3>
+          <p class="p">I come to you with the van and bring the bike back to the garage. Jersey City, Brooklyn and NYC.</p>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">From <span data-cfg="transport.roundTrip.from">$150</span></span>
+          <h3>Pickup + return delivery</h3>
+          <p class="p">Collected before the build, delivered back after. You never have to move it yourself.</p>
+        </article>
+        <article class="svc-card">
+          <span class="svc-chip">Quoted</span>
+          <h3>Further out</h3>
+          <p class="p">Outside the usual run, say where you are. I&rsquo;ll tell you honestly whether I can get to you.</p>
+        </article>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="/wrap-studio.html" data-track="cta_click" data-track-label="pricing-pickup">Add pickup to your build</a>
+        <a class="btn btn-secondary" href="/locations.html">Where I run</a>
+      </div>
     </div>
   </section>
 
@@ -137,19 +189,19 @@
       </div>
       <div class="svc-grid">
         <article class="svc-card">
-          <span class="svc-chip">From $275</span>
+          <span class="svc-chip">From <span data-cfg="services.chromeDelete.from">$275</span></span>
           <h3>Chrome delete</h3>
           <p class="p">Trim, badges and brightwork in gloss or satin black.</p>
           <a class="details" href="/wrap-studio.html">Build it &rarr;</a>
         </article>
         <article class="svc-card">
-          <span class="svc-chip">From $180</span>
+          <span class="svc-chip">From <span data-cfg="services.tankGuard.from">$180</span></span>
           <h3>Tank guard</h3>
           <p class="p">Clear film on the knee and buckle wear zones.</p>
           <a class="details" href="/wrap-studio.html">Build it &rarr;</a>
         </article>
         <article class="svc-card">
-          <span class="svc-chip">From $150</span>
+          <span class="svc-chip">From <span data-cfg="services.wrapRemoval.from">$150</span></span>
           <h3>Wrap removal</h3>
           <p class="p">Old film and adhesive off, paint left clean.</p>
           <a class="details" href="/wrap-studio.html">Build it &rarr;</a>
