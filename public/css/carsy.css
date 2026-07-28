@@ -13,7 +13,7 @@
   --c-hairline: rgba(255, 255, 255, .1);
   --metal: linear-gradient(180deg, #ffffff 0%, #f2f2f2 38%, #b8b8b8 62%, #ffffff 100%);
   --red-metal: linear-gradient(180deg, var(--c-red-hot) 0%, var(--c-red) 45%, var(--c-red-deep) 100%);
-  --font-heading: Archivo, "Chakra Petch", sans-serif;
+  --font-heading: Archivo, "Helvetica Neue", Arial, sans-serif;
   --font-body: Mulish, sans-serif;
   --container: 1200px;
   --pad-section: 130px;
@@ -2008,6 +2008,10 @@ h1, .h1 { font-weight: 800; }
 @media (prefers-reduced-motion: reduce) {
   .hero-media { animation: none; opacity: 1; transform: none; }
 }
+
+/* Viewport breakpoints forced 4 columns even inside the narrow book-grid
+   column, squeezing the tiles. Size to the container instead. */
+.contact-tiles { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
 
 /* `.section-dark a` recolours every descendant link, which turned buttons
    inside those sections into red text on a red fill. Restate them. */
