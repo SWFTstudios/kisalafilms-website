@@ -226,29 +226,26 @@
 
         <!--
           FILMS
-          Each film tile is data-type="embed" with a player URL in data-embed.
-          Vimeo:  https://player.vimeo.com/video/VIDEO_ID
-          YouTube: https://www.youtube.com/embed/VIDEO_ID
-          Swap data-full for the thumbnail you want on the grid.
+          Vimeo ids carried over from public/data/films.json.
+          A film tile is data-type="embed" with a player URL in data-embed:
+            Vimeo    https://player.vimeo.com/video/VIDEO_ID
+            YouTube  https://www.youtube.com/embed/VIDEO_ID
+          Add .masonry-item--reel for anything shot vertical, so the grid tile
+          matches the 9:16 crop the film was cut for.
         -->
-        <figure class="masonry-item" data-filter-item="films" data-type="embed" data-embed="https://player.vimeo.com/video/1029243019" data-full="/images/thumb-f4i-reveal.jpg" data-caption="F4i — the reveal">
-          <button type="button" class="tile is-video" data-lightbox aria-label="Play film: F4i, the reveal">
-            <img src="/images/thumb-f4i-reveal.jpg" alt="Wrapped F4i reveal still" width="1024" height="683" loading="lazy">
+        <figure class="masonry-item masonry-item--reel" data-filter-item="films" data-type="embed" data-embed="https://player.vimeo.com/video/1066971784" data-full="/images/thumb-lost-tapes.jpg" data-caption="L0ST TAPES V1 — 12:04 · New York City">
+          <button type="button" class="tile is-video" data-lightbox aria-label="Play film: Lost Tapes V1">
+            <img src="/images/thumb-lost-tapes.jpg" alt="Lost Tapes V1 still" width="720" height="1280" loading="lazy">
             <span class="tile-play" aria-hidden="true"></span>
+            <span class="tile-meta">Lost Tapes V1 <em>12:04</em></span>
           </button>
         </figure>
 
-        <figure class="masonry-item" data-filter-item="films bts" data-type="embed" data-embed="https://player.vimeo.com/video/1029243019" data-full="/images/thumb-timelapse-shop.jpg" data-caption="Garage timelapse — one build, one day">
-          <button type="button" class="tile is-video" data-lightbox aria-label="Play film: garage timelapse">
-            <img src="/images/thumb-timelapse-shop.jpg" alt="Garage timelapse still" width="1024" height="683" loading="lazy">
+        <figure class="masonry-item masonry-item--reel" data-filter-item="films" data-type="embed" data-embed="https://player.vimeo.com/video/1174158034?h=c80e23ac22" data-full="/images/thumb-andy-q50.jpg" data-caption="ANDY Q50 — 02:15 · Tappan Zee">
+          <button type="button" class="tile is-video" data-lightbox aria-label="Play film: Andy Q50">
+            <img src="/images/thumb-andy-q50.jpg" alt="Andy Q50 still" width="720" height="1280" loading="lazy">
             <span class="tile-play" aria-hidden="true"></span>
-          </button>
-        </figure>
-
-        <figure class="masonry-item" data-filter-item="films" data-type="embed" data-embed="https://player.vimeo.com/video/1029243019" data-full="/images/thumb-night-pov.jpg" data-caption="Night POV — the first ride out">
-          <button type="button" class="tile is-video" data-lightbox aria-label="Play film: night POV">
-            <img src="/images/thumb-night-pov.jpg" alt="Night POV ride still" width="1024" height="683" loading="lazy">
-            <span class="tile-play" aria-hidden="true"></span>
+            <span class="tile-meta">Andy Q50 <em>02:15</em></span>
           </button>
         </figure>
 

@@ -2588,6 +2588,29 @@ h1, .h1 { font-weight: 800; }
 .studio-consent input { margin-top: 4px; accent-color: var(--c-red); }
 
 /* Thanks page */
+/* Vertical films sit in the masonry at the 9:16 crop they were cut for */
+.masonry-item--reel .tile { aspect-ratio: 9 / 16; }
+.masonry-item--reel .tile img { height: 100%; object-fit: cover; }
+
+.tile-meta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--c-white);
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,.88));
+}
+.tile-meta em { font-style: normal; color: var(--c-platinum); }
+
 /* Vimeo / YouTube inside the lightbox needs an explicit 16:9 box */
 .lb-embed {
   width: min(92vw, 1280px);
