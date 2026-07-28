@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "preview": "wrangler versions upload"
+    "preview": "wrangler versions upload",
+    "test": "node scripts/test-pages.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.110.0"
