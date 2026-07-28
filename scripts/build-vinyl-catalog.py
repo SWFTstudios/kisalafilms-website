@@ -12,11 +12,16 @@ Usage:
 from __future__ import annotations
 
 import json
+import sys
 import time
 import urllib.error
 import urllib.request
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from vinyl_families import family_for, family_payload  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "public" / "data" / "vinyl-colors.json"
@@ -125,12 +130,16 @@ def fetch_collection(handle: str) -> list[dict]:
 
 def compact_color(product: dict) -> dict:
     handle = product["handle"]
+    title = product["title"]
     return {
         "id": product["id"],
-        "n": product["title"],
+        "n": title,
         "v": product.get("vendor") or "",
         "t": product.get("product_type") or "",
-        "f": parse_finish(product["title"]),
+        "f": parse_finish(title),
+        # Colour family, for the swatch filters. Metro's feed has no colour
+        # field, so it comes out of the title — see scripts/vinyl_families.py.
+        "c": family_for(title),
         "h": handle,
         "u": product_url(handle),
         "i": first_image(product),
@@ -153,6 +162,11 @@ def main() -> None:
     finishes = sorted({c["f"] for c in colors if c["f"]})
     vendors = sorted({c["v"] for c in colors if c["v"]})
 
+    # Only ship the families that matched something, so the filter row never
+    # offers a chip that comes back empty.
+    family_counts = Counter(c["c"] for c in colors)
+    families = [f for f in family_payload() if family_counts[f["id"]]]
+
     payload = {
         "source": "Metro Restyling Shopify collections",
         "syncedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -165,13 +179,17 @@ def main() -> None:
         ),
         "finishes": finishes,
         "vendors": vendors,
+        "colorFamilies": families,
         "colors": colors,
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {len(colors)} colors → {OUT.relative_to(ROOT)}")
-    print(f"Vendors: {len(vendors)} | Finishes: {len(finishes)}")
+    print(f"Vendors: {len(vendors)} | Finishes: {len(finishes)} | Families: {len(families)}")
+    if family_counts["other"]:
+        share = family_counts["other"] / len(colors) * 100
+        print(f'{family_counts["other"]} ({share:.1f}%) had no recognisable colour in the title.')
 
 
 if __name__ == "__main__":
