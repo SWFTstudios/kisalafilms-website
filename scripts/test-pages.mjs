@@ -1015,6 +1015,92 @@ function fire(win, el, type) {
   });
 }
 
+/* ---- Honest messaging --------------------------------------------------- */
+{
+  const textOf = (page) => {
+    const win = load(page);
+    return win.document.body.textContent.replace(/\s+/g, " ");
+  };
+
+  check("the honest admissions survive the founding reframe", () => {
+    // These are the lines the reframe must not quietly delete.
+    assert(
+      /don.t have client testimonials yet/i.test(textOf("testimonials.html")),
+      "testimonials no longer admits there are none yet"
+    );
+    assert(
+      /No fake reviews here/i.test(textOf("testimonials.html")),
+      "the no-fake-reviews line is gone"
+    );
+    assert(
+      /don.t have a catalog of client wraps or YouTube episodes yet/i.test(textOf("about.html")),
+      "about no longer admits the catalogue is empty"
+    );
+    assert(
+      /No shortcuts sold as finished mastery/i.test(textOf("about.html")),
+      "the no-false-mastery line is gone"
+    );
+  });
+
+  check("those pages now lead with the founding opportunity", () => {
+    ["about.html", "testimonials.html"].forEach((page) => {
+      assert(/founding/i.test(textOf(page)), `${page} does not mention founding builds`);
+    });
+    const win = load("testimonials.html");
+    assert(
+      /first riders here|founding/i.test(win.document.querySelector("h1").textContent),
+      "the testimonials headline still leads with the absence"
+    );
+  });
+
+  check("no page invents a review, rating or credential", () => {
+    const banned = [
+      /\b\d(\.\d)?\s*(out of|\/)\s*5\b/i,
+      /\bstar rating\b/i,
+      /\b\d+\s*(five[- ]star|5[- ]star)\b/i,
+      /\bcertified installer\b/i,
+      /\baward[- ]winning\b/i,
+      /\b(1|2|3|4|5|6|7|8|9)\d*\+?\s*(happy|satisfied)\s+(clients|customers|riders)\b/i,
+      /\byears of experience\b/i,
+    ];
+    for (const page of ["index.html", "about.html", "testimonials.html", "pricing.html", "faq.html", "gallery.html", "services.html", "locations.html", "locations/brooklyn.html", "locations/jersey-city.html", "locations/new-york-city.html"]) {
+      const text = textOf(page);
+      banned.forEach((pattern) =>
+        assert(!pattern.test(text), `${page} matches a fabricated-credibility pattern: ${pattern}`)
+      );
+    }
+  });
+
+  check("no page claims a service location beyond the authorised three", () => {
+    // The garage is Jersey City; Brooklyn and NYC are pickup zones. Anything
+    // else would be a service-area claim nobody signed off.
+    const suspicious = /\b(Philadelphia|Boston|Miami|Los Angeles|Chicago|Newark garage|Brooklyn (shop|garage|studio)|Manhattan (shop|garage|studio))\b/i;
+    for (const page of ["index.html", "pricing.html", "locations.html", "services.html", "locations/brooklyn.html", "locations/jersey-city.html", "locations/new-york-city.html"]) {
+      const text = textOf(page);
+      const match = text.match(suspicious);
+      // "no Brooklyn shop" is a denial, not a claim, so allow a negation nearby.
+      if (match) {
+        const window_ = text.slice(Math.max(0, match.index - 40), match.index + 40);
+        assert(/\bno\b|isn.t|not\b/i.test(window_), `${page} appears to claim: "${window_.trim()}"`);
+      }
+    }
+  });
+
+  check("the founding slot count is one number from the config", () => {
+    const raw = readFileSync(join(PUBLIC, "js/kisala-config.js"), "utf8");
+    const remaining = Number(raw.match(/slotsRemaining:\s*(\d+)/)[1]);
+    const total = Number(raw.match(/slotsTotal:\s*(\d+)/)[1]);
+    assert(remaining <= total, "slotsRemaining should not exceed slotsTotal");
+
+    for (const page of ["about.html", "testimonials.html", "pricing.html", "faq.html", "wrap-studio.html"]) {
+      const win = load(page);
+      win.document.querySelectorAll('[data-cfg="founding.slotsRemaining"]').forEach((el) =>
+        assertEqual(el.textContent, String(remaining), `${page} slot count`)
+      );
+    }
+  });
+}
+
 /* ---- Report ------------------------------------------------------------ */
 console.log(`${passed} passed, ${failures.length} failed`);
 if (failures.length) {
