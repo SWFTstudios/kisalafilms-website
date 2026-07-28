@@ -17,10 +17,16 @@ The site follows the Vossen Wheels pattern — show the product, prove it in the
   - [`public/js/vinyl-search.js`](./public/js/vinyl-search.js) — Metro Restyling film catalogue search
   - [`public/js/shop.js`](./public/js/shop.js) — carries a lookbook piece into the reservation form
   - [`public/js/inquiry-wizard.js`](./public/js/inquiry-wizard.js) — used only by the `/wrap-quote/` ad landing page
+  - [`public/js/vinyl-catalog.js`](./public/js/vinyl-catalog.js) — the browse panel over the same catalogue: colour-family and finish filters, grid/list, sorting, saved films, compare
+  - [`public/js/kisala-config.js`](./public/js/kisala-config.js) — **every price, pickup fee, service zone and availability flag on the site**
+  - [`public/js/config-apply.js`](./public/js/config-apply.js) — writes that config into the markup at load
+  - [`public/js/analytics.js`](./public/js/analytics.js) — GA4 tag plus the `data-track` event layer
 - Deployed as a Cloudflare Worker with [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
 - Auto-deploys on push to `main` → https://kisalafilms-website.elombe.workers.dev
 
 Chrome (header, footer, `<head>`) is duplicated in each HTML file rather than templated. Edit one page's header and you must edit them all.
+
+`site.css` is dead — no page links it. `carsy.css` is the only stylesheet in play.
 
 ## Develop locally
 
@@ -52,6 +58,7 @@ Primary nav: **Services · Gallery · Pricing · Shop · About · Contact**, wit
 | `/pricing.html` | Package tiers and single-service starting prices |
 | `/shop.html` | WLG apparel lookbook — reserve, no cart |
 | `/about.html` · `/journal.html` · `/testimonials.html` · `/faq.html` · `/locations.html` | Supporting |
+| `/locations/jersey-city.html` · `/locations/brooklyn.html` · `/locations/new-york-city.html` | Local landing pages, linked from the locations hub and the home page rather than the nav |
 | `/contact.html` | Short message form for anything that isn't a build |
 | `/thanks.html` | Wrap Studio success page (`noindex`) |
 | `/wrap-quote/` | Isolated Meta ad landing page (`noindex`) |
@@ -68,17 +75,46 @@ Attachments are capped client-side at 8 photos and 9MB, against FormSubmit's 10M
 
 The page accepts `?service=` and `?finish=` so the home page finish tiles can open it with a choice already made.
 
+Steps run: bike → service → colour & finish → add-ons → getting the bike here → photos → your details.
+
 ### Editing the estimate
 
-Prices live in the markup, on the option inputs, next to the copy that quotes them — there is no pricing table in the JavaScript:
+Every number comes from [`public/js/kisala-config.js`](./public/js/kisala-config.js) — see [Configuration](#configuration). The markup still carries `data-price-low` / `data-price-high` / `data-price` attributes, but they are only the pre-hydration fallback; `config-apply.js` overwrites them from config on load, and `wrap-studio.js` reads the attributes exactly as it always did.
+
+Ranges assume a mid-complexity bike. `data-price-scales="1"` marks the services whose labour depends on bodywork; those scale by `1 + 0.18 × (difficulty − 3)` using the bike's band from `motorcycles.json`, so a naked comes in below the base range and a bagger above it. Chrome delete, tank guard and film-only work do not scale. The result is rounded to $25 and sent as `ballpark_estimate` — wrap work only, unchanged from before. Transport is quoted separately in `transport_estimate`, and `estimate_total_range` carries the two added together.
+
+### Transport
+
+Step 05 asks how the bike gets to the garage: ride it in, pickup, or pickup plus return delivery. Fees and the zone list come from `transport` and `zones` in the config. The zone `<select>` is generated at runtime, so adding a zone is a one-line edit — but read the warning in that file first: a zone on that list is a public claim that the run is served.
+
+## Configuration
+
+[`public/js/kisala-config.js`](./public/js/kisala-config.js) is the single source of truth for pricing, pickup fees, service zones and service availability. It is a plain object literal on `window.KISALA_CONFIG`, loaded synchronously in `<head>` ahead of every other script — not JSON over `fetch`, so prices are right on the first paint and there is no async race with the studio's own estimate logic.
+
+[`public/js/config-apply.js`](./public/js/config-apply.js) writes it into the page through three attributes:
 
 ```html
-<input type="radio" name="service" value="Full colour-change wrap"
-       data-price-low="1650" data-price-high="2400" data-price-scales="1">
-<input type="checkbox" name="addons" value="Photo set" data-price="200">
+<!-- text content, money-formatted -->
+<span data-cfg="transport.pickup.from">$75</span>
+
+<!-- an attribute, so existing JS keeps reading dataset.priceLow -->
+<input data-cfg-attr="data-price-low:services.fullWrap.low" data-price-low="1650">
+
+<!-- only rendered in this pricing mode -->
+<p data-cfg-show="founding">Founding-rider rate.</p>
 ```
 
-Ranges assume a mid-complexity bike. `data-price-scales="1"` marks the services whose labour depends on bodywork; those scale by `1 + 0.18 × (difficulty − 3)` using the bike's band from `motorcycles.json`, so a naked comes in below the base range and a bagger above it. Chrome delete, tank guard and film-only work do not scale. The result is rounded to $25 and sent along as `ballpark_estimate`.
+Values already in the markup are the fallback for a JS-off visitor, so they should be kept in step with the config.
+
+### Founding-rider pricing
+
+Each service carries both a `founding` and a `standard` range. `pricingMode` picks which one the whole site quotes — page copy, studio option cards, the ballpark estimate, and the price in the emailed build sheet all move together from that one line.
+
+Founding prices are the rates the site has always published. **The `standard` column has not been signed off** — it is derived from `standardUplift` and marked `REVIEW:` in the file. Check those numbers before flipping `pricingMode` to `"standard"`.
+
+No page anchors a founding price against a struck-through standard one, so nothing public depends on an unreviewed number.
+
+Anything else marked `REVIEW:` in that file is a placeholder in the same sense: structurally wired, numerically unconfirmed.
 
 ## Shop
 
@@ -93,6 +129,36 @@ action="https://formsubmit.co/elombe@swftstudios.com"
 ```
 
 FormSubmit requires a one-time activation per address. The first submission triggers a confirmation email that must be clicked before anything is delivered.
+
+Two different mechanisms, and the difference matters:
+
+- **Wrap Studio** posts natively as `multipart/form-data`, because that is the only endpoint that delivers the photo attachments. Anything added to that form has to be a plain form field.
+- **`/wrap-quote/`** posts through `fetch` to FormSubmit's AJAX endpoint via `inquiry-wizard.js`. It has no attachments, so it can stay on the page.
+
+## SEO
+
+`robots.txt` and `sitemap.xml` are hand-maintained in `public/` — **add new pages to the sitemap yourself**, there is no build step to do it for you. `/thanks.html` and `/wrap-quote/` are `noindex` and stay out of it.
+
+Every indexable page carries a canonical, `og:url`, `og:image` and `twitter:card`. Absolute URLs are built off `siteUrl` in the config; when the site moves to its own domain, change it there and re-run the sitemap check below.
+
+JSON-LD sits inline in the pages that need it: `AutoBodyShop` on the home and city pages, `FAQPage` on `/faq.html` and the city pages, `Service` with the live founding prices on `/pricing.html`, `BreadcrumbList` on inner pages. It asserts only what the site can stand behind — no rating markup, no review markup, no street address.
+
+```bash
+python3 scripts/check-seo.py     # canonicals, sitemap coverage, JSON-LD parse
+```
+
+## Analytics
+
+[`public/js/analytics.js`](./public/js/analytics.js) carries the GA4 tag (`G-F2BXR858CL`) and a delegated event layer. Anything with `data-track` reports itself on click:
+
+```html
+<a class="btn btn-primary" href="/wrap-studio.html"
+   data-track="cta_click" data-track-label="home-hero">Build your wrap</a>
+```
+
+The Wrap Studio also fires `select_service`, `select_transport`, `select_budget`, `vinyl_search`, `vinyl_select`, `vinyl_save`, `vinyl_compare`, and `generate_lead` on submit.
+
+The conversion to count is **`wrap_studio_lead`, fired on `/thanks.html`**, not `generate_lead`. The studio submits natively and the browser leaves the page mid-flight, so a submit-time event can be cut off before it lands; only the redirect target proves the POST completed.
 
 ## Brand assets
 
@@ -127,6 +193,37 @@ Film tiles in `/gallery.html` use `data-type="embed"` with a player URL, so noth
 YouTube works the same way with `https://www.youtube.com/embed/VIDEO_ID`. Add `masonry-item--reel` for anything shot vertical and the tile renders at 9:16 instead of 16:9.
 
 Ids come from [`films.json`](./public/data/films.json). Only two entries there have live Vimeo ids, so only those two are on the grid; the remaining seven need ids before they can be added.
+
+### Case-study metadata
+
+Any tile can carry case-study detail, which the lightbox renders under the caption. Every field is optional and blank ones are skipped, so a tile shows only what is actually known about it:
+
+```html
+<figure class="masonry-item" data-caption="Gloss black full change"
+        data-bike="2004 Honda CBR600F4i"
+        data-service="Full colour-change wrap"
+        data-film="Avery Dennison SW900 Gloss Black"
+        data-coverage="Every painted panel"
+        data-turnaround="3 days"
+        data-city="Jersey City, NJ"
+        data-filmed="Yes — transformation film">
+```
+
+Most tiles are currently filled in only as far as the repository can vouch for: the caption, and city and runtime for the two films that came from `films.json`. **Fill the rest in from your own build records** — bike, film brand and colour, coverage, turnaround. Do not guess at a field to make a tile look complete; an absent row reads better than a wrong one, and these tiles are the portfolio.
+
+## Vinyl catalogue
+
+`vinyl-search.js` owns the typeahead and the selection; `vinyl-catalog.js` mounts the **Browse all films** panel over the same loaded array, and both write the same hidden fields. One catalogue, one fetch, two ways in.
+
+Colour families are derived from the product title, since Metro's feed has no colour field:
+
+```bash
+python3 scripts/enrich-vinyl-families.py    # adds "c" to each record + a colorFamilies list
+```
+
+[`build-vinyl-catalog.py`](./scripts/build-vinyl-catalog.py) applies the same table on a fresh sync, so this only needs running by hand after editing the keyword rules. Family swatch hexes are labels for the filter chips — each film keeps Metro's own product photo as its thumbnail, so no swatch ever stands in for a real film's colour.
+
+Saved films live in `localStorage` under `kisala-saved-films` and ride along on the build sheet as `saved_films`.
 
 ## Brand lines
 
