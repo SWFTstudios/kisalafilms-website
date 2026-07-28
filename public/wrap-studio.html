@@ -201,45 +201,56 @@
             <h2 class="h3">Choose your service</h2>
           </div>
           <p class="p">One main service per build sheet. Add-ons come next.</p>
+          <p class="p" data-cfg-show="founding"><strong class="metal-text">Founding-rider rates.</strong> These are the early-portfolio numbers, open on the next <span data-cfg="founding.slotsRemaining" data-cfg-format="integer">6</span> builds.</p>
           <div class="opt-grid">
             <label class="opt-card">
-              <input type="radio" name="service" value="Full colour-change wrap" data-price-low="1650" data-price-high="2400" data-price-scales="1" required data-summary="service">
+              <input type="radio" name="service" value="Full colour-change wrap" data-price-low="1650" data-price-high="2400" data-price-scales="1" required data-summary="service"
+                     data-cfg-attr="data-price-low:services.fullWrap.low; data-price-high:services.fullWrap.high"
+                     data-track="select_service" data-track-label="Full colour-change wrap">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Full colour-change wrap</span>
-                <span class="opt-price">From $1,650</span>
+                <span class="opt-price">From <span data-cfg="services.fullWrap.from">$1,650</span></span>
                 <span class="opt-note">Every painted panel in premium cast film. Fairings come off, edges get wrapped properly.</span>
               </span>
             </label>
             <label class="opt-card">
-              <input type="radio" name="service" value="Partial wrap / accents" data-price-low="575" data-price-high="975" data-price-scales="1" data-summary="service">
+              <input type="radio" name="service" value="Partial wrap / accents" data-price-low="575" data-price-high="975" data-price-scales="1" data-summary="service"
+                     data-cfg-attr="data-price-low:services.partialWrap.low; data-price-high:services.partialWrap.high"
+                     data-track="select_service" data-track-label="Partial wrap / accents">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Partial wrap &amp; accents</span>
-                <span class="opt-price">From $575</span>
+                <span class="opt-price">From <span data-cfg="services.partialWrap.from">$575</span></span>
                 <span class="opt-note">Tank, tail, belly pan, stripes. Big visual change on a focused budget.</span>
               </span>
             </label>
             <label class="opt-card">
-              <input type="radio" name="service" value="Chrome delete" data-price-low="275" data-price-high="450" data-price-scales="0" data-summary="service">
+              <input type="radio" name="service" value="Chrome delete" data-price-low="275" data-price-high="450" data-price-scales="0" data-summary="service"
+                     data-cfg-attr="data-price-low:services.chromeDelete.low; data-price-high:services.chromeDelete.high"
+                     data-track="select_service" data-track-label="Chrome delete">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Chrome delete</span>
-                <span class="opt-price">From $275</span>
+                <span class="opt-price">From <span data-cfg="services.chromeDelete.from">$275</span></span>
                 <span class="opt-note">Blacked-out trim, badges, and brightwork in gloss or satin.</span>
               </span>
             </label>
             <label class="opt-card">
-              <input type="radio" name="service" value="Tank guard (clear PPF)" data-price-low="180" data-price-high="290" data-price-scales="0" data-summary="service">
+              <input type="radio" name="service" value="Tank guard (clear PPF)" data-price-low="180" data-price-high="290" data-price-scales="0" data-summary="service"
+                     data-cfg-attr="data-price-low:services.tankGuard.low; data-price-high:services.tankGuard.high"
+                     data-track="select_service" data-track-label="Tank guard">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Tank guard</span>
-                <span class="opt-price">From $180</span>
+                <span class="opt-price">From <span data-cfg="services.tankGuard.from">$180</span></span>
                 <span class="opt-note">Clear film on the knee and buckle zones. Keeps your colour, kills the wear.</span>
               </span>
             </label>
             <label class="opt-card">
-              <input type="radio" name="service" value="Paint protection film" data-price-low="450" data-price-high="1250" data-price-scales="1" data-summary="service">
+              <input type="radio" name="service" value="Paint protection film" data-price-low="450" data-price-high="1250" data-price-scales="1" data-summary="service"
+                     data-cfg-attr="data-price-low:services.ppf.low; data-price-high:services.ppf.high"
+                     data-track="select_service" data-track-label="Paint protection film">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Paint protection film</span>
@@ -248,7 +259,9 @@
               </span>
             </label>
             <label class="opt-card">
-              <input type="radio" name="service" value="Custom printed design" data-price-low="950" data-price-high="2300" data-price-scales="1" data-summary="service">
+              <input type="radio" name="service" value="Custom printed design" data-price-low="950" data-price-high="2300" data-price-scales="1" data-summary="service"
+                     data-cfg-attr="data-price-low:services.customPrint.low; data-price-high:services.customPrint.high"
+                     data-track="select_service" data-track-label="Custom printed design">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Custom printed design</span>
@@ -257,16 +270,20 @@
               </span>
             </label>
             <label class="opt-card">
-              <input type="radio" name="service" value="Wrap removal" data-price-low="150" data-price-high="400" data-price-scales="1" data-summary="service">
+              <input type="radio" name="service" value="Wrap removal" data-price-low="150" data-price-high="400" data-price-scales="1" data-summary="service"
+                     data-cfg-attr="data-price-low:services.wrapRemoval.low; data-price-high:services.wrapRemoval.high"
+                     data-track="select_service" data-track-label="Wrap removal">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Wrap removal</span>
-                <span class="opt-price">From $150</span>
+                <span class="opt-price">From <span data-cfg="services.wrapRemoval.from">$150</span></span>
                 <span class="opt-note">Old film and adhesive off, paint left clean and ready.</span>
               </span>
             </label>
             <label class="opt-card">
-              <input type="radio" name="service" value="Film / video only" data-price-low="350" data-price-high="900" data-price-scales="0" data-summary="service">
+              <input type="radio" name="service" value="Film / video only" data-price-low="350" data-price-high="900" data-price-scales="0" data-summary="service"
+                     data-cfg-attr="data-price-low:services.filmOnly.low; data-price-high:services.filmOnly.high"
+                     data-track="select_service" data-track-label="Film / photo only">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Film &amp; photo only</span>
@@ -342,7 +359,8 @@
           <p class="p">Optional. Tick anything you want priced alongside the main service.</p>
           <div class="opt-grid opt-grid--3">
             <label class="opt-card">
-              <input type="checkbox" name="addons" value="Transformation film" data-price="350" data-summary="addons">
+              <input type="checkbox" name="addons" value="Transformation film" data-price="350" data-summary="addons"
+                     data-cfg-attr="data-price:addons.transformationFilm" data-track="select_addon" data-track-label="Transformation film">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Transformation film</span>
@@ -350,7 +368,8 @@
               </span>
             </label>
             <label class="opt-card">
-              <input type="checkbox" name="addons" value="Photo set" data-price="200" data-summary="addons">
+              <input type="checkbox" name="addons" value="Photo set" data-price="200" data-summary="addons"
+                     data-cfg-attr="data-price:addons.photoSet" data-track="select_addon" data-track-label="Photo set">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Photo set</span>
@@ -358,7 +377,8 @@
               </span>
             </label>
             <label class="opt-card">
-              <input type="checkbox" name="addons" value="Tank guard" data-price="180" data-summary="addons">
+              <input type="checkbox" name="addons" value="Tank guard" data-price="180" data-summary="addons"
+                     data-cfg-attr="data-price:addons.tankGuard" data-track="select_addon" data-track-label="Tank guard">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Tank guard</span>
@@ -366,7 +386,8 @@
               </span>
             </label>
             <label class="opt-card">
-              <input type="checkbox" name="addons" value="Rim tape / wheel stripes" data-price="120" data-summary="addons">
+              <input type="checkbox" name="addons" value="Rim tape / wheel stripes" data-price="120" data-summary="addons"
+                     data-cfg-attr="data-price:addons.rimTape" data-track="select_addon" data-track-label="Rim tape">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Rim tape</span>
@@ -374,7 +395,8 @@
               </span>
             </label>
             <label class="opt-card">
-              <input type="checkbox" name="addons" value="Headlight / tail tint" data-price="90" data-summary="addons">
+              <input type="checkbox" name="addons" value="Headlight / tail tint" data-price="90" data-summary="addons"
+                     data-cfg-attr="data-price:addons.lightTint" data-track="select_addon" data-track-label="Light tint">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Light tint</span>
@@ -382,7 +404,8 @@
               </span>
             </label>
             <label class="opt-card">
-              <input type="checkbox" name="addons" value="Remove existing wrap" data-price="150" data-summary="addons">
+              <input type="checkbox" name="addons" value="Remove existing wrap" data-price="150" data-summary="addons"
+                     data-cfg-attr="data-price:addons.stripOldWrap" data-track="select_addon" data-track-label="Strip old wrap">
               <span class="opt-mark" aria-hidden="true"></span>
               <span class="opt-body">
                 <span class="opt-title">Strip old wrap</span>
@@ -392,11 +415,90 @@
           </div>
         </fieldset>
 
-        <!-- 05 — photos -->
+        <!-- 05 — getting the bike here -->
+        <fieldset class="studio-step">
+          <legend class="visually-hidden">Getting the bike to the garage</legend>
+          <div class="studio-step-head">
+            <span class="studio-step-num">05</span>
+            <h2 class="h3">Getting the bike here</h2>
+          </div>
+          <p class="p">The garage is in Jersey City. Ride it in yourself, or I&rsquo;ll come and collect it &mdash; motorcycle pickup starts at <span data-cfg="transport.pickup.from">$75</span>.</p>
+          <div class="opt-grid opt-grid--3">
+            <label class="opt-card">
+              <input type="radio" name="transport" value="Drop-off — riding it in myself" data-fee="0" data-summary="transport" checked
+                     data-cfg-attr="data-fee:transport.dropOff.fee"
+                     data-track="select_transport" data-track-label="Drop-off">
+              <span class="opt-mark" aria-hidden="true"></span>
+              <span class="opt-body">
+                <span class="opt-title">I&rsquo;ll ride it in</span>
+                <span class="opt-price" data-cfg="transport.dropOff.priceLabel" data-cfg-format="plain">No charge</span>
+                <span class="opt-note" data-cfg="transport.dropOff.note" data-cfg-format="plain">Jersey City garage, by appointment. Nothing added to the quote.</span>
+              </span>
+            </label>
+            <label class="opt-card">
+              <input type="radio" name="transport" value="Pickup — collect my bike" data-fee="75" data-summary="transport"
+                     data-cfg-attr="data-fee:transport.pickup.fee"
+                     data-track="select_transport" data-track-label="Pickup">
+              <span class="opt-mark" aria-hidden="true"></span>
+              <span class="opt-body">
+                <span class="opt-title">Pick my bike up</span>
+                <span class="opt-price" data-cfg="transport.pickup.priceLabel" data-cfg-format="plain">From $75</span>
+                <span class="opt-note" data-cfg="transport.pickup.note" data-cfg-format="plain">I come to you with the van and bring the bike back to the garage.</span>
+              </span>
+            </label>
+            <label class="opt-card">
+              <input type="radio" name="transport" value="Pickup and return delivery" data-fee="150" data-summary="transport"
+                     data-cfg-attr="data-fee:transport.roundTrip.fee"
+                     data-track="select_transport" data-track-label="Pickup and return delivery">
+              <span class="opt-mark" aria-hidden="true"></span>
+              <span class="opt-body">
+                <span class="opt-title">Pickup + return delivery</span>
+                <span class="opt-price" data-cfg="transport.roundTrip.priceLabel" data-cfg-format="plain">From $150</span>
+                <span class="opt-note" data-cfg="transport.roundTrip.note" data-cfg-format="plain">Collected before the build and delivered back to you after.</span>
+              </span>
+            </label>
+            <label class="opt-card">
+              <input type="radio" name="transport" value="Not sure yet — advise me" data-fee="0" data-summary="transport"
+                     data-cfg-attr="data-fee:transport.undecided.fee"
+                     data-track="select_transport" data-track-label="Undecided">
+              <span class="opt-mark" aria-hidden="true"></span>
+              <span class="opt-body">
+                <span class="opt-title">Not sure yet</span>
+                <span class="opt-price" data-cfg="transport.undecided.priceLabel" data-cfg-format="plain">Quoted with your build</span>
+                <span class="opt-note" data-cfg="transport.undecided.note" data-cfg-format="plain">Pick this and I&rsquo;ll work it out with you when I send the quote.</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="studio-fields" data-transport-detail hidden>
+            <div class="fld">
+              <label for="pickup_zone">Where&rsquo;s the bike now?</label>
+              <select id="pickup_zone" name="pickup_zone" data-cfg-zones data-summary="zone">
+                <option value="">Select area</option>
+                <option value="Jersey City, NJ">Jersey City, NJ</option>
+                <option value="Brooklyn, NY">Brooklyn, NY</option>
+                <option value="New York City">New York City</option>
+                <option value="Somewhere else — I'll tell you where">Somewhere else &mdash; I&rsquo;ll tell you where</option>
+              </select>
+              <p class="fld-hint" data-zone-hint>Pickup starts at <span data-cfg="transport.pickup.from">$75</span> and depends on the run.</p>
+            </div>
+            <div class="fld">
+              <label for="pickup_area">Neighbourhood or cross streets <span class="fld-hint">optional</span></label>
+              <input id="pickup_area" name="pickup_area" type="text" placeholder="Bed-Stuy, near Nostrand &amp; Gates" autocomplete="address-line1">
+            </div>
+            <div class="fld fld-wide">
+              <label for="pickup_notes">Anything I should know about the pickup? <span class="fld-hint">optional</span></label>
+              <input id="pickup_notes" name="pickup_notes" type="text" placeholder="Garage on the third level, no ramp, bike isn't running…">
+            </div>
+          </div>
+          <p class="fld-hint">Pickup and delivery are quoted with the build, not charged up front. If the bike isn&rsquo;t running, say so &mdash; it changes how I load it, not whether I&rsquo;ll come.</p>
+        </fieldset>
+
+        <!-- 06 — photos -->
         <fieldset class="studio-step">
           <legend class="visually-hidden">Photos of your bike</legend>
           <div class="studio-step-head">
-            <span class="studio-step-num">05</span>
+            <span class="studio-step-num">06</span>
             <h2 class="h3">Photos of your bike</h2>
           </div>
           <p class="p">This is the part that makes the quote accurate. A left side, a right side, the tank, and anything chipped, cracked, or already wrapped.</p>
@@ -415,11 +517,11 @@
           </div>
         </fieldset>
 
-        <!-- 06 — you -->
+        <!-- 07 — you -->
         <fieldset class="studio-step">
           <legend class="visually-hidden">Your details</legend>
           <div class="studio-step-head">
-            <span class="studio-step-num">06</span>
+            <span class="studio-step-num">07</span>
             <h2 class="h3">Where do I send the quote?</h2>
           </div>
           <div class="studio-fields">
@@ -438,6 +540,20 @@
             <div class="fld">
               <label for="city">Where are you riding from?</label>
               <input id="city" name="city" type="text" placeholder="Jersey City, NJ" autocomplete="address-level2">
+            </div>
+            <div class="fld">
+              <label for="budget">Budget range</label>
+              <select id="budget" name="budget" data-summary="budget" data-cfg-budgets data-track="select_budget">
+                <option value="">Select a range</option>
+                <option value="Under $500">Under $500</option>
+                <option value="$500 – $1,000">$500 &ndash; $1,000</option>
+                <option value="$1,000 – $2,000">$1,000 &ndash; $2,000</option>
+                <option value="$2,000 – $3,500">$2,000 &ndash; $3,500</option>
+                <option value="$3,500+">$3,500+</option>
+                <option value="Open — quote it and I'll decide">Open &mdash; quote it and I&rsquo;ll decide</option>
+                <option value="Not sure yet">Not sure yet</option>
+              </select>
+              <p class="fld-hint">It saves us both a round trip. I&rsquo;ll tell you honestly what fits it.</p>
             </div>
             <div class="fld">
               <label for="timeline">Timeline</label>
@@ -479,7 +595,11 @@
         <div class="summary-row"><span class="summary-label">Colour</span><span class="summary-value is-empty" data-summary-out="colour">Not selected</span></div>
         <div class="summary-row"><span class="summary-label">Coverage</span><span class="summary-value is-empty" data-summary-out="coverage">Not selected</span></div>
         <div class="summary-row"><span class="summary-label">Add-ons</span><span class="summary-value is-empty" data-summary-out="addons">None</span></div>
+        <div class="summary-row"><span class="summary-label">Saved films</span><span class="summary-value is-empty" data-summary-out="saved">None</span></div>
+        <div class="summary-row"><span class="summary-label">Getting here</span><span class="summary-value is-empty" data-summary-out="transport">Not selected</span></div>
+        <div class="summary-row"><span class="summary-label">Transport</span><span class="summary-value is-empty" data-summary-out="transportfee">&mdash;</span></div>
         <div class="summary-row"><span class="summary-label">Photos</span><span class="summary-value is-empty" data-summary-out="photos">None yet</span></div>
+        <div class="summary-row"><span class="summary-label">Budget</span><span class="summary-value is-empty" data-summary-out="budget">Not selected</span></div>
         <div class="summary-row"><span class="summary-label">Timeline</span><span class="summary-value is-empty" data-summary-out="timeline">Not selected</span></div>
 
         <div class="summary-estimate">
@@ -488,9 +608,15 @@
           <p class="summary-estimate-note" data-estimate-note>Scales with how much bodywork your bike has to come apart.</p>
         </div>
 
-        <input type="hidden" name="ballpark_estimate" value="" form="wrap-studio" data-estimate-field>
+        <p class="summary-foot" data-cfg-show="founding"><strong class="metal-text">Founding rider.</strong> <span data-cfg="founding.slotsRemaining" data-cfg-format="integer">6</span> of <span data-cfg="founding.slotsTotal" data-cfg-format="integer">8</span> early builds still open at this rate.</p>
 
-        <button class="btn btn-primary studio-submit" type="submit" form="wrap-studio">Send my build sheet</button>
+        <input type="hidden" name="ballpark_estimate" value="" form="wrap-studio" data-estimate-field>
+        <input type="hidden" name="transport_estimate" value="" form="wrap-studio" data-transport-field>
+        <input type="hidden" name="estimate_total_range" value="" form="wrap-studio" data-total-field>
+        <input type="hidden" name="pricing_mode" value="founding" form="wrap-studio" data-cfg-attr="value:pricingMode">
+        <input type="hidden" name="saved_films" value="" form="wrap-studio" data-saved-films-field>
+
+        <button class="btn btn-primary studio-submit" type="submit" form="wrap-studio" data-track="submit_build_sheet" data-track-label="wrap-studio">Send my build sheet</button>
         <p class="summary-foot">Goes straight to <a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a>. One installer reads it &mdash; me. Expect a reply with a real number, not a template.</p>
       </aside>
 
