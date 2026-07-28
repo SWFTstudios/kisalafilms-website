@@ -3,9 +3,9 @@
 
 User-agent: *
 Allow: /
-Disallow: /404.html
-Disallow: /styleguide.html
-Disallow: /thanks.html
+Disallow: /404
+Disallow: /styleguide
+Disallow: /thanks
 Disallow: /wrap-quote/
 
 Sitemap: https://kisalafilms-website.elombe.workers.dev/sitemap.xml

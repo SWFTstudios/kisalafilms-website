@@ -48,12 +48,21 @@ def is_redirect_stub(page: str) -> bool:
 
 
 def canonical_path(rel: str) -> str:
-    """Directory-style URL for index pages, file path for everything else."""
+    """The URL Cloudflare actually serves the page at.
+
+    Workers Static Assets strips the .html and 307-redirects /pricing.html to
+    /pricing. Canonicals and sitemap entries therefore have to be extensionless:
+    pointing them at the .html form makes every one of them a redirect, which is
+    the opposite of what a canonical is for.
+
+    Verified against `wrangler dev`, including /locations — which resolves to
+    locations.html even though a locations/ directory sits beside it.
+    """
     if rel == "index.html":
         return "/"
     if rel.endswith("/index.html"):
         return "/" + rel[: -len("index.html")]
-    return "/" + rel
+    return "/" + rel.removesuffix(".html")
 
 
 def read_title(page: str) -> str:

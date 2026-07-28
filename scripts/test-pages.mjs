@@ -604,7 +604,8 @@ function fire(win, el, type) {
 
     check(`${city} page carries canonical and social tags`, () => {
       const canonical = win.document.querySelector("link[rel=canonical]")?.getAttribute("href");
-      assertEqual(canonical, `https://kisalafilms-website.elombe.workers.dev/${page}`, "canonical");
+      const expected = `https://kisalafilms-website.elombe.workers.dev/${page.replace(/\.html$/, "")}`;
+      assertEqual(canonical, expected, "canonical");
       ["og:url", "og:title", "og:description", "og:image"].forEach((p) =>
         assert(win.document.querySelector(`meta[property="${p}"]`), `missing ${p}`)
       );
@@ -770,8 +771,15 @@ function fire(win, el, type) {
   const sitemap = readFileSync(join(PUBLIC, "sitemap.xml"), "utf8");
   const robots = readFileSync(join(PUBLIC, "robots.txt"), "utf8");
 
+  // Cloudflare Static Assets serves these extensionless and 307-redirects the
+  // .html form, so a canonical naming the .html is a canonical pointing at a
+  // redirect. Mirrors canonical_path() in scripts/build-seo.py.
   const canonicalPath = (rel) =>
-    rel === "index.html" ? "/" : rel.endsWith("/index.html") ? `/${rel.slice(0, -10)}` : `/${rel}`;
+    rel === "index.html"
+      ? "/"
+      : rel.endsWith("/index.html")
+        ? `/${rel.slice(0, -"index.html".length)}`
+        : `/${rel.replace(/\.html$/, "")}`;
 
   check("every indexable page has a canonical, OG and Twitter tags", () => {
     const missing = [];
@@ -884,6 +892,20 @@ function fire(win, el, type) {
     assertEqual(full.offers.priceSpecification.minPrice, 1650, "structured full-wrap floor");
     assertEqual(full.offers.priceSpecification.maxPrice, 2400, "structured full-wrap ceiling");
     assertEqual(full.offers.priceCurrency, "USD", "currency");
+  });
+
+  check("no canonical or structured URL points at a redirect", () => {
+    // The .html form 307s. Anything naming it sends crawlers through a hop.
+    for (const [rel, html] of pages) {
+      const head = html.slice(0, html.indexOf("</head>"));
+      const offenders = [...head.matchAll(/(?:href|content)="(https:\/\/kisalafilms[^"]*\.html)"/g)];
+      assertEqual(offenders.length, 0, `${rel} names ${offenders.map((m) => m[1]).join(", ")}`);
+
+      for (const [, body] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+        const urls = [...body.matchAll(/"(https:\/\/kisalafilms[^"]*\.html)"/g)];
+        assertEqual(urls.length, 0, `${rel} JSON-LD names ${urls.map((m) => m[1]).join(", ")}`);
+      }
+    }
   });
 
   check("breadcrumb trails resolve to real pages", () => {

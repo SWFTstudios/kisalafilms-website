@@ -84,13 +84,20 @@ const garage = () => ({
   ...(CONFIG.garage.appointmentOnly ? { publicAccess: false } : {}),
 });
 
+/**
+ * Cloudflare Static Assets serves these extensionless and 307-redirects the
+ * .html form, so structured data has to name the URL that actually resolves.
+ * Kept in step with canonical_path() in scripts/build-seo.py.
+ */
+const url = (path) => SITE + (path === "/" ? "/" : path.replace(/\.html$/, ""));
+
 const breadcrumbs = (trail) => ({
   "@type": "BreadcrumbList",
   itemListElement: trail.map(([name, path], i) => ({
     "@type": "ListItem",
     position: i + 1,
     name,
-    item: `${SITE}${path}`,
+    item: url(path),
   })),
 });
 
