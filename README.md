@@ -52,24 +52,26 @@ Primary nav: **Services · Gallery · Pricing · Shop · About · Contact**, wit
 | Route | Purpose |
 | --- | --- |
 | `/` | Cinematic hero, service tiers, finish tiles, build gallery, reel rail, process |
-| `/wrap-studio.html` | The configurator — bike, service, colour, photos, estimate, send |
-| `/gallery.html` | Filterable photo and video masonry with lightbox |
-| `/services.html` | Wrap, protection, and cinema services (+ 3 detail pages) |
-| `/pricing.html` | Package tiers and single-service starting prices |
-| `/shop.html` | WLG apparel lookbook — reserve, no cart |
-| `/about.html` · `/journal.html` · `/testimonials.html` · `/faq.html` · `/locations.html` | Supporting |
-| `/locations/jersey-city.html` · `/locations/brooklyn.html` · `/locations/new-york-city.html` | Local landing pages, linked from the locations hub and the home page rather than the nav |
-| `/contact.html` | Short message form for anything that isn't a build |
-| `/thanks.html` | Wrap Studio success page (`noindex`) |
+| `/wrap-studio` | The configurator — bike, service, colour, photos, estimate, send |
+| `/gallery` | Filterable photo and video masonry with lightbox |
+| `/services` | Wrap, protection, and cinema services (+ 3 detail pages) |
+| `/pricing` | Package tiers and single-service starting prices |
+| `/shop` | WLG apparel lookbook — reserve, no cart |
+| `/about` · `/journal` · `/testimonials` · `/faq` · `/locations` | Supporting |
+| `/locations/jersey-city` · `/locations/brooklyn` · `/locations/new-york-city` | Local landing pages, linked from the locations hub and the home page rather than the nav |
+| `/contact` | Short message form for anything that isn't a build |
+| `/thanks` | Wrap Studio success page (`noindex`) |
 | `/wrap-quote/` | Isolated Meta ad landing page (`noindex`) |
 
-Retired routes (`/films.html`, `/watch.html`, `/series.html`, `/dispatches.html`, `/inspo-museum.html`, `/work-with-me.html`) are meta-refresh redirect stubs.
+Routes have no `.html` — see [URLs have no `.html`](#urls-have-no-html).
+
+Retired routes (`/films`, `/watch`, `/series`, `/dispatches`, `/inspo-museum`, `/work-with-me`) are meta-refresh redirect stubs.
 
 ## Wrap Studio
 
-`/wrap-studio.html` is the primary conversion path. A rider selects their bike from [`public/data/motorcycles.json`](./public/data/motorcycles.json), picks a service and add-ons, searches [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) for an exact film, attaches photos of the bike, and sends one build sheet.
+`/wrap-studio` is the primary conversion path. A rider selects their bike from [`public/data/motorcycles.json`](./public/data/motorcycles.json), picks a service and add-ons, searches [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) for an exact film, attaches photos of the bike, and sends one build sheet.
 
-**It submits as a native `multipart/form-data` POST, and it has to stay that way.** FormSubmit only delivers attachments through its standard endpoint; the AJAX endpoint accepts the request and silently drops the files. That is why this form does not use `inquiry-wizard.js` and redirects via `_next` to `/thanks.html` instead of staying on the page.
+**It submits as a native `multipart/form-data` POST, and it has to stay that way.** FormSubmit only delivers attachments through its standard endpoint; the AJAX endpoint accepts the request and silently drops the files. That is why this form does not use `inquiry-wizard.js` and redirects via `_next` to `/thanks` instead of staying on the page.
 
 Attachments are capped client-side at 8 photos and 9MB, against FormSubmit's 10MB per-submission limit, leaving room for the field data. Files that would push past the cap are skipped individually with a message naming them.
 
@@ -135,18 +137,29 @@ Two different mechanisms, and the difference matters:
 - **Wrap Studio** posts natively as `multipart/form-data`, because that is the only endpoint that delivers the photo attachments. Anything added to that form has to be a plain form field.
 - **`/wrap-quote/`** posts through `fetch` to FormSubmit's AJAX endpoint via `inquiry-wizard.js`. It has no attachments, so it can stay on the page.
 
-## SEO
+## Build
 
-Because the chrome is copy-pasted per page, the head tags are generated rather than hand-edited:
+There is no bundler and no compile step — the HTML in `public/` is what ships. But because the chrome is copy-pasted into every page, the parts that must agree across all 28 of them are generated rather than hand-edited:
 
 ```bash
-python3 scripts/build-seo.py      # canonicals, OG/Twitter, robots.txt, sitemap.xml
-node scripts/build-jsonld.mjs     # JSON-LD
+npm run build   # then npm test
 ```
 
-Both are idempotent and both strip their previous output before rewriting, so re-running never stacks duplicate tags. **Run them after adding a page** — the sitemap is generated from the files actually present, so a new page is invisible to search until you do.
+That runs, in order: the city landing pages, the shared `<script>` tags, CTA tracking, internal links, canonicals/OG/robots/sitemap, and JSON-LD. **The order matters** — each step reads what the one before it wrote, so run the chain rather than a single script. Every step is idempotent and strips its own previous output, so re-running never stacks duplicates and a clean run prints `unchanged` for everything.
 
-`/thanks.html`, `/wrap-quote/`, `/styleguide.html` and `/404.html` are `noindex`, disallowed in `robots.txt`, and left out of the sitemap. They get no canonical either, since that would only invite indexing.
+**Run it after adding a page.** The sitemap is generated from the files actually present, so a new page is invisible to search until you do.
+
+### URLs have no `.html`
+
+Cloudflare Static Assets serves `public/pricing.html` at `/pricing` and 307-redirects `/pricing.html` to it. So `.html` is never the URL — it is a redirect to the URL.
+
+`scripts/build-links.py` keeps internal links, `_next` form targets, canonicals, sitemap entries and JSON-LD on the extensionless form. Write `href="/pricing"` in new markup. If you paste in a `.html` link, the build rewrites it and `npm test` fails if anything slips past. The script only rewrites a link once it has confirmed the target file exists, so a typo stays a visible typo instead of being reshaped into a different broken URL.
+
+`/locations` is the one to be careful with: `locations.html` sits next to a `locations/` directory, and Static Assets resolves the file. Verified against `wrangler dev`.
+
+## SEO
+
+`/thanks`, `/wrap-quote/`, `/styleguide` and `/404.html` are `noindex`, disallowed in `robots.txt`, and left out of the sitemap. They get no canonical either, since that would only invite indexing.
 
 `build-jsonld.mjs` runs `kisala-config.js` and `config-apply.js` in a sandbox and asks them for the prices, so the `Offer` markup cannot drift from what the page displays — flipping `pricingMode` moves both. `FAQPage` entries are scraped from the FAQ markup for the same reason. The graph asserts only what the site can stand behind: name, Jersey City locality, email, published hours, appointment-only, and the three served areas. No rating markup, no review markup, no street address, no telephone.
 
@@ -159,13 +172,13 @@ New pages need adding to the `PAGES` map in `build-jsonld.mjs` if they warrant s
 [`public/js/analytics.js`](./public/js/analytics.js) carries the GA4 tag (`G-F2BXR858CL`) and a delegated event layer. Anything with `data-track` reports itself on click:
 
 ```html
-<a class="btn btn-primary" href="/wrap-studio.html"
+<a class="btn btn-primary" href="/wrap-studio"
    data-track="cta_click" data-track-label="home-hero">Build your wrap</a>
 ```
 
 The Wrap Studio also fires `select_service`, `select_transport`, `select_budget`, `vinyl_search`, `vinyl_select`, `vinyl_save`, `vinyl_compare`, and `generate_lead` on submit.
 
-The conversion to count is **`wrap_studio_lead`, fired on `/thanks.html`**, not `generate_lead`. The studio submits natively and the browser leaves the page mid-flight, so a submit-time event can be cut off before it lands; only the redirect target proves the POST completed.
+The conversion to count is **`wrap_studio_lead`, fired on `/thanks`**, not `generate_lead`. The studio submits natively and the browser leaves the page mid-flight, so a submit-time event can be cut off before it lands; only the redirect target proves the POST completed.
 
 ## Brand assets
 

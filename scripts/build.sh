@@ -24,6 +24,10 @@ echo "==> Click tracking on the CTAs"
 python3 scripts/wire-tracking.py
 
 echo
+echo "==> Internal links onto the URLs Cloudflare serves"
+python3 scripts/build-links.py
+
+echo
 echo "==> Canonicals, OG/Twitter, robots.txt, sitemap.xml"
 python3 scripts/build-seo.py
 

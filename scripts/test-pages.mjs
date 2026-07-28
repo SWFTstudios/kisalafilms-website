@@ -635,7 +635,7 @@ function fire(win, el, type) {
       const links = [...win.document.querySelectorAll('a[href^="/locations/"]')].map((a) =>
         a.getAttribute("href")
       );
-      const others = CITY_PAGES.filter(([p]) => p !== page).map(([p]) => `/${p}`);
+      const others = CITY_PAGES.filter(([p]) => p !== page).map(([p]) => `/${p.replace(/\.html$/, "")}`);
       others.forEach((href) => assert(links.includes(href), `no link to ${href}`));
     });
 
@@ -670,7 +670,7 @@ function fire(win, el, type) {
     const win = load("locations.html");
     ["jersey-city", "brooklyn", "new-york-city"].forEach((slug) =>
       assert(
-        win.document.querySelector(`a[href="/locations/${slug}.html"]`),
+        win.document.querySelector(`a[href="/locations/${slug}"]`),
         `hub does not link ${slug}`
       )
     );
@@ -680,7 +680,7 @@ function fire(win, el, type) {
     const win = load("index.html");
     ["jersey-city", "brooklyn", "new-york-city"].forEach((slug) =>
       assert(
-        win.document.querySelector(`a[href="/locations/${slug}.html"]`),
+        win.document.querySelector(`a[href="/locations/${slug}"]`),
         `home page does not link ${slug}`
       )
     );
@@ -904,6 +904,37 @@ function fire(win, el, type) {
       for (const [, body] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
         const urls = [...body.matchAll(/"(https:\/\/kisalafilms[^"]*\.html)"/g)];
         assertEqual(urls.length, 0, `${rel} JSON-LD names ${urls.map((m) => m[1]).join(", ")}`);
+      }
+    }
+  });
+
+  check("internal links point at the served URL, not the redirect", () => {
+    // Every .html URL 307s to its extensionless form, so an internal link
+    // naming it spends a round trip per click. scripts/build-links.py rewrites
+    // them; this is the guard against a hand-edit reintroducing one.
+    for (const [rel, html] of pages) {
+      const offenders = [...html.matchAll(/href="((?!https?:|mailto:|tel:|#)[^"]*\.html(?:[?#][^"]*)?)"/g)];
+      assertEqual(offenders.length, 0, `${rel} links to ${offenders.map((m) => m[1]).join(", ")}`);
+
+      const next = [...html.matchAll(/name="_next" value="([^"]*)"/g)];
+      for (const [, target] of next) {
+        assert(!/\.html(?:[?#]|$)/.test(target), `${rel} sends _next to ${target}, a redirect`);
+      }
+    }
+  });
+
+  check("every internal link resolves to a file that exists", () => {
+    for (const [rel, html] of pages) {
+      for (const [, href] of html.matchAll(/href="((?!https?:|mailto:|tel:|#|javascript:)[^"]+)"/g)) {
+        const path = href.split(/[?#]/)[0];
+        if (!path) continue;
+        // Static Assets answers /pricing with pricing.html and /wrap-quote/
+        // with wrap-quote/index.html.
+        const base = path.startsWith("/")
+          ? join(PUBLIC, path)
+          : join(PUBLIC, rel, "..", path);
+        const found = [base, `${base}.html`, join(base, "index.html")].some(existsSync);
+        assert(found, `${rel} links to ${href}, which nothing serves`);
       }
     }
   });
