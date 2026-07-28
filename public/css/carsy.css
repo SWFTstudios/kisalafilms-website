@@ -749,7 +749,7 @@ body.nav-lock { overflow: hidden; }
   aspect-ratio: 16/9;
   object-fit: cover;
 }
-.gallery-card h4 { font-size: 1.1rem; margin: 12px 0 0; }
+.gallery-card .h4 { font-size: 1.1rem; margin: 12px 0 0; }
 
 /* Pricing */
 .price-grid {
@@ -819,7 +819,7 @@ body.nav-lock { overflow: hidden; }
   padding: 28px 24px;
   border: 1px solid #2a2a2a;
 }
-.contact-tile h6 { margin: 0 0 8px; color: var(--c-orange); }
+.contact-tile .h6 { margin: 0 0 8px; color: var(--c-orange); }
 .contact-tile a, .contact-tile p { margin: 0; color: var(--c-white); font-family: var(--font-heading); font-weight: 600; font-size: 1.15rem; }
 
 /* Blog */
@@ -846,7 +846,7 @@ body.nav-lock { overflow: hidden; }
   color: var(--c-gray);
   margin-bottom: 8px;
 }
-.blog-card h4 { font-size: 1.2rem; margin: 0 0 10px; }
+.blog-card .h4 { font-size: 1.2rem; margin: 0 0 10px; }
 .blog-card .p { margin-bottom: 12px; }
 
 /* Booking CTA */
@@ -1362,7 +1362,7 @@ body.nav-lock { overflow: hidden; }
   gap: 40px;
   margin-bottom: 48px;
 }
-.footer-grid h5 { margin-bottom: 16px; }
+.footer-grid .h5 { margin-bottom: 16px; }
 .footer-links {
   display: flex;
   flex-direction: column;
@@ -2293,7 +2293,7 @@ h1, .h1 { font-weight: 800; }
   justify-content: space-between;
   gap: 14px;
 }
-.look-head h3 { font-size: 1.15rem; margin: 0; }
+.look-head .h3 { font-size: 1.15rem; margin: 0; }
 .look-price {
   font-family: var(--font-heading);
   font-weight: 700;
@@ -2361,7 +2361,7 @@ h1, .h1 { font-weight: 800; }
   letter-spacing: .14em;
   color: var(--c-red);
 }
-.studio-step h3 { font-size: 1.4rem; margin: 0; }
+.studio-step .h3 { font-size: 1.4rem; margin: 0; }
 .studio-step > .p { margin-bottom: 26px; }
 
 /* Selectable option cards (service + finish) */
@@ -2532,7 +2532,7 @@ h1, .h1 { font-weight: 800; }
 @media (min-width: 1000px) {
   .studio-summary { position: sticky; top: 96px; }
 }
-.studio-summary h4 {
+.studio-summary .h4 {
   font-size: 1rem;
   letter-spacing: .1em;
   margin: 0 0 4px;
