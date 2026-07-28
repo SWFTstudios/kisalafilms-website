@@ -2162,6 +2162,110 @@ h1, .h1 { font-weight: 800; }
   background: linear-gradient(180deg, transparent, rgba(0,0,0,.9));
 }
 
+/* ===== Shop lookbook ===== */
+.lookbook-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 620px) { .lookbook-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .lookbook-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.look-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--c-hairline);
+  background: linear-gradient(180deg, #101010, #080808);
+  transition: border-color .25s ease, transform .25s ease;
+}
+.look-card:hover { border-color: rgba(232,39,31,.55); transform: translateY(-3px); }
+.look-card[hidden] { display: none !important; }
+
+.look-shot {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+.look-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s ease, opacity .35s ease;
+}
+/* The alternate shot cross-fades in on hover — the lookbook's one flourish */
+.look-shot img + img { position: absolute; inset: 0; opacity: 0; }
+.look-card:hover .look-shot img + img { opacity: 1; }
+.look-card:hover .look-shot img { transform: scale(1.04); }
+
+.look-kind {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 5px 10px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .64rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--c-white);
+  background: rgba(0,0,0,.72);
+  border: 1px solid var(--c-hairline);
+}
+
+.look-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  flex: 1;
+}
+.look-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+.look-head h3 { font-size: 1.15rem; margin: 0; }
+.look-price {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--c-white);
+  flex: 0 0 auto;
+}
+.look-quote {
+  margin: 0;
+  font-size: .92rem;
+  line-height: 1.6;
+  color: var(--c-platinum);
+  border-left: 2px solid var(--c-red);
+  padding-left: 12px;
+}
+.look-colour {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--c-gray);
+}
+.look-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.35);
+  flex: 0 0 auto;
+}
+.look-blurb { margin: 0; font-size: .82rem; color: var(--c-gray); line-height: 1.55; }
+.look-reserve {
+  margin-top: auto;
+  align-self: flex-start;
+  padding-top: 6px;
+}
+
 /* ===== Wrap Studio configurator ===== */
 .studio-shell {
   display: grid;
