@@ -96,19 +96,18 @@ FormSubmit requires a one-time activation per address. The first submission trig
 
 ## Brand assets
 
-Two source exports drive every logo and favicon on the site. Drop them in `public/images/src/`:
-
-| Source file | Produces |
-| --- | --- |
-| `kisala-films-logo-source.png` | `public/images/brand/kisala-films-logo.png` — the wide wordmark in the header, drawer, and gallery intro |
-| `kisala-films-icon-source.png` | `public/images/brand/kisala-films-icon.png` plus every favicon size and `favicon.ico` |
+Two source exports drive every logo and favicon on the site. Drop them in `public/images/src/` — **filenames do not matter**, the script tells the wide wordmark from the round icon by the shape of the artwork:
 
 ```bash
 pip install pillow
 python3 scripts/build-brand-assets.py
 ```
 
-Both exports are artwork on solid black, so [`scripts/build-brand-assets.py`](./scripts/build-brand-assets.py) recovers exact transparency by dividing the black matte back out of each pixel rather than thresholding it away.
+It writes the wordmark, the icon, and six favicon sizes, then rewrites the `width`/`height` on every page's logo `<img>` to match what it produced so the header does not shift on first paint.
+
+Both exports are artwork on solid black, so [`scripts/build-brand-assets.py`](./scripts/build-brand-assets.py) recovers exact transparency by dividing the black matte back out of each pixel rather than thresholding it away. Favicons are flattened back onto black on the way out: the mark is red *and* white, and left transparent the white half of it vanishes against a light browser tab strip.
+
+Until the real exports land, `public/images/brand/` holds the old metallic mark as a placeholder. See [`public/images/src/README.md`](./public/images/src/README.md).
 
 ## Data catalogues
 
