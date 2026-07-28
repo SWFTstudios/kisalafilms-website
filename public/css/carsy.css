@@ -2126,6 +2126,66 @@ h1, .h1 { font-weight: 800; }
 }
 .tier-card .p { margin: 0 0 18px; }
 
+/* Finish tiles — the film catalogue, rendered in CSS rather than photographed
+   so the swatches stay consistent under the site's own lighting */
+.finish-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 700px) { .finish-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1100px) { .finish-grid { grid-template-columns: repeat(7, 1fr); } }
+
+.finish-tile {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--c-hairline);
+  background: #0a0a0a;
+  text-decoration: none;
+  transition: border-color .25s ease, transform .25s ease;
+}
+.finish-tile:hover { border-color: var(--c-red); transform: translateY(-3px); text-decoration: none; }
+.finish-swatch {
+  aspect-ratio: 1 / 1;
+  position: relative;
+  overflow: hidden;
+}
+.finish-swatch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255,255,255,.28) 0%, transparent 34%, transparent 66%, rgba(255,255,255,.1) 100%);
+}
+.finish-gloss { background: radial-gradient(120% 100% at 30% 12%, #6e6e6e 0%, #1c1c1c 46%, #050505 100%); }
+.finish-satin { background: linear-gradient(160deg, #4a4a4a 0%, #262626 48%, #101010 100%); }
+.finish-matte { background: linear-gradient(160deg, #2c2c2c 0%, #1e1e1e 52%, #151515 100%); }
+.finish-matte::after { opacity: .12; }
+.finish-metallic { background: linear-gradient(140deg, #9aa0a6 0%, #4c5257 34%, #d0d4d8 52%, #3a3f44 74%, #7e858b 100%); }
+.finish-shift { background: linear-gradient(135deg, #7b2ff7 0%, #e8271f 34%, #f2a516 58%, #12b8a6 82%, #2b6ef6 100%); }
+.finish-chrome { background: linear-gradient(180deg, #f4f6f8 0%, #9fa7ae 24%, #3d4348 46%, #e6eaee 62%, #7d858c 82%, #cfd5da 100%); }
+.finish-textured {
+  background:
+    repeating-linear-gradient(45deg, #1a1a1a 0 5px, #101010 5px 10px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 5px, transparent 5px 10px);
+}
+.finish-body { padding: 14px; }
+.finish-body strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--c-white);
+}
+.finish-body span {
+  display: block;
+  margin-top: 4px;
+  font-size: .74rem;
+  color: var(--c-gray);
+  line-height: 1.45;
+}
+
 /* Reel rail — 9:16 verticals, the social-first crop */
 .reel-rail {
   display: grid;
