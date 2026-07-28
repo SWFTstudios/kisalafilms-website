@@ -48,6 +48,7 @@
 
   const stage = modal.querySelector("[data-lb-stage]");
   const caption = modal.querySelector("[data-lb-caption]");
+  const metaOut = modal.querySelector("[data-lb-meta]");
   const btnClose = modal.querySelector("[data-lb-close]");
   const btnPrev = modal.querySelector("[data-lb-prev]");
   const btnNext = modal.querySelector("[data-lb-next]");
@@ -59,6 +60,50 @@
 
   const visibleItems = () =>
     Array.from(grid.querySelectorAll(".masonry-item")).filter((el) => !el.hidden);
+
+  /**
+   * Case-study rows, in the order a rider would ask about them. Every field is
+   * optional: a tile shows only what is actually recorded about it, because an
+   * absent row reads better than an invented one.
+   */
+  const META_ROWS = [
+    ["bike", "Bike"],
+    ["service", "Service"],
+    ["film", "Film"],
+    ["coverage", "Coverage"],
+    ["turnaround", "Time in the garage"],
+    ["city", "Where"],
+    ["runtime", "Runtime"],
+    ["filmed", "On camera"],
+  ];
+
+  function renderMeta(item) {
+    if (!metaOut) return;
+    metaOut.innerHTML = "";
+
+    const rows = META_ROWS.map(([key, label]) => [label, (item.dataset[key] || "").trim()]).filter(
+      ([, value]) => value
+    );
+
+    metaOut.hidden = rows.length === 0;
+    if (!rows.length) return;
+
+    rows.forEach(([label, value]) => {
+      const row = document.createElement("div");
+      row.className = "lb-meta-row";
+
+      const dt = document.createElement("span");
+      dt.className = "lb-meta-label";
+      dt.textContent = label;
+
+      const dd = document.createElement("strong");
+      dd.className = "lb-meta-value";
+      dd.textContent = value;
+
+      row.append(dt, dd);
+      metaOut.appendChild(row);
+    });
+  }
 
   function clearStage() {
     const video = stage.querySelector("video");
@@ -116,6 +161,7 @@
       stage.appendChild(img);
     }
     caption.textContent = cap;
+    renderMeta(item);
   }
 
   function open(index) {

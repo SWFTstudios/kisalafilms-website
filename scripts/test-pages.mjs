@@ -658,6 +658,67 @@ function fire(win, el, type) {
   });
 }
 
+/* ---- Gallery case studies ---------------------------------------------- */
+{
+  const win = load("gallery.html");
+  const grid = win.document.querySelector("[data-gallery-grid]");
+  const metaOut = win.document.querySelector("[data-lb-meta]");
+  const openTile = (figure) => {
+    figure.querySelector("[data-lightbox]").dispatchEvent(
+      new win.MouseEvent("click", { bubbles: true })
+    );
+  };
+  const rows = () =>
+    [...metaOut.querySelectorAll(".lb-meta-row")].map((r) => [
+      r.querySelector(".lb-meta-label").textContent,
+      r.querySelector(".lb-meta-value").textContent,
+    ]);
+
+  check("the lightbox renders the case-study rows a tile has", () => {
+    const figure = grid.querySelector('[data-caption^="Left profile"]');
+    assert(figure, "expected the left-profile tile");
+    openTile(figure);
+
+    assert(!metaOut.hidden, "metadata block should be visible");
+    const map = new Map(rows());
+    assertEqual(map.get("Service"), "Full colour-change wrap", "service row");
+    assertEqual(map.get("Coverage"), "Every painted panel", "coverage row");
+    assertEqual(map.get("Where"), "Jersey City, NJ", "city row");
+  });
+
+  check("unrecorded fields are left out rather than guessed", () => {
+    const labels = rows().map(([label]) => label);
+    ["Bike", "Film", "Time in the garage"].forEach((label) =>
+      assert(!labels.includes(label), `"${label}" should be absent, not invented`)
+    );
+  });
+
+  check("a tile with nothing recorded shows no metadata block", () => {
+    const bare = grid.querySelector('[data-caption^="Knife work"]');
+    assert(bare, "expected the knife-work tile");
+    assert(!bare.dataset.bike && !bare.dataset.service, "that tile should carry no metadata");
+    openTile(bare);
+    assert(metaOut.hidden, "metadata block should collapse for a bare tile");
+    assertEqual(metaOut.children.length, 0, "no stale rows should be left behind");
+  });
+
+  check("film tiles carry the runtime and city from films.json", () => {
+    const film = grid.querySelector('[data-caption^="L0ST TAPES"]');
+    openTile(film);
+    const map = new Map(rows());
+    assertEqual(map.get("Runtime"), "12:04", "runtime row");
+    assertEqual(map.get("Where"), "New York City", "city row");
+  });
+
+  check("no gallery tile claims a bike, film brand or turnaround yet", () => {
+    // These are the fields only the owner's build records can fill.
+    const invented = [...grid.querySelectorAll(".masonry-item")].filter(
+      (el) => el.dataset.bike || el.dataset.film || el.dataset.turnaround
+    );
+    assertEqual(invented.length, 0, "a tile asserts a detail the repository cannot vouch for");
+  });
+}
+
 /* ---- Report ------------------------------------------------------------ */
 console.log(`${passed} passed, ${failures.length} failed`);
 if (failures.length) {

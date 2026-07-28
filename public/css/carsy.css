@@ -1808,6 +1808,54 @@ body.lb-lock { overflow: hidden; }
   margin: 0;
   padding: 0 24px;
 }
+
+/* Case-study block under the caption. Rows are rendered only for the fields a
+   build actually has recorded, so this collapses to nothing on a bare tile. */
+.lb-info {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  padding: 0 24px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+.lb-info .lb-caption { position: static; padding: 0; }
+
+.lb-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 10px;
+  margin: 14px auto 0;
+  max-width: 760px;
+}
+.lb-meta-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 6px 11px;
+  background: rgba(0, 0, 0, .55);
+  border: 1px solid var(--c-hairline);
+}
+.lb-meta-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .64rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--c-gray);
+}
+.lb-meta-value {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--c-white);
+}
+@media (max-width: 700px) {
+  .lb-meta { gap: 6px; }
+  .lb-meta-row { padding: 5px 9px; }
+  .lb-meta-value { font-size: .74rem; }
+}
 .lb-close,
 .lb-nav {
   position: absolute;
