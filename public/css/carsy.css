@@ -2880,7 +2880,16 @@ h1, .h1 { font-weight: 800; }
 .vinyl-saved-drop:hover { color: var(--c-white); }
 
 /* Compare overlay — rides on .lightbox for the backdrop and close button */
-.vinyl-compare-stage { max-width: 1000px; width: 100%; overflow-y: auto; max-height: 84vh; }
+/* .lb-stage is a centring flex row, built to hold one image. The comparison
+   stacks a grid above its note, so the axis has to be overridden or the note
+   lands alongside the films instead of underneath them. */
+.vinyl-compare-stage {
+  display: block;
+  max-width: 1000px;
+  width: 100%;
+  overflow-y: auto;
+  max-height: 84vh;
+}
 .vinyl-compare-grid {
   display: grid;
   grid-template-columns: repeat(var(--compare-cols, 2), minmax(0, 1fr));

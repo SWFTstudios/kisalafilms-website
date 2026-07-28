@@ -364,6 +364,24 @@ try {
         2,
         "columns"
       ));
+
+    await check("the compare note sits under the films, not beside them", async () => {
+      // The panel reuses .lb-stage, which is a centring flex row built for a
+      // single image. Without an axis override the note becomes a sibling column.
+      const laidOut = await page.evaluate(() => {
+        const grid = document.querySelector(".vinyl-compare-grid");
+        const note = document.querySelector(".vinyl-compare-note");
+        if (!grid || !note) return null;
+        const g = grid.getBoundingClientRect();
+        const n = note.getBoundingClientRect();
+        return { gridBottom: g.bottom, gridRight: g.right, noteTop: n.top, noteLeft: n.left };
+      });
+      assert(laidOut, "no compare grid or note rendered");
+      assert(
+        laidOut.noteTop >= laidOut.gridBottom - 1,
+        `the note starts at y=${Math.round(laidOut.noteTop)}, above the grid's bottom at ${Math.round(laidOut.gridBottom)}`
+      );
+    });
     await tap(page, "[data-compare-close]");
 
     // "Use this film" must still write the same hidden fields the typeahead does.
