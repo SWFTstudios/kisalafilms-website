@@ -1900,6 +1900,17 @@ body.intro-lock { overflow: hidden; }
 
 body.carsy { background: var(--c-black); letter-spacing: .002em; }
 
+/* Components set display explicitly, which otherwise beats the UA [hidden] rule */
+[hidden] { display: none !important; }
+
+/* Keep anchor jumps and focus scrolls clear of the sticky header */
+html { scroll-padding-top: 96px; }
+:target,
+.studio-step,
+[id] { scroll-margin-top: 96px; }
+
+.hero-content { text-shadow: 0 2px 28px rgba(0, 0, 0, .8); }
+
 h1, .h1, h2, .h2 { letter-spacing: -.02em; }
 h1, .h1 { font-weight: 800; }
 
@@ -1978,18 +1989,36 @@ h1, .h1 { font-weight: 800; }
 .nav-panel-head .logo img { height: 34px; }
 
 /* Hero — cinematic letterbox fade + slow drift */
+/* Light enough to keep the photograph readable, heavy enough for the type */
 .hero-fade {
   background:
-    radial-gradient(120% 90% at 50% 20%, rgba(0,0,0,.15) 0%, rgba(0,0,0,.72) 62%, #000 100%),
-    linear-gradient(180deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.25) 40%, #000 100%);
+    radial-gradient(130% 100% at 50% 42%, rgba(0,0,0,0) 0%, rgba(0,0,0,.35) 55%, rgba(0,0,0,.78) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.1) 32%, rgba(0,0,0,.5) 78%, #000 100%);
 }
-.hero-media { animation: heroDrift 26s ease-in-out infinite alternate; }
+/* heroIn must stay in the list — it owns the fade-up from opacity 0 */
+.hero-media {
+  animation:
+    heroIn 1.4s cubic-bezier(.22,1,.36,1) both,
+    heroDrift 26s ease-in-out 1.4s infinite alternate;
+}
 @keyframes heroDrift {
   from { transform: scale(1.04) translate3d(0, 0, 0); }
   to { transform: scale(1.12) translate3d(0, -1.5%, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-media { animation: none; }
+  .hero-media { animation: none; opacity: 1; transform: none; }
+}
+
+/* The nav CTA is a .btn, but `.nav-desktop > a` strips button chrome */
+.nav-desktop .nav-cta {
+  background: var(--c-red);
+  border: 2px solid var(--c-red);
+  padding: 12px 22px;
+}
+.nav-desktop .nav-cta:hover {
+  background: var(--c-white);
+  border-color: var(--c-white);
+  color: var(--c-black);
 }
 
 /* Full-bleed video hero */
