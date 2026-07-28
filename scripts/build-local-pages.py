@@ -266,29 +266,19 @@ def chrome() -> tuple[str, str, str]:
 
 
 def head_for(city: dict, head_template: str) -> str:
-    """Rewrite the shared <head> with this page's title, description and URLs."""
-    url = f"{SITE}/locations/{city['slug']}.html"
+    """Rewrite the shared <head> with this page's title and description.
+
+    Canonical, Open Graph and Twitter tags are deliberately not written here —
+    scripts/build-seo.py owns those for every page on the site and derives them
+    from the title and description below. Run it after this.
+    """
     head = re.sub(r"<title>.*?</title>", f"<title>{city['title']}</title>", head_template, flags=re.S)
-    head = re.sub(
+    return re.sub(
         r'<meta name="description" content=".*?">',
         f'<meta name="description" content="{city["description"]}">',
         head,
         flags=re.S,
     )
-
-    social = f"""  <link rel="canonical" href="{url}">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Kisala Films">
-  <meta property="og:title" content="{city['title']}">
-  <meta property="og:description" content="{city['description']}">
-  <meta property="og:url" content="{url}">
-  <meta property="og:image" content="{SITE}/images/brand/kisala-films-logo.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{city['title']}">
-  <meta name="twitter:description" content="{city['description']}">
-  <meta name="twitter:image" content="{SITE}/images/brand/kisala-films-logo.png">
-"""
-    return head.replace('  <link rel="stylesheet" href="/css/carsy.css">', social + '  <link rel="stylesheet" href="/css/carsy.css">')
 
 
 def jsonld(city: dict) -> str:

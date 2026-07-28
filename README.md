@@ -137,15 +137,22 @@ Two different mechanisms, and the difference matters:
 
 ## SEO
 
-`robots.txt` and `sitemap.xml` are hand-maintained in `public/` — **add new pages to the sitemap yourself**, there is no build step to do it for you. `/thanks.html` and `/wrap-quote/` are `noindex` and stay out of it.
-
-Every indexable page carries a canonical, `og:url`, `og:image` and `twitter:card`. Absolute URLs are built off `siteUrl` in the config; when the site moves to its own domain, change it there and re-run the sitemap check below.
-
-JSON-LD sits inline in the pages that need it: `AutoBodyShop` on the home and city pages, `FAQPage` on `/faq.html` and the city pages, `Service` with the live founding prices on `/pricing.html`, `BreadcrumbList` on inner pages. It asserts only what the site can stand behind — no rating markup, no review markup, no street address.
+Because the chrome is copy-pasted per page, the head tags are generated rather than hand-edited:
 
 ```bash
-python3 scripts/check-seo.py     # canonicals, sitemap coverage, JSON-LD parse
+python3 scripts/build-seo.py      # canonicals, OG/Twitter, robots.txt, sitemap.xml
+node scripts/build-jsonld.mjs     # JSON-LD
 ```
+
+Both are idempotent and both strip their previous output before rewriting, so re-running never stacks duplicate tags. **Run them after adding a page** — the sitemap is generated from the files actually present, so a new page is invisible to search until you do.
+
+`/thanks.html`, `/wrap-quote/`, `/styleguide.html` and `/404.html` are `noindex`, disallowed in `robots.txt`, and left out of the sitemap. They get no canonical either, since that would only invite indexing.
+
+`build-jsonld.mjs` runs `kisala-config.js` and `config-apply.js` in a sandbox and asks them for the prices, so the `Offer` markup cannot drift from what the page displays — flipping `pricingMode` moves both. `FAQPage` entries are scraped from the FAQ markup for the same reason. The graph asserts only what the site can stand behind: name, Jersey City locality, email, published hours, appointment-only, and the three served areas. No rating markup, no review markup, no street address, no telephone.
+
+Absolute URLs come from `SITE` in `build-seo.py` and `siteUrl` in the config. When the site moves to its own domain, change both and re-run.
+
+New pages need adding to the `PAGES` map in `build-jsonld.mjs` if they warrant structured data; `build-seo.py` picks them up on its own.
 
 ## Analytics
 

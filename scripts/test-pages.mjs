@@ -719,6 +719,161 @@ function fire(win, el, type) {
   });
 }
 
+/* ---- Technical SEO ------------------------------------------------------ */
+{
+  const { readdirSync, statSync } = await import("node:fs");
+
+  const NOINDEX = new Set(["thanks.html", "styleguide.html", "404.html", "wrap-quote/index.html"]);
+
+  function allPages(dir = PUBLIC, prefix = "") {
+    return readdirSync(dir).flatMap((entry) => {
+      const full = join(dir, entry);
+      const rel = prefix ? `${prefix}/${entry}` : entry;
+      if (statSync(full).isDirectory()) return allPages(full, rel);
+      if (!entry.endsWith(".html")) return [];
+      const html = readFileSync(full, "utf8");
+      // Retired redirect stubs are not pages.
+      if (/http-equiv/.test(html) && /content="0;/.test(html)) return [];
+      return [[rel, html]];
+    });
+  }
+
+  const pages = allPages();
+  const sitemap = readFileSync(join(PUBLIC, "sitemap.xml"), "utf8");
+  const robots = readFileSync(join(PUBLIC, "robots.txt"), "utf8");
+
+  const canonicalPath = (rel) =>
+    rel === "index.html" ? "/" : rel.endsWith("/index.html") ? `/${rel.slice(0, -10)}` : `/${rel}`;
+
+  check("every indexable page has a canonical, OG and Twitter tags", () => {
+    const missing = [];
+    for (const [rel, html] of pages) {
+      if (NOINDEX.has(rel)) continue;
+      const want = [
+        'rel="canonical"',
+        'property="og:url"',
+        'property="og:title"',
+        'property="og:image"',
+        'name="twitter:card"',
+      ];
+      want.forEach((tag) => {
+        if (!html.includes(tag)) missing.push(`${rel} → ${tag}`);
+      });
+    }
+    assertEqual(missing.length, 0, `missing tags: ${missing.join(", ")}`);
+  });
+
+  check("canonicals point at the page's own URL", () => {
+    for (const [rel, html] of pages) {
+      if (NOINDEX.has(rel)) continue;
+      const href = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+      assertEqual(href, `https://kisalafilms-website.elombe.workers.dev${canonicalPath(rel)}`, `${rel} canonical`);
+    }
+  });
+
+  check("no page carries a duplicate canonical or og:url", () => {
+    // Two generators touch the <head>; a stacked tag is the failure mode.
+    for (const [rel, html] of pages) {
+      const canonicals = (html.match(/rel="canonical"/g) || []).length;
+      const ogUrls = (html.match(/property="og:url"/g) || []).length;
+      assert(canonicals <= 1, `${rel} has ${canonicals} canonicals`);
+      assertEqual(ogUrls, 1, `${rel} has ${ogUrls} og:url tags`);
+    }
+  });
+
+  check("post-conversion and campaign pages stay out of the index", () => {
+    for (const rel of NOINDEX) {
+      const html = pages.find(([p]) => p === rel)?.[1];
+      assert(html, `${rel} not found`);
+      assert(/name="robots" content="noindex/.test(html), `${rel} is missing its noindex`);
+      assert(!html.includes('rel="canonical"'), `${rel} should not invite indexing with a canonical`);
+      assert(!sitemap.includes(canonicalPath(rel)), `${rel} is listed in the sitemap`);
+      assert(robots.includes(`Disallow: ${canonicalPath(rel)}`), `${rel} is not disallowed in robots.txt`);
+    }
+  });
+
+  check("the sitemap lists every indexable page and nothing else", () => {
+    const listed = [...sitemap.matchAll(/<loc>https:\/\/[^/]+(\/[^<]*)<\/loc>/g)].map((m) => m[1]);
+    const expected = pages.filter(([rel]) => !NOINDEX.has(rel)).map(([rel]) => canonicalPath(rel));
+
+    expected.forEach((path) => assert(listed.includes(path), `sitemap is missing ${path}`));
+    listed.forEach((path) => assert(expected.includes(path), `sitemap lists ${path}, which is not a page`));
+    assertEqual(listed.length, expected.length, "sitemap entry count");
+  });
+
+  check("the sitemap is valid XML and points robots at itself", () => {
+    assert(/^<\?xml version="1\.0" encoding="UTF-8"\?>/.test(sitemap), "missing XML declaration");
+    assert(sitemap.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'), "missing namespace");
+    assert(robots.includes("Sitemap: https://kisalafilms-website.elombe.workers.dev/sitemap.xml"), "robots.txt does not reference the sitemap");
+  });
+
+  check("all JSON-LD parses", () => {
+    let blocks = 0;
+    for (const [rel, html] of pages) {
+      for (const [, body] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+        try {
+          JSON.parse(body);
+        } catch (err) {
+          throw new Error(`${rel}: ${err.message}`);
+        }
+        blocks += 1;
+      }
+    }
+    assert(blocks >= 15, `only ${blocks} JSON-LD blocks found`);
+  });
+
+  check("JSON-LD claims nothing the site cannot stand behind", () => {
+    const banned = ["aggregateRating", "ratingValue", "reviewCount", '"review"', "streetAddress", "telephone", "award", "hasCredential"];
+    for (const [rel, html] of pages) {
+      for (const [, body] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+        banned.forEach((term) =>
+          assert(!body.includes(term), `${rel} asserts ${term} in structured data`)
+        );
+      }
+    }
+  });
+
+  check("the FAQ markup matches the questions actually on the page", () => {
+    const html = pages.find(([p]) => p === "faq.html")[1];
+    const onPage = [...html.matchAll(/<button class="faq-q"[^>]*>(.*?)<span class="mark">/gs)].length;
+    const graph = JSON.parse(
+      html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]
+    )["@graph"];
+    const faq = graph.find((n) => n["@type"] === "FAQPage");
+    assertEqual(faq.mainEntity.length, onPage, "FAQ entry count should match the page");
+    faq.mainEntity.forEach((q) => {
+      assert(!/[<>]/.test(q.name + q.acceptedAnswer.text), `markup leaked into "${q.name}"`);
+      assert(q.acceptedAnswer.text.length > 20, `answer for "${q.name}" looks empty`);
+    });
+  });
+
+  check("the priced structured data matches the active config", () => {
+    const html = pages.find(([p]) => p === "pricing.html")[1];
+    const graph = JSON.parse(
+      html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]
+    )["@graph"];
+    const full = graph.find((n) => n["@type"] === "Service" && /Full colour-change/.test(n.name));
+    assertEqual(full.offers.priceSpecification.minPrice, 1650, "structured full-wrap floor");
+    assertEqual(full.offers.priceSpecification.maxPrice, 2400, "structured full-wrap ceiling");
+    assertEqual(full.offers.priceCurrency, "USD", "currency");
+  });
+
+  check("breadcrumb trails resolve to real pages", () => {
+    const known = new Set(pages.map(([rel]) => canonicalPath(rel)));
+    for (const [rel, html] of pages) {
+      for (const [, body] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+        const graph = JSON.parse(body)["@graph"] || [];
+        const crumbs = graph.find((n) => n["@type"] === "BreadcrumbList");
+        if (!crumbs) continue;
+        crumbs.itemListElement.forEach((c) => {
+          const path = c.item.replace("https://kisalafilms-website.elombe.workers.dev", "");
+          assert(known.has(path), `${rel} breadcrumb points at ${path}, which does not exist`);
+        });
+      }
+    }
+  });
+}
+
 /* ---- Report ------------------------------------------------------------ */
 console.log(`${passed} passed, ${failures.length} failed`);
 if (failures.length) {
