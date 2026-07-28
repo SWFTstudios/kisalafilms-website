@@ -7,6 +7,7 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "preview": "wrangler versions upload",
+    "build": "bash scripts/build.sh",
     "test": "node scripts/test-pages.mjs"
   },
   "devDependencies": {

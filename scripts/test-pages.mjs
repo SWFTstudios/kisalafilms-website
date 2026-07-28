@@ -15,7 +15,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { JSDOM } from "jsdom";
+import { JSDOM, VirtualConsole } from "jsdom";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC = join(ROOT, "public");
@@ -48,10 +48,22 @@ function assertEqual(actual, expected, message) {
  */
 function load(page, { mutateConfig } = {}) {
   const html = readFileSync(join(PUBLIC, page), "utf8");
+
+  // Clicking a real link makes jsdom log "Not implemented: navigation"; that is
+  // expected here and would otherwise bury an actual failure.
+  const virtualConsole = new VirtualConsole();
+  virtualConsole.on("jsdomError", (err) => {
+    if (!/Not implemented/.test(err.message)) console.error(err.message);
+  });
+  ["error", "warn", "info", "log"].forEach((level) => {
+    virtualConsole.on(level, (...args) => console[level]("[page]", ...args));
+  });
+
   const dom = new JSDOM(html, {
     url: `https://kisalafilms.test/${page}`,
     runScripts: "outside-only",
     pretendToBeVisual: true,
+    virtualConsole,
   });
   const { window } = dom;
 
@@ -71,6 +83,14 @@ function load(page, { mutateConfig } = {}) {
     return { ok: true, status: 200, json: async () => JSON.parse(body), text: async () => body };
   };
 
+  // Capture GA4 traffic instead of loading the real tag.
+  window.__events = [];
+  const realAppend = window.document.head.appendChild.bind(window.document.head);
+  window.document.head.appendChild = (node) => {
+    if (node.tagName === "SCRIPT" && /googletagmanager/.test(node.src || "")) return node;
+    return realAppend(node);
+  };
+
   const sources = [...window.document.querySelectorAll("script[src]")].map((s) =>
     s.getAttribute("src")
   );
@@ -79,6 +99,14 @@ function load(page, { mutateConfig } = {}) {
     const file = join(PUBLIC, src);
     if (!existsSync(file)) throw new Error(`${page} references a missing script: ${src}`);
     window.eval(readFileSync(file, "utf8"));
+
+    if (src.endsWith("analytics.js")) {
+      const real = window.gtag;
+      window.gtag = (...args) => {
+        if (args[0] === "event") window.__events.push({ name: args[1], params: args[2] || {} });
+        return real?.(...args);
+      };
+    }
 
     // Applied between config and the modules that consume it, mirroring the
     // hook the real page has no need for.
@@ -871,6 +899,119 @@ function fire(win, el, type) {
         });
       }
     }
+  });
+}
+
+/* ---- Analytics ---------------------------------------------------------- */
+{
+  const events = (win) => win.__events.map((e) => e.name);
+  const paramsOf = (win, name) => win.__events.find((e) => e.name === name)?.params || {};
+  const click = (win, el) => el.dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+
+  check("GA4 is configured from the shared config", () => {
+    const win = load("index.html");
+    assert(typeof win.KisalaTrack === "function", "KisalaTrack missing");
+    const configured = win.dataLayer.find((a) => a[0] === "config");
+    assertEqual(configured[1], "G-F2BXR858CL", "measurement id");
+  });
+
+  check("the measurement ID is not hardcoded anywhere but the config", () => {
+    // It used to be inlined on the ads landing page as well, which meant two
+    // places to change and one of them always getting missed.
+    const offenders = [];
+    for (const rel of ["index.html", "wrap-studio.html", "wrap-quote/index.html", "thanks.html"]) {
+      const html = readFileSync(join(PUBLIC, rel), "utf8");
+      if (html.includes("G-F2BXR858CL")) offenders.push(rel);
+    }
+    assertEqual(offenders.length, 0, `hardcoded GA id in: ${offenders.join(", ")}`);
+    assert(
+      readFileSync(join(PUBLIC, "js/kisala-config.js"), "utf8").includes("G-F2BXR858CL"),
+      "the config should be the one place the id lives"
+    );
+  });
+
+  check("a data-track click reports with its label", () => {
+    const win = load("index.html");
+    const cta = win.document.querySelector('[data-track="cta_click"]');
+    click(win, cta);
+    assert(events(win).includes("cta_click"), "cta_click not reported");
+    assertEqual(paramsOf(win, "cta_click").label, cta.dataset.trackLabel, "label");
+  });
+
+  check("mailto links report themselves without needing an attribute", () => {
+    const win = load("contact.html");
+    const mail = win.document.querySelector('a[href^="mailto:"]');
+    assert(mail, "expected a mailto link on the contact page");
+    click(win, mail);
+    assert(events(win).includes("email_click"), "email_click not reported");
+  });
+
+  check("opening the Wrap Studio reports a view", () => {
+    const win = load("wrap-studio.html");
+    assert(events(win).includes("view_wrap_studio"), "view_wrap_studio not reported");
+  });
+
+  check("the thanks page fires the conversion", () => {
+    // This, not generate_lead, is the event to count: the studio's native POST
+    // unloads the page mid-request, so only the redirect target proves delivery.
+    const win = load("thanks.html");
+    assert(events(win).includes("wrap_studio_lead"), "wrap_studio_lead not reported");
+    assertEqual(paramsOf(win, "wrap_studio_lead").value, 1, "conversion value");
+  });
+
+  check("no other page fires the conversion", () => {
+    for (const rel of ["index.html", "pricing.html", "wrap-studio.html", "gallery.html"]) {
+      const win = load(rel);
+      assert(!events(win).includes("wrap_studio_lead"), `${rel} fires the conversion`);
+    }
+  });
+
+  check("studio choices report as they are made", () => {
+    const win = load("wrap-studio.html");
+    const service = win.document.querySelector('input[name="service"][value="Chrome delete"]');
+    click(win, service);
+    assert(events(win).includes("select_service"), "select_service not reported");
+    assertEqual(paramsOf(win, "select_service").label, "Chrome delete", "service label");
+
+    const transport = win.document.querySelector('input[name="transport"][value^="Pickup — collect"]');
+    click(win, transport);
+    assertEqual(paramsOf(win, "select_transport").label, "Pickup", "transport label");
+  });
+
+  check("submitting the studio reports the build context", () => {
+    const win = load("wrap-studio.html");
+    const form = win.document.querySelector("[data-wrap-studio]");
+    const service = win.document.querySelector('input[name="service"][value="Full colour-change wrap"]');
+    service.checked = true;
+    fire(win, service, "change");
+
+    const budget = field(win, "budget");
+    budget.value = "$2,000 – $3,500";
+    fire(win, budget, "change");
+
+    // jsdom does not implement submission, only the event.
+    form.dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+
+    const lead = paramsOf(win, "generate_lead");
+    assertEqual(lead.label, "Full colour-change wrap", "service on the lead event");
+    assertEqual(lead.budget, "$2,000 – $3,500", "budget on the lead event");
+  });
+
+  check("the local pages report which city was landed on", () => {
+    const win = load("locations/brooklyn.html");
+    assert(events(win).includes("view_local_page"), "view_local_page not reported");
+    assertEqual(paramsOf(win, "view_local_page").label, "brooklyn", "zone label");
+  });
+
+  check("analytics degrades quietly when disabled", () => {
+    const win = load("index.html", {
+      mutateConfig: (w) => {
+        w.KISALA_CONFIG.analytics.enabled = false;
+      },
+    });
+    const cta = win.document.querySelector('[data-track="cta_click"]');
+    click(win, cta); // must not throw
+    assertEqual(win.__events.length, 0, "nothing should be reported when disabled");
   });
 }
 

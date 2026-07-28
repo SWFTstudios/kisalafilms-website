@@ -742,10 +742,21 @@
     try {
       await postViaFormSubmitAjax();
       clearDraft();
+
+      // This path posts over fetch and the page is still alive when it resolves,
+      // so unlike the main studio's native POST the conversion can be recorded
+      // at the moment it is actually known to have succeeded.
+      window.KisalaTrack?.("generate_lead", {
+        label: "wrap-quote",
+        service: FORM.querySelector('[name="service"]')?.value || "",
+        value: 1,
+      });
+
       const nextInput = FORM.querySelector('input[name="_next"]');
       const next = (nextInput && nextInput.value) || `${location.pathname}?sent=1`;
       location.href = next;
     } catch (err) {
+      window.KisalaTrack?.("lead_submit_failed", { label: "wrap-quote" });
       console.warn("Inquiry send failed", err);
       const msg =
         err && err.name === "AbortError"
