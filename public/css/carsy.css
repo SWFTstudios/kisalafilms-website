@@ -2009,6 +2009,15 @@ h1, .h1 { font-weight: 800; }
   .hero-media { animation: none; opacity: 1; transform: none; }
 }
 
+/* `.section-dark a` recolours every descendant link, which turned buttons
+   inside those sections into red text on a red fill. Restate them. */
+.section-dark a.btn-primary,
+.section-dark a.btn-black,
+.section-dark a.btn-secondary { color: var(--c-white); }
+.section-dark a.btn-primary:hover,
+.section-dark a.btn-secondary:hover { color: var(--c-black); }
+.section-dark a.btn-black:hover { color: var(--c-white); }
+
 /* The nav CTA is a .btn, but `.nav-desktop > a` strips button chrome */
 .nav-desktop .nav-cta {
   background: var(--c-red);

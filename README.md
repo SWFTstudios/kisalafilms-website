@@ -1,19 +1,25 @@
 # Kisala Films website
 
-Creator-led film and lifestyle platform for **Elombe Kisala** — *a world traveler with a camcorder.* Automotive video magazines, cinematic brand edits, life vlogs and cinematic travel films. Visual language: early-2000s VHS travel documentary, night-themed, with a real-time 3D globe and 3D VHS tapes.
+Motorcycle wrap studio and film house for **Elombe Kisala**, Jersey City NJ. Film means two things here: the vinyl that goes on the bike, and the film shot of it happening.
+
+The site follows the Vossen Wheels pattern — show the product, prove it in the wild, capture the lead — mapped onto wraps: finish catalogue, build gallery, and a configurator that emails a build sheet.
 
 ## Stack
 
-- Static multi-page site in `public/`
-- Single design system: [`public/css/vhs.css`](./public/css/vhs.css)
-- Vanilla JS: nav, lightbox + CSS tape slider ([`public/js/vhs.js`](./public/js/vhs.js)), inquiry wizard
-- Real-time 3D (WebGL) via **Three.js**, vendored at [`public/js/vendor/three.module.js`](./public/js/vendor/three.module.js) and loaded through an ES-module import map:
-  - [`public/js/globe.js`](./public/js/globe.js) — dot-matrix travel globe with city pins + arcs
-  - [`public/js/tape3d.js`](./public/js/tape3d.js) — 3D VHS cassette stage (home) and tape wall (watch)
-  - [`public/js/scene-boot.js`](./public/js/scene-boot.js) — capability detection + lazy load; falls back to the CSS crate / static grid when WebGL is unavailable or `prefers-reduced-motion` is set
-- Film catalog: [`public/data/films.json`](./public/data/films.json) (category, city, lat/lng, Vimeo id)
+- Static multi-page site in `public/`, no build step
+- Single design system: [`public/css/carsy.css`](./public/css/carsy.css) — dark premium, logo red `#e8271f`, Archivo + Mulish
+- Vanilla JS, one module per concern:
+  - [`public/js/nav.js`](./public/js/nav.js) — sticky header, mobile drawer, active-state matching
+  - [`public/js/site.js`](./public/js/site.js) — FAQ accordions, scroll reveals, filter tabs
+  - [`public/js/wrap-studio.js`](./public/js/wrap-studio.js) — photo attachments and the live build summary
+  - [`public/js/gallery.js`](./public/js/gallery.js) — gallery intro and the photo/video/embed lightbox
+  - [`public/js/bike-search.js`](./public/js/bike-search.js) — year/make/model dropdowns
+  - [`public/js/vinyl-search.js`](./public/js/vinyl-search.js) — Metro Restyling film catalogue search
+  - [`public/js/inquiry-wizard.js`](./public/js/inquiry-wizard.js) — used only by the `/wrap-quote/` ad landing page
 - Deployed as a Cloudflare Worker with [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
 - Auto-deploys on push to `main` → https://kisalafilms-website.elombe.workers.dev
+
+Chrome (header, footer, `<head>`) is duplicated in each HTML file rather than templated. Edit one page's header and you must edit them all.
 
 ## Develop locally
 
@@ -21,6 +27,8 @@ Creator-led film and lifestyle platform for **Elombe Kisala** — *a world trave
 npm install
 npm run dev
 ```
+
+Static assets are served extensionless: a link to `/gallery.html` 307s to `/gallery`. `nav.js` normalises both forms when deciding which nav item is active.
 
 ## Deploy
 
@@ -32,45 +40,75 @@ Worker `name` in `wrangler.jsonc` must stay `kisalafilms-website` to match the C
 
 ## Information architecture
 
-Primary nav: **Home · Watch · About · Shop · Contact** (+ Instagram / YouTube socials). Series and Dispatches remain reachable from the footer.
+Primary nav: **Services · Gallery · Pricing · About · Contact**, with **Build your wrap** as the standing CTA.
 
 | Route | Purpose |
 | --- | --- |
-| `/` | 3D globe hero + layered sections (pillars, crate, about/shop teasers) |
-| `/watch.html` | 3D tape wall with category filters + grid fallback |
-| `/about.html` | Elombe’s story — world traveler with a camcorder |
-| `/shop.html` | Kiosk — VHS/merch placeholder storefront (drop soon) |
-| `/contact.html` | Contact form (FormSubmit) + socials |
-| `/series.html` | Series tape slider (CSS crate) |
-| `/dispatches.html` | Field notes |
-| `/work-with-me.html` | Partnerships + wrap inquiry wizard |
-| `/faq.html` · `/locations.html` | Secondary |
-| `/wrap-quote/` | Isolated Meta ad LP (`noindex`) |
+| `/` | Cinematic hero, service tiers, build gallery, reel rail, process |
+| `/wrap-studio.html` | The configurator — bike, service, colour, photos, send |
+| `/gallery.html` | Filterable photo and video masonry with lightbox |
+| `/services.html` | Wrap, protection, and cinema services (+ 3 detail pages) |
+| `/pricing.html` | Package tiers and single-service starting prices |
+| `/about.html` · `/journal.html` · `/testimonials.html` · `/faq.html` · `/locations.html` | Supporting |
+| `/contact.html` | Short message form for anything that isn't a build |
+| `/thanks.html` | Wrap Studio success page (`noindex`) |
+| `/wrap-quote/` | Isolated Meta ad landing page (`noindex`) |
 
-Legacy URLs (`/films.html`, `/journal.html`, `/services*.html`, `/pricing.html`, `/contact.html`, `/gallery.html`) redirect to the new IA.
+Retired routes (`/films.html`, `/watch.html`, `/series.html`, `/dispatches.html`, `/inspo-museum.html`, `/work-with-me.html`, `/shop.html`) are meta-refresh redirect stubs.
+
+## Wrap Studio
+
+`/wrap-studio.html` is the primary conversion path. A rider selects their bike from [`public/data/motorcycles.json`](./public/data/motorcycles.json), picks a service and add-ons, searches [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) for an exact film, attaches photos of the bike, and sends one build sheet.
+
+**It submits as a native `multipart/form-data` POST, and it has to stay that way.** FormSubmit only delivers attachments through its standard endpoint; the AJAX endpoint accepts the request and silently drops the files. That is why this form does not use `inquiry-wizard.js` and redirects via `_next` to `/thanks.html` instead of staying on the page.
+
+Attachments are capped client-side at 8 photos and 9MB, against FormSubmit's 10MB per-submission limit, leaving room for the field data. Files that would push past the cap are skipped individually with a message naming them.
 
 ## Forms → FormSubmit
 
-All site forms POST to [FormSubmit](https://formsubmit.co/) at **`hello@swftstudios.com`** (display and action aligned):
+Everything posts to [FormSubmit](https://formsubmit.co/) at **`elombe@swftstudios.com`**:
 
 ```html
-action="https://formsubmit.co/hello@swftstudios.com"
+action="https://formsubmit.co/elombe@swftstudios.com"
 ```
 
-Inquiry wizard on `/work-with-me.html#inquiry` (and `/wrap-quote/`) uses FormSubmit’s Ajax API with `mailto:` fallback. Drafts persist in `localStorage`.
+FormSubmit requires a one-time activation per address. The first submission triggers a confirmation email that must be clicked before anything is delivered.
 
-Data catalogs: [`public/data/motorcycles.json`](./public/data/motorcycles.json), [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json), [`public/data/vinyl-size-guide.json`](./public/data/vinyl-size-guide.json).
+## Brand assets
 
-## 3D tape slider
+Two source exports drive every logo and favicon on the site. Drop them in `public/images/src/`:
 
-[`public/js/vhs.js`](./public/js/vhs.js) renders a perspective VHS carousel (prev/next, index, swipe, arrow keys). Each tape’s `video` URL opens the film. **Placeholder:** titles and URLs currently point at Instagram until real YouTube / hosted clips are wired in `SERIES` inside `vhs.js`.
+| Source file | Produces |
+| --- | --- |
+| `kisala-films-logo-source.png` | `public/images/brand/kisala-films-logo.png` — the wide wordmark in the header, drawer, and gallery intro |
+| `kisala-films-icon-source.png` | `public/images/brand/kisala-films-icon.png` plus every favicon size and `favicon.ico` |
+
+```bash
+pip install pillow
+python3 scripts/build-brand-assets.py
+```
+
+Both exports are artwork on solid black, so [`scripts/build-brand-assets.py`](./scripts/build-brand-assets.py) recovers exact transparency by dividing the black matte back out of each pixel rather than thresholding it away.
+
+## Data catalogues
+
+[`motorcycles.json`](./public/data/motorcycles.json) (year/make/model + fairing R&R labour bands), [`vinyl-colors.json`](./public/data/vinyl-colors.json) (Metro Restyling film catalogue), [`vinyl-size-guide.json`](./public/data/vinyl-size-guide.json).
+
+## Gallery films
+
+Film tiles in `/gallery.html` use `data-type="embed"` with a player URL, so nothing needs self-hosting:
+
+```html
+<figure class="masonry-item" data-filter-item="films" data-type="embed"
+        data-embed="https://player.vimeo.com/video/VIDEO_ID"
+        data-full="/images/your-thumbnail.jpg"
+        data-caption="Build name">
+```
+
+YouTube works the same way with `https://www.youtube.com/embed/VIDEO_ID`. The current entries point at a placeholder Vimeo id and need swapping for real films.
 
 ## Brand lines
 
-- **Primary:** PEOPLE, MACHINES, AND LIFE IN MOTION.
-- **Editorial:** FILMS FROM THE ROAD BETWEEN PLACES.
-- **Close:** GO SOMEWHERE YOU CAN'T EXPLAIN.
-
-## Lead-gen landing page (`/wrap-quote`)
-
-Purpose-built Meta ad funnel — **not** part of the main marketing IA. Keep `noindex`; do not add to primary nav. Same FormSubmit + wizard stack as Work With Me.
+- **Primary:** FILM MEANS TWO THINGS HERE.
+- **Editorial:** FILM ON METAL, SHOT PROPERLY.
+- **Close:** YOUR BIKE, SHOT THE SAME WAY.

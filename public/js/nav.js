@@ -60,13 +60,29 @@
     }
   });
 
-  const path = window.location.pathname.replace(/\/$/, "") || "/";
-  document.querySelectorAll(".nav-panel a[href], .nav-dd-menu a[href], .nav-desktop > a[href]").forEach((a) => {
+  // Workers Static Assets serves these pages extensionless, so /gallery.html
+  // in an href arrives as /gallery in the address bar. Normalise both sides.
+  const normalise = (pathname) =>
+    pathname.replace(/\/index\.html$/, "/").replace(/\.html$/, "").replace(/\/$/, "") || "/";
+
+  const path = normalise(window.location.pathname);
+  const links = Array.from(
+    document.querySelectorAll(".nav-panel a[href], .nav-dd-menu a[href], .nav-desktop > a[href]")
+  ).map((el) => {
+    let href = null;
     try {
-      const href = new URL(a.href).pathname.replace(/\/$/, "") || "/";
-      if (href === path || (path !== "/" && href !== "/" && path.startsWith(href))) {
-        a.classList.add("is-active");
-      }
-    } catch (_) { /* ignore */ }
+      href = normalise(new URL(el.href).pathname);
+    } catch (_) { /* off-site or malformed */ }
+    return { el, href };
   });
+
+  // Prefer an exact match. Only fall back to marking the section parent when
+  // nothing matches exactly, otherwise every /services.html#anchor entry in the
+  // dropdown lights up at once on a /services/* page.
+  const exact = links.filter((l) => l.href === path);
+  const matches = exact.length
+    ? exact
+    : links.filter((l) => l.href && path !== "/" && l.href !== "/" && path.startsWith(l.href + "/"));
+
+  matches.forEach(({ el }) => el.classList.add("is-active"));
 })();
