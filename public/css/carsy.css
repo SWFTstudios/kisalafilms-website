@@ -74,6 +74,7 @@ a:hover { color: var(--c-white); }
 
 /* Typography — Carsy-like rem scale */
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+  overflow-wrap: break-word;
   font-family: var(--font-heading);
   font-weight: 700;
   line-height: 1.12;
@@ -1394,7 +1395,10 @@ body.nav-lock { overflow: hidden; }
   font-size: .8rem;
   font-weight: 600;
 }
-.sg-table { width: 100%; border-collapse: collapse; margin: 20px 0 40px; }
+/* Four columns will not fit a narrow phone, so the table scrolls on its own
+   rather than dragging the whole page sideways */
+.sg-table-scroll { overflow-x: auto; margin: 20px 0 40px; }
+.sg-table { width: 100%; min-width: 480px; border-collapse: collapse; }
 .sg-table th, .sg-table td {
   border: 1px solid #2a2a2a;
   padding: 12px 14px;
@@ -1441,8 +1445,10 @@ body.nav-lock { overflow: hidden; }
 }
 
 @media (max-width: 767px) {
-  h1, .h1 { font-size: 2.4rem; }
-  h2, .h2 { font-size: 1.85rem; }
+  /* A flat 2.4rem overflowed narrow phones on the longest single words
+     ("Straightforward"), so the small end scales with the viewport too. */
+  h1, .h1 { font-size: clamp(1.75rem, 8vw, 2.4rem); }
+  h2, .h2 { font-size: clamp(1.4rem, 6vw, 1.85rem); }
   h3, .h3 { font-size: 1.45rem; }
   .section { padding: var(--pad-section-mob) 0; }
   .section-head { margin-bottom: var(--pad-inner-mob); }
