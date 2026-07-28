@@ -908,6 +908,18 @@ function fire(win, el, type) {
     }
   });
 
+  check("the generators left no dead space in any <head>", () => {
+    // Every generator strips its own previous output before rewriting. Strip a
+    // tag but leave its newline and each build pads the <head> by a line — it
+    // never breaks a page, so nothing catches it except this.
+    for (const [rel, html] of pages) {
+      if (rel === "wrap-quote/index.html") continue; // inline <style>, own chrome
+      const head = html.slice(0, html.indexOf("</head>"));
+      const run = /\n[ \t]*\n[ \t]*\n/.exec(head);
+      assert(!run, `${rel} has a run of blank lines in <head> — a strip left its newlines behind`);
+    }
+  });
+
   check("internal links point at the served URL, not the redirect", () => {
     // Every .html URL 307s to its extensionless form, so an internal link
     // naming it spends a round trip per click. scripts/build-links.py rewrites

@@ -18,6 +18,7 @@ Usage:
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,6 +67,19 @@ def wire(path: Path) -> str:
             html = html.replace("</body>", BODY_TAG + "</body>", 1)
         else:
             return "FAILED (no </body>)"
+        changed = True
+
+    # Successive rounds of strip-and-reinsert left a run of blank lines between
+    # the stylesheet and these scripts. Harmless, but it is dead space in the
+    # <head> of all 28 pages. Collapsing it here is idempotent: once the run is
+    # gone there is nothing left to match.
+    tidied = re.sub(
+        r'\n(?:[ \t]*\n)+(?=[ \t]*<script src="/js/kisala-config\.js">)',
+        "\n",
+        html,
+    )
+    if tidied != html:
+        html = tidied
         changed = True
 
     if changed:
