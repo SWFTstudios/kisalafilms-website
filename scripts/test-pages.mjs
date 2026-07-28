@@ -167,6 +167,34 @@ function fire(win, el, type) {
   });
 }
 
+/* ---- Build deposit (percent × labour + vinyl rolls) --------------------- */
+{
+  const win = load("pricing.html");
+
+  check("depositQuote prices a full wrap with one 5×25 roll", () => {
+    const q = win.KisalaConfig.depositQuote("fullWrap");
+    assert(q, "fullWrap quote missing");
+    assertEqual(q.rolls, 1, "full wrap rolls");
+    assertEqual(q.labour, 1650, "full wrap labour");
+    assertEqual(q.material, 450, "full wrap material");
+    // 0.25 × (1650 + 450) = 525
+    assertEqual(q.amount, 525, "full wrap deposit");
+  });
+
+  check("depositQuote prices an accent package the same way", () => {
+    const q = win.KisalaConfig.depositQuote("partialWrap");
+    assertEqual(q.rolls, 1, "accent rolls");
+    assertEqual(q.labour, 575, "accent labour");
+    // 0.25 × (575 + 450) = 256.25 → 250
+    assertEqual(q.amount, 250, "accent deposit");
+  });
+
+  check("the pricing page exposes deposit pay buttons", () => {
+    assert(win.document.querySelector('[data-deposit-package="fullWrap"]'), "full deposit card");
+    assert(win.document.querySelector("[data-deposit-pay]"), "pay button");
+  });
+}
+
 /* ---- Standard pricing mode -------------------------------------------- */
 {
   const win = load("wrap-studio.html", {
@@ -752,7 +780,13 @@ function fire(win, el, type) {
 {
   const { readdirSync, statSync } = await import("node:fs");
 
-  const NOINDEX = new Set(["thanks.html", "styleguide.html", "404.html", "wrap-quote/index.html"]);
+  const NOINDEX = new Set([
+    "thanks.html",
+    "deposit-thanks.html",
+    "styleguide.html",
+    "404.html",
+    "wrap-quote/index.html",
+  ]);
 
   function allPages(dir = PUBLIC, prefix = "") {
     return readdirSync(dir).flatMap((entry) => {

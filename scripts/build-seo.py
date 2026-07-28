@@ -27,7 +27,13 @@ SHARE_IMAGE = f"{SITE}/images/brand/kisala-films-logo.png"
 
 # Kept out of the index. /thanks.html and /wrap-quote/ are post-conversion and
 # ad-campaign pages; styleguide and 404 have no business in search results.
-NOINDEX = {"thanks.html", "styleguide.html", "404.html", "wrap-quote/index.html"}
+NOINDEX = {
+  "thanks.html",
+  "deposit-thanks.html",
+  "styleguide.html",
+  "404.html",
+  "wrap-quote/index.html",
+}
 
 # Priority by role rather than a flat list: the conversion path first.
 PRIORITY = {

@@ -61,9 +61,45 @@
   }
 
   /**
+   * Deposit for a package key (`fullWrap` | `partialWrap`).
+   * percent × (service.from + rolls × rollCost), rounded to $25.
+   */
+  function depositQuote(packageKey) {
+    const dep = CONFIG.deposit;
+    const pkg = dep && dep.packages && dep.packages[packageKey];
+    if (!dep || !pkg) return null;
+
+    const service = servicePrice(pkg.serviceKey);
+    if (!service) return null;
+
+    const length = dep.rollLengthFt || 25;
+    const perItemRolls = Math.max(1, Math.ceil((pkg.linearFeet || 0) / length));
+    const rolls = perItemRolls * (pkg.filmItems || 1);
+    const material = rolls * (dep.rollCostUsd || 0);
+    const labour = service.low;
+    const subtotal = labour + material;
+    const amount = round25(subtotal * (dep.percent || 0));
+
+    return {
+      packageKey,
+      label: pkg.label,
+      labour,
+      material,
+      rolls,
+      rollCost: dep.rollCostUsd,
+      rollLengthFt: length,
+      rollWidthFt: dep.rollWidthFt || 5,
+      percent: dep.percent,
+      subtotal,
+      amount,
+    };
+  }
+
+  /**
    * Path lookup with a few virtual keys on top of the raw object:
    *   services.<key>.low|high|from|range   the active column
    *   addons.<key>                         the active price
+   *   deposit.amount.<packageKey>          computed Stripe deposit
    *   zones.<id>.<field>                   by id rather than array index
    */
   function get(path) {
@@ -81,6 +117,11 @@
     }
 
     if (parts[0] === "addons" && parts.length === 2) return addonPrice(parts[1]);
+
+    if (parts[0] === "deposit" && parts[1] === "amount" && parts[2]) {
+      const quote = depositQuote(parts[2]);
+      return quote ? quote.amount : undefined;
+    }
 
     if (parts[0] === "zones" && parts.length >= 3) {
       const z = zone(parts[1]);
@@ -178,6 +219,7 @@
     zone,
     zonePickupFrom,
     transport,
+    depositQuote,
     apply,
   };
 
