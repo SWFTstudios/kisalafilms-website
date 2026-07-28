@@ -341,6 +341,64 @@
             <button type="button" class="btn btn-ghost" data-vinyl-clear hidden style="margin-top:12px">Clear colour</button>
             <p class="fld-hint">Over 1,000 films from Avery, 3M, KPMF, Inozetek and more. Pick one or leave it blank.</p>
           </div>
+
+          <!-- Browse panel: same catalogue as the search above, different way in -->
+          <div class="vinyl-browse" data-vinyl-browse>
+            <button type="button" class="btn btn-ghost vinyl-browse-toggle" data-browse-toggle aria-expanded="false">Browse all films</button>
+
+            <div class="vinyl-saved" data-saved-wrap hidden>
+              <p class="vinyl-saved-head">
+                <span class="summary-label">Saved films</span>
+                <span class="vinyl-saved-tally"><span data-saved-count>0</span> shortlisted</span>
+                <button type="button" class="vinyl-saved-compare" data-compare-open hidden>Compare</button>
+              </p>
+              <ul class="vinyl-saved-list" data-saved-list></ul>
+              <p class="fld-hint">Your shortlist stays on this device and rides along on the build sheet.</p>
+            </div>
+
+            <div class="vinyl-browse-panel" data-browse-panel hidden>
+              <div class="vinyl-browse-bar">
+                <div class="fld">
+                  <label for="browse-query">Filter by name or brand</label>
+                  <input id="browse-query" type="search" placeholder="Avery, satin, teal&hellip;" data-browse-query enterkeyhint="search" autocomplete="off">
+                </div>
+                <div class="fld">
+                  <label for="browse-sort">Sort by</label>
+                  <select id="browse-sort" data-browse-sort>
+                    <option value="name">Name</option>
+                    <option value="vendor">Brand</option>
+                    <option value="finish">Finish</option>
+                    <option value="family">Colour family</option>
+                  </select>
+                </div>
+                <div class="fld">
+                  <span class="vinyl-browse-label">View</span>
+                  <div class="filter-tabs vinyl-view-toggle" data-view-toggle>
+                    <button type="button" class="on" data-view="grid" aria-pressed="true">Grid</button>
+                    <button type="button" data-view="list" aria-pressed="false">List</button>
+                  </div>
+                </div>
+              </div>
+
+              <p class="vinyl-browse-label">Colour family</p>
+              <div class="swatch-row" data-family-filters></div>
+
+              <p class="vinyl-browse-label">Finish</p>
+              <div class="swatch-row" data-finish-filters></div>
+
+              <div class="vinyl-browse-status">
+                <span data-browse-count>Loading&hellip;</span>
+                <button type="button" class="vinyl-browse-reset" data-browse-clear hidden>Clear filters</button>
+              </div>
+
+              <div class="vinyl-cards vinyl-cards--grid" data-browse-grid></div>
+
+              <div class="btn-row">
+                <button type="button" class="btn btn-ghost" data-browse-more hidden>Show more films</button>
+              </div>
+              <p class="fld-hint" data-vinyl-picked-note hidden>Film set on your build sheet. Change it any time before you send.</p>
+            </div>
+          </div>
           <input type="hidden" name="vinyl_color" value="" data-vinyl-label data-summary="colour">
           <input type="hidden" name="vinyl_handle" value="" data-vinyl-handle>
           <input type="hidden" name="vinyl_url" value="" data-vinyl-url>
@@ -623,6 +681,11 @@
     </div>
   </section>
 
+  <div class="lightbox vinyl-compare" data-compare-modal hidden aria-modal="true" role="dialog" aria-label="Compare films">
+    <button class="lb-close" type="button" data-compare-close aria-label="Close comparison">&times;</button>
+    <div class="lb-stage vinyl-compare-stage" data-compare-stage></div>
+  </div>
+
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
@@ -678,6 +741,7 @@
   <script src="/js/site.js"></script>
   <script src="/js/bike-search.js"></script>
   <script src="/js/vinyl-search.js"></script>
+  <script src="/js/vinyl-catalog.js"></script>
   <script src="/js/wrap-studio.js"></script>
 </body>
 </html>

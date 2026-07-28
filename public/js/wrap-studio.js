@@ -379,6 +379,12 @@
     const addons = Array.from(form.querySelectorAll('input[name="addons"]:checked')).map((el) => el.value);
     write("addons", addons.join(", "));
 
+    // vinyl-catalog.js owns the shortlist, writes the hidden field and publishes
+    // the count alongside it — film titles contain pipes and newlines of their
+    // own, so the value is not safe to count by splitting.
+    const savedCount = Number(document.querySelector("[data-saved-films-field]")?.dataset.count || 0);
+    write("saved", savedCount ? `${savedCount} shortlisted` : "");
+
     const choice = transportChoice();
     const zone = zoneSelect && !transportDetail?.hidden ? zoneSelect.value : "";
     write("transport", [choice?.value, zone].filter(Boolean).join(" · "));

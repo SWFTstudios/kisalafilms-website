@@ -2615,6 +2615,257 @@ h1, .h1 { font-weight: 800; }
 }
 .studio-consent input { margin-top: 4px; accent-color: var(--c-red); }
 
+/* ===== Vinyl browser =====================================================
+   The browse panel over the same catalogue the typeahead searches. Reuses
+   .filter-tabs for the view toggle and .lightbox for the compare overlay. */
+.vinyl-browse { margin-top: 26px; }
+.vinyl-browse-toggle { width: 100%; }
+
+.vinyl-browse-panel {
+  margin-top: 20px;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--c-hairline);
+}
+
+.vinyl-browse-bar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+@media (min-width: 700px) {
+  .vinyl-browse-bar { grid-template-columns: 2fr 1fr 1fr; align-items: end; }
+}
+
+.vinyl-browse-label {
+  display: block;
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--c-gray);
+}
+.vinyl-view-toggle { margin: 0; }
+
+/* Colour-family and finish chips. The dot is the colour of the family, not a
+   claim about any one film — every film keeps Metro's own photograph. */
+.swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.swatch-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--c-hairline);
+  color: var(--c-platinum);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: .74rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, background-color .2s ease;
+}
+.swatch-chip:hover { border-color: var(--c-platinum); color: var(--c-white); }
+.swatch-chip.on {
+  background: var(--c-red);
+  border-color: var(--c-red);
+  color: var(--c-white);
+}
+.swatch-chip-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .35);
+  flex: 0 0 auto;
+}
+
+.vinyl-browse-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  font-size: .84rem;
+  color: var(--c-gray);
+}
+.vinyl-browse-reset {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--c-red);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .74rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Grid and list are the same cards under a different track definition. */
+.vinyl-cards { display: grid; gap: 14px; }
+.vinyl-cards--grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+.vinyl-cards--list { grid-template-columns: 1fr; }
+
+.vinyl-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: var(--c-dark);
+  border: 1px solid var(--c-hairline);
+}
+.vinyl-cards--list .vinyl-card { flex-direction: row; align-items: center; }
+
+.vinyl-card-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--c-black);
+}
+.vinyl-cards--list .vinyl-card-thumb { width: 72px; aspect-ratio: 1 / 1; flex: 0 0 auto; }
+.vinyl-card-thumb--empty { display: block; border: 1px dashed var(--c-hairline); }
+
+.vinyl-card-body { flex: 1 1 auto; min-width: 0; }
+.vinyl-card-name {
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .86rem;
+  line-height: 1.35;
+  color: var(--c-white);
+}
+.vinyl-card-meta {
+  margin: 0 0 12px;
+  font-size: .78rem;
+  color: var(--c-gray);
+}
+
+.vinyl-card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.vinyl-card-actions button {
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid var(--c-hairline);
+  color: var(--c-platinum);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: .7rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, background-color .2s ease;
+}
+.vinyl-card-actions button:hover { border-color: var(--c-platinum); color: var(--c-white); }
+.vinyl-card-use { border-color: rgba(232, 39, 31, .55) !important; color: var(--c-red) !important; }
+.vinyl-card-use:hover { background: var(--c-red) !important; color: var(--c-white) !important; }
+.vinyl-card-save.is-on,
+.vinyl-card-compare.is-on { border-color: var(--c-red); color: var(--c-white); background: rgba(232, 39, 31, .18); }
+
+.vinyl-card-link {
+  font-size: .72rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--c-gray);
+}
+.vinyl-card-link:hover { color: var(--c-red); }
+
+/* Shortlist */
+.vinyl-saved {
+  margin-top: 18px;
+  padding: 16px;
+  background: var(--c-darker);
+  border: 1px solid var(--c-hairline);
+}
+.vinyl-saved-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+.vinyl-saved-tally { font-size: .8rem; color: var(--c-gray); }
+.vinyl-saved-compare {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--c-red);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .74rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.vinyl-saved-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.vinyl-saved-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .82rem;
+  color: var(--c-platinum);
+}
+.vinyl-saved-item img { object-fit: cover; flex: 0 0 auto; }
+.vinyl-saved-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vinyl-saved-use,
+.vinyl-saved-drop {
+  background: none;
+  border: 0;
+  padding: 0 4px;
+  color: var(--c-gray);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .74rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.vinyl-saved-use:hover { color: var(--c-red); }
+.vinyl-saved-drop { font-size: 1.1rem; letter-spacing: 0; }
+.vinyl-saved-drop:hover { color: var(--c-white); }
+
+/* Compare overlay — rides on .lightbox for the backdrop and close button */
+.vinyl-compare-stage { max-width: 1000px; width: 100%; overflow-y: auto; max-height: 84vh; }
+.vinyl-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--compare-cols, 2), minmax(0, 1fr));
+  gap: 18px;
+}
+.vinyl-compare-col {
+  padding: 16px;
+  background: var(--c-dark);
+  border: 1px solid var(--c-hairline);
+}
+.vinyl-compare-col img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 14px; }
+.vinyl-compare-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--c-hairline);
+  font-size: .8rem;
+}
+.vinyl-compare-row span { color: var(--c-gray); }
+.vinyl-compare-row strong { color: var(--c-white); text-align: right; }
+.vinyl-compare-col .btn { width: 100%; margin-top: 14px; }
+.vinyl-compare-note {
+  margin: 18px 0 0;
+  font-size: .8rem;
+  color: var(--c-gray);
+  text-align: center;
+}
+@media (max-width: 700px) {
+  .vinyl-compare-grid { grid-template-columns: 1fr; }
+}
+
 /* Thanks page */
 /* Vertical films sit in the masonry at the 9:16 crop they were cut for */
 .masonry-item--reel .tile { aspect-ratio: 9 / 16; }

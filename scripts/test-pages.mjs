@@ -281,6 +281,208 @@ function fire(win, el, type) {
   });
 }
 
+/* ---- Vinyl browser ------------------------------------------------------ */
+{
+  const win = load("wrap-studio.html");
+  const root = win.document.querySelector("[data-vinyl-browse]");
+  const panel = root.querySelector("[data-browse-panel]");
+  const toggle = root.querySelector("[data-browse-toggle]");
+  const grid = root.querySelector("[data-browse-grid]");
+  const cards = () => [...grid.querySelectorAll(".vinyl-card")];
+  const chips = (sel) => [...root.querySelectorAll(`${sel} [data-chip]`)];
+
+  const click = (el) => el.dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+  const settle = () => new Promise((r) => setTimeout(r, 30));
+
+  check("the catalogue exposes a shared API", () => {
+    assert(win.KisalaVinyl, "window.KisalaVinyl missing");
+    ["ready", "all", "families", "finishes", "pick"].forEach((k) =>
+      assert(typeof win.KisalaVinyl[k] === "function", `KisalaVinyl.${k} missing`)
+    );
+  });
+
+  check("the browse panel starts closed", () => {
+    assert(panel.hidden, "panel should be collapsed until asked for");
+    assertEqual(grid.children.length, 0, "nothing should render before opening");
+  });
+
+  await (async () => {
+    click(toggle);
+    await settle();
+
+    check("opening the panel loads and renders the catalogue", () => {
+      assert(!panel.hidden, "panel should be open");
+      assertEqual(win.KisalaVinyl.all().length, 1102, "catalogue size");
+      assertEqual(cards().length, 24, "first page of cards");
+      assert(/of 1,?102 films|1102 films/.test(text(win, "[data-browse-count]")), `count read "${text(win, "[data-browse-count]")}"`);
+    });
+
+    check("family and finish chips render from the data", () => {
+      assert(chips("[data-family-filters]").length > 8, "too few family chips");
+      assert(chips("[data-finish-filters]").length > 5, "too few finish chips");
+      const swatch = root.querySelector("[data-family-filters] .swatch-chip-dot");
+      assert(swatch, "family chips should carry a colour dot");
+    });
+
+    check("a family filter narrows the list", () => {
+      const chipFor = (id) => chips("[data-family-filters]").find((c) => c.getAttribute("data-chip") === id);
+      click(chipFor("blue"));
+      assertEqual(win.KisalaVinyl.all().filter((c) => c.c === "blue").length, 149, "blue films in the catalogue");
+      assert(/of 149 films/.test(text(win, "[data-browse-count]")), "count should reflect the filter");
+
+      // Re-queried, not held from before the click: the chip row must survive a
+      // filter toggle in place so keyboard focus is not thrown away.
+      const blue = chipFor("blue");
+      assert(blue.classList.contains("on"), "chip should read as active");
+      assertEqual(blue.getAttribute("aria-pressed"), "true", "chip aria-pressed");
+    });
+
+    check("coloured PPF reaches the colour filter it belongs in", () => {
+      // The bug this guards: a title saying "Paint Protection Film" used to
+      // file every coloured PPF as clear, so blue PPF was unfindable.
+      const bluePpf = win.KisalaVinyl.all().filter((c) => c.c === "blue" && c.t === "Colored PPF Wrap");
+      assert(bluePpf.length > 10, `only ${bluePpf.length} blue PPF films are reachable`);
+    });
+
+    check("a finish filter stacks on top of the family filter", () => {
+      const satin = chips("[data-finish-filters]").find((c) => c.getAttribute("data-chip") === "Satin");
+      click(satin);
+      const expected = win.KisalaVinyl.all().filter((c) => c.c === "blue" && c.f === "Satin").length;
+      assert(expected > 0 && expected < 149, `combined filter returned ${expected}`);
+      assert(new RegExp(`of ${expected} films|^${expected} films`).test(text(win, "[data-browse-count]")), "combined count");
+    });
+
+    check("clearing filters restores the full list", () => {
+      click(root.querySelector("[data-browse-clear]"));
+      assert(/of 1,?102 films|1102 films/.test(text(win, "[data-browse-count]")), "count after clearing");
+      assertEqual(chips("[data-family-filters]").filter((c) => c.classList.contains("on")).length, 0, "chips still active");
+    });
+
+    check("sorting reorders the rendered cards", () => {
+      // The first card can legitimately stay put — the catalogue already sorts
+      // by name and 3M happens to lead both orders — so compare the sequence.
+      const order = () => cards().map((el) => el.querySelector(".vinyl-card-name").textContent).join("|");
+      const byName = order();
+      const sort = root.querySelector("[data-browse-sort]");
+      sort.value = "finish";
+      fire(win, sort, "change");
+      assert(order() !== byName, "sorting by finish changed nothing");
+
+      sort.value = "name";
+      fire(win, sort, "change");
+      assertEqual(order(), byName, "sorting back by name should restore the order");
+    });
+
+    check("the list view swaps the layout without re-rendering a second catalogue", () => {
+      const before = cards().length;
+      click(root.querySelector('[data-view="list"]'));
+      assert(grid.classList.contains("vinyl-cards--list"), "list class missing");
+      assertEqual(cards().length, before, "card count should not change with the view");
+    });
+
+    check("show more pages in the next batch", () => {
+      click(root.querySelector('[data-view="grid"]'));
+      click(root.querySelector("[data-browse-more]"));
+      assertEqual(cards().length, 48, "second page");
+    });
+
+    check("using a film writes the shared hidden fields", () => {
+      const target = win.KisalaVinyl.all().find((c) => c.i && c.u);
+      const card = cards().find((el) => el.querySelector(`[data-use="${target.id}"]`))
+        || grid.querySelector(".vinyl-card");
+      const use = card.querySelector("[data-use]");
+      const picked = win.KisalaVinyl.all().find((c) => String(c.id) === use.getAttribute("data-use"));
+      click(use);
+      assertEqual(field(win, "vinyl_color").value, picked.n, "vinyl_color");
+      assertEqual(field(win, "vinyl_vendor").value, picked.v, "vinyl_vendor");
+      assertEqual(summary(win, "colour"), picked.n, "colour summary row");
+    });
+
+    check("saving a film shortlists it and reaches the build sheet", () => {
+      const save = grid.querySelector("[data-save]");
+      const picked = win.KisalaVinyl.all().find((c) => String(c.id) === save.getAttribute("data-save"));
+      click(save);
+
+      assertEqual(text(win, "[data-saved-count]"), "1", "saved tally");
+      assert(!root.querySelector("[data-saved-wrap]").hidden, "shortlist should be visible");
+      assertEqual(field(win, "saved_films").value, picked.n, "saved_films field");
+      assertEqual(summary(win, "saved"), "1 shortlisted", "saved summary row");
+    });
+
+    check("a shortlist survives titles full of pipes", () => {
+      // Metro titles read "… Vinyl Wrap | G356 | BLOWOUT STOCK | (420 sq ft)",
+      // so the count cannot come from splitting the field value. Pick a
+      // pipe-heavy film that is actually on screen, and not the one already saved.
+      const alreadySaved = field(win, "saved_films").value;
+      const target = cards()
+        .map((el) => el.querySelector("[data-save]"))
+        .filter(Boolean)
+        .map((btn) => win.KisalaVinyl.all().find((c) => String(c.id) === btn.getAttribute("data-save")))
+        .find((c) => c && c.n.split("|").length > 2 && c.n !== alreadySaved);
+
+      assert(target, "expected a pipe-heavy title among the rendered cards");
+      click(grid.querySelector(`[data-save="${target.id}"]`));
+
+      assertEqual(Number(field(win, "saved_films").dataset.count), 2, "two films saved");
+      assertEqual(summary(win, "saved"), "2 shortlisted", "saved summary row");
+      assertEqual(
+        field(win, "saved_films").value.split("\n").length,
+        2,
+        "the field should hold one film per line"
+      );
+    });
+
+    check("saving persists across a reload", () => {
+      const stored = JSON.parse(win.localStorage.getItem("kisala-saved-films"));
+      assertEqual(stored.length, 2, "two films in localStorage");
+      assert(stored[0].n, "stored film should keep its name");
+    });
+
+    check("two saved films are enough to open a comparison", () => {
+      const modal = win.document.querySelector("[data-compare-modal]");
+      const open = root.querySelector("[data-compare-open]");
+      assert(!open.hidden, "compare should be offered once two films are saved");
+      click(open);
+      assert(!modal.hidden, "compare overlay should be open");
+      assertEqual(modal.querySelectorAll(".vinyl-compare-col").length, 2, "two columns");
+      assert(/Metro Restyling/.test(text(win, ".vinyl-compare-note")), "thumbnail provenance note missing");
+    });
+
+    check("escape closes the comparison", () => {
+      const modal = win.document.querySelector("[data-compare-modal]");
+      win.document.dispatchEvent(new win.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      assert(modal.hidden, "overlay should close on Escape");
+    });
+
+    check("ticking compare needs no shortlist of its own", () => {
+      // Removing an entry re-renders the shortlist, so each button has to be
+      // re-queried rather than held from a snapshot taken before the first click.
+      let guard = 0;
+      let next;
+      while ((next = root.querySelector("[data-saved-list] [data-save]")) && guard++ < 20) {
+        click(next);
+      }
+      assertEqual(Number(field(win, "saved_films").dataset.count), 0, "shortlist should be empty");
+      assert(root.querySelector("[data-compare-open]").hidden, "compare should be hidden with nothing chosen");
+
+      [...grid.querySelectorAll("[data-compare]")].slice(0, 2).forEach(click);
+      const open = root.querySelector("[data-compare-open]");
+      assert(!open.hidden, "two ticked films should offer a comparison");
+      click(open);
+      assertEqual(
+        win.document.querySelectorAll("[data-compare-modal] .vinyl-compare-col").length,
+        2,
+        "two ticked columns"
+      );
+    });
+
+    check("un-saving empties the field", () => {
+      assertEqual(field(win, "saved_films").value, "", "saved_films should be empty");
+      assertEqual(summary(win, "saved"), "None", "saved summary should fall back to its placeholder");
+    });
+  })();
+}
+
 /* ---- Report ------------------------------------------------------------ */
 console.log(`${passed} passed, ${failures.length} failed`);
 if (failures.length) {
