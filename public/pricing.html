@@ -435,7 +435,46 @@
       </div>
       <div class="btn-row">
         <a class="btn btn-primary" href="/wrap-studio" data-track="cta_click" data-track-label="pricing-to-wrap-studio">Build your wrap</a>
+        <a class="btn btn-secondary" href="#deposit" data-track="cta_click" data-track-label="pricing-to-deposit">Pay a deposit</a>
       </div>
+    </div>
+  </section>
+
+  <section class="section section-black reveal" id="deposit" data-deposit>
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Hold the slot</p>
+        <h2>Deposit covers the vinyl first.</h2>
+        <p class="p-lg">A deposit is <strong class="metal-text"><span data-deposit-pct>25</span>% of the starting labour plus the cast film</strong> &mdash; priced on a minimum <span data-deposit-roll-size>5&times;25</span>ft roll per film the full transfer needs, so the material is bought before panels come off. Paid through Stripe; applied to your build.</p>
+      </div>
+      <div class="deposit-grid">
+        <article class="deposit-card" data-deposit-package="fullWrap">
+          <p class="eyebrow">Full colour-change</p>
+          <h3 class="h3">Full transformation</h3>
+          <p class="deposit-amount" data-cfg="deposit.amount.fullWrap" data-deposit-amount>$525</p>
+          <p class="p deposit-detail" data-deposit-detail>25% of labour + 1&times; 5&times;25ft vinyl roll</p>
+          <ul class="include-list">
+            <li>Holds a founding / build slot</li>
+            <li>Vinyl ordered at the 5&times;25ft minimum</li>
+            <li>Balance due before the bike leaves</li>
+          </ul>
+          <button type="button" class="btn btn-primary" data-deposit-pay data-track="cta_click" data-track-label="pricing-deposit-full">Pay deposit with Stripe</button>
+        </article>
+        <article class="deposit-card" data-deposit-package="partialWrap">
+          <p class="eyebrow">Partial / accents</p>
+          <h3 class="h3">Accent package</h3>
+          <p class="deposit-amount" data-cfg="deposit.amount.partialWrap" data-deposit-amount>$250</p>
+          <p class="p deposit-detail" data-deposit-detail>25% of labour + 1&times; 5&times;25ft vinyl roll</p>
+          <ul class="include-list">
+            <li>Same Stripe checkout</li>
+            <li>One roll minimum for the film cut</li>
+            <li>Applied to the accent quote</li>
+          </ul>
+          <button type="button" class="btn btn-secondary" data-deposit-pay data-track="cta_click" data-track-label="pricing-deposit-accent">Pay deposit with Stripe</button>
+        </article>
+      </div>
+      <p class="p deposit-note" style="margin-top:28px;max-width:640px">Exact film and final labour still come from the Wrap Studio build sheet. The deposit is the material floor plus a percentage of the published starting price &mdash; not the final invoice. Prefer to talk first? <a href="/wrap-studio">Build your wrap</a> or <a href="/contact">email me</a>.</p>
+      <p class="form-note" data-deposit-error hidden role="alert"></p>
     </div>
   </section>
 
@@ -492,6 +531,7 @@
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
   <script src="/js/site.js"></script>
+  <script src="/js/deposit.js"></script>
 
 </body>
 </html>

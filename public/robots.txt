@@ -4,6 +4,7 @@
 User-agent: *
 Allow: /
 Disallow: /404
+Disallow: /deposit-thanks
 Disallow: /styleguide
 Disallow: /thanks
 Disallow: /wrap-quote/

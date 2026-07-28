@@ -178,6 +178,36 @@ window.KISALA_CONFIG = {
     },
   ],
 
+  /* ---- Build deposit (Stripe Checkout) ---------------------------------
+     Deposit = percent × (service starting price + vinyl material).
+     Material assumes a minimum 5ft × 25ft cast roll per film item the project
+     needs for a full colour transfer — Metro's usual cut width and a full-roll
+     buy so the garage is never short when panels come off.
+     Rolls per item = max(1, ceil(linearFeet / 25)).
+     REVIEW: percent and rollCostUsd until Metro invoice averages confirm them. */
+  deposit: {
+    percent: 0.25, // REVIEW: 25% of (labour floor + vinyl)
+    rollWidthFt: 5,
+    rollLengthFt: 25,
+    rollCostUsd: 450, // REVIEW: typical cast 5×25 roll landed cost
+    /* linearFeet is the size-guide heuristic for a mid bike; filmItems is how
+       many distinct films the package usually consumes (one colour = 1). */
+    packages: {
+      fullWrap: {
+        serviceKey: "fullWrap",
+        label: "Full colour-change deposit",
+        linearFeet: 18,
+        filmItems: 1,
+      },
+      partialWrap: {
+        serviceKey: "partialWrap",
+        label: "Accent package deposit",
+        linearFeet: 8,
+        filmItems: 1,
+      },
+    },
+  },
+
   /* ---- Budget ranges ----------------------------------------------------
      Boundaries line up with the service tiers so the answer is useful: under
      the accent floor, accent range, full-wrap range, and above it. */

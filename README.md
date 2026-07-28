@@ -18,6 +18,7 @@ The site follows the Vossen Wheels pattern — show the product, prove it in the
   - [`public/js/shop.js`](./public/js/shop.js) — carries a lookbook piece into the reservation form
   - [`public/js/inquiry-wizard.js`](./public/js/inquiry-wizard.js) — used only by the `/wrap-quote/` ad landing page
   - [`public/js/vinyl-catalog.js`](./public/js/vinyl-catalog.js) — the browse panel over the same catalogue: colour-family and finish filters, grid/list, sorting, saved films, compare
+  - [`public/js/deposit.js`](./public/js/deposit.js) — pricing-page Stripe deposit checkout
   - [`public/js/kisala-config.js`](./public/js/kisala-config.js) — **every price, pickup fee, service zone and availability flag on the site**
   - [`public/js/config-apply.js`](./public/js/config-apply.js) — writes that config into the markup at load
   - [`public/js/analytics.js`](./public/js/analytics.js) — GA4 tag plus the `data-track` event layer
@@ -55,7 +56,7 @@ Primary nav: **Services · Gallery · Pricing · Shop · About · Contact**, wit
 | `/wrap-studio` | The configurator — bike, service, colour, photos, estimate, send |
 | `/gallery` | Filterable photo and video masonry with lightbox |
 | `/services` | Wrap, protection, and cinema services (+ 3 detail pages) |
-| `/pricing` | Package tiers and single-service starting prices |
+| `/pricing` | Package tiers, single-service prices, Stripe build deposit |
 | `/shop` | Collection hub — photoshoot, wrap finishes, merch |
 | `/about` · `/journal` · `/testimonials` · `/faq` · `/locations` | Supporting |
 | `/locations/jersey-city` · `/locations/brooklyn` · `/locations/new-york-city` | Local landing pages, linked from the locations hub and the home page rather than the nav |
@@ -117,6 +118,23 @@ Founding prices are the rates the site has always published. **The `standard` co
 No page anchors a founding price against a struck-through standard one, so nothing public depends on an unreviewed number.
 
 Anything else marked `REVIEW:` in that file is a placeholder in the same sense: structurally wired, numerically unconfirmed.
+
+### Build deposits (Stripe)
+
+`/pricing#deposit` takes a **percentage of (labour floor + vinyl material)** through Stripe Checkout.
+
+- Material assumes a minimum **5ft × 25ft** cast roll per film item (`deposit.rollCostUsd`, `deposit.packages.*.linearFeet` / `filmItems` in config).
+- Rolls per item = `max(1, ceil(linearFeet / 25))`.
+- The browser shows the amount via `KisalaConfig.depositQuote()`; the Worker at `POST /api/checkout/deposit` recomputes the same formula and opens a Checkout Session so the client cannot underpay.
+- Success lands on `/deposit-thanks` (`noindex`).
+
+Set the secret before deploy:
+
+```bash
+npx wrangler secret put STRIPE_SECRET_KEY
+```
+
+`SITE_URL` is in [`wrangler.jsonc`](./wrangler.jsonc) for Checkout success/cancel URLs. Keep `src/deposit.ts` labour floors in step with founding prices in `kisala-config.js`.
 
 ## Shop
 

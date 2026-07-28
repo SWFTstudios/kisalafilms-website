@@ -11,5 +11,10 @@
   },
   "observability": {
     "enabled": true
+  },
+  /* Set with: wrangler secret put STRIPE_SECRET_KEY
+     Optional: wrangler secret put SITE_URL  (defaults to the request host) */
+  "vars": {
+    "SITE_URL": "https://kisalafilms-website.elombe.workers.dev"
   }
 }
