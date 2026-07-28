@@ -192,12 +192,76 @@
     if (radio) radio.checked = true;
   }
 
+  /* ---- Getting the bike here -------------------------------------------
+     The zone select and the fee attributes are written by config-apply.js, so
+     the numbers here are whatever kisala-config.js says they are.          */
+  const transportDetail = form.querySelector("[data-transport-detail]");
+  const zoneSelect = form.querySelector('[name="pickup_zone"]');
+  const zoneHint = form.querySelector("[data-zone-hint]");
+  const transportField = document.querySelector("[data-transport-field]");
+
+  /** Selected radio, or null before anything is picked. */
+  const transportChoice = () => form.querySelector('input[name="transport"]:checked');
+
+  /** True for the options where I have to travel to the bike. */
+  function transportNeedsZone(choice) {
+    const fee = Number(choice?.dataset.fee || 0);
+    return fee > 0 || /not sure/i.test(choice?.value || "");
+  }
+
+  function transportFee() {
+    const choice = transportChoice();
+    if (!choice) return 0;
+
+    const base = Number(choice.dataset.fee || 0);
+    if (!base) return 0;
+
+    // A zone can carry its own floor. Quote the higher of the two so a longer
+    // run is never under-quoted by the generic rate.
+    const picked = zoneSelect?.selectedOptions?.[0];
+    const zoneFrom = Number(picked?.dataset.pickupFrom || 0);
+    if (!zoneFrom) return base;
+
+    // Round trip is two legs, so scale the zone floor the same way the flat
+    // fee relates to the one-way rate rather than assuming a single leg.
+    const oneWay = window.KisalaConfig?.get("transport.pickup.fee") || zoneFrom;
+    const legs = Math.max(1, Math.round(base / oneWay));
+    return Math.max(base, zoneFrom * legs);
+  }
+
+  function renderTransport() {
+    const choice = transportChoice();
+    const needsZone = transportNeedsZone(choice);
+
+    if (transportDetail) {
+      transportDetail.hidden = !needsZone;
+      // A hidden zone must not post a stale value from an earlier choice.
+      if (!needsZone && zoneSelect) zoneSelect.value = "";
+    }
+
+    if (zoneHint && zoneSelect) {
+      const picked = zoneSelect.selectedOptions?.[0];
+      const available = picked?.dataset.available !== "0";
+      const from = Number(picked?.dataset.pickupFrom || 0);
+      if (!picked || !picked.value) {
+        zoneHint.textContent = `Pickup starts at ${plain(window.KisalaConfig?.get("transport.pickup.from") || 75)} and depends on the run.`;
+      } else if (!available) {
+        zoneHint.textContent = "Outside the usual run — tell me where and I'll say honestly whether I can get to you.";
+      } else {
+        zoneHint.textContent = `${picked.value}: pickup from ${plain(from)}.`;
+      }
+    }
+  }
+
   /* ---- Ballpark estimate ------------------------------------------------ */
   const estimateOut = document.querySelector("[data-estimate-out]");
   const estimateNote = document.querySelector("[data-estimate-note]");
   const estimateField = document.querySelector("[data-estimate-field]");
+  const totalField = document.querySelector("[data-total-field]");
 
   const money = (n) => "$" + (Math.round(n / 25) * 25).toLocaleString("en-US");
+  /** Unrounded, for fees that are already exact figures. */
+  const plain = (n) => "$" + Number(n).toLocaleString("en-US");
 
   function estimate() {
     const service = form.querySelector('input[name="service"]:checked');
@@ -228,6 +292,13 @@
   }
 
   function renderEstimate() {
+    const fee = transportFee();
+
+    // Transport is quoted on its own line whether or not a service is picked,
+    // so the pickup number never looks like part of the wrap price.
+    if (transportField) transportField.value = fee ? plain(fee) : "";
+    write("transportfee", fee ? `${plain(fee)} est.` : "");
+
     if (!estimateOut) return;
     const result = estimate();
 
@@ -237,6 +308,7 @@
         estimateNote.textContent = "Scales with how much bodywork your bike has to come apart.";
       }
       if (estimateField) estimateField.value = "";
+      if (totalField) totalField.value = "";
       return;
     }
 
@@ -257,11 +329,19 @@
         parts.push("Pick your bike to sharpen this.");
       }
       if (result.addons) parts.push(`Includes ${money(result.addons)} of add-ons.`);
+      if (fee) parts.push(`Transport adds about ${plain(fee)} on top.`);
       parts.push("A ballpark, not a quote — photos decide the real number.");
       estimateNote.textContent = parts.join(" ");
     }
 
+    // ballpark_estimate stays wrap-only, the way it has always arrived in the
+    // inbox. The combined figure rides along beside it instead of replacing it.
     if (estimateField) estimateField.value = range;
+    if (totalField) {
+      totalField.value = fee
+        ? `${money(result.low + fee)}–${money(result.high + fee)}`
+        : range;
+    }
   }
 
   /* ---- Live build summary ----------------------------------------------- */
@@ -293,16 +373,28 @@
     write("finish", form.querySelector('[name="finish"]')?.value || "");
     write("coverage", form.querySelector('[name="coverage"]')?.value || "");
     write("timeline", form.querySelector('[name="timeline"]')?.value || "");
+    write("budget", form.querySelector('[name="budget"]')?.value || "");
     write("colour", form.querySelector("[data-vinyl-label]")?.value || "");
 
     const addons = Array.from(form.querySelectorAll('input[name="addons"]:checked')).map((el) => el.value);
     write("addons", addons.join(", "));
+
+    // vinyl-catalog.js owns the shortlist, writes the hidden field and publishes
+    // the count alongside it — film titles contain pipes and newlines of their
+    // own, so the value is not safe to count by splitting.
+    const savedCount = Number(document.querySelector("[data-saved-films-field]")?.dataset.count || 0);
+    write("saved", savedCount ? `${savedCount} shortlisted` : "");
+
+    const choice = transportChoice();
+    const zone = zoneSelect && !transportDetail?.hidden ? zoneSelect.value : "";
+    write("transport", [choice?.value, zone].filter(Boolean).join(" · "));
 
     write(
       "photos",
       photos.length ? `${photos.length} attached · ${mb(total())} MB` : ""
     );
 
+    renderTransport();
     renderEstimate();
   }
 
@@ -321,7 +413,17 @@
       e.preventDefault();
       showError("Those photos add up past 9 MB. Remove one or two and send again.");
       errorOut?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
     }
+
+    // Best-effort only. The native POST tears this page down, so the
+    // conversion that actually gets counted is the one on /thanks.html.
+    window.KisalaTrack?.("generate_lead", {
+      label: form.querySelector('input[name="service"]:checked')?.value || "unknown",
+      transport: transportChoice()?.value || "",
+      budget: form.querySelector('[name="budget"]')?.value || "",
+      photos: photos.length,
+    });
   });
 
   updateSummary();

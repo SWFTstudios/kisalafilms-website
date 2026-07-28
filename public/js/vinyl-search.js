@@ -9,6 +9,11 @@
  *   [data-vinyl-clear]    clear button (optional)
  *   hidden: data-vinyl-label|handle|url|vendor|type|finish
  *   optional finish <select id="finish" name="finish"> soft-set on pick
+ *
+ * Owns the typeahead and the selection. vinyl-catalog.js mounts the browse
+ * panel over the same loaded array and selects through window.KisalaVinyl
+ * rather than fetching the catalogue or writing the hidden fields itself —
+ * one catalogue, one fetch, two ways in.
  */
 (() => {
   const INPUT = document.querySelector("[data-vinyl-search]");
@@ -184,7 +189,13 @@
     INPUT.value = color.n;
     writeMeta(color);
     hideResults();
+    window.KisalaTrack?.("vinyl_select", { label: color.n, vendor: color.v, family: color.c });
+    FORM.dispatchEvent(new Event("change", { bubbles: true }));
   }
+
+  let families = [];
+  let finishes = [];
+  const listeners = [];
 
   async function loadData() {
     if (loaded) return;
@@ -195,7 +206,10 @@
         if (!res.ok) throw new Error(String(res.status));
         const data = await res.json();
         colors = data.colors || [];
+        families = data.colorFamilies || [];
+        finishes = data.finishes || [];
         loaded = true;
+        listeners.splice(0).forEach((fn) => fn());
       } catch (err) {
         console.warn("Vinyl catalog failed to load", err);
         colors = [];
@@ -204,12 +218,36 @@
           RESULTS.innerHTML =
             '<p class="vinyl-empty">Couldn’t load color list. Use finish + notes, or try again later.</p>';
         }
+        listeners.splice(0).forEach((fn) => fn());
       } finally {
         loading = null;
       }
     })();
     return loading;
   }
+
+  /* ---- Shared with vinyl-catalog.js ------------------------------------- */
+  window.KisalaVinyl = {
+    /** Resolves once the catalogue is in memory, whether it loaded or failed. */
+    async ready() {
+      await loadData();
+      if (loaded) return true;
+      return new Promise((resolve) => listeners.push(() => resolve(loaded)));
+    },
+    all: () => colors,
+    families: () => families,
+    finishes: () => finishes,
+    selected: () => (META.label && META.label.value) || "",
+    pick,
+    clear() {
+      INPUT.value = "";
+      clearMeta();
+      hideResults();
+      FORM.dispatchEvent(new Event("change", { bubbles: true }));
+    },
+    escapeHtml,
+    escapeAttr,
+  };
 
   INPUT.setAttribute("autocomplete", "off");
   INPUT.setAttribute("role", "combobox");
@@ -229,6 +267,7 @@
     }
   });
 
+  let searchReport = null;
   INPUT.addEventListener("input", async () => {
     await loadData();
     // Typing a new query clears a previous pick unless it still matches exactly
@@ -238,6 +277,13 @@
     const hits = search(INPUT.value);
     renderResults(hits, INPUT.value);
     INPUT.setAttribute("aria-expanded", hits.length || INPUT.value.trim() ? "true" : "false");
+
+    // Report the settled query rather than every keystroke.
+    clearTimeout(searchReport);
+    searchReport = setTimeout(() => {
+      const q = INPUT.value.trim();
+      if (q.length >= 3) window.KisalaTrack?.("vinyl_search", { label: q, results: hits.length });
+    }, 900);
   });
 
   INPUT.addEventListener("keydown", (e) => {
