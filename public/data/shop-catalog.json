@@ -1,0 +1,415 @@
+{
+  "collections": [
+    {
+      "slug": "photoshoot",
+      "title": "Photoshoot",
+      "eyebrow": "Cinema",
+      "tagline": "The bike gets filmed the same way it gets wrapped.",
+      "description": "Transformation film, stills, and film-only packages \u2014 the cinema side of the garage.",
+      "image": "/images/thumb-transformation-mid.jpg",
+      "cta": "Browse shoots"
+    },
+    {
+      "slug": "wrap",
+      "title": "Wrap",
+      "eyebrow": "Vinyl",
+      "tagline": "Seven finishes. A thousand colours.",
+      "description": "Cast film finishes presented the way a wheel line is \u2014 pick a finish, see it on metal, then build the sheet.",
+      "image": "/images/thumb-f4i-reveal.jpg",
+      "cta": "Browse finishes"
+    },
+    {
+      "slug": "merch",
+      "title": "Merch",
+      "eyebrow": "WLG Quotes",
+      "tagline": "Wear the reason you started.",
+      "description": "The WLG Quotes first run \u2014 heavyweight tees and midweight fleece. Reserve a piece; no cart.",
+      "image": "/images/shop/wlg-lucky-fail-tee-hero.jpg",
+      "cta": "Browse the drop"
+    }
+  ],
+  "photoshoot": [
+    {
+      "slug": "transformation-film",
+      "title": "Transformation Film",
+      "kind": "Cinema",
+      "priceLabel": "Starting at $350",
+      "priceCfg": "addons.transformationFilm",
+      "blurb": "From strip to premiere \u2014 a cinematic edit that turns the wrap into an episode.",
+      "image": "/images/thumb-transformation-mid.jpg",
+      "gallery": [
+        "/images/thumb-transformation-mid.jpg",
+        "/images/thumb-wrap-process.jpg",
+        "/images/thumb-timelapse-shop.jpg",
+        "/images/thumb-shop-bts.jpg"
+      ],
+      "includes": [
+        "Coverage of strip, film lay, and reveal",
+        "Cinematic colour grade and edit",
+        "Vertical and landscape cuts for social",
+        "Delivered as a finished piece, not raw clips"
+      ],
+      "studioHref": "/wrap-studio?service=filmOnly",
+      "detail": "Add it to a wrap build or book it on its own. The garage is lit for this \u2014 the same bench, the same bike, shot properly."
+    },
+    {
+      "slug": "photo-set",
+      "title": "Photo Set",
+      "kind": "Stills",
+      "priceLabel": "Starting at $200",
+      "priceCfg": "addons.photoSet",
+      "blurb": "A still set of the finished bike \u2014 garage light, night metal, and the details that sell the finish.",
+      "image": "/images/refs/ref-01-front-3q.jpg",
+      "gallery": [
+        "/images/refs/ref-01-front-3q.jpg",
+        "/images/refs/ref-11-wheel-brake.jpg",
+        "/images/refs/ref-12-night-motion.jpg",
+        "/images/thumb-panel-lines.jpg"
+      ],
+      "includes": [
+        "Hero three-quarter and detail frames",
+        "Colour-true stills of the film",
+        "Web and print-ready exports",
+        "Shot in the garage or on a night run nearby"
+      ],
+      "studioHref": "/wrap-studio?service=filmOnly",
+      "detail": "Works as an add-on to any wrap, or as a stand-alone set when the bike is already done and you want it documented right."
+    },
+    {
+      "slug": "film-photo-only",
+      "title": "Film & Photo Only",
+      "kind": "Package",
+      "priceLabel": "Starting at $350",
+      "priceCfg": "services.filmOnly.from",
+      "blurb": "No wrap this time \u2014 just the camera on your bike. Film, stills, or both.",
+      "image": "/images/thumb-night-pov.jpg",
+      "gallery": [
+        "/images/thumb-night-pov.jpg",
+        "/images/hero-f4i-garage-night.jpg",
+        "/images/thumb-customer-interview.jpg",
+        "/images/refs/ref-12-night-motion.jpg"
+      ],
+      "includes": [
+        "Film-only or photo-only, or both",
+        "Ballpark from $350 to $900 depending on scope",
+        "Same Wrap Studio path \u2014 pick Film / video only",
+        "Jersey City garage, appointment only"
+      ],
+      "studioHref": "/wrap-studio?service=filmOnly",
+      "detail": "For riders who already have the finish and want the cinema side without another colour change. Build the sheet in Wrap Studio and tell me what you need in the notes."
+    }
+  ],
+  "wrap": [
+    {
+      "slug": "gloss",
+      "title": "Gloss",
+      "series": "Cast Vinyl",
+      "finishParam": "Gloss",
+      "tagline": "Wet, deep, reads like fresh paint.",
+      "swatchClass": "finish-gloss",
+      "heroImage": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/3M-2080-G201-Gloss-Anthracite.jpg?v=1704902995",
+      "coverage": [
+        "Full colour-change",
+        "Partial / accents",
+        "Chrome delete"
+      ],
+      "startingFromCfg": "services.fullWrap.from",
+      "startingLabel": "Starting at $1,650",
+      "finishCount": "360+ colours",
+      "colors": [
+        {
+          "name": "Gloss Anthracite",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/3M-2080-G201-Gloss-Anthracite.jpg?v=1704902995",
+          "hex": "#3a3a3a"
+        },
+        {
+          "name": "Gloss Atomic Teal",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/Gloss-Atomic-Teal.jpg?v=1749841309",
+          "hex": "#0a6e6e"
+        },
+        {
+          "name": "Gloss Plum Explosion",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/3M-1080-GP258-Gloss-Plum-Explosion.jpg?v=1689085463",
+          "hex": "#5c1a4a"
+        },
+        {
+          "name": "Gloss Black",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/3M-2080-G12-Gloss-Black_9b04e92c-5fe5-4871-8077-ec0c2c23839f.jpg?v=1759760031",
+          "hex": "#0a0a0a"
+        }
+      ],
+      "bikeGallery": [
+        "/images/thumb-f4i-reveal.jpg",
+        "/images/refs/ref-01-front-3q.jpg",
+        "/images/thumb-panel-lines.jpg",
+        "/images/refs/ref-12-night-motion.jpg"
+      ],
+      "detail": "High-gloss cast film that takes light like wet paint. The default look when you want depth without going metallic."
+    },
+    {
+      "slug": "satin",
+      "title": "Satin",
+      "series": "Cast Vinyl",
+      "finishParam": "Satin",
+      "tagline": "Half sheen. Shows every body line.",
+      "swatchClass": "finish-satin",
+      "heroImage": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/3M-2080-S51-Satin-Battleship-Gray_ba0e4038-9f11-49ac-bc8c-07bf64b8e3d5.jpg?v=1688746702",
+      "coverage": [
+        "Full colour-change",
+        "Partial / accents",
+        "Chrome delete"
+      ],
+      "startingFromCfg": "services.fullWrap.from",
+      "startingLabel": "Starting at $1,650",
+      "finishCount": "90+ colours",
+      "colors": [
+        {
+          "name": "Satin Battleship Gray",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/3M-2080-S51-Satin-Battleship-Gray_ba0e4038-9f11-49ac-bc8c-07bf64b8e3d5.jpg?v=1688746702",
+          "hex": "#6b6e72"
+        },
+        {
+          "name": "Satin Apple Green",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-S196-Satin-Apple-Green.jpg?v=1669044857",
+          "hex": "#6a9a3a"
+        },
+        {
+          "name": "Satin Bitter Yellow",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/3M-2080-S335-Satin-Bitter-Yellow.jpg?v=1689017759",
+          "hex": "#c4a012"
+        }
+      ],
+      "bikeGallery": [
+        "/images/thumb-f4i-reveal.jpg",
+        "/images/thumb-wrap-process.jpg",
+        "/images/refs/ref-11-wheel-brake.jpg",
+        "/images/about-vinyl-hands.jpg"
+      ],
+      "detail": "Between gloss and matte \u2014 enough reflection to read the panels, not enough to look wet. The finish that shows fairing lines hardest."
+    },
+    {
+      "slug": "matte",
+      "title": "Matte",
+      "series": "Cast Vinyl",
+      "finishParam": "Matte",
+      "tagline": "Flat and stealthy, zero reflection.",
+      "swatchClass": "finish-matte",
+      "heroImage": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Matte-Black-Vinyl-Wrap.jpg?v=1669043606",
+      "coverage": [
+        "Full colour-change",
+        "Partial / accents",
+        "Chrome delete"
+      ],
+      "startingFromCfg": "services.fullWrap.from",
+      "startingLabel": "Starting at $1,650",
+      "finishCount": "140+ colours",
+      "colors": [
+        {
+          "name": "Matte Black",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Matte-Black-Vinyl-Wrap.jpg?v=1669043606",
+          "hex": "#1a1a1a"
+        },
+        {
+          "name": "Dead Matte Black",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Dead-Matte-Black-Vinyl-Wrap.jpg?v=1669041631",
+          "hex": "#0d0d0d"
+        },
+        {
+          "name": "Matte Dark Gray",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/3M-2080-M261-Matte-Dark-Gray.jpg?v=1688746919",
+          "hex": "#3a3a3a"
+        }
+      ],
+      "bikeGallery": [
+        "/images/thumb-f4i-reveal.jpg",
+        "/images/hero-f4i-garage-night.jpg",
+        "/images/thumb-panel-lines.jpg",
+        "/images/thumb-before-strip.jpg"
+      ],
+      "detail": "No shine, no drama in the reflection \u2014 just colour and shape. Dead matte goes further if you want the light to die on the panel."
+    },
+    {
+      "slug": "metallic",
+      "title": "Metallic",
+      "series": "Cast Vinyl",
+      "finishParam": "Metallic",
+      "tagline": "Flake that lights up under the sun.",
+      "swatchClass": "finish-metallic",
+      "heroImage": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Gloss-Black-Metallic-Vinyl-Wrap.jpg?v=1669041672",
+      "coverage": [
+        "Full colour-change",
+        "Partial / accents"
+      ],
+      "startingFromCfg": "services.fullWrap.from",
+      "startingLabel": "Starting at $1,650",
+      "finishCount": "150+ colours",
+      "colors": [
+        {
+          "name": "Gloss Black Metallic",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Gloss-Black-Metallic-Vinyl-Wrap.jpg?v=1669041672",
+          "hex": "#1c1c1e"
+        },
+        {
+          "name": "Brushed Black Metallic",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Brushed-Black-Metallic-Vinyl-Wrap.jpg?v=1669041459",
+          "hex": "#2a2a2c"
+        },
+        {
+          "name": "Gloss Blue Metallic",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Gloss-Blue-Metallic-Vinyl-Wrap.jpg?v=1669041848",
+          "hex": "#1a3a6e"
+        }
+      ],
+      "bikeGallery": [
+        "/images/refs/ref-01-front-3q.jpg",
+        "/images/thumb-f4i-reveal.jpg",
+        "/images/refs/ref-11-wheel-brake.jpg",
+        "/images/thumb-wrap-process.jpg"
+      ],
+      "detail": "Metal flake in the film, not paint. Moves under sun and streetlight the way a factory metallic does \u2014 without the spray booth."
+    },
+    {
+      "slug": "colour-shift",
+      "title": "Colour Shift",
+      "series": "Cast Vinyl",
+      "finishParam": "Colour shift",
+      "tagline": "Changes hue with your angle.",
+      "swatchClass": "finish-shift",
+      "heroImage": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/Avery-SW900-326-S-Gloss-Pearl-Gold-Orange.jpg?v=1731425007",
+      "coverage": [
+        "Full colour-change",
+        "Partial / accents"
+      ],
+      "startingFromCfg": "services.fullWrap.from",
+      "startingLabel": "Starting at $1,650",
+      "finishCount": "Colour-shift & pearl",
+      "colors": [
+        {
+          "name": "Gold Orange Pearlescent",
+          "vendor": "Avery",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/Avery-SW900-326-S-Gloss-Pearl-Gold-Orange.jpg?v=1731425007",
+          "hex": "#c45a12"
+        },
+        {
+          "name": "Light Green Pearlescent",
+          "vendor": "Avery",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/Avery-SW900-777-S--Gloss-Light-Green-Pearlescent.jpg?v=1689110626",
+          "hex": "#6aaa4a"
+        },
+        {
+          "name": "Satin White Pearlescent",
+          "vendor": "Avery",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/files/Avery-SW900-117-S-Satin-White-Pearl_e9451f4a-a7b2-4cc2-a5bd-3528db2a2fbc.jpg?v=1689181146",
+          "hex": "#e8e4dc"
+        }
+      ],
+      "bikeGallery": [
+        "/images/thumb-f4i-reveal.jpg",
+        "/images/refs/ref-12-night-motion.jpg",
+        "/images/thumb-night-pov.jpg",
+        "/images/thumb-transformation-mid.jpg"
+      ],
+      "detail": "Pearlescent and shift films that move as you walk around the bike. Screens lie about these \u2014 real swatches come with the quote."
+    },
+    {
+      "slug": "chrome",
+      "title": "Chrome",
+      "series": "Cast Vinyl",
+      "finishParam": "Chrome",
+      "tagline": "Mirror bright. Nothing subtle here.",
+      "swatchClass": "finish-chrome",
+      "heroImage": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Gloss-Silver-Chrome-Vinyl-Wrap.jpg?v=1669042966",
+      "coverage": [
+        "Full colour-change",
+        "Partial / accents",
+        "Chrome delete"
+      ],
+      "startingFromCfg": "services.fullWrap.from",
+      "startingLabel": "Starting at $1,650",
+      "finishCount": "60+ chrome films",
+      "colors": [
+        {
+          "name": "Gloss Silver Chrome",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Gloss-Silver-Chrome-Vinyl-Wrap.jpg?v=1669042966",
+          "hex": "#c8ced4"
+        },
+        {
+          "name": "Gloss Black Conform Chrome",
+          "vendor": "Avery",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/Avery-Dennison-SF100-Gloss-Black-Conform-Chrome-Vinyl-Wrap.jpg?v=1668782134",
+          "hex": "#1a1a1a"
+        },
+        {
+          "name": "Gloss Blue Conform Chrome",
+          "vendor": "Avery",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/Avery-Dennison-SF100-Gloss-Blue-Conform-Chrome-Vinyl-Wrap.jpg?v=1668782247",
+          "hex": "#1a4a8a"
+        }
+      ],
+      "bikeGallery": [
+        "/images/refs/ref-11-wheel-brake.jpg",
+        "/images/thumb-f4i-reveal.jpg",
+        "/images/about-vinyl-hands.jpg",
+        "/images/thumb-wrap-process.jpg"
+      ],
+      "detail": "Mirror and conform-chrome films for panels that want to throw the street back at you. Best on clean, simple shapes."
+    },
+    {
+      "slug": "textured",
+      "title": "Textured",
+      "series": "Cast Vinyl",
+      "finishParam": "Textured",
+      "tagline": "Carbon, brushed and forged weaves.",
+      "swatchClass": "finish-textured",
+      "heroImage": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Matrix-Black-Textured-Vinyl-Wrap.jpg?v=1669043355",
+      "coverage": [
+        "Partial / accents",
+        "Full colour-change"
+      ],
+      "startingFromCfg": "services.partialWrap.from",
+      "startingLabel": "Starting at $575",
+      "finishCount": "Carbon & texture",
+      "colors": [
+        {
+          "name": "Matrix Black Textured",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Matrix-Black-Textured-Vinyl-Wrap.jpg?v=1669043355",
+          "hex": "#121212"
+        },
+        {
+          "name": "Shadow Black Textured",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Shadow-Black-Textured-Vinyl-Wrap.jpg?v=1669046224",
+          "hex": "#1a1a1a"
+        },
+        {
+          "name": "Shadow Military Green",
+          "vendor": "3M",
+          "image": "https://cdn.shopify.com/s/files/1/0467/3948/8920/products/3M-2080-Shadow-Military-Green-Textured-Vinyl-Wrap.jpg?v=1669046282",
+          "hex": "#3a4a2a"
+        }
+      ],
+      "bikeGallery": [
+        "/images/thumb-panel-lines.jpg",
+        "/images/refs/ref-11-wheel-brake.jpg",
+        "/images/about-vinyl-hands.jpg",
+        "/images/thumb-wrap-process.jpg"
+      ],
+      "detail": "Texture you can feel under the hand \u2014 carbon weaves, shadow grain, forged looks. Often used as accents; full coverage when the bike can carry it."
+    }
+  ]
+}

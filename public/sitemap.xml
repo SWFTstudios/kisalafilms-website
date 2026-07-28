@@ -42,6 +42,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/wrap</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/photoshoot</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://kisalafilms-website.elombe.workers.dev/about</loc>
     <lastmod>2026-07-28</lastmod>
     <priority>0.6</priority>
@@ -82,7 +102,92 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://kisalafilms-website.elombe.workers.dev/shop</loc>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch/wlg-different-path-hoodie</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch/wlg-direction-hoodie</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch/wlg-eighty-tee</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch/wlg-exist-first-tee</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch/wlg-glitch-tee</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch/wlg-lucky-fail-tee</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch/wlg-no-prime-tee</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/merch/wlg-rule-four-tee</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/photoshoot/film-photo-only</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/photoshoot/photo-set</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/photoshoot/transformation-film</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/wrap/chrome</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/wrap/colour-shift</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/wrap/gloss</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/wrap/matte</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/wrap/metallic</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/wrap/satin</loc>
+    <lastmod>2026-07-28</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://kisalafilms-website.elombe.workers.dev/shop/wrap/textured</loc>
     <lastmod>2026-07-28</lastmod>
     <priority>0.6</priority>
   </url>
