@@ -16,6 +16,10 @@ echo "==> Local landing pages (composes chrome from locations.html)"
 python3 scripts/build-local-pages.py
 
 echo
+echo "==> Shop hub, collections and product pages"
+python3 scripts/build-shop-pages.py
+
+echo
 echo "==> Shared scripts into every page"
 python3 scripts/wire-scripts.py
 

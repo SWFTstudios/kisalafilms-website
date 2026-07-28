@@ -56,7 +56,7 @@ Primary nav: **Services · Gallery · Pricing · Shop · About · Contact**, wit
 | `/gallery` | Filterable photo and video masonry with lightbox |
 | `/services` | Wrap, protection, and cinema services (+ 3 detail pages) |
 | `/pricing` | Package tiers and single-service starting prices |
-| `/shop` | WLG apparel lookbook — reserve, no cart |
+| `/shop` | Collection hub — photoshoot, wrap finishes, merch |
 | `/about` · `/journal` · `/testimonials` · `/faq` · `/locations` | Supporting |
 | `/locations/jersey-city` · `/locations/brooklyn` · `/locations/new-york-city` | Local landing pages, linked from the locations hub and the home page rather than the nav |
 | `/contact` | Short message form for anything that isn't a build |
@@ -120,7 +120,16 @@ Anything else marked `REVIEW:` in that file is a placeholder in the same sense: 
 
 ## Shop
 
-`/shop.html` is generated once from [`public/data/products.json`](./public/data/products.json) and committed as static markup — the site has no build step, so adding a piece means editing both. Cards cross-fade to the second product shot on hover, and **Reserve yours** carries the piece into the form at the bottom via `js/shop.js`. There is no cart: reservations email the same inbox as wrap enquiries.
+`/shop` is a collection hub — **Photoshoot**, **Wrap**, and **Merch** — each linking into its own collection page and then product pages. Pages are generated from [`public/data/shop-catalog.json`](./public/data/shop-catalog.json) (photoshoot + wrap) and [`public/data/products.json`](./public/data/products.json) (merch) by [`scripts/build-shop-pages.py`](./scripts/build-shop-pages.py) and committed as static markup.
+
+| Route | Purpose |
+| --- | --- |
+| `/shop` | Collection hub |
+| `/shop/photoshoot` · `/shop/photoshoot/{slug}` | Cinema packages → product pages → Wrap Studio |
+| `/shop/wrap` · `/shop/wrap/{slug}` | Vinyl finishes in a Vossen-style catalogue → product pages → Wrap Studio with `?finish=` |
+| `/shop/merch` · `/shop/merch/{id}` | WLG apparel lookbook and piece pages — reserve, no cart |
+
+Wrap finish cards mirror the Vossen wheels listing: large product shot, series label, coverage chips, starting price, and colour swatches. Merch **Reserve yours** still carries the piece into the form via `js/shop.js`.
 
 ## Forms → FormSubmit
 
