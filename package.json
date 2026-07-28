@@ -8,10 +8,13 @@
     "deploy": "wrangler deploy",
     "preview": "wrangler versions upload",
     "build": "bash scripts/build.sh",
-    "test": "node scripts/test-pages.mjs"
+    "test": "node scripts/test-pages.mjs",
+    "verify:links": "node scripts/crawl-links.mjs",
+    "verify:browser": "node scripts/verify-browser.mjs"
   },
   "devDependencies": {
     "jsdom": "^29.1.1",
+    "puppeteer-core": "^25.4.0",
     "wrangler": "^4.110.0"
   }
 }

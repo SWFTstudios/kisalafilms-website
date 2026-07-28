@@ -157,6 +157,20 @@ Cloudflare Static Assets serves `public/pricing.html` at `/pricing` and 307-redi
 
 `/locations` is the one to be careful with: `locations.html` sits next to a `locations/` directory, and Static Assets resolves the file. Verified against `wrangler dev`.
 
+## Tests
+
+```bash
+npm test                 # 106 checks, jsdom, no server needed
+npm run verify:links     # crawls every internal link against a running site
+npm run verify:browser    # drives the Wrap Studio in real Chrome
+```
+
+`npm test` loads each page under jsdom, runs its scripts, and asserts on the result: config hydration, transport fees, the summary and hidden lead fields, the vinyl browser, the city pages, gallery metadata, canonicals, structured data and the analytics events. It reads from `public/`, so it catches a stale generated file as readily as a broken script.
+
+The other two need `npm run dev` running in another terminal.
+
+`verify:browser` covers the three things jsdom cannot answer: that the hidden estimate fields bound with `form="wrap-studio"` really do submit, that the native multipart body really does carry the photo attachments, and that hydration lands before first paint. **It never contacts FormSubmit** — it repoints the form at a throwaway local server and inspects the multipart body it receives. `PRINT_LEAD=1` prints that captured build sheet, which is the quickest way to see exactly what an inquiry will look like in the inbox. It needs a Chrome binary; set `CHROME_PATH` if it isn't at `/usr/local/bin/google-chrome`.
+
 ## SEO
 
 `/thanks`, `/wrap-quote/`, `/styleguide` and `/404.html` are `noindex`, disallowed in `robots.txt`, and left out of the sitemap. They get no canonical either, since that would only invite indexing.
