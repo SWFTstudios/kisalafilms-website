@@ -70,7 +70,9 @@ Retired routes (`/films`, `/watch`, `/series`, `/dispatches`, `/inspo-museum`, `
 
 ## Wrap Studio
 
-`/wrap-studio` is the primary conversion path. A rider selects their bike from [`public/data/motorcycles.json`](./public/data/motorcycles.json), picks a service and add-ons, searches [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) for an exact film, attaches photos of the bike, and sends one build sheet.
+`/wrap-studio` is the primary conversion path. It runs as a RollerReels-style slide wizard: one step on screen, progress dots, Back/Next, swipe on mobile, and auto-advance on single-choice steps (bike, service, transport). A rider picks their bike from [`public/data/motorcycles.json`](./public/data/motorcycles.json), chooses a service and add-ons, searches [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) for an exact film, attaches photos, reviews the sheet, and sends it.
+
+**Setups stay on the device.** The garage bar (Save / New / Delete) stores multiple named builds in `localStorage` under `kisala-wrap-studio-garage`, so a rider can park one bike’s wrap and start another without an account. Photos are not restored from storage — browsers block repopulating file inputs.
 
 **It submits as a native `multipart/form-data` POST, and it has to stay that way.** FormSubmit only delivers attachments through its standard endpoint; the AJAX endpoint accepts the request and silently drops the files. That is why this form does not use `inquiry-wizard.js` and redirects via `_next` to `/thanks` instead of staying on the page.
 
@@ -78,7 +80,7 @@ Attachments are capped client-side at 8 photos and 9MB, against FormSubmit's 10M
 
 The page accepts `?service=` and `?finish=` so the home page finish tiles can open it with a choice already made.
 
-Steps run: bike → service → colour & finish → add-ons → getting the bike here → photos → your details.
+Steps run: bike → service → colour & finish → add-ons → getting the bike here → photos → your details → review.
 
 ### Editing the estimate
 

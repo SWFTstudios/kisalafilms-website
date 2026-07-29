@@ -96,6 +96,9 @@ function load(page, { mutateConfig } = {}) {
   );
 
   for (const src of sources) {
+    // External CDNs (e.g. GSAP on Wrap Studio) are progressive enhancement —
+    // skip them in jsdom rather than vendoring the whole library.
+    if (/^https?:\/\//i.test(src)) continue;
     const file = join(PUBLIC, src);
     if (!existsSync(file)) throw new Error(`${page} references a missing script: ${src}`);
     window.eval(readFileSync(file, "utf8"));
@@ -330,11 +333,116 @@ function fire(win, el, type) {
     assert(form.querySelector('[name="attachment"]'), "the photo input went missing");
   });
 
+  check("the studio is a slide wizard with a garage", () => {
+    const steps = [...form.querySelectorAll("[data-studio-step]")].map((el) =>
+      el.getAttribute("data-studio-step")
+    );
+    assertEqual(
+      steps.join(","),
+      "bike,service,colour,addons,transport,photos,contact,review",
+      "wizard step order"
+    );
+    assert(form.querySelector("[data-studio-next]"), "next control missing");
+    assert(form.querySelector("[data-studio-back]"), "back control missing");
+    assert(form.querySelector("[data-studio-garage]"), "garage missing");
+    assert(form.querySelector("[data-setup-save]"), "save setup missing");
+    assert(form.querySelector("[data-studio-progress]"), "progress dots missing");
+    const active = form.querySelector("[data-studio-step].is-active");
+    assertEqual(active?.getAttribute("data-studio-step"), "bike", "first step should be active");
+    assert(
+      [...form.querySelectorAll("[data-studio-step]")].filter((el) => !el.hidden).length === 1,
+      "only one step should be visible"
+    );
+  });
+
   check("the new lead fields are all present", () => {
     ["transport", "pickup_zone", "pickup_area", "pickup_notes", "budget", "transport_estimate", "estimate_total_range", "pricing_mode", "saved_films"].forEach(
       (name) => assert(field(win, name), `missing lead field "${name}"`)
     );
   });
+}
+
+/* ---- Studio wizard navigation ----------------------------------------- */
+{
+  const win = load("wrap-studio.html");
+  const form = win.document.querySelector("[data-wrap-studio]");
+  const next = () => form.querySelector("[data-studio-next]");
+  const back = () => form.querySelector("[data-studio-back]");
+  const activeId = () => form.querySelector("[data-studio-step].is-active")?.getAttribute("data-studio-step");
+  const settle = (ms = 40) => new Promise((r) => setTimeout(r, ms));
+
+  const fillBike = async () => {
+    // bike-search fills makes asynchronously from motorcycles.json
+    for (let i = 0; i < 40; i++) {
+      if (field(win, "make").options.length > 1) break;
+      await settle(25);
+    }
+    field(win, "year").value = "2022";
+    fire(win, field(win, "year"), "change");
+    const make = field(win, "make");
+    const makeVal = [...make.options].find((o) => o.value)?.value;
+    assert(makeVal, "make options never loaded");
+    make.value = makeVal;
+    fire(win, make, "change");
+    await settle(40);
+    const model = field(win, "model");
+    model.disabled = false;
+    let modelVal = [...model.options].find((o) => o.value)?.value;
+    if (!modelVal) {
+      const opt = win.document.createElement("option");
+      opt.value = "Stub";
+      opt.textContent = "Stub";
+      model.appendChild(opt);
+      modelVal = "Stub";
+    }
+    model.value = modelVal;
+    fire(win, model, "change");
+  };
+
+  check("next stays gated until the bike is complete", () => {
+    assertEqual(activeId(), "bike", "start on bike");
+    next().dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+    assertEqual(activeId(), "bike", "should not advance without a bike");
+  });
+
+  await (async () => {
+    await fillBike();
+    // Cancel any pending auto-advance so Next is deterministic.
+    await settle(20);
+    check("completing the bike and pressing next advances to service", () => {
+      // If auto-advance already moved us, that's also success.
+      if (activeId() === "bike") {
+        next().dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+      }
+      assertEqual(activeId(), "service", "should advance to service");
+    });
+
+    check("back restores the previous slide with the selection intact", () => {
+      if (activeId() !== "bike") {
+        back().dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+      }
+      assertEqual(activeId(), "bike", "back to bike");
+      assert(field(win, "year").value, "year should still be selected");
+      assert(field(win, "make").value, "make should still be selected");
+    });
+
+    check("garage can save and create another setup", () => {
+      const save = form.querySelector("[data-setup-save]");
+      const neu = form.querySelector("[data-setup-new]");
+      const status = form.querySelector("[data-setup-status]");
+      win.prompt = () => "Night bagger matte";
+      save.dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+      assert(/Night bagger matte/i.test(status.textContent), "save status missing");
+      neu.dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+      assertEqual(activeId(), "bike", "new setup starts on bike");
+      assertEqual(field(win, "year").value, "", "new setup clears year");
+      const select = form.querySelector("[data-setup-select]");
+      assert(
+        [...select.options].some((o) => /Night bagger matte/i.test(o.textContent)),
+        "saved setup should appear in the garage list"
+      );
+    });
+  })();
 }
 
 /* ---- Vinyl browser ------------------------------------------------------ */
@@ -1077,24 +1185,66 @@ function fire(win, el, type) {
     assertEqual(paramsOf(win, "select_transport").label, "Pickup", "transport label");
   });
 
-  check("submitting the studio reports the build context", () => {
+  await (async () => {
     const win = load("wrap-studio.html");
     const form = win.document.querySelector("[data-wrap-studio]");
+    const settle = (ms = 40) => new Promise((r) => setTimeout(r, ms));
+
+    for (let i = 0; i < 40; i++) {
+      if (field(win, "make").options.length > 1) break;
+      await settle(25);
+    }
+
+    field(win, "year").value = "2024";
+    fire(win, field(win, "year"), "change");
+    const make = field(win, "make");
+    make.value = [...make.options].find((o) => o.value)?.value || "";
+    fire(win, make, "change");
+    await settle(40);
+    const model = field(win, "model");
+    model.disabled = false;
+    let modelVal = [...model.options].find((o) => o.value)?.value;
+    if (!modelVal) {
+      const opt = win.document.createElement("option");
+      opt.value = "Test Model";
+      opt.textContent = "Test Model";
+      model.appendChild(opt);
+      modelVal = "Test Model";
+    }
+    model.value = modelVal;
+    fire(win, model, "change");
+
+    // Wait out bike auto-advance so later clicks are stable.
+    await settle(500);
+
     const service = win.document.querySelector('input[name="service"][value="Full colour-change wrap"]');
     service.checked = true;
     fire(win, service, "change");
+    await settle(500);
+
+    field(win, "finish").value = "Matte";
+    fire(win, field(win, "finish"), "change");
+
+    field(win, "name").value = "Test Rider";
+    field(win, "email").value = "rider@example.com";
+    field(win, "consent").checked = true;
 
     const budget = field(win, "budget");
     budget.value = "$2,000 – $3,500";
     fire(win, budget, "change");
 
-    // jsdom does not implement submission, only the event.
+    const reviewDot = form.querySelector('[data-studio-goto="review"]');
+    reviewDot?.dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+    await settle(30);
+
     form.dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
 
-    const lead = paramsOf(win, "generate_lead");
-    assertEqual(lead.label, "Full colour-change wrap", "service on the lead event");
-    assertEqual(lead.budget, "$2,000 – $3,500", "budget on the lead event");
-  });
+    check("submitting the studio reports the build context", () => {
+      const lead = paramsOf(win, "generate_lead");
+      assertEqual(lead.label, "Full colour-change wrap", "service on the lead event");
+      assertEqual(lead.budget, "$2,000 – $3,500", "budget on the lead event");
+    });
+  })();
 
   check("the local pages report which city was landed on", () => {
     const win = load("locations/brooklyn.html");
