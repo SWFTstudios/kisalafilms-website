@@ -240,7 +240,9 @@ Until the real exports land, `public/images/brand/` holds the old metallic mark 
 
 ## Data catalogues
 
-[`motorcycles.json`](./public/data/motorcycles.json) (year/make/model + fairing R&R labour bands), [`vinyl-colors.json`](./public/data/vinyl-colors.json) (Metro Restyling film catalogue), [`vinyl-size-guide.json`](./public/data/vinyl-size-guide.json), [`films.json`](./public/data/films.json) (Vimeo ids, runtimes and cities for the archive), [`products.json`](./public/data/products.json).
+[`motorcycles.json`](./public/data/motorcycles.json) (year/make/model + fairing R&R labour bands), [`vinyl-colors.json`](./public/data/vinyl-colors.json) (Metro Restyling film catalogue + stock), [`vinyl-size-guide.json`](./public/data/vinyl-size-guide.json), [`films.json`](./public/data/films.json) (Vimeo ids, runtimes and cities for the archive), [`products.json`](./public/data/products.json).
+
+Editable CSVs for the film lookbook live in [`doc/spreadsheets/`](./doc/spreadsheets/). The **live lookbook** reads Cloudflare **D1** via `/api/films` (CMS). Import Metro (+ spreadsheet overlays) with `python3 scripts/import-films-d1.py`. Use `npm run dev` (not bare `python -m http.server`) so `/api` works. Wrap Studio still uses [`vinyl-colors.json`](./public/data/vinyl-colors.json) until migrated.
 
 ## Gallery films
 

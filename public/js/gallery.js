@@ -1,46 +1,9 @@
 /**
- * Gallery page: one-time intro animation + photo/video lightbox.
+ * Gallery page: photo/video lightbox.
  * Filtering itself is handled by the shared [data-filter-tabs] logic in site.js;
  * this module reacts to it for the empty-state note and lightbox ordering.
  */
 (() => {
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  /* ---- Intro overlay ---------------------------------------------------- */
-  (function intro() {
-    const overlay = document.querySelector("[data-gallery-intro]");
-    if (!overlay) return;
-
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem("kfilms-intro") === "1";
-    } catch (_) {
-      /* private mode — treat as unseen */
-    }
-
-    const finish = () => {
-      overlay.remove();
-      document.body.classList.remove("intro-lock");
-      try {
-        sessionStorage.setItem("kfilms-intro", "1");
-      } catch (_) {
-        /* ignore */
-      }
-    };
-
-    if (reduceMotion || seen) {
-      overlay.remove();
-      return;
-    }
-
-    document.body.classList.add("intro-lock");
-    overlay.addEventListener("animationend", (e) => {
-      if (e.animationName === "introOut") finish();
-    });
-    // Safety net if animationend never fires
-    setTimeout(finish, 3200);
-  })();
-
   /* ---- Lightbox --------------------------------------------------------- */
   const modal = document.querySelector("[data-lightbox-modal]");
   const grid = document.querySelector("[data-gallery-grid]");
@@ -237,4 +200,20 @@
     });
   }
   syncEmpty();
+
+  /* ---- Build / Film mode tabs (Vossen-style) ---------------------------- */
+  document.querySelectorAll("[data-gallery-mode]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll("[data-gallery-mode]").forEach((t) => {
+        const on = t === tab;
+        t.classList.toggle("is-active", on);
+      });
+      const mode = tab.getAttribute("data-gallery-mode");
+      const filterKey = mode === "films" ? "films" : "all";
+      const filterBtn = document.querySelector(
+        `[data-filter-tabs] button[data-filter="${filterKey}"]`
+      );
+      filterBtn?.click();
+    });
+  });
 })();

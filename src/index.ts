@@ -1,11 +1,19 @@
 import { depositQuote, type PackageKey } from "./deposit";
+import {
+  getFilm,
+  importFilms,
+  listFilms,
+  type D1Database,
+} from "./films";
 
 type Env = {
   ASSETS: {
     fetch: (request: Request) => Promise<Response>;
   };
+  DB: D1Database;
   STRIPE_SECRET_KEY?: string;
   SITE_URL?: string;
+  FILMS_IMPORT_TOKEN?: string;
 };
 
 const JSON_HEADERS = {
@@ -134,6 +142,15 @@ function formatUsd(n: number): string {
   return "$" + n.toLocaleString("en-US");
 }
 
+function corsFilms(request: Request): HeadersInit {
+  const origin = request.headers.get("Origin") || "*";
+  return {
+    "Access-Control-Allow-Origin": origin === "null" ? "*" : origin,
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -153,6 +170,56 @@ export default {
         return json({ error: "POST only." }, 405);
       }
       return createDepositCheckout(request, env);
+    }
+
+    if (url.pathname === "/api/films" || url.pathname === "/api/films/") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsFilms(request) });
+      }
+      if (request.method !== "GET") {
+        return json({ error: "GET only." }, 405);
+      }
+      if (!env.DB) {
+        return json({ error: "D1 database is not bound." }, 503);
+      }
+      const res = await listFilms(env.DB, url);
+      const headers = new Headers(res.headers);
+      Object.entries(corsFilms(request)).forEach(([k, v]) => headers.set(k, v));
+      return new Response(res.body, { status: res.status, headers });
+    }
+
+    if (url.pathname === "/api/films/import") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsFilms(request) });
+      }
+      if (request.method !== "POST") {
+        return json({ error: "POST only." }, 405);
+      }
+      if (!env.DB) {
+        return json({ error: "D1 database is not bound." }, 503);
+      }
+      return importFilms(request, env.DB, env.FILMS_IMPORT_TOKEN);
+    }
+
+    const filmMatch = url.pathname.match(/^\/api\/films\/([^/]+)\/?$/);
+    if (filmMatch) {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsFilms(request) });
+      }
+      if (request.method !== "GET") {
+        return json({ error: "GET only." }, 405);
+      }
+      if (!env.DB) {
+        return json({ error: "D1 database is not bound." }, 503);
+      }
+      const handle = decodeURIComponent(filmMatch[1]);
+      if (handle === "import") {
+        return json({ error: "Not found." }, 404);
+      }
+      const res = await getFilm(env.DB, handle);
+      const headers = new Headers(res.headers);
+      Object.entries(corsFilms(request)).forEach(([k, v]) => headers.set(k, v));
+      return new Response(res.body, { status: res.status, headers });
     }
 
     return env.ASSETS.fetch(request);

@@ -106,6 +106,14 @@ def first_image(product: dict) -> str:
     return images[0].get("src") or ""
 
 
+def is_available(product: dict) -> bool:
+    """True if any Shopify variant is listed as available on Metro."""
+    variants = product.get("variants") or []
+    if not variants:
+        return False
+    return any(bool(v.get("available")) for v in variants)
+
+
 def fetch_collection(handle: str) -> list[dict]:
     products: list[dict] = []
     page = 1
@@ -143,6 +151,8 @@ def compact_color(product: dict) -> dict:
         "h": handle,
         "u": product_url(handle),
         "i": first_image(product),
+        # Stock flag from Metro Restyling (any variant available).
+        "a": is_available(product),
     }
 
 
@@ -161,6 +171,7 @@ def main() -> None:
     colors = sorted(by_id.values(), key=lambda c: (c["n"].lower(), c["id"]))
     finishes = sorted({c["f"] for c in colors if c["f"]})
     vendors = sorted({c["v"] for c in colors if c["v"]})
+    in_stock = sum(1 for c in colors if c.get("a"))
 
     # Only ship the families that matched something, so the filter row never
     # offers a chip that comes back empty.
@@ -171,6 +182,8 @@ def main() -> None:
         "source": "Metro Restyling Shopify collections",
         "syncedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "productCount": len(colors),
+        "inStockCount": in_stock,
+        "outOfStockCount": len(colors) - in_stock,
         "collections": list(COLLECTIONS),
         "includeTypes": sorted(INCLUDE_TYPES),
         "excludeNote": (
@@ -186,7 +199,10 @@ def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {len(colors)} colors → {OUT.relative_to(ROOT)}")
-    print(f"Vendors: {len(vendors)} | Finishes: {len(finishes)} | Families: {len(families)}")
+    print(
+        f"Vendors: {len(vendors)} | Finishes: {len(finishes)} | Families: {len(families)} | "
+        f"In stock: {in_stock} | Out: {len(colors) - in_stock}"
+    )
     if family_counts["other"]:
         share = family_counts["other"] / len(colors) * 100
         print(f'{family_counts["other"]} ({share:.1f}%) had no recognisable colour in the title.')

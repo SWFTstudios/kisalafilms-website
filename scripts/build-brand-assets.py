@@ -131,11 +131,14 @@ def sync_markup(root: Path, size: tuple[int, int]) -> int:
     """
     w, h = size
     pattern = re.compile(
-        r'(<img src="/images/brand/kisala-films-logo\.png"[^>]*?)'
-        r'width="\d+" height="\d+"'
+        r'(src="/images/brand/kisala-films-logo\.png"(?:(?!>).)*?)'
+        r'width="\d+"\s+height="\d+"'
     )
     touched = 0
-    for path in sorted(list(root.glob("*.html")) + list(root.glob("*/*.html"))):
+    targets = list(root.rglob("*.html")) + list((root / "js").glob("*.js"))
+    for path in sorted(targets):
+        if not path.is_file():
+            continue
         text = path.read_text()
         new = pattern.sub(rf'\1width="{w}" height="{h}"', text)
         if new != text:
