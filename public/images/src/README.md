@@ -28,7 +28,10 @@ That writes:
 
 **Favicons keep an opaque black background.** The mark is red *and white*. Left transparent, the white FILMS half of it disappears against a light browser tab strip or a light home screen. The large `brand/kisala-films-icon.png` keeps its transparency, because it only ever sits on the site's own black.
 
-**Until those two files land, `public/images/brand/` holds a placeholder copy of the old metallic K Films mark** so nothing 404s. Running the script replaces it.
+Current sources in this folder:
+
+- `kisala-films-logo-source.png` — wide wordmark (nav / loader / OG)
+- `kisala-films-icon-source.png` — round mark (favicon + Instagram profile)
 
 ## Legacy
 

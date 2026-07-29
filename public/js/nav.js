@@ -67,7 +67,9 @@
 
   const path = normalise(window.location.pathname);
   const links = Array.from(
-    document.querySelectorAll(".nav-panel a[href], .nav-dd-menu a[href], .nav-desktop > a[href]")
+    document.querySelectorAll(
+      ".nav-panel a[href], .nav-dd-menu a[href], .nav-desktop > a[href], .nav-cluster > a[href]"
+    )
   ).map((el) => {
     let href = null;
     try {

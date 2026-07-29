@@ -12,8 +12,17 @@
   "observability": {
     "enabled": true
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "kisalafilms",
+      "database_id": "322e1428-a18a-4b3a-9f23-e381d44212e5",
+      "migrations_dir": "migrations"
+    }
+  ],
   /* Set with: wrangler secret put STRIPE_SECRET_KEY
-     Optional: wrangler secret put SITE_URL  (defaults to the request host) */
+     Optional: wrangler secret put SITE_URL  (defaults to the request host)
+     Films import: wrangler secret put FILMS_IMPORT_TOKEN */
   "vars": {
     "SITE_URL": "https://kisalafilms-website.elombe.workers.dev"
   }
