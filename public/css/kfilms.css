@@ -1467,18 +1467,55 @@ body.kf-transitioning {
   border-color: var(--kf-border-strong);
 }
 
+/* Responsive mosaic: CSS columns pack tiles by their OG aspect ratios. */
 .masonry {
-  column-gap: 16px;
-  column-count: 1;
+  column-gap: 10px;
+  column-count: 2;
 }
 
-@media (min-width: 560px) { .masonry { column-count: 2; } }
-@media (min-width: 900px) { .masonry { column-count: 3; } }
-@media (min-width: 1280px) { .masonry { column-count: 4; } }
+@media (min-width: 700px) { .masonry { column-count: 3; column-gap: 12px; } }
+@media (min-width: 1100px) { .masonry { column-count: 4; column-gap: 14px; } }
+
+@supports (grid-template-rows: masonry) {
+  .masonry {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: masonry;
+    gap: 10px;
+    column-count: auto;
+    column-gap: normal;
+  }
+
+  @media (min-width: 700px) {
+    .masonry {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .masonry {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+  }
+}
 
 .masonry-item {
   break-inside: avoid;
-  margin: 0 0 16px;
+  margin: 0 0 10px;
+}
+
+@media (min-width: 700px) {
+  .masonry-item { margin-bottom: 12px; }
+}
+
+@media (min-width: 1100px) {
+  .masonry-item { margin-bottom: 14px; }
+}
+
+@supports (grid-template-rows: masonry) {
+  .masonry-item { margin: 0; }
 }
 
 .masonry-item[hidden] { display: none !important; }
@@ -1493,13 +1530,20 @@ body.kf-transitioning {
   cursor: pointer;
   overflow: hidden;
   border-radius: 0;
+  /* Default to landscape build stills (1920×1280); overridden by --ar / modifiers. */
+  aspect-ratio: var(--ar, 3 / 2);
   transition: border-color var(--kf-duration) var(--kf-ease);
 }
 
 .tile:hover { border-color: var(--kf-red); }
 
 .tile img {
+  position: absolute;
+  inset: 0;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform 0.8s var(--kf-ease);
 }
@@ -1521,6 +1565,7 @@ body.kf-transitioning {
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid var(--kf-white);
   pointer-events: none;
+  z-index: 1;
 }
 
 .tile-play::before {
@@ -1552,6 +1597,7 @@ body.kf-transitioning {
   text-transform: uppercase;
   text-align: left;
   color: var(--kf-white);
+  z-index: 1;
 }
 
 .tile-meta em {
@@ -1560,8 +1606,10 @@ body.kf-transitioning {
   margin-left: 8px;
 }
 
+/* Vertical films / portrait stills — use the OG frame, not the thumb crop. */
 .masonry-item--reel .tile { aspect-ratio: 9 / 16; }
-.masonry-item--reel .tile img { height: 100%; object-fit: cover; }
+.masonry-item--portrait .tile { aspect-ratio: 2 / 3; }
+.masonry-item--wide .tile { aspect-ratio: 16 / 9; }
 
 .gallery-empty {
   color: var(--kf-muted);
