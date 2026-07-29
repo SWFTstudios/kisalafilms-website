@@ -4,8 +4,9 @@
   const tableBody = document.querySelector("[data-inventory-body]");
   const meta = document.querySelector("[data-lookbook-meta]");
   const search = document.querySelector("[data-lookbook-search]");
-  const filterHost = document.querySelector("[data-lookbook-filters]");
-  const stockHost = document.querySelector("[data-lookbook-stock]");
+  const sortSelect = document.querySelector("[data-lookbook-sort]");
+  const stockSelect = document.querySelector("[data-lookbook-stock]");
+  const finishSelect = document.querySelector("[data-lookbook-finish]");
   if (!grid) return;
 
   /** @type {Array<Record<string, unknown>>} */
@@ -13,13 +14,28 @@
   let finishesFromApi = [];
   let finish = "all";
   let stock = "all"; // all | in | out
+  let sort = "name";
   let query = "";
 
   const availLabel = (inStock) => (inStock ? "In stock" : "Out of stock");
   const availClass = (inStock) => (inStock ? "kf-avail--in" : "kf-avail--out");
 
-  const filtered = () =>
-    rows.filter((r) => {
+  const SORTS = {
+    name: (a, b) => String(a.name || "").localeCompare(String(b.name || "")),
+    "name-desc": (a, b) => String(b.name || "").localeCompare(String(a.name || "")),
+    brand: (a, b) =>
+      String(a.brand || "").localeCompare(String(b.brand || "")) ||
+      String(a.name || "").localeCompare(String(b.name || "")),
+    finish: (a, b) =>
+      String(a.finish || "~").localeCompare(String(b.finish || "~")) ||
+      String(a.name || "").localeCompare(String(b.name || "")),
+    stock: (a, b) =>
+      Number(!!b.in_stock) - Number(!!a.in_stock) ||
+      String(a.name || "").localeCompare(String(b.name || "")),
+  };
+
+  const filtered = () => {
+    const list = rows.filter((r) => {
       const inStock = !!r.in_stock;
       if (stock === "in" && !inStock) return false;
       if (stock === "out" && inStock) return false;
@@ -33,66 +49,48 @@
         .toLowerCase();
       return hay.includes(query);
     });
+    return list.sort(SORTS[sort] || SORTS.name);
+  };
 
-  const renderFilters = () => {
-    if (filterHost) {
-      const finishes = (
-        finishesFromApi.length
-          ? finishesFromApi
-          : Array.from(new Set(rows.map((r) => r.finish).filter(Boolean)))
-      ).slice().sort((a, b) => String(a).localeCompare(String(b)));
-      filterHost.innerHTML = "";
-      const tabRow = document.createElement("div");
-      tabRow.className = "filter-tabs";
-      const makeBtn = (key, label) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = label;
-        if (key === finish) btn.classList.add("on");
-        btn.addEventListener("click", () => {
-          finish = key;
-          renderFilters();
-          render();
-        });
-        return btn;
-      };
-      tabRow.appendChild(makeBtn("all", "All finishes"));
-      finishes.forEach((f) => tabRow.appendChild(makeBtn(String(f), String(f))));
-      filterHost.appendChild(tabRow);
-    }
+  const populateFinishSelect = () => {
+    if (!finishSelect) return;
+    const finishes = (
+      finishesFromApi.length
+        ? finishesFromApi
+        : Array.from(new Set(rows.map((r) => r.finish).filter(Boolean)))
+    )
+      .slice()
+      .sort((a, b) => String(a).localeCompare(String(b)));
 
-    if (stockHost) {
-      stockHost.innerHTML = "";
-      const tabRow = document.createElement("div");
-      tabRow.className = "filter-tabs";
-      [
-        ["all", "All stock"],
-        ["in", "In stock"],
-        ["out", "Out of stock"],
-      ].forEach(([key, label]) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = label;
-        if (key === stock) btn.classList.add("on");
-        btn.addEventListener("click", () => {
-          stock = key;
-          renderFilters();
-          render();
-        });
-        tabRow.appendChild(btn);
-      });
-      stockHost.appendChild(tabRow);
-    }
+    const previous = finish;
+    finishSelect.innerHTML = "";
+    const allOpt = document.createElement("option");
+    allOpt.value = "all";
+    allOpt.textContent = "All finishes";
+    finishSelect.appendChild(allOpt);
+    finishes.forEach((f) => {
+      const opt = document.createElement("option");
+      opt.value = String(f);
+      opt.textContent = String(f);
+      finishSelect.appendChild(opt);
+    });
+    finishSelect.value = finishes.some((f) => String(f) === previous) ? previous : "all";
+    finish = finishSelect.value;
   };
 
   const render = () => {
     const list = filtered();
     const inView = list.filter((r) => r.in_stock).length;
     if (meta) {
-      meta.textContent = `${list.length} colours · ${inView} in stock · Cloudflare D1 CMS`;
+      meta.textContent = `${list.length} colours · ${inView} in stock`;
     }
 
     grid.innerHTML = "";
+    if (!list.length) {
+      grid.innerHTML =
+        '<p class="gallery-empty">No wrap films match those filters. Try clearing search or switching stock / finish.</p>';
+    }
+
     list.forEach((r) => {
       const inStock = !!r.in_stock;
       const name = r.name || "Untitled";
@@ -168,6 +166,21 @@
     render();
   });
 
+  sortSelect?.addEventListener("change", () => {
+    sort = sortSelect.value || "name";
+    render();
+  });
+
+  stockSelect?.addEventListener("change", () => {
+    stock = stockSelect.value || "all";
+    render();
+  });
+
+  finishSelect?.addEventListener("change", () => {
+    finish = finishSelect.value || "all";
+    render();
+  });
+
   fetch(API_URL)
     .then((res) => {
       if (!res.ok) throw new Error(`API ${res.status}`);
@@ -176,7 +189,7 @@
     .then((data) => {
       rows = Array.isArray(data.films) ? data.films : [];
       finishesFromApi = Array.isArray(data.finishes) ? data.finishes : [];
-      renderFilters();
+      populateFinishSelect();
       render();
     })
     .catch((err) => {

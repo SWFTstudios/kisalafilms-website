@@ -1756,34 +1756,72 @@ body.lb-lock { overflow: hidden; }
   .lb-next { right: 8px; }
 }
 
-/* ——— Lookbook / inventory ——— */
+/* ——— Lookbook / wraps gallery ——— */
+.kf-lookbook-body {
+  padding-top: clamp(28px, 4vw, 48px);
+}
+
 .kf-lookbook-toolbar {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.kf-lookbook-toolbar-head .eyebrow {
+  margin-bottom: 8px;
+}
+
+.kf-lookbook-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
+  align-items: end;
 }
 
-.kf-lookbook-filters {
+.kf-lookbook-field {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
 }
 
-.kf-lookbook-search {
-  min-width: min(100%, 260px);
+.kf-lookbook-field--search {
+  grid-column: 1 / -1;
+}
+
+.kf-lookbook-label {
+  font-family: var(--kf-font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: var(--kf-track);
+  text-transform: uppercase;
+  color: var(--kf-muted);
+}
+
+.kf-lookbook-search,
+.kf-lookbook-select {
+  width: 100%;
   min-height: 44px;
-  padding: 0 14px;
+  padding: 0 12px;
   background: var(--kf-surface);
   border: 1px solid var(--kf-border);
   color: var(--kf-white);
   font: inherit;
+  font-size: 0.9rem;
   border-radius: 0;
+  appearance: none;
 }
 
-.kf-lookbook-search:focus {
+.kf-lookbook-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8a8a' d='M1.4.3 6 4.9 10.6.3 12 1.7 6 7.7 0 1.7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.kf-lookbook-search:focus,
+.kf-lookbook-select:focus {
   outline: 1px solid var(--kf-red);
   border-color: var(--kf-red);
 }
@@ -1794,28 +1832,64 @@ body.lb-lock { overflow: hidden; }
   letter-spacing: var(--kf-track-tight);
   text-transform: uppercase;
   font-family: var(--kf-font-display);
+  margin: 0;
 }
 
+/* Portrait / phone: always 2 equal square-media tiles */
 .kf-lookbook-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   align-items: stretch;
 }
 
+.kf-lookbook-grid > .gallery-empty {
+  grid-column: 1 / -1;
+}
+
+@media (orientation: portrait) {
+  .kf-lookbook-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (min-width: 700px) {
-  .kf-lookbook-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .kf-lookbook-controls {
+    grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .kf-lookbook-field--search {
+    grid-column: auto;
+  }
+
+  .kf-lookbook-grid {
+    gap: 16px;
+  }
+}
+
+@media (min-width: 700px) and (orientation: landscape),
+  (min-width: 900px) {
+  .kf-lookbook-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
 }
 
 @media (min-width: 1100px) {
-  .kf-lookbook-grid { grid-template-columns: repeat(4, 1fr); }
+  .kf-lookbook-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
 }
 
 .kf-lookbook-card {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
   min-width: 0;
+  min-height: 0;
   color: inherit;
   border: 1px solid var(--kf-border);
   background: var(--kf-surface);
@@ -1825,50 +1899,78 @@ body.lb-lock { overflow: hidden; }
 .kf-lookbook-card:hover { border-color: var(--kf-red); }
 
 .kf-lookbook-card-media {
-  aspect-ratio: 1;
+  aspect-ratio: 1 / 1;
+  width: 100%;
   overflow: hidden;
   background: #151515;
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
 
 .kf-lookbook-card-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  display: block;
   transition: transform 0.8s var(--kf-ease);
 }
 
 .kf-lookbook-card:hover img { transform: scale(1.04); }
 
 .kf-lookbook-card-body {
-  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  flex: 1;
+  gap: 4px;
+  flex: 1 1 auto;
   min-width: 0;
-  min-height: 5.75rem;
+  /* Fixed footer band so every card shares the same height in a row */
+  height: 5.5rem;
+  padding: 10px 10px 12px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 700px) {
+  .kf-lookbook-card-body {
+    height: 5.75rem;
+    padding: 14px;
+    gap: 6px;
+  }
 }
 
 .kf-lookbook-card-body h3 {
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   margin: 0;
   line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (min-width: 700px) {
+  .kf-lookbook-card-body h3 {
+    font-size: 0.78rem;
+    white-space: nowrap;
+    display: block;
+    -webkit-line-clamp: unset;
+    text-overflow: ellipsis;
+  }
+}
+
+.kf-lookbook-card-body .meta {
+  margin: 0;
+  font-size: 0.65rem;
+  color: var(--kf-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.kf-lookbook-card-body .meta {
-  margin: 0;
-  font-size: 0.72rem;
-  color: var(--kf-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+@media (min-width: 700px) {
+  .kf-lookbook-card-body .meta { font-size: 0.72rem; }
 }
 
 .kf-lookbook-card.is-oos {
@@ -1885,8 +1987,8 @@ body.lb-lock { overflow: hidden; }
   align-items: center;
   gap: 8px;
   margin-top: auto;
-  padding-top: 8px;
-  min-height: 1.25rem;
+  padding-top: 4px;
+  min-height: 1.1rem;
 }
 
 .kf-avail {
