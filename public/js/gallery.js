@@ -201,6 +201,32 @@
   }
   syncEmpty();
 
+  /* ---- OG aspect ratios for mosaic tiles --------------------------------
+   * Photo tiles size to the still’s intrinsic ratio. Reel / portrait / wide
+   * modifiers keep the authored frame (9:16, 2:3, 16:9) so vertical films
+   * stay vertical even when the poster thumb is landscape.
+   */
+  function applyOgAspect(item) {
+    if (
+      item.classList.contains("masonry-item--reel") ||
+      item.classList.contains("masonry-item--portrait") ||
+      item.classList.contains("masonry-item--wide")
+    ) {
+      return;
+    }
+    const img = item.querySelector(".tile img");
+    const tile = item.querySelector(".tile");
+    if (!img || !tile || !img.naturalWidth || !img.naturalHeight) return;
+    tile.style.setProperty("--ar", `${img.naturalWidth} / ${img.naturalHeight}`);
+  }
+
+  grid.querySelectorAll(".masonry-item").forEach((item) => {
+    const img = item.querySelector(".tile img");
+    if (!img) return;
+    if (img.complete) applyOgAspect(item);
+    else img.addEventListener("load", () => applyOgAspect(item), { once: true });
+  });
+
   /* ---- Build / Film mode tabs (Vossen-style) ---------------------------- */
   document.querySelectorAll("[data-gallery-mode]").forEach((tab) => {
     tab.addEventListener("click", () => {
