@@ -137,15 +137,19 @@
       <div class="kf-page-hero-copy">
         <p class="eyebrow" data-hero-anim>Wraps gallery</p>
         <h1 data-hero-anim>Lookbook</h1>
-        <p class="p-lg" data-hero-anim>Browse wrap film colours — search, sort, and filter by finish and stock, then open Wrap Studio to lock in a build.</p>
+        <p class="p-lg" data-hero-anim>Explore every wrap colour, then try one on your bike — drop a photo, generate a concept mockup, and we&rsquo;ll email it to you.</p>
+        <div class="btn-row" data-hero-anim>
+          <a class="btn btn-primary" href="#try-the-wrap">Try the wrap</a>
+          <a class="btn btn-ghost" href="#lookbook-grid">Browse colours</a>
+        </div>
       </div>
     </section>
 
     <section class="kf-section kf-lookbook-body">
       <div class="kf-container">
-        <div class="kf-lookbook-toolbar" data-reveal>
+        <div class="kf-lookbook-toolbar" data-reveal id="lookbook-grid">
           <div class="kf-lookbook-toolbar-head">
-            <p class="eyebrow">Wrap film catalogue</p>
+            <p class="eyebrow">Explore wrap options</p>
             <p class="kf-lookbook-meta" data-lookbook-meta>Loading colours…</p>
           </div>
 
@@ -182,6 +186,96 @@
         </div>
 
         <div class="kf-lookbook-grid" data-lookbook-grid data-reveal></div>
+
+        <section class="kf-try-wrap" id="try-the-wrap" data-try-wrap data-reveal>
+          <div class="kf-try-wrap-head">
+            <p class="eyebrow">Try the wrap</p>
+            <h2>Drop a photo. See the colour on your bike.</h2>
+            <p class="p-lg">Pick a film from the gallery above, upload a clear photo of your bike, generate a concept mockup, and we&rsquo;ll email it to you and the garage.</p>
+          </div>
+
+          <div class="kf-try-wrap-layout">
+            <div class="kf-try-wrap-film" data-try-film>
+              <p class="kf-try-empty">Tap <strong>Try</strong> on any colour above to start — or keep browsing.</p>
+            </div>
+
+            <div class="kf-try-wrap-studio">
+              <div class="kf-try-dropzone" data-try-dropzone tabindex="0" role="button" aria-label="Drop a bike photo or click to upload">
+                <input type="file" accept="image/*" data-try-photo hidden>
+                <div data-try-drop-copy>
+                  <p class="kf-try-drop-title">Drop your bike photo</p>
+                  <p class="fld-hint">JPG or PNG, under 8&nbsp;MB. Side or three-quarter works best.</p>
+                </div>
+                <img data-try-photo-preview alt="Uploaded bike photo" hidden>
+              </div>
+
+              <div class="kf-try-actions btn-row">
+                <button type="button" class="btn btn-primary" data-try-generate disabled>Generate mockup</button>
+                <button type="button" class="btn btn-ghost" data-try-download hidden>Download mockup</button>
+              </div>
+              <p class="fld-hint" data-try-status>Choose a film and a photo to generate a concept preview.</p>
+
+              <div class="kf-try-result" data-try-result hidden>
+                <canvas data-try-canvas aria-label="Wrap mockup preview"></canvas>
+                <p class="fld-hint">Concept preview — lighting and panel edges are approximate. Real film reads differently in person.</p>
+              </div>
+
+              <form
+                class="kf-try-email"
+                data-try-form
+                action="https://formsubmit.co/elombe@swftstudios.com"
+                method="POST"
+                enctype="multipart/form-data"
+                hidden
+              >
+                <input type="hidden" name="_subject" value="Kisala Films — Try the wrap mockup">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/lookbook?try=sent#try-the-wrap">
+                <input type="hidden" name="_cc" value="" data-try-cc>
+                <input type="hidden" name="_autoresponse" value="Thanks — your Kisala Films wrap mockup is attached to this email (and a copy went to the garage). Concept preview only; the real film will be quoted from photos and a build sheet.">
+                <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
+                <input type="hidden" name="film_name" value="" data-try-film-name>
+                <input type="hidden" name="film_handle" value="" data-try-film-handle>
+                <input type="hidden" name="film_brand" value="" data-try-film-brand>
+                <input type="hidden" name="film_finish" value="" data-try-film-finish>
+                <input type="hidden" name="film_url" value="" data-try-film-url>
+                <input type="file" name="attachment" accept="image/png" data-try-attachment hidden>
+
+                <p class="vinyl-browse-label">Email me this mockup</p>
+                <div class="kf-try-email-fields">
+                  <div class="fld">
+                    <label for="try-name">Name</label>
+                    <input id="try-name" class="kf-lookbook-search" type="text" name="name" required autocomplete="name">
+                  </div>
+                  <div class="fld">
+                    <label for="try-email">Email</label>
+                    <input id="try-email" class="kf-lookbook-search" type="email" name="email" required autocomplete="email">
+                  </div>
+                </div>
+                <div class="fld" style="margin-top:12px">
+                  <label for="try-notes">Notes <span class="fld-hint" style="display:inline">(optional)</span></label>
+                  <textarea id="try-notes" name="notes" rows="3" placeholder="Bike model, panels you want wrapped…"></textarea>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary" type="submit" data-try-send>Email mockup</button>
+                  <a class="btn btn-ghost" href="/wrap-studio" data-track="cta_click" data-track-label="try-to-wrap-studio">Build your wrap</a>
+                </div>
+                <p class="fld-hint">We CC you on the message so the mockup lands in your inbox, and Elombe gets a copy at the garage.</p>
+              </form>
+
+              <div class="kf-try-sent" data-try-sent hidden>
+                <p class="eyebrow">Sent</p>
+                <h3>Mockup is on its way</h3>
+                <p class="p">Check your inbox for the concept preview. Want a real quote next? Open Wrap Studio with the same film.</p>
+                <div class="btn-row">
+                  <a class="btn btn-primary" href="/wrap-studio" data-try-studio>Build your wrap</a>
+                  <button type="button" class="btn btn-ghost" data-try-again>Try another colour</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <div class="kf-gallery-cta btn-row" style="margin-top:48px;justify-content:center">
           <a class="btn btn-primary" href="/wrap-studio" data-track="cta_click" data-track-label="lookbook-to-wrap-studio">Build your wrap</a>
@@ -272,6 +366,7 @@
   <script src="/js/nav.js"></script>
 
   <script src="/js/lookbook.js"></script>
+  <script src="/js/lookbook-try.js"></script>
   <script src="/js/motion.js"></script>
 </body>
 </html>
