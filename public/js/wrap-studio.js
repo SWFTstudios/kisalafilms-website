@@ -416,6 +416,20 @@
       return;
     }
 
+    const email = (form.querySelector('[name="email"]')?.value || "").trim();
+    const cc = form.querySelector("[data-studio-cc]");
+    const replyto = form.querySelector("[data-studio-replyto]");
+    if (cc) cc.value = email;
+    if (replyto) replyto.value = email;
+
+    // Compile a plain-text sheet so the rider’s CC’d copy is readable.
+    const summaryField = form.querySelector("[data-build-summary]");
+    if (summaryField && window.KisalaGarage?.compileBuildSheet) {
+      const draft = window.KisalaGarage.collectDraft();
+      summaryField.value = window.KisalaGarage.compileBuildSheet(draft);
+    }
+    window.KisalaGarage?.markSent?.();
+
     // Best-effort only. The native POST tears this page down, so the
     // conversion that actually gets counted is the one on /thanks.html.
     window.KisalaTrack?.("generate_lead", {
