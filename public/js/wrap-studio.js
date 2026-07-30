@@ -192,6 +192,31 @@
     if (radio) radio.checked = true;
   }
 
+  /* Prefill a catalogue film into the saved-films shortlist when linked from vinyl catalog. */
+  const preselectFilm = (params.get("film") || "").trim();
+  if (preselectFilm) {
+    try {
+      const key = "kisala-saved-films";
+      const raw = localStorage.getItem(key);
+      const list = raw ? JSON.parse(raw) : [];
+      const handles = Array.isArray(list) ? list : [];
+      if (!handles.includes(preselectFilm)) {
+        handles.unshift(preselectFilm);
+        localStorage.setItem(key, JSON.stringify(handles.slice(0, 24)));
+      }
+      const field = form.querySelector("[data-saved-films-field]");
+      if (field) {
+        field.value = handles.join("\n");
+        field.dataset.count = String(handles.length);
+      }
+      document.querySelector("[data-saved-films-note]")?.replaceChildren(
+        document.createTextNode(`Catalogue film loaded: ${preselectFilm}`)
+      );
+    } catch (err) {
+      console.warn("Could not prefill film", err);
+    }
+  }
+
   /* ---- Getting the bike here -------------------------------------------
      The zone select and the fee attributes are written by config-apply.js, so
      the numbers here are whatever kisala-config.js says they are.          */

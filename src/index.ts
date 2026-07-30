@@ -2,9 +2,13 @@ import { depositQuote, type PackageKey } from "./deposit";
 import {
   getFilm,
   importFilms,
+  incrementCompletedOrders,
   listFilms,
+  pricingCsv,
+  setCompletedOrders,
   type D1Database,
 } from "./films";
+import { syncMetroPrices } from "./metro-prices";
 
 type Env = {
   ASSETS: {
@@ -14,6 +18,7 @@ type Env = {
   STRIPE_SECRET_KEY?: string;
   SITE_URL?: string;
   FILMS_IMPORT_TOKEN?: string;
+  FOUNDER_ADMIN_TOKEN?: string;
 };
 
 const JSON_HEADERS = {
@@ -73,18 +78,12 @@ async function createDepositCheckout(
   params.set("customer_creation", "always");
   params.set("billing_address_collection", "auto");
   params.set("phone_number_collection[enabled]", "true");
-  params.set(
-    "line_items[0][price_data][currency]",
-    "usd"
-  );
+  params.set("line_items[0][price_data][currency]", "usd");
   params.set(
     "line_items[0][price_data][unit_amount]",
     String(quote.amountCents)
   );
-  params.set(
-    "line_items[0][price_data][product_data][name]",
-    quote.label
-  );
+  params.set("line_items[0][price_data][product_data][name]", quote.label);
   params.set(
     "line_items[0][price_data][product_data][description]",
     `${Math.round(quote.percent * 100)}% of labour (${formatUsd(quote.labour)}) + ${quote.rolls}× ${quote.rollWidthFt}×${quote.rollLengthFt}ft vinyl roll (${formatUsd(quote.material)}). Applied to your build.`
@@ -151,9 +150,57 @@ function corsFilms(request: Request): HeadersInit {
   };
 }
 
+function withCors(res: Response, request: Request): Response {
+  const headers = new Headers(res.headers);
+  Object.entries(corsFilms(request)).forEach(([k, v]) => headers.set(k, v));
+  return new Response(res.body, { status: res.status, headers });
+}
+
+function redirect(to: string, status = 301): Response {
+  return new Response(null, {
+    status,
+    headers: { Location: to, "Cache-Control": "public, max-age=3600" },
+  });
+}
+
+function adminAuthed(request: Request, env: Env): boolean {
+  const token = env.FOUNDER_ADMIN_TOKEN || env.FILMS_IMPORT_TOKEN;
+  if (!token) return false;
+  const auth = request.headers.get("Authorization") || "";
+  return auth === `Bearer ${token}`;
+}
+
 export default {
+  async scheduled(
+    _controller: ScheduledController,
+    env: Env,
+    ctx: ExecutionContext
+  ): Promise<void> {
+    if (!env.DB) {
+      console.error("D1 not bound; skip Metro price sync");
+      return;
+    }
+    ctx.waitUntil(
+      syncMetroPrices(env.DB)
+        .then((r) => console.log("metro price sync", JSON.stringify(r)))
+        .catch((err) => console.error("metro price sync failed", String(err)))
+    );
+  },
+
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    // Lookbook → vinyl catalog redirects
+    if (url.pathname === "/lookbook" || url.pathname === "/lookbook/") {
+      return redirect("/vinyl-catalog" + url.search);
+    }
+    if (
+      url.pathname === "/lookbook/film" ||
+      url.pathname === "/lookbook/film/" ||
+      url.pathname === "/lookbook/film.html"
+    ) {
+      return redirect("/vinyl-catalog/film.html" + url.search);
+    }
 
     if (url.pathname === "/api/checkout/deposit") {
       if (request.method === "OPTIONS") {
@@ -172,6 +219,41 @@ export default {
       return createDepositCheckout(request, env);
     }
 
+    if (url.pathname === "/api/films/pricing.csv") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsFilms(request) });
+      }
+      if (request.method !== "GET") {
+        return json({ error: "GET only." }, 405);
+      }
+      if (!env.DB) return json({ error: "D1 database is not bound." }, 503);
+      return withCors(await pricingCsv(env.DB), request);
+    }
+
+    if (url.pathname === "/api/founder/complete") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsFilms(request) });
+      }
+      if (request.method !== "POST") {
+        return json({ error: "POST only." }, 405);
+      }
+      if (!env.DB) return json({ error: "D1 database is not bound." }, 503);
+      if (!adminAuthed(request, env)) {
+        return json({ error: "Unauthorized." }, 401);
+      }
+      let body: { set?: number } = {};
+      try {
+        body = (await request.json()) as { set?: number };
+      } catch {
+        /* increment by default */
+      }
+      const founder =
+        typeof body.set === "number"
+          ? await setCompletedOrders(env.DB, body.set)
+          : await incrementCompletedOrders(env.DB);
+      return json({ ok: true, ...founder });
+    }
+
     if (url.pathname === "/api/films" || url.pathname === "/api/films/") {
       if (request.method === "OPTIONS") {
         return new Response(null, { status: 204, headers: corsFilms(request) });
@@ -182,10 +264,7 @@ export default {
       if (!env.DB) {
         return json({ error: "D1 database is not bound." }, 503);
       }
-      const res = await listFilms(env.DB, url);
-      const headers = new Headers(res.headers);
-      Object.entries(corsFilms(request)).forEach(([k, v]) => headers.set(k, v));
-      return new Response(res.body, { status: res.status, headers });
+      return withCors(await listFilms(env.DB, url), request);
     }
 
     if (url.pathname === "/api/films/import") {
@@ -201,6 +280,21 @@ export default {
       return importFilms(request, env.DB, env.FILMS_IMPORT_TOKEN);
     }
 
+    if (url.pathname === "/api/films/sync-prices") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsFilms(request) });
+      }
+      if (request.method !== "POST") {
+        return json({ error: "POST only." }, 405);
+      }
+      if (!env.DB) return json({ error: "D1 database is not bound." }, 503);
+      if (!adminAuthed(request, env)) {
+        return json({ error: "Unauthorized." }, 401);
+      }
+      const result = await syncMetroPrices(env.DB);
+      return json({ ok: true, ...result });
+    }
+
     const filmMatch = url.pathname.match(/^\/api\/films\/([^/]+)\/?$/);
     if (filmMatch) {
       if (request.method === "OPTIONS") {
@@ -213,13 +307,10 @@ export default {
         return json({ error: "D1 database is not bound." }, 503);
       }
       const handle = decodeURIComponent(filmMatch[1]);
-      if (handle === "import") {
+      if (["import", "pricing.csv", "sync-prices"].includes(handle)) {
         return json({ error: "Not found." }, 404);
       }
-      const res = await getFilm(env.DB, handle);
-      const headers = new Headers(res.headers);
-      Object.entries(corsFilms(request)).forEach(([k, v]) => headers.set(k, v));
-      return new Response(res.body, { status: res.status, headers });
+      return withCors(await getFilm(env.DB, handle), request);
     }
 
     return env.ASSETS.fetch(request);

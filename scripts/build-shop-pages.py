@@ -259,7 +259,7 @@ def photoshoot_product_body(p: dict) -> str:
 {includes}
         </ul>
         <div class="btn-row">
-          <a class="btn btn-primary" href="{esc(p['studioHref'])}" data-track="cta_click" data-track-label="shop-photoshoot-{esc(p['slug'])}">Build this shoot</a>
+          <a class="btn btn-primary" href="{esc(p['studioHref'])}" data-track="cta_click" data-track-label="shop-photoshoot-{esc(p['slug'])}">Build your project</a>
           <a class="btn btn-secondary" href="/gallery">See the gallery</a>
         </div>
       </div>
@@ -383,7 +383,7 @@ def wrap_product_body(w: dict, siblings: list[dict]) -> str:
           <p class="p">{esc(w['finishCount'])} in the Metro Restyling feed — search the exact film in Wrap Studio.</p>
         </div>
         <div class="btn-row">
-          <a class="btn btn-primary" href="{studio}" data-track="cta_click" data-track-label="shop-wrap-{esc(w['slug'])}">Build with {esc(w['title'])}</a>
+          <a class="btn btn-primary" href="{studio}" data-track="cta_click" data-track-label="shop-wrap-{esc(w['slug'])}">Build your project</a>
           <a class="btn btn-secondary" href="/gallery">See it on bikes</a>
         </div>
       </div>
@@ -553,8 +553,9 @@ def merch_product_body(p: dict, products: list[dict]) -> str:
         <p class="p">{esc(p['blurb'])}</p>
         <p class="p">Limited first run. Reserve below — I confirm sizing and payment directly. Nothing is charged from this page.</p>
         <div class="btn-row">
-          <a class="btn btn-primary" href="#reserve" data-reserve="{esc(piece_val)}">Reserve yours</a>
-          <a class="btn btn-secondary" href="/shop/k-merch">All K Merch</a>
+          <a class="btn btn-primary" href="/wrap-studio" data-track="cta_click" data-track-label="shop-merch-{esc(p['id'])}-build">Build your project</a>
+          <a class="btn btn-secondary" href="#reserve" data-reserve="{esc(piece_val)}">Reserve yours</a>
+          <a class="btn btn-ghost" href="/shop/k-merch">All K Merch</a>
         </div>
       </div>
     </div>

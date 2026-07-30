@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Style Guide — Kisala Films</title>
-  <meta name="description" content="Vossen-inspired design tokens for Kisala Films — dark premium system.">
+  <title>Vinyl film | Kisala Films</title>
+  <meta name="description" content="Vinyl wrap colour detail from the Kisala Films vinyl-catalog — finish, stock status from Metro Restyling, and garage notes.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,14 +20,14 @@
   <meta name="robots" content="noindex, nofollow">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Kisala Films">
-  <meta property="og:description" content="Vossen-inspired design tokens for Kisala Films — dark premium system.">
-  <meta property="og:title" content="Style Guide — Kisala Films">
-  <meta property="og:url" content="https://kisalafilms-website.elombe.workers.dev/styleguide">
+  <meta property="og:description" content="Vinyl wrap colour detail from the Kisala Films vinyl-catalog — finish, stock status from Metro Restyling, and garage notes.">
+  <meta property="og:title" content="Vinyl film | Kisala Films">
+  <meta property="og:url" content="https://kisalafilms-website.elombe.workers.dev/vinyl-catalog/film">
   <meta property="og:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Style Guide — Kisala Films">
+  <meta name="twitter:title" content="Vinyl film | Kisala Films">
   <meta name="twitter:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
-  <meta name="twitter:description" content="Vossen-inspired design tokens for Kisala Films — dark premium system.">
+  <meta name="twitter:description" content="Vinyl wrap colour detail from the Kisala Films vinyl-catalog — finish, stock status from Metro Restyling, and garage notes.">
 </head>
 <body class="kfilms" data-barba="wrapper">
 
@@ -37,7 +37,7 @@
     <div class="kf-pt-line" data-kf-pt-line aria-hidden="true"></div>
   </div>
 
-  <header class="site-header is-solid">
+<header class="site-header">
     <div class="header-shell">
       <nav class="nav-cluster nav-cluster--left" aria-label="Primary left">
         <div class="nav-dd">
@@ -63,7 +63,7 @@
         <div class="nav-dd">
           <button type="button" class="nav-dd-btn" aria-expanded="false">Wraps</button>
           <div class="nav-dd-menu">
-            <a href="/vinyl-catalog">Vinyl catalog</a>
+            <a href="/vinyl-catalog">Film vinyl-catalog</a>
             <a href="/shop/wrap">Finish catalogue</a>
             <a href="/wrap-studio">Build your wrap</a>
           </div>
@@ -101,112 +101,63 @@
       <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
     </div>
     <nav class="nav-panel-body">
-      <a class="nav-row" href="/">Home</a>
-      <a class="nav-row" href="/gallery">Gallery</a>
-      <a class="nav-row" href="/vinyl-catalog">Vinyl catalog</a>
-      <a class="nav-row" href="/shop">Shop</a>
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">&#9660;</span></button>
+        <div class="nav-acc-panel">
+          <a href="/services">All services</a>
+          <a href="/services/full-wraps">Full colour-change wraps</a>
+          <a href="/services/accent-package">Partial &amp; accents</a>
+          <a href="/services#chrome">Chrome delete</a>
+          <a href="/services#protect">Tank guard &amp; PPF</a>
+          <a href="/services/transformation-film">Transformation film</a>
+        </div>
+      </div>
       <a class="nav-row" href="/wrap-studio">Wrap Studio</a>
+      <a class="nav-row" href="/gallery">Gallery</a>
+      <a class="nav-row" href="/vinyl-catalog">Film vinyl-catalog</a>
+      <a class="nav-row" href="/pricing">Pricing</a>
+      <a class="nav-row" href="/shop">Shop</a>
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">&#9660;</span></button>
+        <div class="nav-acc-panel">
+          <a href="/about">Who I am</a>
+          <a href="/journal">Journal</a>
+          <a href="/testimonials">Rider notes</a>
+          <a href="/faq">FAQ</a>
+          <a href="/locations">The garage</a>
+        </div>
+      </div>
+      <a class="nav-row" href="/login">Login</a>
+      <a class="nav-row" href="/contact">Contact</a>
       <a class="btn btn-primary nav-panel-cta" href="/wrap-studio">Build your wrap</a>
     </nav>
   </aside>
 
-  <main data-barba="container" data-barba-namespace="styleguide" class="barba-container">
+  
+  <main data-barba="container" data-barba-namespace="vinyl-catalog-film" class="barba-container">
 
-    <section class="page-hero">
+    <section class="kf-section kf-film-detail">
       <div class="kf-container">
-        <p class="eyebrow" data-hero-anim>System</p>
-        <h1 data-hero-anim>Style Guide</h1>
-        <p class="p-lg" data-hero-anim>Vossen-inspired Kisala Films system — black canvas, logo red accent, Archivo + Mulish, full-bleed desktop layout.</p>
-      </div>
-    </section>
+        <p class="eyebrow" data-hero-anim><a class="link-arrow" href="/vinyl-catalog.html" style="letter-spacing:inherit">Back to vinyl-catalog</a></p>
 
-    <section class="kf-section" data-reveal>
-      <div class="kf-container">
-        <h2>Color palette</h2>
-        <div class="sg-swatch-row" data-reveal-stagger>
-          <div class="sg-swatch" style="background:#000;color:#fff" data-reveal="scale">#000000</div>
-          <div class="sg-swatch" style="background:#0a0a0a;color:#fff" data-reveal="scale">#0a0a0a</div>
-          <div class="sg-swatch" style="background:#111;color:#fff" data-reveal="scale">#111111</div>
-          <div class="sg-swatch" style="background:#e8271f;color:#fff" data-reveal="scale">#e8271f</div>
-          <div class="sg-swatch" style="background:#fff;color:#000" data-reveal="scale">#ffffff</div>
-          <div class="sg-swatch" style="background:#c8c8c8;color:#000" data-reveal="scale">#c8c8c8</div>
-          <div class="sg-swatch" style="background:#8a8a8a;color:#000" data-reveal="scale">#8a8a8a</div>
-        </div>
-
-        <h2 data-reveal>Tokens</h2>
-        <div class="sg-token-list" data-reveal="fade">
-          <div>--kf-black / --kf-surface / --kf-surface-2</div>
-          <div>--kf-red #e8271f (accent only)</div>
-          <div>--kf-font-display: Archivo &middot; --kf-font-body: Mulish</div>
-          <div>--kf-gutter: clamp(20px, 4vw, 64px)</div>
-          <div>--kf-section-y: clamp(72px, 12vw, 140px)</div>
-        </div>
-
-        <h2 data-reveal>Typography</h2>
-        <div class="sg-type-sample h1" data-reveal>Heading 1 — thin display</div>
-        <div class="sg-type-sample h2" data-reveal>Heading 2 — section titles</div>
-        <div class="sg-type-sample h3" data-reveal>Heading 3</div>
-        <div class="sg-type-sample h4" data-reveal>Heading 4</div>
-        <div class="sg-type-sample h5" data-reveal>Heading 5 — tracked uppercase</div>
-        <p class="eyebrow" data-reveal="fade">Eyebrow label</p>
-        <p class="p-lg" data-reveal>Paragraph large — lead copy for intros and hero support.</p>
-        <p class="p" data-reveal>Paragraph — secondary body in muted silver.</p>
-
-        <h2 style="margin-top:48px" data-reveal>Buttons</h2>
-        <div class="btn-row" data-reveal>
-          <a class="btn btn-primary" href="#">Primary</a>
-          <a class="btn btn-ghost" href="#">Ghost</a>
-          <a class="btn btn-secondary" href="#">Secondary</a>
-          <a class="link-arrow" href="#">Link arrow</a>
-        </div>
-
-        <h2 style="margin-top:64px" data-reveal>Layout rules</h2>
-        <div class="sg-table-scroll" data-reveal>
-          <table class="sg-table">
-            <thead>
-              <tr><th>Surface</th><th>Rule</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Hero</td><td>100svh full-bleed media; brand + one headline + one support line + CTA</td></tr>
-              <tr><td>Nav</td><td>Centered logo; left/right clusters; all-caps tracked links</td></tr>
-              <tr><td>Columns</td><td>50/50 edge-to-edge tiles; no card chrome</td></tr>
-              <tr><td>Accent</td><td>Logo red only for brand marks, primary buttons, and link arrows</td></tr>
-              <tr><td>Motion</td><td>Lenis + GSAP ScrollTrigger + Barba film-gate wipe; honor prefers-reduced-motion</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2 data-reveal>Spacing</h2>
-        <div class="sg-table-scroll" data-reveal>
-          <table class="sg-table">
-            <thead>
-              <tr><th>Breakpoint</th><th>Section pad</th><th>Gutter</th><th>Max content</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>≥1100px</td><td>~140px</td><td>up to 64px</td><td>1400px</td></tr>
-              <tr><td>768–1099px</td><td>~96px</td><td>~4vw</td><td>fluid</td></tr>
-              <tr><td>&lt;768px</td><td>~72px</td><td>20px+</td><td>100%</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="sg-nav" data-reveal>
-          <a class="link-arrow" href="/">Home</a>
-          <a class="link-arrow" href="/gallery">Gallery</a>
-          <a class="link-arrow" href="/shop/k-merch">Apparel</a>
+        <div data-film-root data-reveal>
+          <p class="kf-vinyl-catalog-meta">Loading colour…</p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <footer class="site-footer">
+<footer class="site-footer">
     <div class="footer-grid">
       <div>
         <h2 class="h5">Wrap</h2>
         <div class="footer-links">
+          <a href="/vinyl-catalog">Film vinyl-catalog</a>
           <a href="/services/full-wraps">Full colour-change</a>
           <a href="/services/accent-package">Partial &amp; accents</a>
+          <a href="/services#protect">Tank guard &amp; PPF</a>
+          <a href="/pricing">Pricing</a>
           <a href="/wrap-studio">Build your wrap</a>
         </div>
       </div>
@@ -214,33 +165,50 @@
         <h2 class="h5">Film</h2>
         <div class="footer-links">
           <a href="/gallery">Gallery</a>
+          <a href="/services/transformation-film">Transformation film</a>
+          <a href="/journal">Journal</a>
+          <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
           <a href="/shop">Shop the drop</a>
+          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
         </div>
       </div>
       <div>
-        <h2 class="h5">System</h2>
-        <div class="footer-links">
-          <a href="/css/kfilms.css">kfilms.css</a>
-          <a href="/">Homepage</a>
-        </div>
+        <h2 class="h5">Stay on the list</h2>
+        <p class="p">Build drops, new finishes, and the films that come out of the garage.</p>
+        <form class="form" action="https://formsubmit.co/elombe@swftstudios.com" method="POST" accept-charset="UTF-8">
+          <input type="hidden" name="_subject" value="Kisala Films - email subscribe">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/?subscribed=1">
+          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
+          <div class="fld"><input type="email" name="email" placeholder="Email address" aria-label="Email" required></div>
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-note">Thanks — you’re on the list.</p>
+        </form>
       </div>
       <div class="footer-hours">
         <h2 class="h5">The garage</h2>
-        <p>Jersey City, NJ &middot; by appointment</p>
+        <p>Jersey City, NJ · by appointment</p>
+        <p><a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a></p>
+        <p>Monday to Friday: 10:00 AM – 6:00 PM</p>
+        <p>Saturday/Sunday: by appointment</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 Kisala Films &middot; Style guide (noindex)</span>
+      <span>&copy; 2026 Kisala Films · Jersey City, NJ · Film means vinyl — and cinema.</span>
       <a href="/styleguide">Style guide</a>
     </div>
   </footer>
 
+  
   <script src="https://cdn.jsdelivr.net/npm/@barba/core@2.10.3/dist/barba.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
+  <script src="/js/vinyl-catalog-film.js"></script>
   <script src="/js/motion.js"></script>
+
 </body>
 </html>

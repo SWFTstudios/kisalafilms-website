@@ -116,6 +116,60 @@
     } catch {
       /* private mode */
     }
+    scheduleCloudSync();
+  }
+
+  let cloudTimer = null;
+  function scheduleCloudSync() {
+    if (!window.KisalaAuth) return;
+    window.clearTimeout(cloudTimer);
+    cloudTimer = window.setTimeout(() => {
+      syncGarageToCloud().catch((err) => console.warn("cloud sync", err));
+    }, 700);
+  }
+
+  async function syncGarageToCloud() {
+    if (!window.KisalaAuth) return;
+    const user = await window.KisalaAuth.currentUser();
+    if (!user) return;
+    await window.KisalaAuth.ensureCustomerDoc(user);
+    const entries = Object.entries(garage.setups || {});
+    for (const [id, setup] of entries) {
+      await window.KisalaAuth.pushBuild(user.uid, id, {
+        ...setup,
+        status: setup.status || "draft",
+        title: setup.label || id,
+      });
+    }
+  }
+
+  async function mergeCloudBuilds(user) {
+    if (!window.KisalaAuth || !user) return;
+    const remote = await window.KisalaAuth.pullBuilds(user.uid);
+    const remoteIds = Object.keys(remote);
+    const localIds = Object.keys(garage.setups || {});
+    if (!remoteIds.length) {
+      if (localIds.length) {
+        const ok = window.confirm(
+          `Import ${localIds.length} build${localIds.length === 1 ? "" : "s"} from this device into your account?`
+        );
+        if (ok) await syncGarageToCloud();
+      }
+      return;
+    }
+    // Prefer newer updatedAt; keep local-only builds.
+    for (const [id, setup] of Object.entries(remote)) {
+      const local = garage.setups[id];
+      const remoteTs = Number(setup.updatedAt || 0);
+      const localTs = Number(local?.updatedAt || 0);
+      if (!local || remoteTs >= localTs) {
+        garage.setups[id] = { ...setup, id };
+      }
+    }
+    if (!garage.activeId || !garage.setups[garage.activeId]) {
+      garage.activeId = Object.keys(garage.setups)[0] || null;
+    }
+    writeGarage();
   }
 
   function readAccount() {
@@ -241,7 +295,7 @@
       f.notes || "—",
       "",
       "Resume anytime: https://kisalafilms-website.elombe.workers.dev/wrap-studio",
-      "(Saved builds live on this device — open Wrap Studio on the same phone/browser.)",
+      "(Builds sync to your Kisala Films account when signed in; otherwise they stay on this device.)",
     ];
     return lines.join("\n");
   }
@@ -252,10 +306,17 @@
 
   function renderAccount() {
     if (!accountOut) return;
-    if (account?.email) {
-      accountOut.textContent = `Signed in on this device as ${account.name || account.email}`;
+    if (window.__kisalaFirebaseUser?.email) {
+      const u = window.__kisalaFirebaseUser;
+      accountOut.innerHTML = `Signed in as ${escapeHtml(
+        u.displayName || u.email
+      )} · builds sync to your account · <a href="/login">Account</a>`;
+    } else if (account?.email) {
+      accountOut.innerHTML = `Saved on this device as ${escapeHtml(
+        account.name || account.email
+      )}. <a href="/login">Log in</a> to sync across phones.`;
     } else {
-      accountOut.textContent = "Save your garage to pick up builds later on this device.";
+      accountOut.innerHTML = `Save builds on this device, or <a href="/login">create an account</a> to sync them.`;
     }
   }
 
@@ -300,7 +361,7 @@
     );
     if (!entries.length) {
       listEl.innerHTML =
-        '<li class="studio-garage-empty">No saved builds yet. Open Save / sign up to keep this one.</li>';
+        '<li class="studio-garage-empty">No saved builds yet. Save this one, or <a href="/login">log in</a> to sync across devices.</li>';
       return;
     }
     listEl.innerHTML = entries
@@ -658,15 +719,24 @@
     setStatus("New build started. Save it whenever you’re ready.");
   });
 
-  deleteBtn?.addEventListener("click", () => {
+  deleteBtn?.addEventListener("click", async () => {
     if (!activeSetupId || !garage.setups[activeSetupId]) return;
     const label = garage.setups[activeSetupId].label || "this build";
     if (!window.confirm(`Delete “${label}” from this device?`)) return;
+    const deletedId = activeSetupId;
     delete garage.setups[activeSetupId];
     const remaining = Object.keys(garage.setups);
     activeSetupId = remaining[0] || null;
     garage.activeId = activeSetupId;
     writeGarage();
+    if (window.KisalaAuth) {
+      try {
+        const user = await window.KisalaAuth.currentUser();
+        if (user) await window.KisalaAuth.deleteBuild(user.uid, deletedId);
+      } catch (err) {
+        console.warn("cloud delete", err);
+      }
+    }
     if (activeSetupId) {
       applyDraft(garage.setups[activeSetupId]);
       setStatus(`Loaded “${garage.setups[activeSetupId].label}”.`);
@@ -738,6 +808,29 @@
   // Boot
   garage = readGarage();
   account = readAccount();
+
+  if (window.KisalaAuth) {
+    window.KisalaAuth.onAuth(async (user) => {
+      window.__kisalaFirebaseUser = user || null;
+      renderAccount();
+      if (user) {
+        try {
+          await mergeCloudBuilds(user);
+          if (garage.activeId && garage.setups[garage.activeId]) {
+            activeSetupId = garage.activeId;
+            await applyDraft(garage.setups[activeSetupId]);
+          }
+          renderSelect();
+          renderList();
+          renderProgress(garage.setups[activeSetupId]);
+          setStatus(`Synced cloud garage for ${user.email}.`);
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+    });
+  }
+
   renderAccount();
 
   if (garage.activeId && garage.setups[garage.activeId]) {
