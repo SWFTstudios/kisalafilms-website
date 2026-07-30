@@ -382,11 +382,11 @@
             <span class="studio-step-num">03</span>
             <h2 class="h3">Colour &amp; finish</h2>
           </div>
-          <p class="p">Search the live Metro Restyling catalogue for the exact film, or just tell me the look you&rsquo;re after and I&rsquo;ll send swatches.</p>
+          <p class="p">Pick one film for the whole bike, or assign different colours to fairings, tank, tail and accents. Search the Metro catalogue, then tap the parts each film should cover.</p>
 
           <div class="studio-fields">
             <div class="fld">
-              <label for="finish">Finish</label>
+              <label for="finish">Primary finish</label>
               <select id="finish" name="finish" data-summary="finish" required>
                 <option value="">Select finish</option>
                 <option value="Gloss">Gloss</option>
@@ -419,8 +419,8 @@
             <input id="vinyl-color" type="search" name="vinyl_color_query" placeholder="Gloss black, Avery, KPMF, colour shift&hellip;" data-vinyl-search enterkeyhint="search">
             <div class="vinyl-results" id="vinyl-color-results" data-vinyl-results hidden></div>
             <div class="vinyl-picked" data-vinyl-selected hidden></div>
-            <button type="button" class="btn btn-ghost" data-vinyl-clear hidden style="margin-top:12px">Clear colour</button>
-            <p class="fld-hint">Over 1,000 films from Avery, 3M, KPMF, Inozetek and more. Pick one or leave it blank.</p>
+            <button type="button" class="btn btn-ghost" data-vinyl-clear hidden style="margin-top:12px">Clear active colour</button>
+            <p class="fld-hint">Over 1,000 films from Avery, 3M, KPMF, Inozetek and more. Pick a film, then assign it to parts below — repeat for a multi-colour wrap.</p>
           </div>
 
           <!-- Browse panel: same catalogue as the search above, different way in -->
@@ -477,9 +477,19 @@
               <div class="btn-row">
                 <button type="button" class="btn btn-ghost" data-browse-more hidden>Show more films</button>
               </div>
-              <p class="fld-hint" data-vinyl-picked-note hidden>Film set on your build sheet. Change it any time before you send.</p>
+              <p class="fld-hint" data-vinyl-picked-note hidden>Film set on your build sheet. Assign it to parts below, or change it any time before you send.</p>
             </div>
           </div>
+
+          <div class="part-colours" data-part-colours>
+            <p class="vinyl-browse-label">Assign colours to parts</p>
+            <p class="fld-hint">With a film active above, tap each part it should cover. Switch films to paint uppers, lowers, tank and accents differently.</p>
+            <div class="part-colour-active" data-part-colour-active hidden></div>
+            <div class="part-colour-grid" data-part-colour-grid role="group" aria-label="Bike parts"></div>
+            <input type="hidden" name="part_colours" value="" data-part-colours-field data-summary="partcolours">
+            <input type="hidden" name="wrap_parts_summary" value="" data-parts-summary>
+          </div>
+
           <input type="hidden" name="vinyl_color" value="" data-vinyl-label data-summary="colour">
           <input type="hidden" name="vinyl_handle" value="" data-vinyl-handle>
           <input type="hidden" name="vinyl_url" value="" data-vinyl-url>
@@ -732,6 +742,7 @@
         <div class="summary-row"><span class="summary-label">Service</span><span class="summary-value is-empty" data-summary-out="service">Not selected</span></div>
         <div class="summary-row"><span class="summary-label">Finish</span><span class="summary-value is-empty" data-summary-out="finish">Not selected</span></div>
         <div class="summary-row"><span class="summary-label">Colour</span><span class="summary-value is-empty" data-summary-out="colour">Not selected</span></div>
+        <div class="summary-row"><span class="summary-label">Part colours</span><span class="summary-value is-empty" data-summary-out="partcolours">Not assigned</span></div>
         <div class="summary-row"><span class="summary-label">Coverage</span><span class="summary-value is-empty" data-summary-out="coverage">Not selected</span></div>
         <div class="summary-row"><span class="summary-label">Add-ons</span><span class="summary-value is-empty" data-summary-out="addons">None</span></div>
         <div class="summary-row"><span class="summary-label">Saved films</span><span class="summary-value is-empty" data-summary-out="saved">None</span></div>
@@ -823,6 +834,7 @@
   <script src="/js/bike-search.js"></script>
   <script src="/js/vinyl-search.js"></script>
   <script src="/js/vinyl-catalog.js"></script>
+  <script src="/js/wrap-part-colours.js"></script>
   <script src="/js/wrap-studio.js"></script>
 </body>
 </html>
