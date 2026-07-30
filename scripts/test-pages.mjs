@@ -312,7 +312,7 @@ function fire(win, el, type) {
         el.getAttribute("data-summary-out")
       )
     );
-    ["bike", "service", "finish", "colour", "coverage", "addons", "saved", "transport", "transportfee", "photos", "budget", "timeline"].forEach(
+    ["bike", "service", "finish", "colour", "partcolours", "coverage", "addons", "saved", "transport", "transportfee", "photos", "budget", "timeline"].forEach(
       (key) => assert(outs.has(key), `no summary row for "${key}"`)
     );
   });
@@ -331,7 +331,7 @@ function fire(win, el, type) {
   });
 
   check("the new lead fields are all present", () => {
-    ["transport", "pickup_zone", "pickup_area", "pickup_notes", "budget", "transport_estimate", "estimate_total_range", "pricing_mode", "saved_films"].forEach(
+    ["transport", "pickup_zone", "pickup_area", "pickup_notes", "budget", "transport_estimate", "estimate_total_range", "pricing_mode", "saved_films", "part_colours", "wrap_parts_summary"].forEach(
       (name) => assert(field(win, name), `missing lead field "${name}"`)
     );
   });
@@ -452,6 +452,41 @@ function fire(win, el, type) {
       assertEqual(field(win, "vinyl_color").value, picked.n, "vinyl_color");
       assertEqual(field(win, "vinyl_vendor").value, picked.v, "vinyl_vendor");
       assertEqual(summary(win, "colour"), picked.n, "colour summary row");
+    });
+
+    check("an active film can be assigned to multiple bike parts", () => {
+      assert(win.KisalaPartColours, "part-colour module missing");
+      const first = win.KisalaVinyl.selectedColor();
+      assert(first, "expected an active film from the previous pick");
+
+      const studio = win.document.querySelector("[data-wrap-studio]");
+      const tank = studio.querySelector('.part-colour-chip[data-part="tank"]');
+      const upper = studio.querySelector('.part-colour-chip[data-part="upper_fairing"]');
+      assert(tank && upper, "part chips should render");
+      click(tank);
+      click(upper);
+
+      const map = win.KisalaPartColours.map();
+      assertEqual(map.tank?.n, first.n, "tank colour");
+      assertEqual(map.upper_fairing?.n, first.n, "upper fairing colour");
+      assert(/Tank:/.test(field(win, "part_colours").value), "part_colours should list the tank");
+      assert(/Upper fairing:/.test(field(win, "part_colours").value), "part_colours should list the upper fairing");
+      assert(/Tank/.test(field(win, "wrap_parts_summary").value), "parts summary");
+
+      // Second film on a different part — multi-colour wrap.
+      const other = win.KisalaVinyl.all().find((c) => c.n && c.n !== first.n && c.i);
+      assert(other, "need a second film");
+      win.KisalaVinyl.pick(other);
+      const lower = studio.querySelector('.part-colour-chip[data-part="lower_fairing"]');
+      click(lower);
+      assertEqual(win.KisalaPartColours.map().lower_fairing?.n, other.n, "lower fairing got the second film");
+      assertEqual(win.KisalaPartColours.map().tank?.n, first.n, "tank kept the first film");
+      // Summary refreshes on a short timeout after change events.
+      win.document.querySelector("[data-wrap-studio]").dispatchEvent(new win.Event("change", { bubbles: true }));
+      assert(
+        /3 parts mapped|Lower fairing|Tank:/.test(summary(win, "partcolours")),
+        `part colours summary reads "${summary(win, "partcolours")}"`
+      );
     });
 
     check("saving a film shortlists it and reaches the build sheet", () => {

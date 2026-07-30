@@ -52,8 +52,12 @@
   let loading = null;
   let activeIndex = -1;
   let currentHits = [];
+  /** Last film handed to pick() — used by part-colour assignment. */
+  let currentColor = null;
 
   function clearMeta() {
+    const hadColor = !!currentColor;
+    currentColor = null;
     Object.values(META).forEach((el) => {
       if (el) el.value = "";
     });
@@ -62,6 +66,9 @@
       SELECTED.innerHTML = "";
     }
     if (CLEAR_BTN) CLEAR_BTN.hidden = true;
+    if (hadColor) {
+      FORM.dispatchEvent(new CustomEvent("kisala:vinyl-clear", { bubbles: true }));
+    }
   }
 
   function writeMeta(color) {
@@ -186,11 +193,15 @@
 
   function pick(color) {
     if (!color) return;
+    currentColor = color;
     INPUT.value = color.n;
     writeMeta(color);
     hideResults();
     window.KisalaTrack?.("vinyl_select", { label: color.n, vendor: color.v, family: color.c });
     FORM.dispatchEvent(new Event("change", { bubbles: true }));
+    FORM.dispatchEvent(
+      new CustomEvent("kisala:vinyl-pick", { bubbles: true, detail: { color } })
+    );
   }
 
   let families = [];
@@ -238,6 +249,8 @@
     families: () => families,
     finishes: () => finishes,
     selected: () => (META.label && META.label.value) || "",
+    /** Full colour object from the last pick, or null. */
+    selectedColor: () => currentColor,
     pick,
     clear() {
       INPUT.value = "";

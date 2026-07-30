@@ -376,6 +376,21 @@
     write("budget", form.querySelector('[name="budget"]')?.value || "");
     write("colour", form.querySelector("[data-vinyl-label]")?.value || "");
 
+    const partMap = form.querySelector("[data-part-colours-field]")?.value || "";
+    const partLines = partMap
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => line.split("|")[0].trim());
+    write(
+      "partcolours",
+      partLines.length
+        ? partLines.length <= 2
+          ? partLines.join(" · ")
+          : `${partLines.length} parts mapped`
+        : ""
+    );
+
     const addons = Array.from(form.querySelectorAll('input[name="addons"]:checked')).map((el) => el.value);
     write("addons", addons.join(", "));
 

@@ -462,7 +462,7 @@ try {
     await check("the hidden estimate fields bound with form= do submit", () => {
       // These sit outside <form>. If the association failed they'd be missing,
       // and the owner's build sheet would arrive with no prices on it.
-      ["ballpark_estimate", "transport_estimate", "estimate_total_range", "pricing_mode", "saved_films"].forEach(
+      ["ballpark_estimate", "transport_estimate", "estimate_total_range", "pricing_mode", "saved_films", "part_colours", "wrap_parts_summary"].forEach(
         (name) => assert(fields.has(name), `${name} never reached the server`)
       );
       assert(num(fields.get("ballpark_estimate")) > 0, "ballpark_estimate is empty");

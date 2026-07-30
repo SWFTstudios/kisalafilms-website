@@ -3282,6 +3282,143 @@ a.shop-product-card:hover { text-decoration: none; }
   background: #000;
 }
 
+/* ===== Part → colour assignment (Wrap Studio) ============================ */
+.part-colours {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--c-hairline);
+}
+
+.part-colour-active {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 14px;
+  border: 1px solid var(--c-orange);
+  background: #1a120f;
+}
+
+.part-colour-active img,
+.part-colour-active-swatch {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  flex: 0 0 auto;
+  background: #2a2a2a;
+  border: 1px solid var(--c-hairline);
+}
+
+.part-colour-active-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.part-colour-active-kicker {
+  font-family: var(--font-heading);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--c-orange);
+}
+
+.part-colour-active-copy strong {
+  font-size: .95rem;
+  color: var(--c-white);
+}
+
+.part-colour-active-hint {
+  font-size: .8rem;
+  color: var(--c-gray);
+}
+
+.part-colour-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 560px) {
+  .part-colour-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 960px) {
+  .part-colour-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.part-colour-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 12px;
+  text-align: left;
+  border: 1px solid var(--c-hairline);
+  background: #141414;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color .2s ease, background-color .2s ease, opacity .2s ease;
+}
+
+.part-colour-chip:hover:not(:disabled) {
+  border-color: var(--c-platinum);
+}
+
+.part-colour-chip.has-film {
+  border-color: var(--c-orange);
+  background: #1a120f;
+}
+
+.part-colour-chip.is-locked,
+.part-colour-chip:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.part-colour-chip-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  flex: 0 0 auto;
+  background: #222;
+  border: 1px solid var(--c-hairline);
+}
+
+.part-colour-chip-thumb--empty {
+  display: block;
+  border-style: dashed;
+}
+
+.part-colour-chip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.part-colour-chip-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: .86rem;
+  color: var(--c-white);
+}
+
+.part-colour-chip-meta {
+  font-size: .74rem;
+  color: var(--c-gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.part-colour-chip.has-film .part-colour-chip-meta {
+  color: var(--c-platinum);
+}
+
 .thanks-card {
   max-width: 620px;
   margin: 0 auto;
