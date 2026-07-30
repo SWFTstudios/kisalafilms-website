@@ -136,7 +136,7 @@ def fetch_collection(handle: str) -> list[dict]:
     return products
 
 
-def compact_color(product: dict) -> dict:
+def compact_color(product: dict, collection: str = "") -> dict:
     handle = product["handle"]
     title = product["title"]
     return {
@@ -153,6 +153,7 @@ def compact_color(product: dict) -> dict:
         "i": first_image(product),
         # Stock flag from Metro Restyling (any variant available).
         "a": is_available(product),
+        "collection": collection,
     }
 
 
@@ -166,7 +167,9 @@ def main() -> None:
             ptype = product.get("product_type") or ""
             if ptype not in INCLUDE_TYPES:
                 continue
-            by_id[pid] = compact_color(product)
+            # Prefer the first (broadest) collection a SKU appears in; don't overwrite.
+            if pid not in by_id:
+                by_id[pid] = compact_color(product, collection=handle)
 
     colors = sorted(by_id.values(), key=lambda c: (c["n"].lower(), c["id"]))
     finishes = sorted({c["f"] for c in colors if c["f"]})

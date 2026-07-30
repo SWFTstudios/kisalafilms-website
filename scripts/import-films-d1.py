@@ -80,6 +80,8 @@ def build_films(metro: dict, sheet: dict[str, dict[str, str]]) -> list[dict]:
                 "brand": row.get("brand") or c.get("v") or "",
                 "finish": row.get("finish") or c.get("f") or "",
                 "color_family": c.get("c") or "",
+                "product_type": c.get("t") or "",
+                "collection": c.get("collection") or "",
                 "image_url": c.get("i") or "",
                 "metro_url": c.get("u") or f"https://metrorestyling.com/products/{handle}",
                 "in_stock": bool(c.get("a")),

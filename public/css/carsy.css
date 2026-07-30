@@ -939,6 +939,22 @@ body.nav-lock { overflow: hidden; }
   display: none;
 }
 .form-note.show { display: block; }
+[data-auth-error]:not([hidden]) {
+  display: block;
+  color: #e8271f;
+}
+button.linkish {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+button.linkish:hover {
+  opacity: 0.85;
+}
 .honey {
   position: absolute;
   left: -9999px;

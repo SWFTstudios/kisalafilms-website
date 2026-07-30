@@ -131,6 +131,7 @@
       <a href="/locations">The garage</a>
           </div>
         </div>
+        <a href="/login">Login</a>
         <a href="/contact">Contact</a>
         <a class="btn btn-primary nav-cta" href="/wrap-studio">Build your wrap</a>
       </nav>
@@ -171,6 +172,7 @@
       <a href="/locations">The garage</a>
         </div>
       </div>
+      <a class="nav-row" href="/login">Login</a>
       <a class="nav-row" href="/contact">Contact</a>
       <a class="btn btn-primary nav-panel-cta" href="/wrap-studio">Build your wrap</a>
     </nav>
@@ -712,7 +714,7 @@
               <p class="summary-label">Your garage</p>
               <p class="studio-garage-account" data-garage-account>Save your garage to pick up builds later on this device.</p>
             </div>
-            <button type="button" class="btn btn-ghost studio-garage-signup" data-garage-open-save>Save / sign up</button>
+            <button type="button" class="btn btn-ghost studio-garage-signup" data-garage-open-save>Save build</button>
           </div>
 
           <div class="studio-progress-head">
@@ -787,7 +789,7 @@
     <div class="studio-save-panel">
       <p class="eyebrow">Your garage</p>
       <h2 class="h3">Save this build</h2>
-      <p class="p">Sign up on this device to keep multiple bike builds, pick up where you left off, and track progress. Optional: email yourself a copy of the sheet now.</p>
+      <p class="p">Save this build on this device, or <a href="/login">create an account</a> to sync builds across phones. Optional: email yourself a copy of the sheet now.</p>
       <form data-garage-signup-form>
         <div class="studio-fields">
           <div class="fld">
@@ -811,7 +813,7 @@
           <button class="btn btn-primary" type="submit">Save to my garage</button>
           <button class="btn btn-ghost" type="button" data-garage-close>Not now</button>
         </div>
-        <p class="fld-hint">Builds are stored on this phone/browser only — no password account. Sending the full quote still goes to the garage with photos.</p>
+        <p class="fld-hint">Device saves work offline. Signed-in accounts sync builds to the cloud via Firebase Auth.</p>
       </form>
     </div>
   </div>
@@ -892,6 +894,8 @@
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
   <script src="/js/site.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth-client.js"></script>
   <script src="/js/bike-search.js"></script>
   <script src="/js/vinyl-search.js"></script>
   <script src="/js/vinyl-catalog.js"></script>

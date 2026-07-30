@@ -278,6 +278,29 @@ Most tiles are currently filled in only as far as the repository can vouch for: 
 
 ## Vinyl catalogue
 
+Public Metro-style browse lives at [`/vinyl-catalog`](./public/vinyl-catalog.html) (D1 CMS via `GET /api/films`). Wrap Studio still uses [`vinyl-catalog.js`](./public/js/vinyl-catalog.js) over `vinyl-colors.json` for the in-studio browse panel; the page catalog is [`vinyl-catalog-page.js`](./public/js/vinyl-catalog-page.js). Old `/lookbook` URLs 301 to the new routes.
+
+Hourly Worker cron scrapes Metro product prices into D1. Download the garage sheet anytime: `GET /api/films/pricing.csv`.
+
+### Founder at-cost pricing
+
+Until **5 completed orders** (`site_meta.completed_orders`), the public films API includes `price_usd` / `roll_price_usd` and `founderPricingActive: true`. After that, prices are omitted from the catalog UI (CSV export still includes them for the garage).
+
+Mark a completed build (burns one founder slot):
+
+```bash
+curl -X POST https://kisalafilms-website.elombe.workers.dev/api/founder/complete \
+  -H "Authorization: Bearer $FOUNDER_ADMIN_TOKEN" \
+  -H "Content-Type: application/json"
+# optional body: {"set": 3} to set the counter explicitly
+```
+
+Set the secret with `wrangler secret put FOUNDER_ADMIN_TOKEN` (or reuse `FILMS_IMPORT_TOKEN`).
+
+### Accounts (Firebase)
+
+Email/password Auth + Firestore builds under `customers/{uid}/builds/{buildId}`. Config: [`firebase-config.js`](./public/js/firebase-config.js). Login: [`/login`](./public/login.html). Wrap Studio syncs the garage when signed in.
+
 `vinyl-search.js` owns the typeahead and the selection; `vinyl-catalog.js` mounts the **Browse all films** panel over the same loaded array, and both write the same hidden fields. One catalogue, one fetch, two ways in.
 
 Colour families are derived from the product title, since Metro's feed has no colour field:

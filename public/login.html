@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login | Kisala Films</title>
+  <meta name="description" content="Sign in to sync Wrap Studio builds across devices at Kisala Films.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="/images/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link rel="canonical" href="https://kisalafilms-website.elombe.workers.dev/login">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Kisala Films">
+  <meta property="og:title" content="Login | Kisala Films">
+  <meta property="og:url" content="https://kisalafilms-website.elombe.workers.dev/login">
+  <meta property="og:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
+  <link rel="stylesheet" href="/css/carsy.css">
+  <script src="/js/kisala-config.js"></script>
+  <script src="/js/analytics.js"></script>
+</head>
+<body class="carsy">
+
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745"></a>
+      <nav class="nav-desktop" aria-label="Primary">
+        <div class="nav-dd">
+          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
+          <div class="nav-dd-menu">
+            <a href="/services">All services</a>
+            <a href="/services/full-wraps">Full colour-change wraps</a>
+            <a href="/services/accent-package">Partial &amp; accents</a>
+            <a href="/services#chrome">Chrome delete</a>
+            <a href="/services#protect">Tank guard &amp; PPF</a>
+            <a href="/services/transformation-film">Transformation film</a>
+          </div>
+        </div>
+        <a href="/gallery">Gallery</a>
+        <a href="/vinyl-catalog">Vinyl catalog</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/shop">Shop</a>
+        <a href="/login">Login</a>
+        <a href="/contact">Contact</a>
+        <a class="btn btn-primary nav-cta" href="/wrap-studio">Build your wrap</a>
+      </nav>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+  <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
+  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
+    <div class="nav-panel-head">
+      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745"></a>
+      <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
+    </div>
+    <nav class="nav-panel-body">
+      <a class="nav-row" href="/wrap-studio">Wrap Studio</a>
+      <a class="nav-row" href="/vinyl-catalog">Vinyl catalog</a>
+      <a class="nav-row" href="/gallery">Gallery</a>
+      <a class="nav-row" href="/pricing">Pricing</a>
+      <a class="nav-row" href="/shop">Shop</a>
+      <a class="nav-row" href="/login">Login</a>
+      <a class="nav-row" href="/contact">Contact</a>
+      <a class="btn btn-primary nav-panel-cta" href="/wrap-studio">Build your wrap</a>
+    </nav>
+  </aside>
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Your garage</p>
+      <h1>Login</h1>
+      <p class="p-lg">Create an account to sync Wrap Studio builds across phones. Passwords stay with Firebase Auth — never stored on this site.</p>
+    </div>
+  </section>
+
+  <section class="section reveal">
+    <div class="container book-grid">
+      <div>
+        <h2 data-auth-heading>Sign in</h2>
+        <p class="p-lg" data-auth-lead>Use the same email you put on build sheets. Builds sync to the cloud when you&rsquo;re signed in.</p>
+        <div class="contact-tiles" style="margin-top:28px" data-auth-signed-out-help>
+          <div class="contact-tile"><h3 class="h6">Device cache</h3><p>Builds still save on this browser if you&rsquo;re offline.</p></div>
+          <div class="contact-tile"><h3 class="h6">Multi-build</h3><p>Switch, rename, and resume projects from any signed-in device.</p></div>
+          <div class="contact-tile"><h3 class="h6">Wrap Studio</h3><p><a href="/wrap-studio">Open the configurator</a> after you sign in.</p></div>
+        </div>
+      </div>
+
+      <div>
+        <form class="form" data-auth-form data-auth-mode="signin" novalidate>
+          <div class="fld" data-auth-name-field hidden>
+            <label for="auth-name">Name</label>
+            <input id="auth-name" name="displayName" type="text" autocomplete="name">
+          </div>
+          <div class="fld">
+            <label for="auth-email">Email</label>
+            <input id="auth-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="fld">
+            <label for="auth-password">Password</label>
+            <input id="auth-password" name="password" type="password" autocomplete="current-password" required minlength="6">
+          </div>
+          <p class="form-note" data-auth-error role="alert" hidden></p>
+          <button class="btn btn-primary" type="submit" data-auth-submit>Sign in</button>
+          <p class="form-note">
+            <button type="button" class="linkish" data-auth-toggle>Need an account? Create one</button>
+          </p>
+        </form>
+
+        <div class="studio-garage" data-auth-account hidden style="margin-top:0">
+          <div class="studio-garage-head">
+            <h2 class="h5" style="margin:0">Your builds</h2>
+            <p class="studio-garage-account" data-auth-user></p>
+          </div>
+          <ul class="studio-garage-list" data-auth-builds></ul>
+          <div class="studio-garage-actions">
+            <a class="btn btn-primary" href="/wrap-studio">Open Wrap Studio</a>
+            <button type="button" class="btn btn-ghost" data-auth-import>Import builds from this device</button>
+            <button type="button" class="btn btn-ghost" data-auth-signout>Sign out</button>
+          </div>
+          <p class="form-note" data-auth-status></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h2 class="h5">Wrap</h2>
+        <div class="footer-links">
+          <a href="/services/full-wraps">Full colour-change</a>
+          <a href="/vinyl-catalog">Vinyl catalog</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/wrap-studio">Build your wrap</a>
+        </div>
+      </div>
+      <div>
+        <h2 class="h5">The garage</h2>
+        <p>Jersey City, NJ &middot; by appointment</p>
+        <p><a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a></p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>&copy; 2026 Kisala Films</span>
+      <a href="/styleguide">Style guide</a>
+    </div>
+  </footer>
+
+  <script src="/js/nav.js"></script>
+  <script src="/js/site.js"></script>
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/auth-client.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>

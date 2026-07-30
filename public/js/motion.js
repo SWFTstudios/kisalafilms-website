@@ -486,10 +486,10 @@
       rebindPageScript("/js/home.js");
     } else if (namespace === "gallery") {
       rebindPageScript("/js/gallery.js");
-    } else if (namespace === "lookbook") {
-      rebindPageScript("/js/lookbook.js");
-    } else if (namespace === "lookbook-film") {
-      rebindPageScript("/js/lookbook-film.js");
+    } else if (namespace === "vinyl-catalog" || namespace === "lookbook") {
+      rebindPageScript("/js/vinyl-catalog-page.js");
+    } else if (namespace === "vinyl-catalog-film" || namespace === "lookbook-film") {
+      rebindPageScript("/js/vinyl-catalog-film.js");
     }
   };
 
@@ -528,6 +528,8 @@
         { namespace: "home" },
         { namespace: "styleguide" },
         { namespace: "gallery" },
+        { namespace: "vinyl-catalog" },
+        { namespace: "vinyl-catalog-film" },
         { namespace: "lookbook" },
         { namespace: "lookbook-film" },
       ],
@@ -537,8 +539,14 @@
         if (href.startsWith("http") || href.startsWith("mailto:") || href.startsWith("#"))
           return true;
         let path = href.split("?")[0].replace(/\.html$/, "").replace(/\/$/, "") || "/";
-        if (path === "/lookbook/film" || path === "/lookbook/film.html") return true;
-        const allowed = ["/", "/styleguide", "/gallery", "/lookbook"];
+        if (
+          path === "/lookbook/film" ||
+          path === "/vinyl-catalog/film" ||
+          path.endswith("/film")
+        ) {
+          return true;
+        }
+        const allowed = ["/", "/styleguide", "/gallery", "/lookbook", "/vinyl-catalog", "/login"];
         return !allowed.includes(path);
       },
     });
