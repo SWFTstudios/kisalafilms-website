@@ -32,4 +32,27 @@
     video.addEventListener("error", hide);
     video.querySelector("source")?.addEventListener("error", hide);
   }
+
+  // In The Shop — muted looping Vimeo in the intro media frame.
+  const intro = document.querySelector("[data-intro-vimeo]");
+  const mount = intro?.querySelector("[data-intro-embed]");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (intro && mount && !reduceMotion) {
+    const id = intro.getAttribute("data-intro-vimeo");
+    const title = intro.getAttribute("data-intro-title") || "In The Shop — 02' Honda F4i";
+    const src =
+      `https://player.vimeo.com/video/${id}` +
+      `&autoplay=1&muted=1&loop=1&background=1&title=0&byline=0&portrait=0`;
+    const iframe = document.createElement("iframe");
+    iframe.src = src;
+    iframe.title = title;
+    iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
+    iframe.setAttribute("allowfullscreen", "");
+    iframe.loading = "lazy";
+    iframe.tabIndex = -1;
+    mount.appendChild(iframe);
+    iframe.addEventListener("load", () => mount.classList.add("is-ready"), { once: true });
+    // Failsafe if load never fires
+    window.setTimeout(() => mount.classList.add("is-ready"), 2500);
+  }
 })();
