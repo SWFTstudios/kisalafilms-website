@@ -172,7 +172,7 @@ def hub_body(catalog: dict) -> str:
     <div class="container">
       <p class="eyebrow">Shop</p>
       <h1>Three ways in.</h1>
-      <p class="p-lg">Photoshoot packages, vinyl finishes, and the WLG merch drop. Pick a collection — each one opens into its own products.</p>
+      <p class="p-lg">Photoshoot packages, vinyl finishes, and the K Merch drop. Pick a collection — each one opens into its own products.</p>
     </div>
   </section>
 
@@ -460,7 +460,8 @@ def merch_collection_body(drop: dict, products: list[dict]) -> str:
     <div class="container">
       <p class="eyebrow"><a href="/shop">Shop</a> / Merch</p>
       <h1>{esc(drop.get('drop', 'Merch'))}</h1>
-      <p class="p-lg">Eight pieces carrying the lines that keep the garage moving. Heavyweight cotton and midweight fleece, Kisala Films mark on the front, the quote across the back left shoulder.</p>
+      <p class="p-lg">Clothes that express and inspire individuals of all walks of life to explore the unknown and carve out the life they seek in this world.</p>
+      <p class="p-lg">Comfy heavyweight t-shirts and hoodies that look and feel good.</p>
       <p class="p">No cart and no checkout &mdash; this is a limited run, so you reserve a piece and I confirm sizing and payment directly.</p>
     </div>
   </section>
@@ -628,7 +629,7 @@ def main() -> None:
     # Hub
     hub = page_shell(
         title="Shop — Photoshoot, Wrap & Merch | Kisala Films",
-        description="Shop Kisala Films: photoshoot packages, vinyl wrap finishes, and the WLG merch drop.",
+        description="Shop Kisala Films: photoshoot packages, vinyl wrap finishes, and the K Merch drop.",
         head_template=head_t,
         header=header,
         body=hub_body(catalog),
@@ -735,8 +736,8 @@ def main() -> None:
             write(
                 path,
                 page_shell(
-                    title=f"Merch — {merch_data.get('drop', 'WLG Quotes')} | Kisala Films",
-                    description="The WLG Quotes first run — heavyweight tees and midweight fleece. Reserve a piece before the run is cut.",
+                    title=f"Merch — {merch_data.get('drop', 'K Merch')} | Kisala Films",
+                    description="Clothes that express and inspire individuals of all walks of life to explore the unknown and carve out the life they seek in this world. Comfy heavyweight t-shirts and hoodies that look and feel good.",
                     head_template=head_t,
                     header=header,
                     body=merch_collection_body(merch_data, products),

@@ -145,7 +145,7 @@ npx wrangler secret put STRIPE_SECRET_KEY
 | `/shop` | Collection hub |
 | `/shop/photoshoot` · `/shop/photoshoot/{slug}` | Cinema packages → product pages → Wrap Studio |
 | `/shop/wrap` · `/shop/wrap/{slug}` | Vinyl finishes in a Vossen-style catalogue → product pages → Wrap Studio with `?finish=` |
-| `/shop/merch` · `/shop/merch/{id}` | WLG apparel lookbook and piece pages — reserve, no cart |
+| `/shop/merch` · `/shop/merch/{id}` | K Merch apparel lookbook and piece pages — reserve, no cart |
 
 Wrap finish cards mirror the Vossen wheels listing: large product shot, series label, coverage chips, starting price, and colour swatches. Merch **Reserve yours** still carries the piece into the form via `js/shop.js`.
 
