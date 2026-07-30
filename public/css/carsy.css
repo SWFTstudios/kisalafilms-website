@@ -3282,6 +3282,194 @@ a.shop-product-card:hover { text-decoration: none; }
   background: #000;
 }
 
+/* ===== Wrap Studio garage / save modal ================================== */
+.studio-garage {
+  margin: 0 0 22px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--c-hairline);
+}
+
+.studio-garage-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.studio-garage-account {
+  margin: 4px 0 0;
+  font-size: .78rem;
+  color: var(--c-gray);
+  line-height: 1.45;
+}
+
+.studio-garage-signup {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 14px;
+}
+
+.studio-progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.studio-progress {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.studio-progress-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .78rem;
+  color: var(--c-gray);
+}
+
+.studio-progress-item.is-done {
+  color: var(--c-white);
+}
+
+.studio-progress-mark {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--c-hairline);
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.studio-progress-item.is-done .studio-progress-mark {
+  background: var(--c-orange);
+  border-color: var(--c-orange);
+}
+
+.studio-garage-switch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.studio-garage-switch select,
+.studio-save-panel input[type="text"],
+.studio-save-panel input[type="email"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  background: #0a0a0a;
+  border: 1px solid var(--c-hairline);
+  color: var(--c-white);
+  font: inherit;
+}
+
+.studio-garage-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.studio-garage-empty {
+  font-size: .78rem;
+  color: var(--c-gray);
+}
+
+.studio-garage-card {
+  border: 1px solid var(--c-hairline);
+  background: #0a0a0a;
+}
+
+.studio-garage-card.is-active {
+  border-color: var(--c-orange);
+}
+
+.studio-garage-card-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.studio-garage-card-btn strong {
+  font-family: var(--font-heading);
+  font-size: .8rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.studio-garage-card-btn span {
+  font-size: .72rem;
+  color: var(--c-gray);
+}
+
+.studio-garage-card-bar {
+  height: 3px;
+  background: #1a1a1a;
+}
+
+.studio-garage-card-bar i {
+  display: block;
+  height: 100%;
+  background: var(--c-orange);
+}
+
+.studio-garage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.studio-garage-actions .btn {
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.studio-save-modal {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.studio-save-panel {
+  width: min(520px, 100%);
+  max-height: min(90vh, 720px);
+  overflow: auto;
+  padding: 28px 24px;
+  background: #0c0c0c;
+  border: 1px solid var(--c-hairline);
+}
+
+.studio-save-panel .h3 {
+  margin: 0 0 .35em;
+}
+
+.studio-save-panel .p {
+  margin-bottom: 18px;
+}
+
+.studio-save-panel .studio-fields {
+  margin-bottom: 8px;
+}
+
+.studio-save-panel .studio-consent {
+  margin: 16px 0;
+}
+
 .thanks-card {
   max-width: 620px;
   margin: 0 auto;

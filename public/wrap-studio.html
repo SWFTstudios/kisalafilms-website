@@ -192,11 +192,17 @@
             method="POST"
             enctype="multipart/form-data"
             accept-charset="UTF-8"
-            data-wrap-studio>
+            data-wrap-studio
+            data-studio-storage="kisala-wrap-studio-garage">
         <input type="hidden" name="_subject" value="Kisala Films — Wrap Studio build sheet">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/thanks">
+        <input type="hidden" name="_cc" value="" data-studio-cc>
+        <input type="hidden" name="_replyto" value="" data-studio-replyto>
+        <input type="hidden" name="_autoresponse" value="Thanks — your Kisala Films wrap build sheet is attached in this email (and a copy went to the garage). Resume anytime at https://kisalafilms-website.elombe.workers.dev/wrap-studio on this same phone or browser.">
+        <input type="hidden" name="build_sheet_summary" value="" data-build-summary>
+        <input type="hidden" name="build_progress" value="" data-build-progress>
         <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
 
         <!-- 01 — the bike -->
@@ -728,6 +734,44 @@
       <aside class="studio-summary" aria-label="Build summary">
         <h2 class="h4">Your build</h2>
         <p class="summary-sub">Updates as you choose.</p>
+
+        <div class="studio-garage" data-studio-garage>
+          <div class="studio-garage-head">
+            <div>
+              <p class="summary-label">Your garage</p>
+              <p class="studio-garage-account" data-garage-account>Save your garage to pick up builds later on this device.</p>
+            </div>
+            <button type="button" class="btn btn-ghost studio-garage-signup" data-garage-open-save>Save / sign up</button>
+          </div>
+
+          <div class="studio-progress-head">
+            <span class="summary-label">Progress</span>
+            <strong data-build-progress-pct>0%</strong>
+          </div>
+          <ol class="studio-progress" data-build-progress-list></ol>
+
+          <label class="studio-garage-switch">
+            <span class="summary-label">Saved builds</span>
+            <select data-garage-select aria-label="Switch saved build"></select>
+          </label>
+          <ul class="studio-garage-list" data-garage-list></ul>
+          <label class="studio-garage-switch">
+            <span class="summary-label">Build status</span>
+            <select data-garage-status-select aria-label="Update build status">
+              <option value="draft">Drafting</option>
+              <option value="sent">Sent to garage</option>
+              <option value="in_progress">Build in progress</option>
+              <option value="complete">Complete</option>
+            </select>
+          </label>
+          <div class="studio-garage-actions">
+            <button type="button" class="btn btn-ghost" data-garage-save>Save build</button>
+            <button type="button" class="btn btn-ghost" data-garage-new>New build</button>
+            <button type="button" class="btn btn-ghost" data-garage-delete hidden>Delete</button>
+          </div>
+          <p class="fld-hint" data-garage-status></p>
+        </div>
+
         <div class="summary-row"><span class="summary-label">Bike</span><span class="summary-value is-empty" data-summary-out="bike">Not selected</span></div>
         <div class="summary-row"><span class="summary-label">Service</span><span class="summary-value is-empty" data-summary-out="service">Not selected</span></div>
         <div class="summary-row"><span class="summary-label">Finish</span><span class="summary-value is-empty" data-summary-out="finish">Not selected</span></div>
@@ -756,7 +800,7 @@
         <input type="hidden" name="saved_films" value="" form="wrap-studio" data-saved-films-field>
 
         <button class="btn btn-primary studio-submit" type="submit" form="wrap-studio" data-track="submit_build_sheet" data-track-label="wrap-studio">Send my build sheet</button>
-        <p class="summary-foot">Goes straight to <a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a>. One installer reads it &mdash; me. Expect a reply with a real number, not a template.</p>
+        <p class="summary-foot">We email the full sheet to you and to <a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a>. Save builds above to resume later on this device.</p>
       </aside>
 
     </div>
@@ -766,6 +810,63 @@
     <button class="lb-close" type="button" data-compare-close aria-label="Close comparison">&times;</button>
     <div class="lb-stage vinyl-compare-stage" data-compare-stage></div>
   </div>
+
+  <div class="lightbox studio-save-modal" data-garage-modal hidden aria-modal="true" role="dialog" aria-label="Save your garage">
+    <button class="lb-close" type="button" data-garage-close aria-label="Close">&times;</button>
+    <div class="studio-save-panel">
+      <p class="eyebrow">Your garage</p>
+      <h2 class="h3">Save this build</h2>
+      <p class="p">Sign up on this device to keep multiple bike builds, pick up where you left off, and track progress. Optional: email yourself a copy of the sheet now.</p>
+      <form data-garage-signup-form>
+        <div class="studio-fields">
+          <div class="fld">
+            <label for="garage_name">Name</label>
+            <input id="garage_name" name="garage_name" type="text" autocomplete="name" required>
+          </div>
+          <div class="fld">
+            <label for="garage_email">Email</label>
+            <input id="garage_email" name="garage_email" type="email" autocomplete="email" required>
+          </div>
+          <div class="fld fld-wide">
+            <label for="garage_label">Build name</label>
+            <input id="garage_label" name="garage_label" type="text" placeholder="2004 CBR600F4i — full wrap">
+          </div>
+        </div>
+        <label class="studio-consent">
+          <input type="checkbox" name="garage_email_copy" value="1">
+          <span>Email me a compiled copy of this build sheet now</span>
+        </label>
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">Save to my garage</button>
+          <button class="btn btn-ghost" type="button" data-garage-close>Not now</button>
+        </div>
+        <p class="fld-hint">Builds are stored on this phone/browser only — no password account. Sending the full quote still goes to the garage with photos.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lightweight FormSubmit for “email me a copy” from the save modal (no photos). -->
+  <form
+    class="visually-hidden"
+    data-garage-email-form
+    action="https://formsubmit.co/elombe@swftstudios.com"
+    method="POST"
+    accept-charset="UTF-8"
+    hidden
+  >
+    <input type="hidden" name="_subject" value="Kisala Films — saved build sheet copy">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/wrap-studio?saved=1">
+    <input type="hidden" name="_cc" value="">
+    <input type="hidden" name="_autoresponse" value="Here’s your Kisala Films build sheet copy. Resume anytime at https://kisalafilms-website.elombe.workers.dev/wrap-studio on this same device.">
+    <input type="hidden" name="name" value="">
+    <input type="hidden" name="email" value="">
+    <input type="hidden" name="build_label" value="">
+    <input type="hidden" name="build_progress" value="">
+    <input type="hidden" name="build_sheet_summary" value="">
+    <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
+  </form>
 
   <footer class="site-footer">
     <div class="container footer-grid">
@@ -824,5 +925,6 @@
   <script src="/js/vinyl-search.js"></script>
   <script src="/js/vinyl-catalog.js"></script>
   <script src="/js/wrap-studio.js"></script>
+  <script src="/js/wrap-studio-garage.js"></script>
 </body>
 </html>
