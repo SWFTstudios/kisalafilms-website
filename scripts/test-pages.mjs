@@ -331,9 +331,16 @@ function fire(win, el, type) {
   });
 
   check("the new lead fields are all present", () => {
-    ["transport", "pickup_zone", "pickup_area", "pickup_notes", "budget", "transport_estimate", "estimate_total_range", "pricing_mode", "saved_films"].forEach(
+    ["transport", "pickup_zone", "pickup_area", "pickup_notes", "budget", "transport_estimate", "estimate_total_range", "pricing_mode", "saved_films", "build_sheet_summary", "build_progress"].forEach(
       (name) => assert(field(win, name), `missing lead field "${name}"`)
     );
+    assert(win.document.querySelector("[data-studio-cc]"), "missing FormSubmit _cc for rider email");
+    assert(win.document.querySelector("[data-garage-modal]"), "missing save/sign-up modal");
+  });
+
+  check("the garage script is wired on wrap studio", () => {
+    const scripts = [...win.document.querySelectorAll("script[src]")].map((s) => s.getAttribute("src"));
+    assert(scripts.includes("/js/wrap-studio-garage.js"), "wrap-studio-garage.js missing");
   });
 }
 
