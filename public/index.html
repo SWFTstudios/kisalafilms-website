@@ -261,15 +261,27 @@
     </section>
 
     <section class="kf-split" aria-label="Film video and film wraps" data-reveal-stagger>
-      <a class="kf-split-tile" href="/gallery" data-track="cta_click" data-track-label="home-col-film" data-reveal="clip">
-        <img src="/images/thumb-lost-tapes.jpg" alt="Motorcycle cinema still from Kisala Films" width="1200" height="1600" loading="lazy">
+      <a class="kf-split-tile kf-split-tile--video" href="/gallery" data-track="cta_click" data-track-label="home-col-film" data-reveal="clip" data-split-vimeo="1066971784" data-split-title="L0ST TAPES V1">
+        <img class="kf-split-poster" src="/images/refs/ref-12-night-motion.jpg" alt="" width="1200" height="1600" loading="lazy" aria-hidden="true">
+        <div class="kf-split-embed" data-split-embed aria-hidden="true"></div>
+        <video class="kf-split-video" muted loop playsinline autoplay poster="/images/refs/ref-12-night-motion.jpg" aria-hidden="true">
+          <source src="/videos/hero-loop.mp4" type="video/mp4">
+        </video>
         <div class="kf-split-copy">
           <h2>Film Video</h2>
           <p>Builds, night rides, and travel reels — shot as the wrap happens and the road unfolds.</p>
         </div>
       </a>
-      <a class="kf-split-tile" href="/lookbook" data-track="cta_click" data-track-label="home-col-wraps" data-reveal="clip">
-        <img src="/images/thumb-f4i-reveal.jpg" alt="Motorcycle full colour-change wrap reveal" width="1200" height="1600" loading="lazy">
+      <a class="kf-split-tile kf-split-tile--slides" href="/lookbook" data-track="cta_click" data-track-label="home-col-wraps" data-reveal="clip">
+        <div class="kf-split-slides" data-split-slides>
+          <img class="is-active" src="/images/thumb-f4i-reveal.jpg" alt="" width="1200" height="1600" loading="eager" aria-hidden="true">
+          <img src="/images/refs/ref-01-front-3q.jpg" alt="" width="1920" height="1280" loading="lazy" aria-hidden="true">
+          <img src="/images/refs/ref-02-left-profile.jpg" alt="" width="1920" height="1280" loading="lazy" aria-hidden="true">
+          <img src="/images/refs/ref-05-head-on.jpg" alt="" width="1920" height="1280" loading="lazy" aria-hidden="true">
+          <img src="/images/refs/ref-08-overhead-3q.jpg" alt="" width="1920" height="1280" loading="lazy" aria-hidden="true">
+          <img src="/images/refs/ref-04-rear-3q.jpg" alt="" width="1920" height="1280" loading="lazy" aria-hidden="true">
+          <img src="/images/thumb-transformation-mid.jpg" alt="" width="1200" height="1600" loading="lazy" aria-hidden="true">
+        </div>
         <div class="kf-split-copy">
           <h2>Film Wraps</h2>
           <p>Colour-change, accents, chrome delete, and protection — premium cast film, installed by hand.</p>
@@ -277,12 +289,15 @@
       </a>
     </section>
 
-    <section class="kf-galleries" id="galleries">
-      <div class="kf-galleries-hero" data-reveal="scale">
-        <img src="/images/refs/ref-01-front-3q.jpg" alt="Front three-quarter of a wrapped sportbike" width="1920" height="1080" loading="lazy">
+    <section class="kf-galleries" id="galleries" data-galleries-parallax>
+      <div class="kf-galleries-hero">
+        <div class="kf-galleries-hero-media">
+          <img src="/images/refs/ref-01-front-3q.jpg" alt="Front three-quarter of a wrapped sportbike" width="1920" height="1080" loading="lazy">
+        </div>
         <h2 class="kf-galleries-label">Galleries</h2>
       </div>
 
+      <div class="kf-galleries-body">
       <div class="kf-gallery-tabs" role="tablist" aria-label="Gallery categories" data-reveal="fade">
         <button type="button" class="kf-gallery-tab is-active" role="tab" aria-selected="true" data-gallery-tab="film">Film galleries</button>
         <button type="button" class="kf-gallery-tab" role="tab" aria-selected="false" data-gallery-tab="wrap">Wrap galleries</button>
@@ -380,6 +395,7 @@
         <div class="kf-gallery-cta" data-reveal="fade">
           <a class="btn btn-ghost" href="/gallery" data-track="cta_click" data-track-label="home-explore-gallery">Explore all galleries</a>
         </div>
+      </div>
       </div>
     </section>
 
