@@ -223,6 +223,56 @@
     });
   };
 
+  const initGalleriesParallax = () => {
+    const section = document.querySelector("[data-galleries-parallax]");
+    if (!section) return;
+
+    const media = section.querySelector(".kf-galleries-hero-media");
+    const label = section.querySelector(".kf-galleries-label");
+    const body = section.querySelector(".kf-galleries-body");
+    if (!media || !body) return;
+
+    if (reduceMotion) {
+      gsap.set([media, label].filter(Boolean), { clearProps: "transform,opacity" });
+      return;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.fromTo(
+      media,
+      { yPercent: -8 },
+      {
+        yPercent: 12,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      }
+    );
+
+    if (label) {
+      gsap.fromTo(
+        label,
+        { y: 0, opacity: 1 },
+        {
+          y: -72,
+          opacity: 0.15,
+          ease: "none",
+          scrollTrigger: {
+            trigger: body,
+            start: "top 88%",
+            end: "top 35%",
+            scrub: true,
+          },
+        }
+      );
+    }
+  };
+
   const initReveals = () => {
     const els = Array.from(document.querySelectorAll("[data-reveal]"));
     const staggerParents = Array.from(document.querySelectorAll("[data-reveal-stagger]"));
@@ -376,6 +426,7 @@
     killScrollTriggers();
     initHero({ skip: deferHero });
     initHeroMedia();
+    initGalleriesParallax();
     initReveals();
     if (window.ScrollTrigger) ScrollTrigger.refresh();
   };
