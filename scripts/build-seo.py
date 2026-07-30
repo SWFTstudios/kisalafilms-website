@@ -33,6 +33,7 @@ NOINDEX = {
   "styleguide.html",
   "404.html",
   "wrap-quote/index.html",
+  "lookbook/film.html",
 }
 
 # Priority by role rather than a flat list: the conversion path first.
@@ -45,7 +46,7 @@ PRIORITY = {
     "shop.html": "0.8",
     "shop/wrap.html": "0.8",
     "shop/photoshoot.html": "0.7",
-    "shop/merch.html": "0.7",
+    "shop/k-merch.html": "0.7",
     "locations/jersey-city.html": "0.8",
     "locations/brooklyn.html": "0.8",
     "locations/new-york-city.html": "0.8",

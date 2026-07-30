@@ -11,10 +11,10 @@ Data:
 
 Outputs:
   public/shop.html
-  public/shop/{photoshoot,wrap,merch}.html
+  public/shop/{photoshoot,wrap,k-merch}.html
   public/shop/photoshoot/*.html
   public/shop/wrap/*.html
-  public/shop/merch/*.html
+  public/shop/k-merch/*.html
 
 Usage:
   python3 scripts/build-shop-pages.py
@@ -89,6 +89,7 @@ def breadcrumbs(*crumbs: tuple[str, str]) -> str:
             "item": {json.dumps(url)}
           }}"""
         )
+    item_list = ",\n".join(items)
     return f"""  <script type="application/ld+json">
   {{
     "@context": "https://schema.org",
@@ -96,7 +97,7 @@ def breadcrumbs(*crumbs: tuple[str, str]) -> str:
       {{
         "@type": "BreadcrumbList",
         "itemListElement": [
-{',\n'.join(items)}
+{item_list}
         ]
       }}
     ]
@@ -433,7 +434,7 @@ def merch_collection_body(drop: dict, products: list[dict]) -> str:
     for p in products:
         kind = "Tee" if p["kind"] == "tee" else "Hoodie"
         cards.append(
-            f"""        <a class="look-card shop-product-card" href="/shop/merch/{esc(p['id'])}" data-filter-item="{esc(p['kind'])}">
+            f"""        <a class="look-card shop-product-card" href="/shop/k-merch/{esc(p['id'])}" data-filter-item="{esc(p['kind'])}">
           <div class="look-shot">
             <span class="look-kind">{kind}</span>
             <img src="{esc(p['images']['hero'])}" alt="{esc(p['title'])} in {esc(p['color'])}" width="800" height="1000" loading="lazy">
@@ -458,8 +459,8 @@ def merch_collection_body(drop: dict, products: list[dict]) -> str:
     )
     return f"""  <section class="page-hero">
     <div class="container">
-      <p class="eyebrow"><a href="/shop">Shop</a> / Merch</p>
-      <h1>{esc(drop.get('drop', 'Merch'))}</h1>
+      <p class="eyebrow"><a href="/shop">Shop</a> / K Merch</p>
+      <h1>{esc(drop.get('drop', 'K Merch'))}</h1>
       <p class="p-lg">Clothes that express and inspire individuals of all walks of life to explore the unknown and carve out the life they seek in this world.</p>
       <p class="p-lg">Comfy heavyweight t-shirts and hoodies that look and feel good.</p>
       <p class="p">No cart and no checkout &mdash; this is a limited run, so you reserve a piece and I confirm sizing and payment directly.</p>
@@ -490,7 +491,7 @@ def merch_collection_body(drop: dict, products: list[dict]) -> str:
         <input type="hidden" name="_subject" value="Kisala Films - merch reservation">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_next" value="{SITE}/shop/merch?sent=1#reserve">
+        <input type="hidden" name="_next" value="{SITE}/shop/k-merch?sent=1#reserve">
         <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
         <div class="fld">
           <label for="piece">Piece</label>
@@ -533,7 +534,7 @@ def merch_product_body(p: dict, products: list[dict]) -> str:
     )
     return f"""  <section class="page-hero page-hero--compact">
     <div class="container">
-      <p class="eyebrow"><a href="/shop">Shop</a> / <a href="/shop/merch">Merch</a> / {esc(p['title'])}</p>
+      <p class="eyebrow"><a href="/shop">Shop</a> / <a href="/shop/k-merch">K Merch</a> / {esc(p['title'])}</p>
       <h1>{esc(p['title'])}</h1>
       <p class="p-lg">{esc(p['quote'])}</p>
     </div>
@@ -553,7 +554,7 @@ def merch_product_body(p: dict, products: list[dict]) -> str:
         <p class="p">Limited first run. Reserve below — I confirm sizing and payment directly. Nothing is charged from this page.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="#reserve" data-reserve="{esc(piece_val)}">Reserve yours</a>
-          <a class="btn btn-secondary" href="/shop/merch">All merch</a>
+          <a class="btn btn-secondary" href="/shop/k-merch">All K Merch</a>
         </div>
       </div>
     </div>
@@ -574,7 +575,7 @@ def merch_product_body(p: dict, products: list[dict]) -> str:
         <input type="hidden" name="_subject" value="Kisala Films - merch reservation">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_next" value="{SITE}/shop/merch/{esc(p['id'])}?sent=1#reserve">
+        <input type="hidden" name="_next" value="{SITE}/shop/k-merch/{esc(p['id'])}?sent=1#reserve">
         <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
         <div class="fld">
           <label for="piece">Piece</label>
@@ -728,21 +729,21 @@ def main() -> None:
             )
         )
 
-    # Merch collection
-    path = OUTDIR / "merch.html"
+    # K Merch collection
+    path = OUTDIR / "k-merch.html"
     results.append(
         (
             path,
             write(
                 path,
                 page_shell(
-                    title=f"Merch — {merch_data.get('drop', 'K Merch')} | Kisala Films",
+                    title=f"K Merch — {merch_data.get('drop', 'K Merch')} | Kisala Films",
                     description="Clothes that express and inspire individuals of all walks of life to explore the unknown and carve out the life they seek in this world. Comfy heavyweight t-shirts and hoodies that look and feel good.",
                     head_template=head_t,
                     header=header,
                     body=merch_collection_body(merch_data, products),
                     footer=footer,
-                    crumbs=[("Home", "/"), ("Shop", "/shop"), ("Merch", "/shop/merch")],
+                    crumbs=[("Home", "/"), ("Shop", "/shop"), ("K Merch", "/shop/k-merch")],
                     extra_scripts='  <script src="/js/shop.js"></script>\n',
                 ),
             ),
@@ -750,14 +751,14 @@ def main() -> None:
     )
 
     for p in products:
-        path = OUTDIR / "merch" / f"{p['id']}.html"
+        path = OUTDIR / "k-merch" / f"{p['id']}.html"
         results.append(
             (
                 path,
                 write(
                     path,
                     page_shell(
-                        title=f"{p['title']} — Merch | Kisala Films",
+                        title=f"{p['title']} — K Merch | Kisala Films",
                         description=f"{p['title']} in {p['color']}. {p['quote']}",
                         head_template=head_t,
                         header=header,
@@ -766,8 +767,8 @@ def main() -> None:
                         crumbs=[
                             ("Home", "/"),
                             ("Shop", "/shop"),
-                            ("Merch", "/shop/merch"),
-                            (p["title"], f"/shop/merch/{p['id']}"),
+                            ("K Merch", "/shop/k-merch"),
+                            (p["title"], f"/shop/k-merch/{p['id']}"),
                         ],
                         extra_scripts='  <script src="/js/shop.js"></script>\n',
                     ),
