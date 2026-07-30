@@ -437,6 +437,7 @@
       rebindPageScript("/js/gallery.js");
     } else if (namespace === "lookbook") {
       rebindPageScript("/js/lookbook.js");
+      rebindPageScript("/js/lookbook-try.js");
     } else if (namespace === "lookbook-film") {
       rebindPageScript("/js/lookbook-film.js");
     }

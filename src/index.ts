@@ -142,6 +142,46 @@ function formatUsd(n: number): string {
   return "$" + n.toLocaleString("en-US");
 }
 
+/** Same-origin proxy so lookbook mockups can sample Metro/Shopify swatches on canvas. */
+async function proxyImage(request: Request): Promise<Response> {
+  const target = new URL(request.url).searchParams.get("url") || "";
+  let parsed: URL;
+  try {
+    parsed = new URL(target);
+  } catch {
+    return json({ error: "Invalid image url." }, 400);
+  }
+
+  const allowed =
+    parsed.protocol === "https:" &&
+    (parsed.hostname === "cdn.shopify.com" ||
+      parsed.hostname === "metrorestyling.com" ||
+      parsed.hostname.endsWith(".myshopify.com"));
+  if (!allowed) {
+    return json({ error: "Image host is not allowed." }, 400);
+  }
+
+  const upstream = await fetch(parsed.toString());
+
+  if (!upstream.ok) {
+    return json({ error: "Upstream image fetch failed." }, 502);
+  }
+
+  const contentType = upstream.headers.get("Content-Type") || "image/jpeg";
+  if (!contentType.startsWith("image/")) {
+    return json({ error: "Upstream was not an image." }, 502);
+  }
+
+  return new Response(upstream.body, {
+    status: 200,
+    headers: {
+      "Content-Type": contentType,
+      "Cache-Control": "public, max-age=86400",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
+
 function corsFilms(request: Request): HeadersInit {
   const origin = request.headers.get("Origin") || "*";
   return {
@@ -154,6 +194,22 @@ function corsFilms(request: Request): HeadersInit {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/image-proxy") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, {
+          status: 204,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+          },
+        });
+      }
+      if (request.method !== "GET") {
+        return json({ error: "GET only." }, 405);
+      }
+      return proxyImage(request);
+    }
 
     if (url.pathname === "/api/checkout/deposit") {
       if (request.method === "OPTIONS") {

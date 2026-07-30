@@ -127,7 +127,10 @@
             }</span> <span class="kf-film-stock-src">Cloudflare D1 CMS</span></p>
             ${blocks.join("")}
             <div class="btn-row">
-              <a class="btn btn-primary" href="${escapeHtml(
+              <a class="btn btn-primary" href="/lookbook?try=${encodeURIComponent(
+                film.handle || ""
+              )}#try-the-wrap" data-track="cta_click" data-track-label="film-to-try-wrap">Try this wrap</a>
+              <a class="btn btn-ghost" href="${escapeHtml(
                 wrapHref
               )}" data-track="cta_click" data-track-label="film-to-wrap-studio">Build your wrap</a>
               <a class="btn btn-ghost" href="/lookbook.html">All colours</a>

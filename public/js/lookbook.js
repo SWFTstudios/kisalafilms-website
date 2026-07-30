@@ -100,15 +100,17 @@
         ? `/lookbook/film.html?h=${encodeURIComponent(String(handle))}`
         : "/lookbook.html";
 
-      const card = document.createElement("a");
+      const card = document.createElement("article");
       card.className = "kf-lookbook-card";
       if (!inStock) card.classList.add("is-oos");
-      card.href = href;
-      card.setAttribute("data-track", "cta_click");
-      card.setAttribute("data-track-label", `lookbook-${handle || sku || "film"}`);
+      if (handle) card.setAttribute("data-film-handle", String(handle));
 
-      const media = document.createElement("div");
+      const media = document.createElement("a");
       media.className = "kf-lookbook-card-media";
+      media.href = href;
+      media.setAttribute("data-track", "cta_click");
+      media.setAttribute("data-track-label", `lookbook-${handle || sku || "film"}`);
+      media.setAttribute("aria-label", `View ${name}`);
       if (r.image_url) {
         const img = document.createElement("img");
         img.src = String(r.image_url);
@@ -123,12 +125,22 @@
       const body = document.createElement("div");
       body.className = "kf-lookbook-card-body";
       body.innerHTML = `
-        <h3>${escapeHtml(name)}</h3>
+        <h3><a href="${href}">${escapeHtml(name)}</a></h3>
         <p class="meta">${escapeHtml([r.brand, r.finish, sku].filter(Boolean).join(" · "))}</p>
         <div class="kf-lookbook-card-foot">
           <span class="kf-avail ${availClass(inStock)}">${availLabel(inStock)}</span>
+          <button type="button" class="kf-lookbook-try-btn" data-try-film-btn>Try</button>
         </div>
       `;
+      body.querySelector("[data-try-film-btn]")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.KisalaTryWrap?.selectFilm(r);
+        window.KisalaTrack?.("try_wrap_select", {
+          label: String(name),
+          handle: String(handle || ""),
+        });
+      });
       card.appendChild(body);
       grid.appendChild(card);
     });
