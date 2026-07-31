@@ -140,101 +140,27 @@
       <div class="kf-page-hero-copy">
         <p class="eyebrow" data-hero-anim>Vinyl films</p>
         <h1 data-hero-anim>Vinyl catalog</h1>
-        <p class="p-lg" data-hero-anim>Browse cast vinyl, PPF, caliper, and light wrap films from the Metro catalogue — then start a motorcycle or helmet project.</p>
+        <p class="p-lg" data-hero-anim>Pick a colour. Start a motorcycle or helmet wrap.</p>
       </div>
     </section>
 
     <section class="kf-section kf-vinyl-catalog-body">
       <div class="kf-container">
-        <div class="kf-vinyl-catalog-toolbar" data-reveal>
+        <div class="kf-vinyl-catalog-toolbar kf-vinyl-catalog-toolbar--simple" data-reveal>
           <div class="kf-vinyl-catalog-toolbar-head">
-            <p class="eyebrow">Vinyl catalogue</p>
-            <p class="kf-vinyl-catalog-meta" data-catalog-meta>Loading colours…</p>
+            <p class="eyebrow">Colours</p>
+            <p class="kf-vinyl-catalog-meta" data-catalog-meta>Loading…</p>
           </div>
-
-          
-          <div class="kf-vinyl-catalog-types" data-catalog-types role="tablist" aria-label="Film categories">
-            <button type="button" class="kf-vinyl-catalog-type is-active" data-catalog-type="all" role="tab" aria-selected="true">All</button>
-            <button type="button" class="kf-vinyl-catalog-type" data-catalog-type="Vinyl" role="tab">Vinyl wrap</button>
-            <button type="button" class="kf-vinyl-catalog-type" data-catalog-type="Colored PPF Wrap" role="tab">Colored PPF</button>
-            <button type="button" class="kf-vinyl-catalog-type" data-catalog-type="PPF" role="tab">PPF</button>
-            <button type="button" class="kf-vinyl-catalog-type" data-catalog-type="Brake Caliper" role="tab">Brake caliper</button>
-            <button type="button" class="kf-vinyl-catalog-type" data-catalog-type="Light Wrap" role="tab">Light wrap</button>
-          </div>
-          <p class="kf-founder-banner" data-founder-banner hidden></p>
-
-          <div class="kf-vinyl-catalog-controls" role="search">
-            <label class="kf-vinyl-catalog-field kf-vinyl-catalog-field--search">
-              <span class="kf-vinyl-catalog-label">Search</span>
-              <input class="kf-vinyl-catalog-search" type="search" placeholder="Colour, brand, finish…" data-catalog-search enterkeyhint="search" autocomplete="off">
-            </label>
-            <label class="kf-vinyl-catalog-field">
-              <span class="kf-vinyl-catalog-label">Sort</span>
-              <select class="kf-vinyl-catalog-select" data-catalog-sort aria-label="Sort wraps">
-                <option value="name">Name A–Z</option>
-                <option value="name-desc">Name Z–A</option>
-                <option value="brand">Brand</option>
-                <option value="finish">Finish</option>
-                <option value="stock">In stock first</option>
-              </select>
-            </label>
-            <label class="kf-vinyl-catalog-field">
-              <span class="kf-vinyl-catalog-label">Stock</span>
-              <select class="kf-vinyl-catalog-select" data-catalog-stock aria-label="Filter by stock">
-                <option value="all">All stock</option>
-                <option value="in">In stock</option>
-                <option value="out">Out of stock</option>
-              </select>
-            </label>
-
-            <label class="kf-vinyl-catalog-field">
-              <span class="kf-vinyl-catalog-label">Brand</span>
-              <select class="kf-vinyl-catalog-select" data-catalog-brand aria-label="Filter by brand">
-                <option value="all">All brands</option>
-              </select>
-            </label>
-            <label class="kf-vinyl-catalog-field">
-              <span class="kf-vinyl-catalog-label">Colour</span>
-              <select class="kf-vinyl-catalog-select" data-catalog-family aria-label="Filter by colour family">
-                <option value="all">All colours</option>
-              </select>
-            </label>
-            <label class="kf-vinyl-catalog-field">
-              <span class="kf-vinyl-catalog-label">Finish</span>
-              <select class="kf-vinyl-catalog-select" data-catalog-finish aria-label="Filter by finish">
-                <option value="all">All finishes</option>
-              </select>
-            </label>
-          </div>
+          <label class="kf-vinyl-catalog-field kf-vinyl-catalog-field--search">
+            <span class="kf-vinyl-catalog-label">Search</span>
+            <input class="kf-vinyl-catalog-search" type="search" placeholder="Search colours…" data-catalog-search enterkeyhint="search" autocomplete="off">
+          </label>
         </div>
 
         <div class="kf-vinyl-catalog-grid" data-catalog-grid data-reveal></div>
 
         <div class="kf-gallery-cta btn-row" style="margin-top:48px;justify-content:center">
           <a class="btn btn-primary" href="/project" data-track="cta_click" data-track-label="vinyl-catalog-to-project">Start a project</a>
-          <a class="btn btn-ghost" href="/wrap-studio" data-track="cta_click" data-track-label="vinyl-catalog-to-wrap-studio">Wrap Studio quote</a>
-          <a class="btn btn-ghost" href="/shop/wrap" data-track="cta_click" data-track-label="vinyl-catalog-to-finish-catalogue">Finish catalogue</a>
-        </div>
-
-        <div class="kf-inventory" data-reveal>
-          <p class="eyebrow">Stock list</p>
-          <h2>Colour options &amp; availability</h2>
-          <p class="p-lg">Colours from the bundled Metro catalogue (<code>/data/vinyl-colors.json</code>). Live roll prices overlay from D1 when synced — browsing never depends on the database.</p>
-          <div class="sg-table-scroll">
-            <table class="sg-table">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Colour</th>
-                  <th>Brand</th>
-                  <th>Finish</th>
-                  <th>Roll</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody data-inventory-body></tbody>
-            </table>
-          </div>
         </div>
       </div>
     </section>
@@ -300,7 +226,6 @@
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
 
-  <script src="/js/vinyl-catalog-data.js"></script>
   <script src="/js/vinyl-catalog-page.js"></script>
   <script src="/js/motion.js"></script>
 </body>

@@ -2573,3 +2573,15 @@ body.lb-lock { overflow: hidden; }
   border: 1px solid rgba(232, 39, 31, 0.45);
   background: rgba(232, 39, 31, 0.08);
 }
+
+.kf-vinyl-catalog-toolbar--simple {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (min-width: 720px) {
+  .kf-vinyl-catalog-toolbar--simple {
+    grid-template-columns: 1fr minmax(220px, 320px);
+    align-items: end;
+  }
+}
