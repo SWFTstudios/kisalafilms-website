@@ -219,65 +219,133 @@
       render();
     });
   });
+  const formatName = (title) => {
+    const raw = String(title || "").trim();
+    if (!raw) return "Untitled";
+    return raw.split("|")[0].trim() || raw;
+  };
+  const formatSku = (title) => {
+    const parts = String(title || "")
+      .split("|")
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (parts.length < 2) return "";
+    return parts[1].split(/\s+/)[0] || "";
+  };
+  /** Map bundled Metro JSON → film rows when D1 is empty or unreachable. */
+  const fromStaticCatalog = (data) => {
+    const colors = Array.isArray(data.colors) ? data.colors : [];
+    const films = colors
+      .map((c) => {
+        const handle = String(c.h || "").trim();
+        if (!handle) return null;
+        return {
+          handle,
+          sku: formatSku(c.n),
+          name: formatName(c.n),
+          brand: c.v || "",
+          finish: c.f || "",
+          color_family: c.c || "",
+          product_type: c.t || "",
+          collection: c.collection || "",
+          image_url: c.i || "",
+          metro_url: c.u || "",
+          in_stock: !!c.a,
+          sell_price_usd: null,
+          roll_price_usd: null,
+          price_usd: null,
+        };
+      })
+      .filter(Boolean);
+    return {
+      films,
+      finishes: Array.isArray(data.finishes) ? data.finishes : [],
+      brands: Array.isArray(data.vendors) ? data.vendors : [],
+      colorFamilies: Array.isArray(data.colorFamilies) ? data.colorFamilies : [],
+      founderPricingActive: false,
+      source: "static",
+    };
+  };
+  const applyCatalog = (data) => {
+    rows = Array.isArray(data.films) ? data.films : [];
+    finishesFromApi = Array.isArray(data.finishes) ? data.finishes : [];
+    brandsFromApi = Array.isArray(data.brands) ? data.brands : [];
+    familiesFromApi = Array.isArray(data.colorFamilies) ? data.colorFamilies : [];
+    founderPricingActive = !!data.founderPricingActive;
+    if (founderBanner) {
+      founderBanner.hidden = false;
+      const sourceNote =
+        data.source === "static"
+          ? " Showing the bundled Metro catalogue (D1 not seeded yet)."
+          : "";
+      founderBanner.textContent =
+        "Vinyl priced at Metro roll cost + 40%. Motorcycle & helmet wraps use set labour by difficulty. Start a project from any film." +
+        (founderPricingActive
+          ? " Founder window: " +
+            (data.founderSlotsRemaining ?? "?") +
+            " of " +
+            (data.founderLimit || 5) +
+            " at-cost slots still show supplier cost for reference."
+          : "") +
+        sourceNote;
+    }
+    if (sortSelect && !sortSelect.querySelector('option[value="price"]')) {
+      const opt = document.createElement("option");
+      opt.value = "price";
+      opt.textContent = "Roll price";
+      sortSelect.appendChild(opt);
+    }
+    finish = fillSelect(
+      finishSelect,
+      finishesFromApi.length
+        ? finishesFromApi
+        : Array.from(new Set(rows.map((r) => r.finish).filter(Boolean))),
+      "All finishes",
+      finish
+    );
+    brand = fillSelect(
+      brandSelect,
+      brandsFromApi.length
+        ? brandsFromApi
+        : Array.from(new Set(rows.map((r) => r.brand).filter(Boolean))),
+      "All brands",
+      brand
+    );
+    family = fillSelect(
+      familySelect,
+      familiesFromApi.length
+        ? familiesFromApi
+        : Array.from(new Set(rows.map((r) => r.color_family).filter(Boolean))),
+      "All colours",
+      family
+    );
+    render();
+  };
+  const loadStatic = () =>
+    fetch("/data/vinyl-colors.json")
+      .then((res) => {
+        if (!res.ok) throw new Error("static " + res.status);
+        return res.json();
+      })
+      .then((data) => applyCatalog(fromStaticCatalog(data)));
+
   fetch(API_URL)
     .then((res) => {
       if (!res.ok) throw new Error("API " + res.status);
       return res.json();
     })
     .then((data) => {
-      rows = Array.isArray(data.films) ? data.films : [];
-      finishesFromApi = Array.isArray(data.finishes) ? data.finishes : [];
-      brandsFromApi = Array.isArray(data.brands) ? data.brands : [];
-      familiesFromApi = Array.isArray(data.colorFamilies) ? data.colorFamilies : [];
-      founderPricingActive = !!data.founderPricingActive;
-      if (founderBanner) {
-        founderBanner.hidden = false;
-        founderBanner.textContent =
-          "Vinyl priced at Metro roll cost + 40%. Motorcycle & helmet wraps use set labour by difficulty. Start a project from any film." +
-          (founderPricingActive
-            ? " Founder window: " +
-              (data.founderSlotsRemaining ?? "?") +
-              " of " +
-              (data.founderLimit || 5) +
-              " at-cost slots still show supplier cost for reference."
-            : "");
-      }
-      if (sortSelect && !sortSelect.querySelector('option[value="price"]')) {
-        const opt = document.createElement("option");
-        opt.value = "price";
-        opt.textContent = "Roll price";
-        sortSelect.appendChild(opt);
-      }
-      finish = fillSelect(
-        finishSelect,
-        finishesFromApi.length
-          ? finishesFromApi
-          : Array.from(new Set(rows.map((r) => r.finish).filter(Boolean))),
-        "All finishes",
-        finish
-      );
-      brand = fillSelect(
-        brandSelect,
-        brandsFromApi.length
-          ? brandsFromApi
-          : Array.from(new Set(rows.map((r) => r.brand).filter(Boolean))),
-        "All brands",
-        brand
-      );
-      family = fillSelect(
-        familySelect,
-        familiesFromApi.length
-          ? familiesFromApi
-          : Array.from(new Set(rows.map((r) => r.color_family).filter(Boolean))),
-        "All colours",
-        family
-      );
-      render();
+      const films = Array.isArray(data.films) ? data.films : [];
+      if (!films.length) return loadStatic();
+      applyCatalog(data);
     })
     .catch((err) => {
-      console.error(err);
-      if (meta) meta.textContent = "Could not load film CMS (D1 API)";
-      grid.innerHTML =
-        '<p class="gallery-empty">Vinyl catalog needs Wrangler + D1. Run <code>npm run dev</code>, apply migrations, then import films.</p>';
+      console.warn("films API failed, trying static catalogue", err);
+      loadStatic().catch((staticErr) => {
+        console.error(staticErr);
+        if (meta) meta.textContent = "Could not load film catalogue";
+        grid.innerHTML =
+          '<p class="gallery-empty">Vinyl catalog could not load. Refresh, or run <code>npm run dev</code> and import films into D1.</p>';
+      });
     });
 })();

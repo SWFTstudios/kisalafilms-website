@@ -733,7 +733,7 @@ export default {
       if (!env.DB) {
         return json({ error: "D1 database is not bound." }, 503);
       }
-      return withCors(await listFilms(env.DB, url), request);
+      return withCors(await listFilms(env.DB, url, env.ASSETS, request), request);
     }
 
     if (url.pathname === "/api/films/import") {
@@ -779,7 +779,7 @@ export default {
       if (["import", "pricing.csv", "sync-prices"].includes(handle)) {
         return json({ error: "Not found." }, 404);
       }
-      return withCors(await getFilm(env.DB, handle), request);
+      return withCors(await getFilm(env.DB, handle, env.ASSETS, request), request);
     }
 
     return env.ASSETS.fetch(request);

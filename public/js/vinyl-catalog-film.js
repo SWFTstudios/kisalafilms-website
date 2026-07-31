@@ -33,11 +33,56 @@
     return;
   }
 
+  const loadFromStatic = () =>
+    fetch("/data/vinyl-colors.json")
+      .then((res) => {
+        if (!res.ok) throw new Error("static " + res.status);
+        return res.json();
+      })
+      .then((data) => {
+        const colors = Array.isArray(data.colors) ? data.colors : [];
+        const c = colors.find(
+          (row) => String(row.h || "").toLowerCase() === handle.toLowerCase()
+        );
+        if (!c) throw Object.assign(new Error("notfound"), { code: 404 });
+        const title = c.n || "";
+        const name = title.split("|")[0].trim() || title || "Untitled";
+        const skuParts = title.split("|").map((p) => p.trim()).filter(Boolean);
+        return {
+          source: "static",
+          founderPricingActive: false,
+          film: {
+            handle: c.h,
+            name,
+            brand: c.v || "",
+            finish: c.f || "",
+            sku: skuParts.length > 1 ? skuParts[1].split(/\s+/)[0] || "" : "",
+            product_type: c.t || "",
+            image_url: c.i || "",
+            metro_url: c.u || "",
+            in_stock: !!c.a,
+            description: "",
+            install_notes: "",
+            recommended_for: "",
+            notes: "",
+            sell_price_usd: null,
+            roll_price_usd: null,
+            price_usd: null,
+          },
+        };
+      });
+
   fetch(`/api/films/${encodeURIComponent(handle)}`)
     .then((res) => {
       if (res.status === 404) throw Object.assign(new Error("notfound"), { code: 404 });
       if (!res.ok) throw new Error(`API ${res.status}`);
       return res.json();
+    })
+    .catch((err) => {
+      if (err && err.code === 404) return loadFromStatic();
+      return loadFromStatic().catch(() => {
+        throw err;
+      });
     })
     .then((data) => {
       const film = data.film;
