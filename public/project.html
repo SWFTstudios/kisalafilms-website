@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Start your wrap project | Kisala Films</title>
-  <meta name="description" content="Pick motorcycle or helmet, lock your film, and order a vinyl wrap — set labour by difficulty plus Metro vinyl at cost + 40%.">
+  <meta name="description" content="Add vinyl colours to your build — motorcycle, helmet, or both — then tell us where each colour goes and lock in your wrap.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,14 +20,14 @@
   <link rel="canonical" href="https://kisalafilms-website.elombe.workers.dev/project">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Kisala Films">
-  <meta property="og:description" content="Pick motorcycle or helmet, lock your film, and order a vinyl wrap — set labour by difficulty plus Metro vinyl at cost + 40%.">
+  <meta property="og:description" content="Add vinyl colours to your build — motorcycle, helmet, or both — then tell us where each colour goes and lock in your wrap.">
   <meta property="og:title" content="Start your wrap project | Kisala Films">
   <meta property="og:url" content="https://kisalafilms-website.elombe.workers.dev/project">
   <meta property="og:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Start your wrap project | Kisala Films">
   <meta name="twitter:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
-  <meta name="twitter:description" content="Pick motorcycle or helmet, lock your film, and order a vinyl wrap — set labour by difficulty plus Metro vinyl at cost + 40%.">
+  <meta name="twitter:description" content="Add vinyl colours to your build — motorcycle, helmet, or both — then tell us where each colour goes and lock in your wrap.">
 </head>
 <body class="kfilms" data-barba="wrapper">
 
@@ -118,24 +118,23 @@
     <section class="kf-project" data-project-root>
       <div class="kf-container kf-project-shell">
         <aside class="kf-project-rail" aria-label="Mission progress">
-          <p class="eyebrow">Mission</p>
+          <p class="eyebrow">Your build</p>
           <h1 class="kf-project-title">Build your wrap</h1>
-          <p class="p kf-project-lede">Five clear stages. Pick film, surface, coverage, and details — then save the run or lock it in with Stripe.</p>
+          <p class="p kf-project-lede">Add colours, say where each one goes, choose bike, helmet, or both — then save or check out.</p>
           <ol class="kf-project-steps" data-project-steps>
-            <li class="is-active" data-step-indicator="0"><span class="kf-step-num">01</span> Film</li>
+            <li class="is-active" data-step-indicator="0"><span class="kf-step-num">01</span> Colours</li>
             <li data-step-indicator="1"><span class="kf-step-num">02</span> Surface</li>
             <li data-step-indicator="2"><span class="kf-step-num">03</span> Setup</li>
             <li data-step-indicator="3"><span class="kf-step-num">04</span> Details</li>
-            <li data-step-indicator="4"><span class="kf-step-num">05</span> Checkout</li>
+            <li data-step-indicator="4"><span class="kf-step-num">05</span> Review</li>
           </ol>
           <div class="kf-project-xp" aria-hidden="true">
             <div class="kf-project-xp-bar"><span data-project-xp></span></div>
             <p class="kf-project-xp-label"><span data-project-xp-label>Stage 1 of 5</span></p>
           </div>
           <div class="kf-project-film-card" data-project-film-card hidden>
-            <img data-project-film-thumb alt="" width="120" height="120">
             <div>
-              <p class="eyebrow">Selected film</p>
+              <p class="eyebrow">In this build</p>
               <p class="kf-project-film-name" data-project-film-name></p>
               <p class="meta" data-project-film-meta></p>
             </div>
@@ -146,19 +145,14 @@
           <p class="kf-project-banner" data-project-banner hidden></p>
           <p class="kf-project-error" data-project-error hidden role="alert"></p>
 
-          <!-- Stage 0: Film -->
+          <!-- Stage 0: Colours in build -->
           <section class="kf-mission-panel is-active" data-mission="0" aria-labelledby="mission-film">
-            <h2 id="mission-film">Lock your film</h2>
-            <p class="p-lg">Browse the catalog and bring a colour in, or enter a film handle from Metro.</p>
+            <h2 id="mission-film">Colours in your build</h2>
+            <p class="p-lg">Add colours from the catalog. For each one, note where it goes and upload photos of that area on the bike or helmet.</p>
             <div class="kf-mission-actions">
-              <a class="btn btn-primary" href="/vinyl-catalog" data-track="cta_click" data-track-label="project-to-catalog">Open vinyl catalog</a>
+              <a class="btn btn-primary" href="/vinyl-catalog" data-track="cta_click" data-track-label="project-to-catalog">Browse vinyl catalog</a>
             </div>
-            <label class="kf-mission-field">
-              <span>Film handle</span>
-              <input type="text" data-project-film-handle placeholder="e.g. 3m-2080-gloss-black-vinyl-wrap-g12" autocomplete="off">
-            </label>
-            <button type="button" class="btn btn-ghost" data-project-load-film>Load film</button>
-            <div class="kf-mission-preview" data-project-film-preview hidden></div>
+            <div class="kf-build-films" data-build-films></div>
             <div class="kf-mission-nav">
               <button type="button" class="btn btn-primary" data-project-next disabled>Continue</button>
             </div>
@@ -166,18 +160,23 @@
 
           <!-- Stage 1: Surface -->
           <section class="kf-mission-panel" data-mission="1" aria-labelledby="mission-surface" hidden>
-            <h2 id="mission-surface">Choose your surface</h2>
-            <p class="p-lg">Basic vinyl wraps only — motorcycle bodywork or a helmet shell.</p>
-            <div class="kf-mission-cards" role="radiogroup" aria-label="Surface">
+            <h2 id="mission-surface">What are we wrapping?</h2>
+            <p class="p-lg">Motorcycle, helmet, or both. Combo builds include savings on the combined total.</p>
+            <div class="kf-mission-cards kf-mission-cards--3" role="radiogroup" aria-label="Surface">
               <button type="button" class="kf-mission-card" data-surface="motorcycle" aria-pressed="false">
-                <span class="kf-mission-card-kicker">Level · bike</span>
+                <span class="kf-mission-card-kicker">Bike</span>
                 <strong>Motorcycle</strong>
-                <span>Full colour-change or accent package. Labour scales with fairing difficulty.</span>
+                <span>Full colour-change or accent package on the bike.</span>
               </button>
               <button type="button" class="kf-mission-card" data-surface="helmet" aria-pressed="false">
-                <span class="kf-mission-card-kicker">Level · lid</span>
+                <span class="kf-mission-card-kicker">Lid</span>
                 <strong>Helmet</strong>
-                <span>Full shell wrap. Labour scales with film difficulty (gloss easy → shift hard).</span>
+                <span>Full shell wrap for your helmet.</span>
+              </button>
+              <button type="button" class="kf-mission-card" data-surface="both" aria-pressed="false">
+                <span class="kf-mission-card-kicker">Combo · 20% off</span>
+                <strong>Bike + helmet</strong>
+                <span>Wrap both together and save on the combined total.</span>
               </button>
             </div>
             <div class="kf-mission-nav">
@@ -189,32 +188,32 @@
           <!-- Stage 2: Setup -->
           <section class="kf-mission-panel" data-mission="2" aria-labelledby="mission-setup" hidden>
             <h2 id="mission-setup">Setup</h2>
-            <p class="p-lg" data-setup-lede>Tell us what we’re wrapping so the set price can lock in.</p>
+            <p class="p-lg" data-setup-lede>Tell us what we’re wrapping so we can size the install.</p>
 
             <div data-setup-motorcycle hidden>
               <div class="kf-mission-cards kf-mission-cards--coverage" role="radiogroup" aria-label="Coverage">
                 <button type="button" class="kf-mission-card is-active" data-coverage="full" aria-pressed="true">
                   <strong>Full wrap</strong>
-                  <span>All painted bodywork — set labour by bike difficulty.</span>
+                  <span>All painted bodywork on the bike.</span>
                 </button>
                 <button type="button" class="kf-mission-card" data-coverage="accent" aria-pressed="false">
                   <strong>Accent package</strong>
-                  <span>Tank, fenders, and highlight panels — lighter set labour.</span>
+                  <span>Tank, fenders, and highlight panels.</span>
                 </button>
               </div>
               <form class="kf-bike-form" data-project-bike-form onsubmit="return false">
                 <div class="kf-bike-grid">
                   <label class="kf-mission-field">
                     <span>Year</span>
-                    <select data-bike-year required><option value="">Year</option></select>
+                    <input type="number" data-bike-year name="year" required inputmode="numeric" min="1950" max="2030" placeholder="e.g. 2019" autocomplete="off">
                   </label>
                   <label class="kf-mission-field">
                     <span>Make</span>
-                    <select data-bike-make disabled required><option value="">Make</option></select>
+                    <select data-bike-make required><option value="">Select make</option></select>
                   </label>
                   <label class="kf-mission-field">
                     <span>Model</span>
-                    <select data-bike-model disabled required><option value="">Model</option></select>
+                    <select data-bike-model disabled required><option value="">Select make first</option></select>
                   </label>
                 </div>
                 <input type="hidden" name="bike" data-bike-label value="">
@@ -232,7 +231,6 @@
                 <span>Helmet notes</span>
                 <textarea data-helmet-notes rows="3" placeholder="Brand, model, shell size, vents, visor notes…"></textarea>
               </label>
-              <p class="meta">Helmet labour uses the film’s finish difficulty. Vinyl assumed at ~3 linear feet of 5ft-wide cast film.</p>
             </div>
 
             <div class="kf-mission-nav">
@@ -244,7 +242,7 @@
           <!-- Stage 3: Contact -->
           <section class="kf-mission-panel" data-mission="3" aria-labelledby="mission-details" hidden>
             <h2 id="mission-details">Your details</h2>
-            <p class="p-lg">Saved to your garage on this device — and to Firebase when you’re signed in.</p>
+            <p class="p-lg">We’ll save the build on this device, and to your account if you’re signed in.</p>
             <div class="kf-mission-form-grid">
               <label class="kf-mission-field">
                 <span>Name</span>
@@ -259,25 +257,25 @@
                 <input type="tel" data-customer-phone autocomplete="tel">
               </label>
             </div>
-            <p class="meta" data-auth-status>Not signed in — projects still save locally. <a href="/login">Login</a> to sync.</p>
+            <p class="meta" data-auth-status>Not signed in — builds still save on this device. <a href="/login">Login</a> to sync.</p>
             <div class="kf-mission-nav">
               <button type="button" class="btn btn-ghost" data-project-back>Back</button>
-              <button type="button" class="btn btn-primary" data-project-next>Review quote</button>
+              <button type="button" class="btn btn-primary" data-project-next>Review total</button>
             </div>
           </section>
 
           <!-- Stage 4: Checkout -->
           <section class="kf-mission-panel" data-mission="4" aria-labelledby="mission-checkout" hidden>
-            <h2 id="mission-checkout">Lock in the run</h2>
-            <p class="p-lg">Set labour by difficulty + vinyl at Metro cost with 40% markup. The Worker recomputes this before Stripe so the client can’t underpay.</p>
+            <h2 id="mission-checkout">Review your build</h2>
+            <p class="p-lg">Save it for later, or continue to payment to lock in the run. Appointment timing is confirmed after payment.</p>
             <div class="kf-quote-board" data-quote-board>
               <p class="meta">Pricing your build…</p>
             </div>
             <div class="kf-mission-nav kf-mission-nav--split">
               <button type="button" class="btn btn-ghost" data-project-back>Back</button>
               <div class="btn-row">
-                <button type="button" class="btn btn-ghost" data-project-save data-track="cta_click" data-track-label="project-save">Save project</button>
-                <button type="button" class="btn btn-primary" data-project-pay data-track="cta_click" data-track-label="project-pay">Order with Stripe</button>
+                <button type="button" class="btn btn-ghost" data-project-save data-track="cta_click" data-track-label="project-save">Save build</button>
+                <button type="button" class="btn btn-primary" data-project-pay data-track="cta_click" data-track-label="project-pay">Continue to payment</button>
               </div>
             </div>
           </section>
@@ -324,6 +322,7 @@
   <script src="/js/auth-client.js"></script>
   <script src="/js/bike-search.js"></script>
   <script src="/js/vinyl-catalog-data.js"></script>
+  <script src="/js/vinyl-build.js"></script>
   <script src="/js/project-onboarding.js"></script>
 </body>
 </html>

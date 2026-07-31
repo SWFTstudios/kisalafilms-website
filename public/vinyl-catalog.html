@@ -145,22 +145,90 @@
     </section>
 
     <section class="kf-section kf-vinyl-catalog-body">
-      <div class="kf-container">
-        <div class="kf-vinyl-catalog-toolbar kf-vinyl-catalog-toolbar--simple" data-reveal>
-          <div class="kf-vinyl-catalog-toolbar-head">
-            <p class="eyebrow">Colours</p>
-            <p class="kf-vinyl-catalog-meta" data-catalog-meta>Loading…</p>
+      <div class="kf-vinyl-subnav" data-catalog-subnav>
+        <div class="kf-container kf-vinyl-subnav-inner">
+          <div class="kf-vinyl-subnav-search" role="search">
+            <label class="kf-vinyl-subnav-search-label">
+              <span class="visually-hidden">Search colours</span>
+              <input class="kf-vinyl-catalog-search" type="search" placeholder="Search colour, brand, finish…" data-catalog-search enterkeyhint="search" autocomplete="off">
+            </label>
           </div>
-          <label class="kf-vinyl-catalog-field kf-vinyl-catalog-field--search">
-            <span class="kf-vinyl-catalog-label">Search</span>
-            <input class="kf-vinyl-catalog-search" type="search" placeholder="Search colours…" data-catalog-search enterkeyhint="search" autocomplete="off">
-          </label>
+          <div class="kf-vinyl-subnav-filters" role="toolbar" aria-label="Catalog filters">
+            <button type="button" class="kf-vinyl-filter-btn" data-filter-trigger="sort" aria-expanded="false" aria-controls="catalog-panel-sort">
+              <span data-filter-label="sort">Sort</span>
+            </button>
+            <button type="button" class="kf-vinyl-filter-btn" data-filter-trigger="stock" aria-expanded="false" aria-controls="catalog-panel-stock">
+              <span data-filter-label="stock">Stock</span>
+            </button>
+            <button type="button" class="kf-vinyl-filter-btn" data-filter-trigger="brand" aria-expanded="false" aria-controls="catalog-panel-brand">
+              <span data-filter-label="brand">Brand</span>
+            </button>
+            <button type="button" class="kf-vinyl-filter-btn" data-filter-trigger="finish" aria-expanded="false" aria-controls="catalog-panel-finish">
+              <span data-filter-label="finish">Finish</span>
+            </button>
+            <button type="button" class="kf-vinyl-filter-btn" data-filter-trigger="colour" aria-expanded="false" aria-controls="catalog-panel-colour">
+              <span data-filter-label="colour">Colour</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kf-vinyl-filter-backdrop" data-filter-backdrop hidden></div>
+
+      <div id="catalog-panel-sort" class="kf-vinyl-filter-panel" data-filter-panel="sort" role="dialog" aria-label="Sort" hidden>
+        <div class="kf-vinyl-filter-panel-head">
+          <span class="kf-vinyl-catalog-label">Sort</span>
+          <button type="button" class="kf-vinyl-filter-close" data-filter-close aria-label="Close">Close</button>
+        </div>
+        <div class="kf-vinyl-filter-options" data-catalog-sort-options></div>
+      </div>
+
+      <div id="catalog-panel-stock" class="kf-vinyl-filter-panel" data-filter-panel="stock" role="dialog" aria-label="Stock" hidden>
+        <div class="kf-vinyl-filter-panel-head">
+          <span class="kf-vinyl-catalog-label">Stock</span>
+          <button type="button" class="kf-vinyl-filter-close" data-filter-close aria-label="Close">Close</button>
+        </div>
+        <div class="kf-vinyl-filter-options" data-catalog-stock-options></div>
+      </div>
+
+      <div id="catalog-panel-brand" class="kf-vinyl-filter-panel" data-filter-panel="brand" role="dialog" aria-label="Brand" hidden>
+        <div class="kf-vinyl-filter-panel-head">
+          <span class="kf-vinyl-catalog-label">Brand</span>
+          <button type="button" class="kf-vinyl-filter-close" data-filter-close aria-label="Close">Close</button>
+        </div>
+        <div class="kf-vinyl-filter-options" data-catalog-brand-options></div>
+      </div>
+
+      <div id="catalog-panel-finish" class="kf-vinyl-filter-panel" data-filter-panel="finish" role="dialog" aria-label="Finish" hidden>
+        <div class="kf-vinyl-filter-panel-head">
+          <span class="kf-vinyl-catalog-label">Finish</span>
+          <button type="button" class="kf-vinyl-filter-close" data-filter-close aria-label="Close">Close</button>
+        </div>
+        <div class="kf-vinyl-filter-options" data-catalog-finish-options></div>
+      </div>
+
+      <div id="catalog-panel-colour" class="kf-vinyl-filter-panel kf-vinyl-filter-panel--colour" data-filter-panel="colour" role="dialog" aria-label="Colour" hidden>
+        <div class="kf-vinyl-filter-panel-head">
+          <span class="kf-vinyl-catalog-label">Colour</span>
+          <div class="kf-vinyl-filter-panel-actions">
+            <button type="button" class="kf-vinyl-color-clear" data-catalog-family-clear hidden>Clear colours</button>
+            <button type="button" class="kf-vinyl-filter-close" data-filter-close aria-label="Close">Close</button>
+          </div>
+        </div>
+        <p class="kf-vinyl-color-hint">Tap one or more — orange + blue shows both.</p>
+        <div class="kf-vinyl-color-chips" data-catalog-families role="group" aria-label="Filter by colour (multi-select)"></div>
+      </div>
+
+      <div class="kf-container">
+        <div class="kf-vinyl-catalog-toolbar-head" data-reveal>
+          <p class="eyebrow">Colours</p>
+          <p class="kf-vinyl-catalog-meta" data-catalog-meta>Loading…</p>
         </div>
 
         <div class="kf-vinyl-catalog-grid" data-catalog-grid data-reveal></div>
 
         <div class="kf-gallery-cta btn-row" style="margin-top:48px;justify-content:center">
-          <a class="btn btn-primary" href="/project" data-track="cta_click" data-track-label="vinyl-catalog-to-project">Start a project</a>
+          <a class="btn btn-primary" href="/project" data-track="cta_click" data-track-label="vinyl-catalog-to-project">Start a build</a>
         </div>
       </div>
     </section>

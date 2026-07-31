@@ -19,20 +19,18 @@
   const notFound = (msg) => {
     root.innerHTML = `
       <div class="kf-film-empty">
-        <h1>Film not found</h1>
+        <h1>Colour not found</h1>
         <p class="p-lg">${escapeHtml(msg)}</p>
         <div class="btn-row">
           <a class="btn btn-ghost" href="/vinyl-catalog">Back to catalog</a>
         </div>
       </div>
     `;
-    document.title = "Film not found | Kisala Films";
+    document.title = "Colour not found | Kisala Films";
   };
 
   if (!handle) {
-    notFound(
-      "Add a film handle to the URL, e.g. /vinyl-catalog/film?h=3m-2080-gloss-black-vinyl-wrap-g12"
-    );
+    notFound("Pick a colour from the catalog to open its page.");
     return;
   }
 
@@ -40,7 +38,7 @@
     .then((data) => {
       const film = data.film;
       if (!film) {
-        notFound(`No film matches handle “${handle}”.`);
+        notFound("That colour isn’t in the catalog.");
         return;
       }
 
@@ -69,10 +67,6 @@
         );
       }
 
-      const projectHref = `/project?film=${encodeURIComponent(film.handle)}`;
-      const wrapHref = `/wrap-studio?finish=${encodeURIComponent(finish)}&film=${encodeURIComponent(
-        film.handle
-      )}`;
       const metroHref =
         film.metro_url || `https://metrorestyling.com/products/${encodeURIComponent(film.handle)}`;
 
@@ -107,15 +101,15 @@
       }
       if (!blocks.length) {
         blocks.push(
-          `<div class="kf-film-block"><p class="p">Garage notes for this colour are empty. Add copy in <code>doc/spreadsheets/vinyl-products.csv</code> when you want them on the page.</p></div>`
+          `<div class="kf-film-block"><p class="p">More notes for this colour coming soon.</p></div>`
         );
       }
 
       const priceBlock = sellLabel
-        ? `<p class="kf-roll-price-lg">Roll · <strong>${escapeHtml(
-            sellLabel
-          )}</strong> <span class="kf-film-stock-src">Metro cost + 40%</span></p>`
-        : `<p class="p">Roll price is quoted in project checkout when Metro prices are synced.</p>`;
+        ? `<p class="kf-roll-price-lg">From <strong>${escapeHtml(sellLabel)}</strong> / roll</p>`
+        : `<p class="p">Roll price is confirmed when you review your build.</p>`;
+
+      const inBuild = !!window.KisalaVinylBuild?.has(film.handle);
 
       root.innerHTML = `
         <div class="kf-film-layout">
@@ -137,30 +131,50 @@
             }</span></p>
             ${priceBlock}
             ${blocks.join("")}
+            <p class="kf-build-toast" data-build-toast hidden role="status"></p>
             <div class="btn-row">
-              <a class="btn btn-primary" href="${escapeHtml(
-                projectHref
-              )}" data-track="cta_click" data-track-label="film-to-project">Start project</a>
-              <a class="btn btn-ghost" href="${escapeHtml(
-                wrapHref
-              )}" data-track="cta_click" data-track-label="film-to-wrap-studio">Wrap Studio quote</a>
-              <a class="btn btn-ghost" href="/vinyl-catalog">All films</a>
+              <button type="button" class="btn btn-primary" data-add-to-build data-track="cta_click" data-track-label="film-add-to-build">
+                ${inBuild ? "Added to build" : "Add to build"}
+              </button>
+              <a class="btn btn-ghost" href="/project" data-track="cta_click" data-track-label="film-to-project">View build</a>
+              <a class="btn btn-ghost" href="/vinyl-catalog">All colours</a>
               <a class="btn btn-ghost" href="${escapeHtml(
                 metroHref
-              )}" rel="noopener" target="_blank">Metro product</a>
+              )}" rel="noopener" target="_blank">Supplier page</a>
             </div>
           </div>
         </div>
       `;
+
+      const addBtn = root.querySelector("[data-add-to-build]");
+      const toast = root.querySelector("[data-build-toast]");
+      addBtn?.addEventListener("click", () => {
+        if (!window.KisalaVinylBuild) return;
+        window.KisalaVinylBuild.add({
+          handle: film.handle,
+          name: film.name,
+          brand: film.brand,
+          finish: film.finish,
+          sku: film.sku,
+          image_url: film.image_url,
+          color_family: film.color_family,
+        });
+        addBtn.textContent = "Added to build";
+        if (toast) {
+          toast.hidden = false;
+          toast.innerHTML = `In your build. <a href="/project">Open build</a> to add notes and photos, or keep browsing.`;
+        }
+        window.KisalaTrack?.("vinyl_add_to_build", { label: film.handle });
+      });
 
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
     })
     .catch((err) => {
       console.error(err);
       if (err && err.code === 404) {
-        notFound(`No film matches handle “${handle}” in the Metro catalogue.`);
+        notFound("That colour isn’t in the catalog.");
         return;
       }
-      notFound("Could not load the vinyl catalogue. Refresh and try again.");
+      notFound("Could not load the colour catalog. Refresh and try again.");
     });
 })();

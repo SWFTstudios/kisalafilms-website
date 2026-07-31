@@ -88,10 +88,18 @@ function orderId(): string {
   return `ord_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
+type ProjectFilmBody = {
+  handle?: string;
+  notes?: string;
+  placement?: string;
+  imageCount?: number;
+};
+
 type ProjectBody = {
   surface?: string;
   coverage?: string;
   filmHandle?: string;
+  films?: ProjectFilmBody[];
   bikeDifficulty?: number;
   bodyClass?: string;
   bikeYear?: string;
@@ -106,30 +114,72 @@ type ProjectBody = {
   projectId?: string;
 };
 
+function surfaceLabel(surface: ProjectSurface): string {
+  if (surface === "helmet") return "Helmet wrap";
+  if (surface === "both") return "Bike + helmet combo";
+  return "Motorcycle wrap";
+}
+
 async function buildProjectQuote(env: Env, body: ProjectBody) {
   const surface = body.surface as ProjectSurface;
-  if (surface !== "motorcycle" && surface !== "helmet") {
-    return { error: "surface must be motorcycle or helmet.", status: 400 as const };
-  }
-  const filmHandle = String(body.filmHandle || "").trim();
-  if (!filmHandle) {
-    return { error: "filmHandle is required.", status: 400 as const };
-  }
-  if (!env.DB) {
-    return { error: "D1 database is not bound.", status: 503 as const };
+  if (surface !== "motorcycle" && surface !== "helmet" && surface !== "both") {
+    return {
+      error: "Choose motorcycle, helmet, or both.",
+      status: 400 as const,
+    };
   }
 
-  const film = await getFilmCostRow(env.DB, filmHandle);
-  if (!film) {
-    return { error: "Film not found in catalog.", status: 404 as const };
+  const handles: string[] = [];
+  const placementByHandle = new Map<string, string>();
+  if (Array.isArray(body.films)) {
+    body.films.forEach((f) => {
+      const h = String(f?.handle || "").trim();
+      if (!h || handles.includes(h)) return;
+      handles.push(h);
+      placementByHandle.set(h, String(f.placement || ""));
+    });
   }
-  const rollCost = Number(film.roll_price_usd ?? film.price_usd);
-  if (!Number.isFinite(rollCost) || rollCost <= 0) {
+  const legacy = String(body.filmHandle || "").trim();
+  if (legacy && !handles.includes(legacy)) handles.unshift(legacy);
+
+  if (!handles.length) {
+    return { error: "Add at least one colour to your build.", status: 400 as const };
+  }
+  if (!env.DB) {
     return {
-      error:
-        "This film does not have a synced Metro roll price yet. Try another colour or wait for the hourly price sync.",
-      status: 409 as const,
+      error: "Pricing is temporarily unavailable. Save your build and we’ll confirm the total.",
+      status: 503 as const,
     };
+  }
+
+  const filmRows = [];
+  for (const handle of handles) {
+    const film = await getFilmCostRow(env.DB, handle);
+    if (!film) {
+      return {
+        error: "One of the colours in your build isn’t available right now. Remove it and try another.",
+        status: 404 as const,
+      };
+    }
+    const rollCost = Number(film.roll_price_usd ?? film.price_usd);
+    if (!Number.isFinite(rollCost) || rollCost <= 0) {
+      return {
+        error:
+          "Pricing for one of your colours isn’t ready yet. Save the build and we’ll follow up with a total.",
+        status: 409 as const,
+      };
+    }
+    filmRows.push({
+      handle: film.handle,
+      name: film.name,
+      brand: film.brand,
+      finish: film.finish,
+      sku: film.sku,
+      image_url: film.image_url,
+      in_stock: !!film.in_stock,
+      rollCostUsd: rollCost,
+      placement: placementByHandle.get(film.handle) || "",
+    });
   }
 
   const coverage: ProjectCoverage =
@@ -144,8 +194,14 @@ async function buildProjectQuote(env: Env, body: ProjectBody) {
     coverage,
     bikeDifficulty: body.bikeDifficulty,
     bodyClass: body.bodyClass,
-    filmFinish: film.finish || undefined,
-    rollCostUsd: rollCost,
+    filmFinish: filmRows[0]?.finish || undefined,
+    films: filmRows.map((f) => ({
+      handle: f.handle,
+      name: f.name,
+      finish: f.finish || undefined,
+      rollCostUsd: f.rollCostUsd,
+      placement: f.placement,
+    })),
   });
   if (!quote || quote.amountCents < 50) {
     return { error: "Could not price that project.", status: 400 as const };
@@ -153,14 +209,15 @@ async function buildProjectQuote(env: Env, body: ProjectBody) {
 
   return {
     film: {
-      handle: film.handle,
-      name: film.name,
-      brand: film.brand,
-      finish: film.finish,
-      sku: film.sku,
-      image_url: film.image_url,
-      in_stock: !!film.in_stock,
+      handle: filmRows[0].handle,
+      name: filmRows[0].name,
+      brand: filmRows[0].brand,
+      finish: filmRows[0].finish,
+      sku: filmRows[0].sku,
+      image_url: filmRows[0].image_url,
+      in_stock: filmRows[0].in_stock,
     },
+    films: filmRows.map(({ rollCostUsd: _c, ...rest }) => rest),
     quote,
     status: 200 as const,
   };
@@ -275,34 +332,42 @@ async function createProjectCheckout(
     return json(
       {
         error:
-          "Stripe is not configured yet. Set the STRIPE_SECRET_KEY Worker secret, then redeploy.",
+          "Checkout isn’t available right now. Save your build and we’ll follow up by email.",
       },
       503
     );
   }
-  if (!env.DB) return json({ error: "D1 database is not bound." }, 503);
+  if (!env.DB) {
+    return json(
+      {
+        error:
+          "Pricing is temporarily unavailable. Save your build and we’ll confirm the total.",
+      },
+      503
+    );
+  }
 
   let body: ProjectBody;
   try {
     body = (await request.json()) as ProjectBody;
   } catch {
-    return json({ error: "Expected JSON project body." }, 400);
+    return json({ error: "Could not read that request. Try again." }, 400);
   }
 
   const email = String(body.customerEmail || "").trim();
   const name = String(body.customerName || "").trim();
   if (!email || !email.includes("@")) {
-    return json({ error: "A valid customerEmail is required." }, 400);
+    return json({ error: "A valid email is required." }, 400);
   }
   if (!name) {
-    return json({ error: "customerName is required." }, 400);
+    return json({ error: "Your name is required." }, 400);
   }
 
   const built = await buildProjectQuote(env, body);
   if ("error" in built && built.error) {
     return json({ error: built.error }, built.status);
   }
-  const { film, quote } = built as {
+  const { film, films, quote } = built as {
     film: {
       handle: string;
       name: string;
@@ -312,6 +377,7 @@ async function createProjectCheckout(
       image_url: string | null;
       in_stock: boolean;
     };
+    films: Array<{ handle: string; name: string }>;
     quote: NonNullable<ReturnType<typeof quoteProject>>;
   };
 
@@ -321,7 +387,10 @@ async function createProjectCheckout(
     surface: quote.surface,
     coverage: quote.coverage,
     filmHandle: film.handle,
-    filmName: film.name,
+    filmName:
+      films.length > 1
+        ? `${film.name} + ${films.length - 1} more`
+        : film.name,
     filmFinish: film.finish || undefined,
     difficulty: quote.difficulty,
     bodyClass: body.bodyClass,
@@ -339,17 +408,17 @@ async function createProjectCheckout(
   });
 
   const base = siteUrl(request, env);
-  const surfaceLabel =
-    quote.surface === "helmet" ? "Helmet wrap" : "Motorcycle wrap";
-  const coverageLabel = quote.coverage === "accent" ? "accent package" : "full wrap";
-  const productName = `${surfaceLabel} — ${film.name}`;
-  const description = [
-    `${coverageLabel} · ${quote.difficultyLabel}`,
-    `Labour ${formatUsd(quote.labourUsd)}`,
-    `Vinyl ${quote.rolls}× ${quote.rollWidthFt}×${quote.rollLengthFt}ft @ Metro cost + ${Math.round(
-      (quote.vinylMarkup - 1) * 100
-    )}% (${formatUsd(quote.vinylSellUsd)})`,
-  ].join(" · ");
+  const productName = `${surfaceLabel(quote.surface)} — ${
+    films.length > 1 ? `${films.length} colours` : film.name
+  }`;
+  const descriptionParts = [
+    quote.difficultyLabel,
+    films.length > 1 ? `${films.length} colours` : film.name,
+  ];
+  if (quote.discountUsd > 0) {
+    descriptionParts.push("Combo savings included");
+  }
+  const description = descriptionParts.join(" · ");
 
   const params = new URLSearchParams();
   params.set("mode", "payment");
@@ -357,10 +426,7 @@ async function createProjectCheckout(
     "success_url",
     `${base}/project-thanks?order_id=${encodeURIComponent(id)}&session_id={CHECKOUT_SESSION_ID}`
   );
-  params.set(
-    "cancel_url",
-    `${base}/project?film=${encodeURIComponent(film.handle)}&cancelled=1`
-  );
+  params.set("cancel_url", `${base}/project?cancelled=1`);
   params.set("customer_creation", "always");
   params.set("customer_email", email);
   params.set("billing_address_collection", "auto");
@@ -374,7 +440,7 @@ async function createProjectCheckout(
   params.set("metadata[surface]", quote.surface);
   params.set("metadata[coverage]", quote.coverage);
   params.set("metadata[film_handle]", film.handle);
-  params.set("metadata[difficulty]", String(quote.difficulty));
+  params.set("metadata[film_count]", String(films.length));
   params.set("metadata[total_usd]", String(quote.totalUsd));
   params.set("payment_intent_data[description]", `Kisala Films — ${productName}`);
   params.set("payment_intent_data[metadata][order_id]", id);
@@ -398,8 +464,7 @@ async function createProjectCheckout(
     return json(
       {
         error:
-          stripeBody.error?.message ||
-          "Stripe rejected the checkout session.",
+          "Checkout couldn’t start right now. Save your build and we’ll follow up.",
       },
       502
     );
@@ -414,6 +479,7 @@ async function createProjectCheckout(
     amount: quote.totalUsd,
     quote,
     film,
+    films,
   });
 }
 

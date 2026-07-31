@@ -52,7 +52,7 @@
       <div class="container">
         <p class="eyebrow">Mission complete</p>
         <h1>Project ordered</h1>
-        <p class="p-lg" data-thanks-lede>Confirming your Stripe payment…</p>
+        <p class="p-lg" data-thanks-lede>Confirming your payment…</p>
         <div class="kf-quote-board" data-thanks-order style="max-width:520px;margin-top:24px"></div>
         <div class="btn-row" style="margin-top:28px">
           <a class="btn btn-primary" href="/vinyl-catalog">Back to catalog</a>
@@ -93,7 +93,7 @@
             lede.textContent =
               order.status === "paid"
                 ? "You’re booked in the queue. Vinyl will be ordered and Elombe will confirm the appointment."
-                : "Checkout started — status: " + order.status + ".";
+                : "Payment started — we’ll email you when it’s confirmed.";
           }
           if (board) {
             board.innerHTML =

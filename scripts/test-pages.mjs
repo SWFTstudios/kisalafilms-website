@@ -450,22 +450,23 @@ function fire(win, el, type) {
       assertEqual(cards().length, 48, "second page");
     });
 
-    check("using a film writes the shared hidden fields", () => {
+    check("adding a film to the build writes the shared hidden fields", () => {
       const target = win.KisalaVinyl.all().find((c) => c.i && c.u);
-      const card = cards().find((el) => el.querySelector(`[data-use="${target.id}"]`))
+      const card = cards().find((el) => el.querySelector(`[data-add-build="${target.id}"]`))
         || grid.querySelector(".vinyl-card");
-      const use = card.querySelector("[data-use]");
-      const picked = win.KisalaVinyl.all().find((c) => String(c.id) === use.getAttribute("data-use"));
-      click(use);
+      const add = card.querySelector("[data-add-build]");
+      const picked = win.KisalaVinyl.all().find((c) => String(c.id) === add.getAttribute("data-add-build"));
+      click(add);
       assertEqual(field(win, "vinyl_color").value, picked.n, "vinyl_color");
       assertEqual(field(win, "vinyl_vendor").value, picked.v, "vinyl_vendor");
       assertEqual(summary(win, "colour"), picked.n, "colour summary row");
     });
 
-    check("saving a film shortlists it and reaches the build sheet", () => {
-      const save = grid.querySelector("[data-save]");
-      const picked = win.KisalaVinyl.all().find((c) => String(c.id) === save.getAttribute("data-save"));
-      click(save);
+    check("adding a film to the build shortlists it and reaches the build sheet", () => {
+      const add = grid.querySelector("[data-add-build]");
+      const picked = win.KisalaVinyl.all().find((c) => String(c.id) === add.getAttribute("data-add-build"));
+      // May already be shortlisted from the previous add — force a clean add of another if needed
+      if (Number(field(win, "saved_films").dataset.count || 0) === 0) click(add);
 
       assertEqual(text(win, "[data-saved-count]"), "1", "saved tally");
       assert(!root.querySelector("[data-saved-wrap]").hidden, "shortlist should be visible");
@@ -479,13 +480,13 @@ function fire(win, el, type) {
       // pipe-heavy film that is actually on screen, and not the one already saved.
       const alreadySaved = field(win, "saved_films").value;
       const target = cards()
-        .map((el) => el.querySelector("[data-save]"))
+        .map((el) => el.querySelector("[data-add-build]"))
         .filter(Boolean)
-        .map((btn) => win.KisalaVinyl.all().find((c) => String(c.id) === btn.getAttribute("data-save")))
+        .map((btn) => win.KisalaVinyl.all().find((c) => String(c.id) === btn.getAttribute("data-add-build")))
         .find((c) => c && c.n.split("|").length > 2 && c.n !== alreadySaved);
 
       assert(target, "expected a pipe-heavy title among the rendered cards");
-      click(grid.querySelector(`[data-save="${target.id}"]`));
+      click(grid.querySelector(`[data-add-build="${target.id}"]`));
 
       assertEqual(Number(field(win, "saved_films").dataset.count), 2, "two films saved");
       assertEqual(summary(win, "saved"), "2 shortlisted", "saved summary row");
@@ -1236,17 +1237,21 @@ function fire(win, el, type) {
 
   check("project page wires mission onboarding", () => {
     assert(win.document.querySelector("[data-project-root]"), "project root missing");
-    assert(win.document.querySelector("[data-mission='0']"), "film stage missing");
+    assert(win.document.querySelector("[data-mission='0']"), "colours stage missing");
     assert(win.document.querySelector("[data-surface='helmet']"), "helmet surface missing");
-    assert(win.document.querySelector("[data-project-pay]"), "Stripe CTA missing");
+    assert(win.document.querySelector("[data-surface='both']"), "combo surface missing");
+    assert(win.document.querySelector("[data-project-pay]"), "payment CTA missing");
+    assert(win.document.querySelector("[data-build-films]"), "build films list missing");
     const html = readFileSync(join(PUBLIC, "project.html"), "utf8");
     assert(/\/js\/project-onboarding\.js/.test(html), "project-onboarding.js missing");
+    assert(/\/js\/vinyl-build\.js/.test(html), "vinyl-build.js missing");
     assert(/\/js\/bike-search\.js/.test(html), "bike-search.js missing");
   });
 
   check("projectCheckout config + preview prices a mid bike full wrap", () => {
     assert(win.KISALA_CONFIG.projectCheckout, "projectCheckout missing");
     assertEqual(win.KISALA_CONFIG.projectCheckout.vinylMarkup, 1.4, "vinyl markup");
+    assertEqual(win.KISALA_CONFIG.projectCheckout.comboDiscount, 0.2, "combo discount");
     const q = win.KisalaConfig.projectQuotePreview({
       surface: "motorcycle",
       coverage: "full",
@@ -1272,6 +1277,25 @@ function fire(win, el, type) {
     assertEqual(q.rolls, 1, "3ft → 1 roll");
     assertEqual(q.vinylSellUsd, 560, "400 × 1.4");
     assertEqual(q.totalUsd, 885, "helmet total");
+  });
+
+  check("projectCheckout combo applies 20% off bike + helmet", () => {
+    const q = win.KisalaConfig.projectQuotePreview({
+      surface: "both",
+      coverage: "full",
+      bikeDifficulty: 3,
+      bodyClass: "half_faired",
+      filmDifficulty: 2,
+      rollCostUsd: 400,
+    });
+    assert(q, "combo quote missing");
+    assertEqual(q.motorcycleLabourUsd, 1450, "combo bike labour");
+    assertEqual(q.helmetLabourUsd, 200, "combo helmet labour");
+    assertEqual(q.rolls, 2, "bike + helmet rolls");
+    assertEqual(q.vinylSellUsd, 1120, "2× 400 × 1.4");
+    assertEqual(q.subtotalUsd, 2770, "combo subtotal");
+    assertEqual(q.discountUsd, 554, "20% combo savings");
+    assertEqual(q.totalUsd, 2216, "combo total");
   });
 
   check("project-thanks is noindex", () => {
