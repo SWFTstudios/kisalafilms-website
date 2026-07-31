@@ -1,13 +1,15 @@
 /**
- * Vinyl project pricing — set labour by difficulty + vinyl at Metro cost × markup.
+ * Vinyl project pricing — labour by complexity + vinyl sell price.
  * Keep in sync with public/js/kisala-config.js → projectCheckout.
  */
 
 export const VINYL_MARKUP = 1.4;
 export const ROLL_LENGTH_FT = 25;
 export const ROLL_WIDTH_FT = 5;
+/** Combo (bike + helmet) discount off the combined total. */
+export const COMBO_DISCOUNT = 0.2;
 
-/** Set labour (USD) for a motorcycle wrap by fairing difficulty 1–5. */
+/** Set labour (USD) for a motorcycle wrap by fairing complexity 1–5. */
 export const MOTORCYCLE_LABOUR: Record<
   "full" | "accent",
   Record<number, number>
@@ -16,7 +18,7 @@ export const MOTORCYCLE_LABOUR: Record<
   accent: { 1: 350, 2: 450, 3: 575, 4: 750, 5: 950 },
 };
 
-/** Set labour (USD) for a helmet wrap by film-difficulty 1–5. */
+/** Set labour (USD) for a helmet wrap by film complexity 1–5. */
 export const HELMET_LABOUR: Record<number, number> = {
   1: 175,
   2: 200,
@@ -42,7 +44,7 @@ export const FULL_FEET_BY_BODY: Record<string, number> = {
 export const ACCENT_FEET = 8;
 export const HELMET_FEET = 3;
 
-/** Film finish → install difficulty for helmet (and waste buffer). */
+/** Film finish → install complexity for helmet. */
 export const FILM_DIFFICULTY: Record<string, number> = {
   Gloss: 1,
   Satin: 2,
@@ -56,19 +58,31 @@ export const FILM_DIFFICULTY: Record<string, number> = {
   Shift: 5,
 };
 
-export type ProjectSurface = "motorcycle" | "helmet";
+export type ProjectSurface = "motorcycle" | "helmet" | "both";
 export type ProjectCoverage = "full" | "accent";
+export type FilmPlacement = "motorcycle" | "helmet" | "both" | "";
+
+export type QuoteFilmInput = {
+  rollCostUsd: number;
+  finish?: string;
+  placement?: FilmPlacement | string;
+  handle?: string;
+  name?: string;
+};
 
 export type ProjectQuoteInput = {
   surface: ProjectSurface;
   coverage: ProjectCoverage;
-  /** Bike fairing difficulty 1–5 (motorcycle). */
+  /** Bike fairing complexity 1–5 (motorcycle / combo). */
   bikeDifficulty?: number;
   bodyClass?: string;
-  /** Film finish label (helmet difficulty). */
+  /** Single-film shortcut (legacy). */
   filmFinish?: string;
-  /** Metro roll cost (USD) from D1. */
-  rollCostUsd: number;
+  rollCostUsd?: number;
+  /** Multi-film builds. */
+  films?: QuoteFilmInput[];
+  /** Override combo discount (0–1). Default COMBO_DISCOUNT. */
+  comboDiscount?: number;
 };
 
 export type ProjectQuote = {
@@ -77,6 +91,8 @@ export type ProjectQuote = {
   difficulty: number;
   difficultyLabel: string;
   labourUsd: number;
+  motorcycleLabourUsd: number;
+  helmetLabourUsd: number;
   linearFeet: number;
   rolls: number;
   rollWidthFt: number;
@@ -84,8 +100,12 @@ export type ProjectQuote = {
   rollCostUsd: number;
   vinylMarkup: number;
   vinylSellUsd: number;
+  subtotalUsd: number;
+  comboDiscount: number;
+  discountUsd: number;
   totalUsd: number;
   amountCents: number;
+  filmCount: number;
 };
 
 export function clampDifficulty(n: number): number {
@@ -116,41 +136,152 @@ export function rollsForFeet(linearFeet: number, rollLength = ROLL_LENGTH_FT): n
   return Math.max(1, Math.ceil(Math.max(0, linearFeet) / rollLength));
 }
 
-export function quoteProject(input: ProjectQuoteInput): ProjectQuote | null {
+function motorcycleFeet(coverage: ProjectCoverage, bodyClass?: string): number {
+  if (coverage === "accent") return ACCENT_FEET;
+  const body = bodyClass || "unknown";
+  return FULL_FEET_BY_BODY[body] ?? FULL_FEET_BY_BODY.unknown;
+}
+
+function normalizeFilms(input: ProjectQuoteInput): QuoteFilmInput[] {
+  if (Array.isArray(input.films) && input.films.length) {
+    return input.films.filter((f) => Number(f.rollCostUsd) > 0);
+  }
   const cost = Number(input.rollCostUsd);
-  if (!Number.isFinite(cost) || cost <= 0) return null;
+  if (Number.isFinite(cost) && cost > 0) {
+    return [{ rollCostUsd: cost, finish: input.filmFinish }];
+  }
+  return [];
+}
+
+function filmAppliesTo(
+  placement: string | undefined,
+  target: "motorcycle" | "helmet",
+  surface: ProjectSurface
+): boolean {
+  const p = String(placement || "").toLowerCase();
+  if (!p || p === "both") {
+    if (surface === "both") return true;
+    return surface === target;
+  }
+  if (p === target || p === "both") return true;
+  // Unspecified placement on a single-surface build always applies
+  if (surface === target) return true;
+  return false;
+}
+
+function vinylForFeet(
+  films: QuoteFilmInput[],
+  linearFeet: number
+): { rolls: number; vinylSellUsd: number; avgCost: number } {
+  if (!films.length || linearFeet <= 0) {
+    return { rolls: 0, vinylSellUsd: 0, avgCost: 0 };
+  }
+  const share = linearFeet / films.length;
+  let rolls = 0;
+  let vinylSellUsd = 0;
+  let costSum = 0;
+  films.forEach((f) => {
+    const r = rollsForFeet(share);
+    rolls += r;
+    costSum += Number(f.rollCostUsd) * r;
+    vinylSellUsd += sellFromCost(Number(f.rollCostUsd) * r);
+  });
+  return {
+    rolls,
+    vinylSellUsd: roundMoney(vinylSellUsd),
+    avgCost: costSum / Math.max(1, rolls),
+  };
+}
+
+export function quoteProject(input: ProjectQuoteInput): ProjectQuote | null {
+  const films = normalizeFilms(input);
+  if (!films.length) return null;
 
   const surface = input.surface;
-  const coverage: ProjectCoverage =
-    surface === "helmet" ? "full" : input.coverage === "accent" ? "accent" : "full";
-
-  let difficulty: number;
-  let labourUsd: number;
-  let linearFeet: number;
-  let difficultyLabel: string;
-
-  if (surface === "helmet") {
-    difficulty = clampDifficulty(filmDifficultyFromFinish(input.filmFinish));
-    labourUsd = HELMET_LABOUR[difficulty] ?? HELMET_LABOUR[3];
-    linearFeet = HELMET_FEET;
-    difficultyLabel = `Helmet · film level ${difficulty}/5`;
-  } else {
-    difficulty = clampDifficulty(input.bikeDifficulty ?? 3);
-    const table = MOTORCYCLE_LABOUR[coverage];
-    labourUsd = table[difficulty] ?? table[3];
-    if (coverage === "accent") {
-      linearFeet = ACCENT_FEET;
-      difficultyLabel = `Accent package · bike level ${difficulty}/5`;
-    } else {
-      const body = input.bodyClass || "unknown";
-      linearFeet = FULL_FEET_BY_BODY[body] ?? FULL_FEET_BY_BODY.unknown;
-      difficultyLabel = `Full wrap · bike level ${difficulty}/5`;
-    }
+  if (surface !== "motorcycle" && surface !== "helmet" && surface !== "both") {
+    return null;
   }
 
-  const rolls = rollsForFeet(linearFeet);
-  const vinylSellUsd = sellFromCost(cost * rolls);
-  const totalUsd = roundMoney(labourUsd + vinylSellUsd);
+  const coverage: ProjectCoverage =
+    surface === "helmet"
+      ? "full"
+      : input.coverage === "accent"
+        ? "accent"
+        : "full";
+
+  let motorcycleLabourUsd = 0;
+  let helmetLabourUsd = 0;
+  let bikeDifficulty = 3;
+  let helmetDifficulty = 3;
+  let linearFeet = 0;
+  let rolls = 0;
+  let vinylSellUsd = 0;
+  let costAccumulator = 0;
+  let costRolls = 0;
+
+  if (surface === "motorcycle" || surface === "both") {
+    bikeDifficulty = clampDifficulty(input.bikeDifficulty ?? 3);
+    const table = MOTORCYCLE_LABOUR[coverage];
+    motorcycleLabourUsd = table[bikeDifficulty] ?? table[3];
+    const feet = motorcycleFeet(coverage, input.bodyClass);
+    const motoFilms = films.filter((f) =>
+      filmAppliesTo(f.placement, "motorcycle", surface)
+    );
+    const pool = motoFilms.length ? motoFilms : films;
+    const v = vinylForFeet(pool, feet);
+    linearFeet += feet;
+    rolls += v.rolls;
+    vinylSellUsd += v.vinylSellUsd;
+    costAccumulator += v.avgCost * v.rolls;
+    costRolls += v.rolls;
+  }
+
+  if (surface === "helmet" || surface === "both") {
+    const finishFilm =
+      films.find((f) => filmAppliesTo(f.placement, "helmet", surface)) || films[0];
+    helmetDifficulty = clampDifficulty(
+      filmDifficultyFromFinish(finishFilm?.finish || input.filmFinish)
+    );
+    helmetLabourUsd = HELMET_LABOUR[helmetDifficulty] ?? HELMET_LABOUR[3];
+    const helmetFilms = films.filter((f) =>
+      filmAppliesTo(f.placement, "helmet", surface)
+    );
+    const pool = helmetFilms.length ? helmetFilms : films;
+    const v = vinylForFeet(pool, HELMET_FEET);
+    linearFeet += HELMET_FEET;
+    rolls += v.rolls;
+    vinylSellUsd += v.vinylSellUsd;
+    costAccumulator += v.avgCost * v.rolls;
+    costRolls += v.rolls;
+  }
+
+  const labourUsd = roundMoney(motorcycleLabourUsd + helmetLabourUsd);
+  vinylSellUsd = roundMoney(vinylSellUsd);
+  const subtotalUsd = roundMoney(labourUsd + vinylSellUsd);
+
+  const comboDiscount =
+    surface === "both"
+      ? Math.min(
+          0.5,
+          Math.max(0, Number(input.comboDiscount ?? COMBO_DISCOUNT) || 0)
+        )
+      : 0;
+  const discountUsd = roundMoney(subtotalUsd * comboDiscount);
+  const totalUsd = roundMoney(subtotalUsd - discountUsd);
+
+  let difficultyLabel = "";
+  let difficulty = bikeDifficulty;
+  if (surface === "helmet") {
+    difficulty = helmetDifficulty;
+    difficultyLabel = "Helmet wrap";
+  } else if (surface === "both") {
+    difficulty = Math.max(bikeDifficulty, helmetDifficulty);
+    difficultyLabel = "Bike + helmet combo";
+  } else if (coverage === "accent") {
+    difficultyLabel = "Accent package";
+  } else {
+    difficultyLabel = "Full motorcycle wrap";
+  }
 
   return {
     surface,
@@ -158,14 +289,20 @@ export function quoteProject(input: ProjectQuoteInput): ProjectQuote | null {
     difficulty,
     difficultyLabel,
     labourUsd,
+    motorcycleLabourUsd: roundMoney(motorcycleLabourUsd),
+    helmetLabourUsd: roundMoney(helmetLabourUsd),
     linearFeet,
     rolls,
     rollWidthFt: ROLL_WIDTH_FT,
     rollLengthFt: ROLL_LENGTH_FT,
-    rollCostUsd: roundMoney(cost),
+    rollCostUsd: roundMoney(costRolls ? costAccumulator / costRolls : films[0].rollCostUsd),
     vinylMarkup: VINYL_MARKUP,
     vinylSellUsd,
+    subtotalUsd,
+    comboDiscount,
+    discountUsd,
     totalUsd,
     amountCents: Math.round(totalUsd * 100),
+    filmCount: films.length,
   };
 }

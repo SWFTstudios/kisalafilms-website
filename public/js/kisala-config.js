@@ -178,13 +178,15 @@ window.KISALA_CONFIG = {
     },
   ],
 
-  /* ---- Vinyl project checkout (Stripe) ---------------------------------
-     Full project price = set labour (by difficulty) + vinyl (Metro cost × markup).
-     Motorcycle difficulty comes from motorcycles.json labourBands (1–5).
-     Helmet difficulty comes from film finish (Gloss=1 … Color Shift=5).
-     Keep mirrored in src/project-quote.ts — the Worker recomputes before Stripe. */
+  /* ---- Vinyl project checkout ------------------------------------------
+     Full project price = labour + vinyl sell price.
+     Motorcycle complexity from motorcycles.json labourBands (1–5).
+     Helmet complexity from film finish.
+     Combo (bike + helmet) applies comboDiscount off the combined total.
+     Mirrored in src/project-quote.ts for server-side recompute. */
   projectCheckout: {
-    vinylMarkup: 1.4, // Metro roll cost + 40% profit
+    vinylMarkup: 1.4,
+    comboDiscount: 0.2,
     rollWidthFt: 5,
     rollLengthFt: 25,
     helmetLinearFeet: 3,

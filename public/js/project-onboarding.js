@@ -1,7 +1,6 @@
 /**
- * Game-like vinyl project onboarding — catalog film → surface → setup →
- * details → save or Stripe checkout. Quote is previewed client-side then
- * recomputed on the Worker before payment.
+ * Vinyl project onboarding — multi-colour build → surface → setup →
+ * details → save or payment. Quote is previewed then recomputed server-side.
  */
 (() => {
   const root = document.querySelector("[data-project-root]");
@@ -9,10 +8,10 @@
 
   const STORAGE_KEY = "kisala-vinyl-projects";
   const params = new URLSearchParams(window.location.search);
+  const Build = window.KisalaVinylBuild;
 
   const state = {
     step: 0,
-    film: null,
     surface: null,
     coverage: "full",
     projectId: `proj_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
@@ -28,12 +27,9 @@
     xp: root.querySelector("[data-project-xp]"),
     xpLabel: root.querySelector("[data-project-xp-label]"),
     filmCard: root.querySelector("[data-project-film-card]"),
-    filmThumb: root.querySelector("[data-project-film-thumb]"),
     filmName: root.querySelector("[data-project-film-name]"),
     filmMeta: root.querySelector("[data-project-film-meta]"),
-    filmHandle: root.querySelector("[data-project-film-handle]"),
-    filmPreview: root.querySelector("[data-project-film-preview]"),
-    loadFilm: root.querySelector("[data-project-load-film]"),
+    buildFilms: root.querySelector("[data-build-films]"),
     surfaceBtns: root.querySelectorAll("[data-surface]"),
     coverageBtns: root.querySelectorAll("[data-coverage]"),
     setupMoto: root.querySelector("[data-setup-motorcycle]"),
@@ -71,6 +67,10 @@
       .replace(/"/g, "&quot;");
   }
 
+  function films() {
+    return Build ? Build.list() : [];
+  }
+
   function showError(msg) {
     if (!els.error) return;
     els.error.hidden = !msg;
@@ -100,6 +100,7 @@
     if (els.xp) els.xp.style.width = pct + "%";
     if (els.xpLabel) els.xpLabel.textContent = `Stage ${state.step + 1} of 5`;
 
+    if (state.step === 0) renderBuildFilms();
     if (state.step === 2) syncSetupSurface();
     if (state.step === 4) refreshQuote();
     showError("");
@@ -107,98 +108,147 @@
   }
 
   function syncSetupSurface() {
-    const moto = state.surface === "motorcycle";
-    if (els.setupMoto) els.setupMoto.hidden = !moto;
-    if (els.setupHelmet) els.setupHelmet.hidden = moto;
+    const needBike = state.surface === "motorcycle" || state.surface === "both";
+    const needHelmet = state.surface === "helmet" || state.surface === "both";
+    if (els.setupMoto) els.setupMoto.hidden = !needBike;
+    if (els.setupHelmet) els.setupHelmet.hidden = !needHelmet;
     if (els.setupLede) {
-      els.setupLede.textContent = moto
-        ? "Pick coverage and your bike — labour is a set price by fairing difficulty."
-        : "Add helmet notes — labour is a set price by film difficulty.";
-    }
-  }
-
-  function renderFilmCard() {
-    const film = state.film;
-    if (!film || !els.filmCard) return;
-    els.filmCard.hidden = false;
-    if (els.filmThumb) {
-      if (film.image_url) {
-        els.filmThumb.hidden = false;
-        els.filmThumb.src = film.image_url;
-        els.filmThumb.alt = film.name || "";
+      if (state.surface === "both") {
+        els.setupLede.textContent =
+          "Add your bike and helmet details so we can size the combo install.";
+      } else if (needBike) {
+        els.setupLede.textContent = "Pick coverage and your bike.";
       } else {
-        els.filmThumb.hidden = true;
+        els.setupLede.textContent = "Add a few notes about the helmet.";
       }
     }
-    if (els.filmName) els.filmName.textContent = film.name || film.handle;
-    if (els.filmMeta) {
-      els.filmMeta.textContent = [film.brand, film.finish, film.sku]
-        .filter(Boolean)
-        .join(" · ");
-    }
-    if (els.filmHandle) els.filmHandle.value = film.handle || "";
-    if (els.filmPreview) {
-      const sell = film.sell_price_usd;
-      const sellLabel =
-        sell != null && Number.isFinite(Number(sell))
-          ? money(sell) + " / roll (cost + 40%)"
-          : "Price syncing";
-      els.filmPreview.hidden = false;
-      els.filmPreview.innerHTML = `
-        <div class="kf-mission-preview-inner">
-          ${
-            film.image_url
-              ? `<img src="${escapeHtml(film.image_url)}" alt="" width="96" height="96">`
-              : ""
-          }
-          <div>
-            <strong>${escapeHtml(film.name || "")}</strong>
-            <p class="meta">${escapeHtml(
-              [film.brand, film.finish].filter(Boolean).join(" · ")
-            )}</p>
-            <p class="kf-roll-price">${escapeHtml(sellLabel)}</p>
-          </div>
-        </div>`;
-    }
-    const next0 = root.querySelector('[data-mission="0"] [data-project-next]');
-    if (next0) next0.disabled = !film;
   }
 
-  async function loadFilm(handle) {
-    const h = String(handle || "").trim();
-    if (!h) {
-      showError("Enter a film handle or pick one from the catalog.");
+  function renderRail() {
+    const list = films();
+    if (!els.filmCard) return;
+    if (!list.length) {
+      els.filmCard.hidden = true;
       return;
     }
-    showError("");
-    try {
-      let film = null;
-      if (window.KisalaVinylCatalog) {
-        const data = await window.KisalaVinylCatalog.loadFilm(h);
-        film = data.film;
-      } else {
-        const res = await fetch(`/api/films/${encodeURIComponent(h)}`);
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data.film) {
-          throw new Error(data.error || "Film not found in the catalog.");
-        }
-        film = data.film;
-      }
-      state.film = film;
-      renderFilmCard();
-      window.KisalaTrack?.("project_film_loaded", { label: h });
-    } catch (err) {
-      showError(err.message || "Could not load that film.");
-      state.film = null;
-      renderFilmCard();
+    els.filmCard.hidden = false;
+    if (els.filmName) {
+      els.filmName.textContent =
+        list.length === 1 ? list[0].name : `${list.length} colours`;
     }
+    if (els.filmMeta) {
+      els.filmMeta.textContent =
+        list.length === 1
+          ? [list[0].brand, list[0].finish].filter(Boolean).join(" · ")
+          : list
+              .slice(0, 3)
+              .map((f) => f.name)
+              .join(", ") + (list.length > 3 ? "…" : "");
+    }
+    const next0 = root.querySelector('[data-mission="0"] [data-project-next]');
+    if (next0) next0.disabled = list.length === 0;
+  }
+
+  function renderBuildFilms() {
+    renderRail();
+    if (!els.buildFilms) return;
+    const list = films();
+    if (!list.length) {
+      els.buildFilms.innerHTML =
+        '<p class="gallery-empty">No colours yet. Browse the catalog and tap <strong>Add to build</strong>.</p>';
+      return;
+    }
+
+    const showPlacement = true;
+    els.buildFilms.innerHTML = list
+      .map((f) => {
+        const thumbs = (f.images || [])
+          .map(
+            (src, i) =>
+              `<button type="button" class="kf-build-photo" data-remove-photo="${escapeHtml(
+                f.handle
+              )}" data-photo-index="${i}" aria-label="Remove photo">
+                <img src="${escapeHtml(src)}" alt="">
+              </button>`
+          )
+          .join("");
+        return `<article class="kf-build-film" data-build-handle="${escapeHtml(f.handle)}">
+          <div class="kf-build-film-top">
+            ${
+              f.image_url
+                ? `<img class="kf-build-film-swatch" src="${escapeHtml(
+                    f.image_url
+                  )}" alt="" width="72" height="72">`
+                : `<span class="kf-build-film-swatch kf-build-film-swatch--empty"></span>`
+            }
+            <div class="kf-build-film-copy">
+              <strong>${escapeHtml(f.name)}</strong>
+              <p class="meta">${escapeHtml(
+                [f.brand, f.finish].filter(Boolean).join(" · ")
+              )}</p>
+            </div>
+            <button type="button" class="kf-build-film-remove" data-remove-film="${escapeHtml(
+              f.handle
+            )}" aria-label="Remove ${escapeHtml(f.name)}">Remove</button>
+          </div>
+          ${
+            showPlacement
+              ? `<label class="kf-mission-field">
+                  <span>Where does this colour go?</span>
+                  <select data-film-placement="${escapeHtml(f.handle)}">
+                    <option value="" ${!f.placement ? "selected" : ""}>Not sure yet</option>
+                    <option value="motorcycle" ${
+                      f.placement === "motorcycle" ? "selected" : ""
+                    }>Motorcycle</option>
+                    <option value="helmet" ${
+                      f.placement === "helmet" ? "selected" : ""
+                    }>Helmet</option>
+                    <option value="both" ${
+                      f.placement === "both" ? "selected" : ""
+                    }>Bike and helmet</option>
+                  </select>
+                </label>`
+              : ""
+          }
+          <label class="kf-mission-field">
+            <span>Notes for this colour</span>
+            <textarea data-film-notes="${escapeHtml(
+              f.handle
+            )}" rows="2" placeholder="Tank top, side panels, chin bar…">${escapeHtml(
+              f.notes || ""
+            )}</textarea>
+          </label>
+          <div class="kf-build-photos">
+            ${thumbs}
+            ${
+              (f.images || []).length < (Build?.MAX_IMAGES || 3)
+                ? `<label class="kf-build-photo-add">
+                    <span>Add photo</span>
+                    <input type="file" accept="image/*" data-film-photo="${escapeHtml(
+                      f.handle
+                    )}" hidden>
+                  </label>`
+                : ""
+            }
+          </div>
+        </article>`;
+      })
+      .join("");
   }
 
   function payload() {
+    const list = films();
     return {
       surface: state.surface,
-      coverage: state.surface === "helmet" ? "full" : state.coverage,
-      filmHandle: state.film?.handle,
+      coverage:
+        state.surface === "helmet" ? "full" : state.coverage || "full",
+      filmHandle: list[0]?.handle,
+      films: list.map((f) => ({
+        handle: f.handle,
+        notes: f.notes || "",
+        placement: f.placement || "",
+        imageCount: (f.images || []).length,
+      })),
       bikeDifficulty: Number(els.bikeDifficulty?.value || 3) || 3,
       bodyClass: els.bikeBody?.value || "unknown",
       bikeYear: els.bikeYear?.value || "",
@@ -215,16 +265,17 @@
   }
 
   function validateStep() {
-    if (state.step === 0 && !state.film) {
-      showError("Load a film before continuing.");
+    if (state.step === 0 && !films().length) {
+      showError("Add at least one colour to your build.");
       return false;
     }
     if (state.step === 1 && !state.surface) {
-      showError("Pick motorcycle or helmet.");
+      showError("Pick motorcycle, helmet, or both.");
       return false;
     }
     if (state.step === 2) {
-      if (state.surface === "motorcycle") {
+      const needBike = state.surface === "motorcycle" || state.surface === "both";
+      if (needBike) {
         if (!els.bikeYear?.value || !els.bikeMake?.value || !els.bikeModel?.value) {
           showError("Select year, make, and model.");
           return false;
@@ -244,8 +295,14 @@
     return true;
   }
 
+  function surfaceCopy(surface) {
+    if (surface === "helmet") return "Helmet wrap";
+    if (surface === "both") return "Bike + helmet combo";
+    return "Motorcycle wrap";
+  }
+
   async function refreshQuote() {
-    if (!els.quoteBoard || !state.film || !state.surface) return;
+    if (!els.quoteBoard || !state.surface || !films().length) return;
     els.quoteBoard.innerHTML = `<p class="meta">Pricing your build…</p>`;
     try {
       const res = await fetch("/api/quote/project", {
@@ -255,33 +312,49 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.quote) {
-        throw new Error(data.error || "Could not price this project.");
+        throw new Error(data.error || "Could not price this build yet.");
       }
       state.quote = data.quote;
       const q = data.quote;
-      els.quoteBoard.innerHTML = `
+      const list = films();
+      const colourLine =
+        list.length === 1
+          ? escapeHtml(list[0].name)
+          : `${list.length} colours`;
+      let lines = `
         <ul class="kf-quote-lines">
-          <li><span>Surface</span><strong>${escapeHtml(
-            q.surface === "helmet" ? "Helmet wrap" : "Motorcycle wrap"
-          )}</strong></li>
+          <li><span>Build</span><strong>${escapeHtml(surfaceCopy(q.surface))}</strong></li>
           <li><span>Coverage</span><strong>${escapeHtml(
             q.coverage === "accent" ? "Accent package" : "Full wrap"
           )}</strong></li>
-          <li><span>Difficulty</span><strong>${escapeHtml(q.difficultyLabel)}</strong></li>
-          <li><span>Labour (set)</span><strong>${money(q.labourUsd)}</strong></li>
-          <li><span>Vinyl · ${q.rolls}× ${q.rollWidthFt}×${q.rollLengthFt}ft</span><strong>${money(
-            q.vinylSellUsd
-          )}</strong></li>
-          <li class="kf-quote-total"><span>Total</span><strong>${money(q.totalUsd)}</strong></li>
-        </ul>
-        <p class="meta">Vinyl = Metro roll cost × ${Math.round(
-          (q.vinylMarkup - 1) * 100
-        )}% markup. Appointment scheduling is confirmed after payment.</p>`;
+          <li><span>Colours</span><strong>${colourLine}</strong></li>`;
+      if (q.motorcycleLabourUsd > 0) {
+        lines += `<li><span>Motorcycle install</span><strong>${money(
+          q.motorcycleLabourUsd
+        )}</strong></li>`;
+      }
+      if (q.helmetLabourUsd > 0) {
+        lines += `<li><span>Helmet install</span><strong>${money(
+          q.helmetLabourUsd
+        )}</strong></li>`;
+      }
+      lines += `<li><span>Vinyl film</span><strong>${money(q.vinylSellUsd)}</strong></li>`;
+      if (q.discountUsd > 0) {
+        lines += `<li><span>Combo savings</span><strong>−${money(
+          q.discountUsd
+        )}</strong></li>`;
+      }
+      lines += `<li class="kf-quote-total"><span>Total</span><strong>${money(
+        q.totalUsd
+      )}</strong></li></ul>
+        <p class="meta">Appointment timing is confirmed after payment.</p>`;
+      els.quoteBoard.innerHTML = lines;
     } catch (err) {
       state.quote = null;
       els.quoteBoard.innerHTML = `<p class="kf-project-error">${escapeHtml(
         err.message || "Quote failed."
-      )}</p>`;
+      )}</p>
+        <p class="meta">You can still save the build — we’ll confirm the total with you.</p>`;
     }
   }
 
@@ -303,19 +376,23 @@
 
   async function saveProject() {
     showError("");
+    const list = films();
     const snap = {
       id: state.projectId,
       status: "draft",
       title:
-        (state.film?.name || "Vinyl project") +
+        (list.length === 1 ? list[0].name : `${list.length} colours`) +
         (state.surface ? ` · ${state.surface}` : ""),
       ...payload(),
-      film: state.film,
+      filmsDetail: list,
       quote: state.quote,
       updatedAt: Date.now(),
     };
     const all = readLocal();
+    // Keep a single active draft per browser by projectId, and also a stable "active" pointer
+    // so revisiting /project can resume instead of spawning endless drafts.
     all[state.projectId] = snap;
+    all.__active = state.projectId;
     writeLocal(all);
 
     if (window.KisalaAuth && state.firebaseUid) {
@@ -325,22 +402,24 @@
         console.warn("cloud project save", err);
       }
     }
-    showBanner("Project saved. You can leave and resume from this browser" +
-      (state.firebaseUid ? " (and your account)." : "."));
+    showBanner(
+      "Build saved on this device" +
+        (state.firebaseUid ? " and your account." : ".")
+    );
     window.KisalaTrack?.("project_saved", { label: state.projectId });
   }
 
   async function payProject() {
     showError("");
     if (!state.quote) {
-      showError("Wait for the quote to finish, then try again.");
+      showError("Wait for the total to finish, or save the build and we’ll follow up.");
       return;
     }
     const btn = els.payBtn;
     const original = btn?.textContent;
     if (btn) {
       btn.disabled = true;
-      btn.textContent = "Opening Stripe…";
+      btn.textContent = "Opening checkout…";
     }
     await saveProject();
     try {
@@ -351,7 +430,7 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.url) {
-        throw new Error(data.error || "Checkout unavailable.");
+        throw new Error(data.error || "Checkout unavailable right now.");
       }
       window.KisalaTrack?.("project_checkout_start", { label: data.orderId || "" });
       window.location.href = data.url;
@@ -359,7 +438,7 @@
       showError(err.message || "Could not start checkout.");
       if (btn) {
         btn.disabled = false;
-        btn.textContent = original || "Order with Stripe";
+        btn.textContent = original || "Continue to payment";
       }
       window.KisalaTrack?.("project_checkout_error", {});
     }
@@ -375,11 +454,48 @@
   root.querySelectorAll("[data-project-back]").forEach((btn) => {
     btn.addEventListener("click", () => setStep(state.step - 1));
   });
-  els.loadFilm?.addEventListener("click", () => loadFilm(els.filmHandle?.value));
-  els.filmHandle?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      loadFilm(els.filmHandle.value);
+
+  els.buildFilms?.addEventListener("click", (e) => {
+    const removeFilm = e.target.closest("[data-remove-film]");
+    if (removeFilm && Build) {
+      Build.remove(removeFilm.getAttribute("data-remove-film"));
+      renderBuildFilms();
+      return;
+    }
+    const removePhoto = e.target.closest("[data-remove-photo]");
+    if (removePhoto && Build) {
+      Build.removeImage(
+        removePhoto.getAttribute("data-remove-photo"),
+        removePhoto.getAttribute("data-photo-index")
+      );
+      renderBuildFilms();
+    }
+  });
+
+  els.buildFilms?.addEventListener("input", (e) => {
+    const notes = e.target.closest("[data-film-notes]");
+    if (notes && Build) {
+      Build.update(notes.getAttribute("data-film-notes"), { notes: notes.value });
+      return;
+    }
+    const placement = e.target.closest("[data-film-placement]");
+    if (placement && Build) {
+      Build.update(placement.getAttribute("data-film-placement"), {
+        placement: placement.value,
+      });
+    }
+  });
+
+  els.buildFilms?.addEventListener("change", async (e) => {
+    const input = e.target.closest("[data-film-photo]");
+    if (!input || !Build || !input.files?.[0]) return;
+    const handle = input.getAttribute("data-film-photo");
+    try {
+      await Build.addImage(handle, input.files[0]);
+      showError("");
+      renderBuildFilms();
+    } catch (err) {
+      showError(err.message || "Could not add that photo.");
     }
   });
 
@@ -409,43 +525,105 @@
 
   const updateBikeNote = () => {
     if (!els.bikeNote) return;
-    const d = els.bikeDifficulty?.value;
     const label = root.querySelector("[data-bike-labor-label]")?.value;
-    if (!d) {
+    const bike = els.bikeLabel?.value;
+    if (!bike) {
       els.bikeNote.textContent = "";
       return;
     }
-    els.bikeNote.textContent = `Difficulty ${d}/5${label ? ` · ${label}` : ""} — set labour locks from this band.`;
+    els.bikeNote.textContent = label
+      ? `${bike} · ${label}`
+      : bike;
   };
   ["change", "input"].forEach((ev) => {
     els.bikeYear?.addEventListener(ev, updateBikeNote);
     els.bikeMake?.addEventListener(ev, updateBikeNote);
     els.bikeModel?.addEventListener(ev, updateBikeNote);
   });
-  // bike-search writes hidden fields after model change
   els.bikeModel?.addEventListener("change", () => setTimeout(updateBikeNote, 0));
 
   els.saveBtn?.addEventListener("click", () => saveProject());
   els.payBtn?.addEventListener("click", () => payProject());
 
   if (params.get("cancelled") === "1") {
-    showBanner("Checkout cancelled — your project is still here. Save it or try Stripe again.");
+    showBanner("Checkout cancelled — your build is still here. Save it or try payment again.");
   }
 
-  const filmParam = params.get("film") || params.get("h") || "";
-  if (filmParam) {
-    loadFilm(filmParam).then(() => {
-      if (state.film) setStep(1);
-    });
+  async function hydrateFromParam() {
+    const filmParam = params.get("film") || params.get("h") || params.get("add") || "";
+    if (!filmParam || !Build) return;
+    try {
+      let film = null;
+      if (window.KisalaVinylCatalog) {
+        const data = await window.KisalaVinylCatalog.loadFilm(filmParam);
+        film = data.film;
+      }
+      if (film) {
+        Build.add({
+          handle: film.handle,
+          name: film.name,
+          brand: film.brand,
+          finish: film.finish,
+          sku: film.sku,
+          image_url: film.image_url,
+        });
+        showBanner(`Added ${film.name} to your build.`);
+      } else {
+        Build.add({ handle: filmParam, name: filmParam });
+      }
+    } catch {
+      Build.add({ handle: filmParam, name: filmParam });
+    }
   }
+
+  function resumeActiveDraft() {
+    const all = readLocal();
+    const activeId = all.__active;
+    const snap = activeId ? all[activeId] : null;
+    if (!snap || !snap.id) return;
+    // Only resume empty cart from draft films if cart is empty
+    if (Build && !Build.count() && Array.isArray(snap.filmsDetail)) {
+      snap.filmsDetail.forEach((f) => Build.add(f));
+    }
+    state.projectId = snap.id;
+    if (snap.surface) {
+      state.surface = snap.surface;
+      els.surfaceBtns.forEach((b) => {
+        const on = b.getAttribute("data-surface") === snap.surface;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-pressed", String(on));
+      });
+      const next = root.querySelector('[data-mission="1"] [data-project-next]');
+      if (next && snap.surface) next.disabled = false;
+    }
+    if (snap.coverage) state.coverage = snap.coverage;
+    if (els.helmetNotes && snap.helmetNotes) els.helmetNotes.value = snap.helmetNotes;
+    if (els.name && snap.customerName) els.name.value = snap.customerName;
+    if (els.email && snap.customerEmail) els.email.value = snap.customerEmail;
+    if (els.phone && snap.customerPhone) els.phone.value = snap.customerPhone;
+  }
+
+  window.addEventListener("kisala-build-change", () => {
+    renderRail();
+    if (state.step === 0) renderBuildFilms();
+  });
+
+  hydrateFromParam().then(() => {
+    resumeActiveDraft();
+    renderBuildFilms();
+    if (films().length && params.get("film")) {
+      // Stay on colours so they can add notes, unless they came ready to continue
+      setStep(0);
+    }
+  });
 
   if (window.KisalaAuth) {
     window.KisalaAuth.onAuth((user) => {
       state.firebaseUid = user?.uid || null;
       if (els.authStatus) {
         els.authStatus.innerHTML = user
-          ? `Signed in as ${escapeHtml(user.email || "rider")} — projects sync to Firebase.`
-          : `Not signed in — projects still save locally. <a href="/login">Login</a> to sync.`;
+          ? `Signed in as ${escapeHtml(user.email || "rider")} — builds sync to your account.`
+          : `Not signed in — builds still save on this device. <a href="/login">Login</a> to sync.`;
       }
       if (user) window.KisalaAuth.ensureCustomerDoc(user);
     });

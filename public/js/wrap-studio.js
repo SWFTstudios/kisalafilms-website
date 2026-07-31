@@ -192,25 +192,43 @@
     if (radio) radio.checked = true;
   }
 
-  /* Prefill a catalogue film into the saved-films shortlist when linked from vinyl catalog. */
+  /* Prefill catalogue film into the shared build cart (and studio shortlist). */
   const preselectFilm = (params.get("film") || "").trim();
   if (preselectFilm) {
     try {
+      if (window.KisalaVinylBuild) {
+        window.KisalaVinylBuild.add({ handle: preselectFilm, name: preselectFilm });
+      }
+      // Keep wrap-studio shortlist as objects — never rewrite it as bare strings.
       const key = "kisala-saved-films";
       const raw = localStorage.getItem(key);
-      const list = raw ? JSON.parse(raw) : [];
-      const handles = Array.isArray(list) ? list : [];
-      if (!handles.includes(preselectFilm)) {
-        handles.unshift(preselectFilm);
-        localStorage.setItem(key, JSON.stringify(handles.slice(0, 24)));
+      let list = [];
+      try {
+        list = raw ? JSON.parse(raw) : [];
+      } catch {
+        list = [];
+      }
+      if (!Array.isArray(list)) list = [];
+      const objects = list.filter((c) => c && typeof c === "object" && c.id);
+      if (!objects.some((c) => String(c.id) === preselectFilm || String(c.u || "").includes(preselectFilm))) {
+        objects.unshift({
+          id: preselectFilm,
+          n: preselectFilm,
+          v: "",
+          f: "",
+          c: "",
+          i: "",
+          u: "",
+        });
+        localStorage.setItem(key, JSON.stringify(objects.slice(0, 24)));
       }
       const field = form.querySelector("[data-saved-films-field]");
       if (field) {
-        field.value = handles.join("\n");
-        field.dataset.count = String(handles.length);
+        field.value = objects.map((c) => c.n).join("\n");
+        field.dataset.count = String(objects.length);
       }
       document.querySelector("[data-saved-films-note]")?.replaceChildren(
-        document.createTextNode(`Catalogue film loaded: ${preselectFilm}`)
+        document.createTextNode("Colour loaded into your build.")
       );
     } catch (err) {
       console.warn("Could not prefill film", err);

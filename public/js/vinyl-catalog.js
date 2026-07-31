@@ -127,7 +127,9 @@
       ? `<img class="vinyl-card-thumb" src="${escAttr(color.i)}" alt="" width="120" height="120" loading="lazy">`
       : '<span class="vinyl-card-thumb vinyl-card-thumb--empty" aria-hidden="true"></span>';
     const meta = [color.v, color.f, familyLabel(color.c)].filter(Boolean).join(" · ");
-    const on = isSaved(color);
+    const inBuild = window.KisalaVinylBuild
+      ? window.KisalaVinylBuild.has(color.h || String(color.id))
+      : isSaved(color);
     const inCompare = compare.some((c) => c.id === color.id);
 
     return `<article class="vinyl-card">
@@ -136,35 +138,34 @@
         <h4 class="vinyl-card-name">${esc(color.n)}</h4>
         <p class="vinyl-card-meta">${esc(meta)}</p>
         <div class="vinyl-card-actions">
-          <button type="button" class="vinyl-card-use" data-use="${color.id}">Use this film</button>
-          <button type="button" class="vinyl-card-save${on ? " is-on" : ""}" data-save="${color.id}"
-                  aria-pressed="${on ? "true" : "false"}"
-                  aria-label="${on ? "Remove" : "Save"} ${escAttr(color.n)}">${on ? "★ Saved" : "☆ Save"}</button>
+          <button type="button" class="vinyl-card-use${inBuild ? " is-on" : ""}" data-add-build="${color.id}">${
+            inBuild ? "In build" : "Add to build"
+          }</button>
           <button type="button" class="vinyl-card-compare${inCompare ? " is-on" : ""}" data-compare="${color.id}"
                   aria-pressed="${inCompare ? "true" : "false"}">Compare</button>
         </div>
       </div>
-      ${color.u ? `<a class="vinyl-card-link" href="${escAttr(color.u)}" target="_blank" rel="noopener">View on Metro</a>` : ""}
+      ${color.u ? `<a class="vinyl-card-link" href="${escAttr(color.u)}" target="_blank" rel="noopener">Supplier page</a>` : ""}
     </article>`;
   }
 
   /**
-   * Repaints one card's buttons. Saving or comparing used to re-render the whole
-   * grid, which threw away keyboard focus and could jump the scroll position
-   * under the rider's thumb — for a change to a single card.
+   * Repaints one card's buttons without re-rendering the whole grid.
    */
   function syncCard(id) {
     if (!grid) return;
-    const savedNow = saved.some((c) => String(c.id) === String(id));
+    const color = byId(id);
+    const inBuild = color
+      ? window.KisalaVinylBuild
+        ? window.KisalaVinylBuild.has(color.h || String(color.id))
+        : isSaved(color)
+      : false;
     const comparedNow = compare.some((c) => String(c.id) === String(id));
 
-    const saveBtn = grid.querySelector(`[data-save="${id}"]`);
-    if (saveBtn) {
-      saveBtn.classList.toggle("is-on", savedNow);
-      saveBtn.setAttribute("aria-pressed", savedNow ? "true" : "false");
-      saveBtn.textContent = savedNow ? "★ Saved" : "☆ Save";
-      const name = byId(id)?.n || "";
-      saveBtn.setAttribute("aria-label", `${savedNow ? "Remove" : "Save"} ${name}`);
+    const addBtn = grid.querySelector(`[data-add-build="${id}"]`);
+    if (addBtn) {
+      addBtn.classList.toggle("is-on", inBuild);
+      addBtn.textContent = inBuild ? "In build" : "Add to build";
     }
 
     const cmpBtn = grid.querySelector(`[data-compare="${id}"]`);
@@ -212,7 +213,7 @@
         (color) => `<li class="vinyl-saved-item">
           ${color.i ? `<img src="${escAttr(color.i)}" alt="" width="34" height="34" loading="lazy">` : ""}
           <span class="vinyl-saved-name">${esc(color.n)}</span>
-          <button type="button" class="vinyl-saved-use" data-use="${color.id}">Use</button>
+          <button type="button" class="vinyl-saved-use" data-add-build="${color.id}">Add to build</button>
           <button type="button" class="vinyl-saved-drop" data-save="${color.id}" aria-label="Remove ${escAttr(color.n)}">&times;</button>
         </li>`
       )
@@ -308,7 +309,7 @@
           (c) => `<div class="vinyl-compare-col">
             ${c.i ? `<img src="${escAttr(c.i)}" alt="" width="220" height="220" loading="lazy">` : '<span class="vinyl-card-thumb vinyl-card-thumb--empty"></span>'}
             ${rows.map(([label, get]) => `<p class="vinyl-compare-row"><span>${esc(label)}</span><strong>${esc(get(c))}</strong></p>`).join("")}
-            <button type="button" class="btn btn-ghost" data-use="${c.id}">Use this film</button>
+            <button type="button" class="btn btn-ghost" data-add-build="${c.id}">Add to build</button>
           </div>`
         )
         .join("")}
@@ -397,9 +398,37 @@
     renderGrid();
   });
 
-  // One handler for the grid, the saved tray and the compare panel: they all
-  // speak the same data-use / data-save / data-compare vocabulary.
+  // One handler for the grid, the saved tray and the compare panel.
   document.addEventListener("click", (e) => {
+    const addBuild = e.target.closest("[data-add-build]");
+    if (addBuild && (ROOT.contains(addBuild) || compareModal?.contains(addBuild))) {
+      const color = byId(addBuild.getAttribute("data-add-build"));
+      if (color) {
+        const handle = color.h || String(color.id);
+        if (window.KisalaVinylBuild) {
+          window.KisalaVinylBuild.add({
+            handle,
+            name: color.n,
+            brand: color.v,
+            finish: color.f,
+            image_url: color.i,
+            color_family: color.c,
+          });
+        }
+        if (!isSaved(color)) toggleSaved(color);
+        else {
+          writeSaved();
+          renderSaved();
+          syncCard(color.id);
+        }
+        window.KisalaVinyl.pick(color);
+        closeCompare();
+        ROOT.querySelector("[data-vinyl-picked-note]")?.removeAttribute("hidden");
+        window.KisalaTrack?.("vinyl_add_to_build", { label: handle, family: color.c });
+      }
+      return;
+    }
+
     const use = e.target.closest("[data-use]");
     if (use && (ROOT.contains(use) || compareModal?.contains(use))) {
       const color = byId(use.getAttribute("data-use"));

@@ -97,12 +97,15 @@
 
   /**
    * Client-side preview for /project checkout.
-   * Mirror of src/project-quote.ts — Worker recomputes with live Metro cost.
+   * Mirror of src/project-quote.ts.
    */
   function projectQuotePreview(opts) {
     const pc = CONFIG.projectCheckout;
     if (!pc) return null;
     const surface = opts && opts.surface;
+    if (surface !== "motorcycle" && surface !== "helmet" && surface !== "both") {
+      return null;
+    }
     const coverage =
       surface === "helmet" ? "full" : opts.coverage === "accent" ? "accent" : "full";
     const markup = pc.vinylMarkup || 1.4;
@@ -112,39 +115,64 @@
     if (!Number.isFinite(cost) || cost <= 0) return null;
 
     const clamp = (n) => Math.min(5, Math.max(1, Math.round(Number(n) || 3)));
-    let difficulty;
-    let labourUsd;
-    let linearFeet;
-    let difficultyLabel;
+    const rollsFor = (ft) => Math.max(1, Math.ceil(Math.max(0, ft) / length));
+    const sell = (c) => Math.round(c * markup * 100) / 100;
 
-    if (surface === "helmet") {
-      difficulty = clamp(opts.filmDifficulty || 2);
-      labourUsd = (pc.helmetLabour && pc.helmetLabour[difficulty]) || 250;
-      linearFeet = pc.helmetLinearFeet || 3;
-      difficultyLabel = `Helmet · film level ${difficulty}/5`;
-    } else if (surface === "motorcycle") {
+    let motorcycleLabourUsd = 0;
+    let helmetLabourUsd = 0;
+    let linearFeet = 0;
+    let rolls = 0;
+    let vinylSellUsd = 0;
+    let difficulty = 3;
+    let difficultyLabel = "Full motorcycle wrap";
+
+    if (surface === "motorcycle" || surface === "both") {
       difficulty = clamp(opts.bikeDifficulty || 3);
       const table =
         (pc.motorcycleLabour && pc.motorcycleLabour[coverage]) || {};
-      labourUsd = table[difficulty] || 1450;
+      motorcycleLabourUsd = table[difficulty] || 1450;
+      let feet;
       if (coverage === "accent") {
-        linearFeet = pc.accentLinearFeet || 8;
-        difficultyLabel = `Accent package · bike level ${difficulty}/5`;
+        feet = pc.accentLinearFeet || 8;
+        if (surface === "motorcycle") difficultyLabel = "Accent package";
       } else {
         const body = (opts && opts.bodyClass) || "unknown";
-        linearFeet =
+        feet =
           (pc.fullFeetByBody && pc.fullFeetByBody[body]) ||
           (pc.fullFeetByBody && pc.fullFeetByBody.unknown) ||
           18;
-        difficultyLabel = `Full wrap · bike level ${difficulty}/5`;
+        if (surface === "motorcycle") difficultyLabel = "Full motorcycle wrap";
       }
-    } else {
-      return null;
+      const r = rollsFor(feet);
+      linearFeet += feet;
+      rolls += r;
+      vinylSellUsd += sell(cost * r);
     }
 
-    const rolls = Math.max(1, Math.ceil(linearFeet / length));
-    const vinylSellUsd = Math.round(cost * rolls * markup * 100) / 100;
-    const totalUsd = Math.round((labourUsd + vinylSellUsd) * 100) / 100;
+    if (surface === "helmet" || surface === "both") {
+      const hd = clamp(opts.filmDifficulty || 2);
+      helmetLabourUsd = (pc.helmetLabour && pc.helmetLabour[hd]) || 250;
+      const feet = pc.helmetLinearFeet || 3;
+      const r = rollsFor(feet);
+      linearFeet += feet;
+      rolls += r;
+      vinylSellUsd += sell(cost * r);
+      if (surface === "helmet") {
+        difficulty = hd;
+        difficultyLabel = "Helmet wrap";
+      } else {
+        difficulty = Math.max(difficulty, hd);
+        difficultyLabel = "Bike + helmet combo";
+      }
+    }
+
+    const labourUsd = Math.round((motorcycleLabourUsd + helmetLabourUsd) * 100) / 100;
+    vinylSellUsd = Math.round(vinylSellUsd * 100) / 100;
+    const subtotalUsd = Math.round((labourUsd + vinylSellUsd) * 100) / 100;
+    const comboDiscount =
+      surface === "both" ? Number(pc.comboDiscount ?? 0.2) || 0 : 0;
+    const discountUsd = Math.round(subtotalUsd * comboDiscount * 100) / 100;
+    const totalUsd = Math.round((subtotalUsd - discountUsd) * 100) / 100;
 
     return {
       surface,
@@ -152,6 +180,8 @@
       difficulty,
       difficultyLabel,
       labourUsd,
+      motorcycleLabourUsd,
+      helmetLabourUsd,
       linearFeet,
       rolls,
       rollWidthFt: width,
@@ -159,8 +189,12 @@
       rollCostUsd: cost,
       vinylMarkup: markup,
       vinylSellUsd,
+      subtotalUsd,
+      comboDiscount,
+      discountUsd,
       totalUsd,
       amountCents: Math.round(totalUsd * 100),
+      filmCount: 1,
     };
   }
 
