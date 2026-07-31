@@ -245,7 +245,7 @@ Until the real exports land, `public/images/brand/` holds the old metallic mark 
 
 [`motorcycles.json`](./public/data/motorcycles.json) (year/make/model + fairing R&R labour bands), [`vinyl-colors.json`](./public/data/vinyl-colors.json) (Metro Restyling film catalogue + stock), [`vinyl-size-guide.json`](./public/data/vinyl-size-guide.json), [`films.json`](./public/data/films.json) (Vimeo ids, runtimes and cities for the archive), [`products.json`](./public/data/products.json).
 
-Editable CSVs for the film lookbook live in [`doc/spreadsheets/`](./doc/spreadsheets/). The **live lookbook** reads Cloudflare **D1** via `/api/films` (CMS). Import Metro (+ spreadsheet overlays) with `python3 scripts/import-films-d1.py`. Use `npm run dev` (not bare `python -m http.server`) so `/api` works. Wrap Studio still uses [`vinyl-colors.json`](./public/data/vinyl-colors.json) until migrated.
+Editable CSVs for film notes live in [`doc/spreadsheets/`](./doc/spreadsheets/). The **vinyl catalog** reads [`vinyl-colors.json`](./public/data/vinyl-colors.json) in the browser (JSON-first). Optional D1 price overlay via `/api/films` when seeded.
 
 ## Gallery films
 
@@ -281,9 +281,13 @@ Most tiles are currently filled in only as far as the repository can vouch for: 
 
 ## Vinyl catalogue
 
-Public Metro-style browse lives at [`/vinyl-catalog`](./public/vinyl-catalog.html) (D1 CMS via `GET /api/films`). Wrap Studio still uses [`vinyl-catalog.js`](./public/js/vinyl-catalog.js) over `vinyl-colors.json` for the in-studio browse panel; the page catalog is [`vinyl-catalog-page.js`](./public/js/vinyl-catalog-page.js). Old `/lookbook` URLs 301 to the new routes.
+Public browse lives at [`/vinyl-catalog`](./public/vinyl-catalog.html) and reads **[`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) first** (Metro Restyling export — ~1,100 films). No database required to show the grid.
 
-Hourly Worker cron scrapes Metro product prices into D1. Download the garage sheet anytime: `GET /api/films/pricing.csv`.
+Optional live roll prices can overlay from D1 (`GET /api/films`) when that table is seeded; browsing never depends on it. Rebuild Metro JSON with [`build-vinyl-catalog.py`](./scripts/build-vinyl-catalog.py). Film detail and project onboarding use the same JSON via [`vinyl-catalog-data.js`](./public/js/vinyl-catalog-data.js).
+
+Wrap Studio’s in-form browse panel still uses [`vinyl-catalog.js`](./public/js/vinyl-catalog.js) over the same JSON file.
+
+Old `/lookbook` URLs 301 to the vinyl-catalog routes.
 
 ### Project checkout (motorcycle + helmet)
 

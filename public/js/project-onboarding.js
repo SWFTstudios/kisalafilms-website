@@ -172,12 +172,19 @@
     }
     showError("");
     try {
-      const res = await fetch(`/api/films/${encodeURIComponent(h)}`);
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.film) {
-        throw new Error(data.error || "Film not found in the catalog.");
+      let film = null;
+      if (window.KisalaVinylCatalog) {
+        const data = await window.KisalaVinylCatalog.loadFilm(h);
+        film = data.film;
+      } else {
+        const res = await fetch(`/api/films/${encodeURIComponent(h)}`);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.film) {
+          throw new Error(data.error || "Film not found in the catalog.");
+        }
+        film = data.film;
       }
-      state.film = data.film;
+      state.film = film;
       renderFilmCard();
       window.KisalaTrack?.("project_film_loaded", { label: h });
     } catch (err) {

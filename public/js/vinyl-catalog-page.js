@@ -1,5 +1,8 @@
+/**
+ * Vinyl catalog browse — JSON-first from /data/vinyl-colors.json.
+ * D1 prices are an optional overlay, never required to show the grid.
+ */
 (() => {
-  const API_URL = "/api/films";
   const grid = document.querySelector("[data-catalog-grid]");
   const tableBody = document.querySelector("[data-inventory-body]");
   const meta = document.querySelector("[data-catalog-meta]");
@@ -11,7 +14,7 @@
   const familySelect = document.querySelector("[data-catalog-family]");
   const typeTabs = document.querySelectorAll("[data-catalog-type]");
   const founderBanner = document.querySelector("[data-founder-banner]");
-  if (!grid) return;
+  if (!grid || !window.KisalaVinylCatalog) return;
 
   let rows = [];
   let finishesFromApi = [];
@@ -24,7 +27,6 @@
   let stock = "all";
   let sort = "name";
   let query = "";
-  let founderPricingActive = false;
 
   const availLabel = (inStock) => (inStock ? "In stock" : "Out of stock");
   const availClass = (inStock) => (inStock ? "kf-avail--in" : "kf-avail--out");
@@ -115,8 +117,8 @@
     list.forEach((r) => {
       const handle = r.handle || "";
       const href = handle
-        ? "/vinyl-catalog/film.html?h=" + encodeURIComponent(String(handle))
-        : "/vinyl-catalog.html";
+        ? "/vinyl-catalog/film?h=" + encodeURIComponent(String(handle))
+        : "/vinyl-catalog";
       const roll = formatRoll(r);
       const card = document.createElement("a");
       card.className = "kf-lookbook-card" + (r.in_stock ? "" : " is-oos");
@@ -164,8 +166,8 @@
           escapeHtml(r.sku || "—") +
           '</td><td><a href="' +
           (handle
-            ? "/vinyl-catalog/film.html?h=" + encodeURIComponent(String(handle))
-            : "/vinyl-catalog.html") +
+            ? "/vinyl-catalog/film?h=" + encodeURIComponent(String(handle))
+            : "/vinyl-catalog") +
           '">' +
           escapeHtml(r.name || "Untitled") +
           "</a></td><td>" +
@@ -184,6 +186,7 @@
     }
     if (window.ScrollTrigger) window.ScrollTrigger.refresh();
   };
+
   search?.addEventListener("input", () => {
     query = (search.value || "").trim().toLowerCase();
     render();
@@ -219,75 +222,18 @@
       render();
     });
   });
-  const formatName = (title) => {
-    const raw = String(title || "").trim();
-    if (!raw) return "Untitled";
-    return raw.split("|")[0].trim() || raw;
-  };
-  const formatSku = (title) => {
-    const parts = String(title || "")
-      .split("|")
-      .map((p) => p.trim())
-      .filter(Boolean);
-    if (parts.length < 2) return "";
-    return parts[1].split(/\s+/)[0] || "";
-  };
-  /** Map bundled Metro JSON → film rows when D1 is empty or unreachable. */
-  const fromStaticCatalog = (data) => {
-    const colors = Array.isArray(data.colors) ? data.colors : [];
-    const films = colors
-      .map((c) => {
-        const handle = String(c.h || "").trim();
-        if (!handle) return null;
-        return {
-          handle,
-          sku: formatSku(c.n),
-          name: formatName(c.n),
-          brand: c.v || "",
-          finish: c.f || "",
-          color_family: c.c || "",
-          product_type: c.t || "",
-          collection: c.collection || "",
-          image_url: c.i || "",
-          metro_url: c.u || "",
-          in_stock: !!c.a,
-          sell_price_usd: null,
-          roll_price_usd: null,
-          price_usd: null,
-        };
-      })
-      .filter(Boolean);
-    return {
-      films,
-      finishes: Array.isArray(data.finishes) ? data.finishes : [],
-      brands: Array.isArray(data.vendors) ? data.vendors : [],
-      colorFamilies: Array.isArray(data.colorFamilies) ? data.colorFamilies : [],
-      founderPricingActive: false,
-      source: "static",
-    };
-  };
+
   const applyCatalog = (data) => {
     rows = Array.isArray(data.films) ? data.films : [];
     finishesFromApi = Array.isArray(data.finishes) ? data.finishes : [];
     brandsFromApi = Array.isArray(data.brands) ? data.brands : [];
     familiesFromApi = Array.isArray(data.colorFamilies) ? data.colorFamilies : [];
-    founderPricingActive = !!data.founderPricingActive;
     if (founderBanner) {
       founderBanner.hidden = false;
-      const sourceNote =
-        data.source === "static"
-          ? " Showing the bundled Metro catalogue (D1 not seeded yet)."
-          : "";
-      founderBanner.textContent =
-        "Vinyl priced at Metro roll cost + 40%. Motorcycle & helmet wraps use set labour by difficulty. Start a project from any film." +
-        (founderPricingActive
-          ? " Founder window: " +
-            (data.founderSlotsRemaining ?? "?") +
-            " of " +
-            (data.founderLimit || 5) +
-            " at-cost slots still show supplier cost for reference."
-          : "") +
-        sourceNote;
+      const priced = rows.some((r) => r.sell_price_usd != null);
+      founderBanner.textContent = priced
+        ? "Vinyl priced at Metro roll cost + 40% when live prices are synced. Start a project from any film."
+        : "Browse the full Metro catalogue. Start a project from any film — roll pricing is quoted at checkout when synced.";
     }
     if (sortSelect && !sortSelect.querySelector('option[value="price"]')) {
       const opt = document.createElement("option");
@@ -295,57 +241,19 @@
       opt.textContent = "Roll price";
       sortSelect.appendChild(opt);
     }
-    finish = fillSelect(
-      finishSelect,
-      finishesFromApi.length
-        ? finishesFromApi
-        : Array.from(new Set(rows.map((r) => r.finish).filter(Boolean))),
-      "All finishes",
-      finish
-    );
-    brand = fillSelect(
-      brandSelect,
-      brandsFromApi.length
-        ? brandsFromApi
-        : Array.from(new Set(rows.map((r) => r.brand).filter(Boolean))),
-      "All brands",
-      brand
-    );
-    family = fillSelect(
-      familySelect,
-      familiesFromApi.length
-        ? familiesFromApi
-        : Array.from(new Set(rows.map((r) => r.color_family).filter(Boolean))),
-      "All colours",
-      family
-    );
+    finish = fillSelect(finishSelect, finishesFromApi, "All finishes", finish);
+    brand = fillSelect(brandSelect, brandsFromApi, "All brands", brand);
+    family = fillSelect(familySelect, familiesFromApi, "All colours", family);
     render();
   };
-  const loadStatic = () =>
-    fetch("/data/vinyl-colors.json")
-      .then((res) => {
-        if (!res.ok) throw new Error("static " + res.status);
-        return res.json();
-      })
-      .then((data) => applyCatalog(fromStaticCatalog(data)));
 
-  fetch(API_URL)
-    .then((res) => {
-      if (!res.ok) throw new Error("API " + res.status);
-      return res.json();
-    })
-    .then((data) => {
-      const films = Array.isArray(data.films) ? data.films : [];
-      if (!films.length) return loadStatic();
-      applyCatalog(data);
-    })
+  if (meta) meta.textContent = "Loading catalogue…";
+  window.KisalaVinylCatalog.loadCatalogWithOptionalPrices()
+    .then(applyCatalog)
     .catch((err) => {
-      console.warn("films API failed, trying static catalogue", err);
-      loadStatic().catch((staticErr) => {
-        console.error(staticErr);
-        if (meta) meta.textContent = "Could not load film catalogue";
-        grid.innerHTML =
-          '<p class="gallery-empty">Vinyl catalog could not load. Refresh, or run <code>npm run dev</code> and import films into D1.</p>';
-      });
+      console.error(err);
+      if (meta) meta.textContent = "Could not load film catalogue";
+      grid.innerHTML =
+        '<p class="gallery-empty">Could not load <code>/data/vinyl-colors.json</code>. Refresh the page.</p>';
     });
 })();
