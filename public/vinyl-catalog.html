@@ -146,15 +146,53 @@
 
     <section class="kf-section kf-vinyl-catalog-body">
       <div class="kf-container">
-        <div class="kf-vinyl-catalog-toolbar kf-vinyl-catalog-toolbar--simple" data-reveal>
+        <div class="kf-vinyl-catalog-toolbar" data-reveal>
           <div class="kf-vinyl-catalog-toolbar-head">
             <p class="eyebrow">Colours</p>
             <p class="kf-vinyl-catalog-meta" data-catalog-meta>Loading…</p>
           </div>
-          <label class="kf-vinyl-catalog-field kf-vinyl-catalog-field--search">
-            <span class="kf-vinyl-catalog-label">Search</span>
-            <input class="kf-vinyl-catalog-search" type="search" placeholder="Search colours…" data-catalog-search enterkeyhint="search" autocomplete="off">
-          </label>
+          <div class="kf-vinyl-catalog-controls" role="search">
+            <label class="kf-vinyl-catalog-field kf-vinyl-catalog-field--search">
+              <span class="kf-vinyl-catalog-label">Search</span>
+              <input class="kf-vinyl-catalog-search" type="search" placeholder="Colour, brand, finish…" data-catalog-search enterkeyhint="search" autocomplete="off">
+            </label>
+            <label class="kf-vinyl-catalog-field">
+              <span class="kf-vinyl-catalog-label">Sort</span>
+              <select class="kf-vinyl-catalog-select" data-catalog-sort aria-label="Sort colours">
+                <option value="name">Name A–Z</option>
+                <option value="name-desc">Name Z–A</option>
+                <option value="brand">Brand</option>
+                <option value="finish">Finish</option>
+                <option value="stock">In stock first</option>
+              </select>
+            </label>
+            <label class="kf-vinyl-catalog-field">
+              <span class="kf-vinyl-catalog-label">Stock</span>
+              <select class="kf-vinyl-catalog-select" data-catalog-stock aria-label="Filter by stock">
+                <option value="all">All stock</option>
+                <option value="in">In stock</option>
+                <option value="out">Out of stock</option>
+              </select>
+            </label>
+            <label class="kf-vinyl-catalog-field">
+              <span class="kf-vinyl-catalog-label">Brand</span>
+              <select class="kf-vinyl-catalog-select" data-catalog-brand aria-label="Filter by brand">
+                <option value="all">All brands</option>
+              </select>
+            </label>
+            <label class="kf-vinyl-catalog-field">
+              <span class="kf-vinyl-catalog-label">Colour</span>
+              <select class="kf-vinyl-catalog-select" data-catalog-family aria-label="Filter by colour">
+                <option value="all">All colours</option>
+              </select>
+            </label>
+            <label class="kf-vinyl-catalog-field">
+              <span class="kf-vinyl-catalog-label">Finish</span>
+              <select class="kf-vinyl-catalog-select" data-catalog-finish aria-label="Filter by finish">
+                <option value="all">All finishes</option>
+              </select>
+            </label>
+          </div>
         </div>
 
         <div class="kf-vinyl-catalog-grid" data-catalog-grid data-reveal></div>
