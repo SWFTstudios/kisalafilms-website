@@ -13,6 +13,26 @@
   const finishSelect = document.querySelector("[data-catalog-finish]");
   if (!grid) return;
 
+  /** Spectrum first (ROYGBIV + pink), then neutrals, then effects. */
+  const FAMILY_ORDER = [
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "purple",
+    "pink",
+    "white",
+    "black",
+    "grey",
+    "brown",
+    "chrome",
+    "carbon",
+    "shift",
+    "clear",
+    "other",
+  ];
+
   let rows = [];
   let query = "";
   let sort = "name";
@@ -60,6 +80,40 @@
       Number(!!b.in_stock) - Number(!!a.in_stock) || a.name.localeCompare(b.name),
   };
 
+  /** Normalize colorFamilies entries to { id, label }. */
+  function normalizeFamilies(raw, fallbackIds) {
+    const fromJson = Array.isArray(raw)
+      ? raw
+          .map((f) => {
+            if (f && typeof f === "object") {
+              const id = String(f.id || "").trim();
+              if (!id) return null;
+              return { id, label: String(f.label || id) };
+            }
+            const id = String(f || "").trim();
+            return id ? { id, label: id } : null;
+          })
+          .filter(Boolean)
+      : [];
+
+    const byId = new Map(fromJson.map((f) => [f.id, f]));
+    fallbackIds.forEach((id) => {
+      if (!byId.has(id)) byId.set(id, { id, label: id });
+    });
+
+    const ordered = [];
+    FAMILY_ORDER.forEach((id) => {
+      if (byId.has(id)) {
+        ordered.push(byId.get(id));
+        byId.delete(id);
+      }
+    });
+    [...byId.values()]
+      .sort((a, b) => a.label.localeCompare(b.label))
+      .forEach((f) => ordered.push(f));
+    return ordered;
+  }
+
   function fillSelect(select, values, allLabel, current) {
     if (!select) return current;
     const list = values.slice().sort((a, b) => String(a).localeCompare(String(b)));
@@ -75,6 +129,24 @@
       select.appendChild(opt);
     });
     const next = list.some((v) => String(v) === current) ? current : "all";
+    select.value = next;
+    return next;
+  }
+
+  function fillFamilySelect(select, families, current) {
+    if (!select) return current;
+    select.innerHTML = "";
+    const allOpt = document.createElement("option");
+    allOpt.value = "all";
+    allOpt.textContent = "All colours";
+    select.appendChild(allOpt);
+    families.forEach((f) => {
+      const opt = document.createElement("option");
+      opt.value = f.id;
+      opt.textContent = f.label;
+      select.appendChild(opt);
+    });
+    const next = families.some((f) => f.id === current) ? current : "all";
     select.value = next;
     return next;
   }
@@ -167,15 +239,16 @@
       const brands = Array.isArray(data.vendors)
         ? data.vendors
         : Array.from(new Set(rows.map((r) => r.brand).filter(Boolean)));
-      const families = Array.isArray(data.colorFamilies)
-        ? data.colorFamilies
-        : Array.from(new Set(rows.map((r) => r.color_family).filter(Boolean)));
       const finishes = Array.isArray(data.finishes)
         ? data.finishes
         : Array.from(new Set(rows.map((r) => r.finish).filter(Boolean)));
+      const familyIds = Array.from(
+        new Set(rows.map((r) => r.color_family).filter(Boolean))
+      );
+      const families = normalizeFamilies(data.colorFamilies, familyIds);
 
       brand = fillSelect(brandSelect, brands, "All brands", brand);
-      family = fillSelect(familySelect, families, "All colours", family);
+      family = fillFamilySelect(familySelect, families, family);
       finish = fillSelect(finishSelect, finishes, "All finishes", finish);
       render();
     })
