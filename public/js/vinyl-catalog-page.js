@@ -1,17 +1,16 @@
 /**
  * Vinyl colour grid — JSON from /data/vinyl-colors.json.
- * Search + sort + filters. Colour families are multi-select (OR).
+ * Sticky sub-nav: search + filter popovers. Colour families are multi-select (OR).
  */
 (() => {
   const grid = document.querySelector("[data-catalog-grid]");
   const meta = document.querySelector("[data-catalog-meta]");
   const search = document.querySelector("[data-catalog-search]");
-  const sortSelect = document.querySelector("[data-catalog-sort]");
-  const stockSelect = document.querySelector("[data-catalog-stock]");
-  const brandSelect = document.querySelector("[data-catalog-brand]");
   const familyChips = document.querySelector("[data-catalog-families]");
   const familyClear = document.querySelector("[data-catalog-family-clear]");
-  const finishSelect = document.querySelector("[data-catalog-finish]");
+  const backdrop = document.querySelector("[data-filter-backdrop]");
+  const triggers = Array.from(document.querySelectorAll("[data-filter-trigger]"));
+  const panels = Array.from(document.querySelectorAll("[data-filter-panel]"));
   if (!grid) return;
 
   /** Spectrum first (ROYGBIV + pink), then neutrals, then effects. */
@@ -53,6 +52,20 @@
     other: "#5a5f63",
   };
 
+  const SORT_OPTIONS = [
+    { value: "name", label: "Name A–Z" },
+    { value: "name-desc", label: "Name Z–A" },
+    { value: "brand", label: "Brand" },
+    { value: "finish", label: "Finish" },
+    { value: "stock", label: "In stock first" },
+  ];
+
+  const STOCK_OPTIONS = [
+    { value: "all", label: "All stock" },
+    { value: "in", label: "In stock" },
+    { value: "out", label: "Out of stock" },
+  ];
+
   let rows = [];
   let query = "";
   let sort = "name";
@@ -61,6 +74,10 @@
   /** @type {Set<string>} */
   let familiesSelected = new Set();
   let finish = "all";
+  /** @type {string|null} */
+  let openPanel = null;
+  /** @type {HTMLElement|null} */
+  let lastTrigger = null;
 
   function escapeHtml(str) {
     return String(str)
@@ -140,23 +157,38 @@
     return ordered;
   }
 
-  function fillSelect(select, values, allLabel, current) {
-    if (!select) return current;
-    const list = values.slice().sort((a, b) => String(a).localeCompare(String(b)));
-    select.innerHTML = "";
-    const allOpt = document.createElement("option");
-    allOpt.value = "all";
-    allOpt.textContent = allLabel;
-    select.appendChild(allOpt);
-    list.forEach((v) => {
-      const opt = document.createElement("option");
-      opt.value = String(v);
-      opt.textContent = String(v);
-      select.appendChild(opt);
+  function optionList(key) {
+    return document.querySelector("[data-catalog-" + key + "-options]");
+  }
+
+  function fillOptions(key, options, current) {
+    const host = optionList(key);
+    if (!host) return current;
+    const list = options.slice();
+    const values = list.map((o) => String(o.value));
+    const next = values.includes(String(current)) ? current : list[0]?.value;
+    host.innerHTML = "";
+    list.forEach((o) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "kf-vinyl-filter-option";
+      btn.setAttribute("data-filter-value", String(o.value));
+      btn.setAttribute("aria-pressed", String(o.value) === String(next) ? "true" : "false");
+      if (String(o.value) === String(next)) btn.classList.add("is-on");
+      btn.textContent = o.label;
+      host.appendChild(btn);
     });
-    const next = list.some((v) => String(v) === current) ? current : "all";
-    select.value = next;
     return next;
+  }
+
+  function syncOptionPressed(key, current) {
+    const host = optionList(key);
+    if (!host) return;
+    host.querySelectorAll("[data-filter-value]").forEach((btn) => {
+      const on = btn.getAttribute("data-filter-value") === String(current);
+      btn.classList.toggle("is-on", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
   }
 
   function renderFamilyChips(families) {
@@ -191,6 +223,91 @@
     if (familyClear) familyClear.hidden = familiesSelected.size === 0;
   }
 
+  function labelFor(key, value, options) {
+    const hit = options.find((o) => String(o.value) === String(value));
+    return hit ? hit.label : String(value);
+  }
+
+  function updateTriggerLabels() {
+    const sortLabel = document.querySelector('[data-filter-label="sort"]');
+    const stockLabel = document.querySelector('[data-filter-label="stock"]');
+    const brandLabel = document.querySelector('[data-filter-label="brand"]');
+    const finishLabel = document.querySelector('[data-filter-label="finish"]');
+    const colourLabel = document.querySelector('[data-filter-label="colour"]');
+
+    if (sortLabel) {
+      sortLabel.textContent =
+        sort === "name" ? "Sort" : "Sort · " + labelFor("sort", sort, SORT_OPTIONS);
+    }
+    if (stockLabel) {
+      stockLabel.textContent =
+        stock === "all" ? "Stock" : "Stock · " + labelFor("stock", stock, STOCK_OPTIONS);
+    }
+    if (brandLabel) {
+      brandLabel.textContent = brand === "all" ? "Brand" : "Brand · " + brand;
+    }
+    if (finishLabel) {
+      finishLabel.textContent = finish === "all" ? "Finish" : "Finish · " + finish;
+    }
+    if (colourLabel) {
+      colourLabel.textContent =
+        familiesSelected.size === 0
+          ? "Colour"
+          : "Colour · " + familiesSelected.size;
+    }
+
+    triggers.forEach((btn) => {
+      const key = btn.getAttribute("data-filter-trigger");
+      let active = false;
+      if (key === "sort") active = sort !== "name";
+      else if (key === "stock") active = stock !== "all";
+      else if (key === "brand") active = brand !== "all";
+      else if (key === "finish") active = finish !== "all";
+      else if (key === "colour") active = familiesSelected.size > 0;
+      btn.classList.toggle("is-active", active);
+    });
+  }
+
+  function closePanel(opts) {
+    if (!openPanel) return;
+    panels.forEach((p) => {
+      p.hidden = true;
+    });
+    triggers.forEach((t) => t.setAttribute("aria-expanded", "false"));
+    if (backdrop) backdrop.hidden = true;
+    document.documentElement.classList.remove("kf-vinyl-filter-open");
+    openPanel = null;
+    if (!opts || opts.focus !== false) {
+      if (lastTrigger) lastTrigger.focus();
+    }
+    lastTrigger = null;
+  }
+
+  function openFilterPanel(key, triggerEl) {
+    if (openPanel === key) {
+      closePanel();
+      return;
+    }
+    closePanel({ focus: false });
+    const panel = panels.find((p) => p.getAttribute("data-filter-panel") === key);
+    if (!panel) return;
+    openPanel = key;
+    lastTrigger = triggerEl || null;
+    panel.hidden = false;
+    if (backdrop) backdrop.hidden = false;
+    document.documentElement.classList.add("kf-vinyl-filter-open");
+    triggers.forEach((t) => {
+      t.setAttribute(
+        "aria-expanded",
+        t.getAttribute("data-filter-trigger") === key ? "true" : "false"
+      );
+    });
+    const focusable = panel.querySelector(
+      "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+    );
+    focusable?.focus();
+  }
+
   function filtered() {
     const list = rows.filter((r) => {
       if (stock === "in" && !r.in_stock) return false;
@@ -209,10 +326,15 @@
 
   function render() {
     const list = filtered();
+    updateTriggerLabels();
     if (meta) {
       const pick =
         familiesSelected.size > 0
-          ? " · " + familiesSelected.size + " colour" + (familiesSelected.size === 1 ? "" : "s") + " selected"
+          ? " · " +
+            familiesSelected.size +
+            " colour" +
+            (familiesSelected.size === 1 ? "" : "s") +
+            " selected"
           : "";
       meta.textContent = list.length + " colours" + pick;
     }
@@ -250,21 +372,52 @@
     query = (search.value || "").trim().toLowerCase();
     render();
   });
-  sortSelect?.addEventListener("change", () => {
-    sort = sortSelect.value || "name";
-    render();
+
+  triggers.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.getAttribute("data-filter-trigger");
+      if (!key) return;
+      openFilterPanel(key, btn);
+    });
   });
-  stockSelect?.addEventListener("change", () => {
-    stock = stockSelect.value || "all";
-    render();
+
+  backdrop?.addEventListener("click", () => closePanel());
+
+  document.querySelectorAll("[data-filter-close]").forEach((btn) => {
+    btn.addEventListener("click", () => closePanel());
   });
-  brandSelect?.addEventListener("change", () => {
-    brand = brandSelect.value || "all";
-    render();
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && openPanel) {
+      e.preventDefault();
+      closePanel();
+    }
   });
-  finishSelect?.addEventListener("change", () => {
-    finish = finishSelect.value || "all";
-    render();
+
+  function bindOptionClicks(key, apply) {
+    const host = optionList(key);
+    host?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-filter-value]");
+      if (!btn || !host.contains(btn)) return;
+      const value = btn.getAttribute("data-filter-value");
+      apply(value);
+      syncOptionPressed(key, value);
+      render();
+      if (key !== "colour") closePanel();
+    });
+  }
+
+  bindOptionClicks("sort", (v) => {
+    sort = v || "name";
+  });
+  bindOptionClicks("stock", (v) => {
+    stock = v || "all";
+  });
+  bindOptionClicks("brand", (v) => {
+    brand = v || "all";
+  });
+  bindOptionClicks("finish", (v) => {
+    finish = v || "all";
   });
 
   familyChips?.addEventListener("click", (e) => {
@@ -283,6 +436,9 @@
     syncFamilyChipState();
     render();
   });
+
+  fillOptions("sort", SORT_OPTIONS, sort);
+  fillOptions("stock", STOCK_OPTIONS, stock);
 
   if (meta) meta.textContent = "Loading…";
   fetch("/data/vinyl-colors.json")
@@ -306,8 +462,21 @@
       );
       const families = normalizeFamilies(data.colorFamilies, familyIds);
 
-      brand = fillSelect(brandSelect, brands, "All brands", brand);
-      finish = fillSelect(finishSelect, finishes, "All finishes", finish);
+      const brandOpts = [{ value: "all", label: "All brands" }].concat(
+        brands
+          .slice()
+          .sort((a, b) => String(a).localeCompare(String(b)))
+          .map((v) => ({ value: String(v), label: String(v) }))
+      );
+      const finishOpts = [{ value: "all", label: "All finishes" }].concat(
+        finishes
+          .slice()
+          .sort((a, b) => String(a).localeCompare(String(b)))
+          .map((v) => ({ value: String(v), label: String(v) }))
+      );
+
+      brand = fillOptions("brand", brandOpts, brand);
+      finish = fillOptions("finish", finishOpts, finish);
       renderFamilyChips(families);
       render();
     })

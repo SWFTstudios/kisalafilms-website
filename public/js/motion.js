@@ -90,13 +90,21 @@
   const initHeaderSolid = () => {
     const header = document.querySelector(".site-header");
     if (!header) return;
+    const hero =
+      document.querySelector(".kf-hero") || document.querySelector(".kf-page-hero");
     const onScroll = () => {
       const y = lenis ? lenis.scroll : window.scrollY || window.pageYOffset;
-      header.classList.toggle("is-solid", y > window.innerHeight * 0.65);
+      let threshold = window.innerHeight * 0.65;
+      if (hero) {
+        const top = hero.getBoundingClientRect().top + y;
+        threshold = top + hero.offsetHeight - 1;
+      }
+      header.classList.toggle("is-solid", y > threshold);
     };
     onScroll();
     if (lenis) lenis.on("scroll", onScroll);
     else window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
   };
 
   const revealFromVars = (variant) => {
