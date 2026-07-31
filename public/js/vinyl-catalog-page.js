@@ -1,6 +1,6 @@
 /**
  * Vinyl colour grid — JSON from /data/vinyl-colors.json.
- * Search + sort + stock/brand/colour/finish filters, all client-side.
+ * Search + sort + filters. Colour families are multi-select (OR).
  */
 (() => {
   const grid = document.querySelector("[data-catalog-grid]");
@@ -9,7 +9,8 @@
   const sortSelect = document.querySelector("[data-catalog-sort]");
   const stockSelect = document.querySelector("[data-catalog-stock]");
   const brandSelect = document.querySelector("[data-catalog-brand]");
-  const familySelect = document.querySelector("[data-catalog-family]");
+  const familyChips = document.querySelector("[data-catalog-families]");
+  const familyClear = document.querySelector("[data-catalog-family-clear]");
   const finishSelect = document.querySelector("[data-catalog-finish]");
   if (!grid) return;
 
@@ -33,12 +34,32 @@
     "other",
   ];
 
+  const FAMILY_HEX = {
+    red: "#d2201a",
+    orange: "#e8701a",
+    yellow: "#e8c31a",
+    green: "#2f9e52",
+    blue: "#2b6ef6",
+    purple: "#7d3fc9",
+    pink: "#e0479b",
+    white: "#f4f4f2",
+    black: "#0b0b0b",
+    grey: "#8a8f94",
+    brown: "#7a5334",
+    chrome: "#cfd5da",
+    carbon: "#1e1e1e",
+    shift: "#7b2ff7",
+    clear: "#8fa3ad",
+    other: "#5a5f63",
+  };
+
   let rows = [];
   let query = "";
   let sort = "name";
   let stock = "all";
   let brand = "all";
-  let family = "all";
+  /** @type {Set<string>} */
+  let familiesSelected = new Set();
   let finish = "all";
 
   function escapeHtml(str) {
@@ -80,7 +101,6 @@
       Number(!!b.in_stock) - Number(!!a.in_stock) || a.name.localeCompare(b.name),
   };
 
-  /** Normalize colorFamilies entries to { id, label }. */
   function normalizeFamilies(raw, fallbackIds) {
     const fromJson = Array.isArray(raw)
       ? raw
@@ -88,17 +108,23 @@
             if (f && typeof f === "object") {
               const id = String(f.id || "").trim();
               if (!id) return null;
-              return { id, label: String(f.label || id) };
+              return {
+                id,
+                label: String(f.label || id),
+                hex: String(f.hex || FAMILY_HEX[id] || "#888"),
+              };
             }
             const id = String(f || "").trim();
-            return id ? { id, label: id } : null;
+            return id ? { id, label: id, hex: FAMILY_HEX[id] || "#888" } : null;
           })
           .filter(Boolean)
       : [];
 
     const byId = new Map(fromJson.map((f) => [f.id, f]));
     fallbackIds.forEach((id) => {
-      if (!byId.has(id)) byId.set(id, { id, label: id });
+      if (!byId.has(id)) {
+        byId.set(id, { id, label: id, hex: FAMILY_HEX[id] || "#888" });
+      }
     });
 
     const ordered = [];
@@ -133,22 +159,36 @@
     return next;
   }
 
-  function fillFamilySelect(select, families, current) {
-    if (!select) return current;
-    select.innerHTML = "";
-    const allOpt = document.createElement("option");
-    allOpt.value = "all";
-    allOpt.textContent = "All colours";
-    select.appendChild(allOpt);
+  function renderFamilyChips(families) {
+    if (!familyChips) return;
+    familyChips.innerHTML = "";
     families.forEach((f) => {
-      const opt = document.createElement("option");
-      opt.value = f.id;
-      opt.textContent = f.label;
-      select.appendChild(opt);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "kf-vinyl-color-chip";
+      btn.setAttribute("data-family-id", f.id);
+      btn.setAttribute("aria-pressed", "false");
+      btn.innerHTML =
+        '<span class="kf-vinyl-color-swatch" style="background:' +
+        escapeHtml(f.hex || FAMILY_HEX[f.id] || "#888") +
+        '" aria-hidden="true"></span>' +
+        '<span class="kf-vinyl-color-chip-label">' +
+        escapeHtml(f.label) +
+        "</span>";
+      familyChips.appendChild(btn);
     });
-    const next = families.some((f) => f.id === current) ? current : "all";
-    select.value = next;
-    return next;
+    syncFamilyChipState();
+  }
+
+  function syncFamilyChipState() {
+    if (!familyChips) return;
+    familyChips.querySelectorAll("[data-family-id]").forEach((btn) => {
+      const id = btn.getAttribute("data-family-id");
+      const on = familiesSelected.has(id);
+      btn.classList.toggle("is-on", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (familyClear) familyClear.hidden = familiesSelected.size === 0;
   }
 
   function filtered() {
@@ -156,7 +196,7 @@
       if (stock === "in" && !r.in_stock) return false;
       if (stock === "out" && r.in_stock) return false;
       if (brand !== "all" && r.brand !== brand) return false;
-      if (family !== "all" && r.color_family !== family) return false;
+      if (familiesSelected.size > 0 && !familiesSelected.has(r.color_family)) return false;
       if (finish !== "all" && r.finish !== finish) return false;
       if (!query) return true;
       return [r.name, r.brand, r.finish, r.color_family, r.handle]
@@ -169,7 +209,13 @@
 
   function render() {
     const list = filtered();
-    if (meta) meta.textContent = list.length + " colours";
+    if (meta) {
+      const pick =
+        familiesSelected.size > 0
+          ? " · " + familiesSelected.size + " colour" + (familiesSelected.size === 1 ? "" : "s") + " selected"
+          : "";
+      meta.textContent = list.length + " colours" + pick;
+    }
     grid.innerHTML = "";
     if (!list.length) {
       grid.innerHTML =
@@ -216,12 +262,25 @@
     brand = brandSelect.value || "all";
     render();
   });
-  familySelect?.addEventListener("change", () => {
-    family = familySelect.value || "all";
-    render();
-  });
   finishSelect?.addEventListener("change", () => {
     finish = finishSelect.value || "all";
+    render();
+  });
+
+  familyChips?.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-family-id]");
+    if (!btn) return;
+    const id = btn.getAttribute("data-family-id");
+    if (!id) return;
+    if (familiesSelected.has(id)) familiesSelected.delete(id);
+    else familiesSelected.add(id);
+    syncFamilyChipState();
+    render();
+  });
+
+  familyClear?.addEventListener("click", () => {
+    familiesSelected.clear();
+    syncFamilyChipState();
     render();
   });
 
@@ -248,8 +307,8 @@
       const families = normalizeFamilies(data.colorFamilies, familyIds);
 
       brand = fillSelect(brandSelect, brands, "All brands", brand);
-      family = fillFamilySelect(familySelect, families, family);
       finish = fillSelect(finishSelect, finishes, "All finishes", finish);
+      renderFamilyChips(families);
       render();
     })
     .catch((err) => {

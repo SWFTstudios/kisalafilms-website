@@ -181,17 +181,19 @@
               </select>
             </label>
             <label class="kf-vinyl-catalog-field">
-              <span class="kf-vinyl-catalog-label">Colour</span>
-              <select class="kf-vinyl-catalog-select" data-catalog-family aria-label="Filter by colour">
-                <option value="all">All colours</option>
-              </select>
-            </label>
-            <label class="kf-vinyl-catalog-field">
               <span class="kf-vinyl-catalog-label">Finish</span>
               <select class="kf-vinyl-catalog-select" data-catalog-finish aria-label="Filter by finish">
                 <option value="all">All finishes</option>
               </select>
             </label>
+          </div>
+          <div class="kf-vinyl-color-picker" data-reveal>
+            <div class="kf-vinyl-color-picker-head">
+              <span class="kf-vinyl-catalog-label">Colour</span>
+              <button type="button" class="kf-vinyl-color-clear" data-catalog-family-clear hidden>Clear colours</button>
+            </div>
+            <p class="kf-vinyl-color-hint">Tap one or more — orange + blue shows both.</p>
+            <div class="kf-vinyl-color-chips" data-catalog-families role="group" aria-label="Filter by colour (multi-select)"></div>
           </div>
         </div>
 
