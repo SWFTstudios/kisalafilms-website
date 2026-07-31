@@ -1,3 +1,5 @@
+import { VINYL_MARKUP, sellFromCost } from "./project-quote";
+
 export type FilmRow = {
   handle: string;
   sku: string;
@@ -14,8 +16,13 @@ export type FilmRow = {
   install_notes: string;
   recommended_for: string;
   notes: string;
+  /** Metro landed cost when founder pricing is active; otherwise null. */
   price_usd: number | null;
+  /** Metro roll cost when founder pricing is active; otherwise null. */
   roll_price_usd: number | null;
+  /** Always public: Metro cost × vinyl markup (1.4). */
+  sell_price_usd: number | null;
+  vinyl_markup: number;
   price_synced_at: string;
   updated_at: string;
 };
@@ -72,7 +79,12 @@ function json(data: unknown, status = 200, extra: HeadersInit = {}): Response {
   });
 }
 
-function mapFilm(row: FilmDbRow, showPrices: boolean): FilmRow {
+function mapFilm(row: FilmDbRow, showCostPrices: boolean): FilmRow {
+  const cost = row.roll_price_usd ?? row.price_usd;
+  const sell =
+    cost !== null && cost !== undefined && Number.isFinite(Number(cost))
+      ? sellFromCost(Number(cost))
+      : null;
   return {
     handle: row.handle,
     sku: row.sku || "",
@@ -89,11 +101,24 @@ function mapFilm(row: FilmDbRow, showPrices: boolean): FilmRow {
     install_notes: row.install_notes || "",
     recommended_for: row.recommended_for || "",
     notes: row.notes || "",
-    price_usd: showPrices ? row.price_usd : null,
-    roll_price_usd: showPrices ? row.roll_price_usd : null,
-    price_synced_at: showPrices ? row.price_synced_at || "" : "",
+    price_usd: showCostPrices ? row.price_usd : null,
+    roll_price_usd: showCostPrices ? row.roll_price_usd : null,
+    sell_price_usd: sell,
+    vinyl_markup: VINYL_MARKUP,
+    price_synced_at: row.price_synced_at || "",
     updated_at: row.updated_at,
   };
+}
+
+/** Internal: raw D1 row for checkout (includes Metro cost). */
+export async function getFilmCostRow(
+  db: D1Database,
+  handle: string
+): Promise<FilmDbRow | null> {
+  return db
+    .prepare(`SELECT * FROM films WHERE handle = ?`)
+    .bind(handle)
+    .first<FilmDbRow>();
 }
 
 function normalizeIncoming(raw: Record<string, unknown>): FilmRow | null {
@@ -123,6 +148,8 @@ function normalizeIncoming(raw: Record<string, unknown>): FilmRow | null {
     notes: String(raw.notes || "").trim(),
     price_usd: toNum(raw.price_usd),
     roll_price_usd: toNum(raw.roll_price_usd),
+    sell_price_usd: null,
+    vinyl_markup: VINYL_MARKUP,
     price_synced_at: String(raw.price_synced_at || "").trim(),
     updated_at: new Date().toISOString(),
   };
@@ -235,8 +262,8 @@ export async function listFilms(db: D1Database, url: URL): Promise<Response> {
     .all<FilmDbRow>();
 
   const founder = await getFounderPricing(db);
-  const showPrices = founder.founderPricingActive;
-  const films = (rows.results || []).map((r) => mapFilm(r, showPrices));
+  const showCostPrices = founder.founderPricingActive;
+  const films = (rows.results || []).map((r) => mapFilm(r, showCostPrices));
 
   const [finishes, types, brands, families, collections] = await Promise.all([
     db

@@ -54,6 +54,9 @@ Primary nav: **Services · Gallery · Pricing · Shop · About · Contact**, wit
 | --- | --- |
 | `/` | Cinematic hero, service tiers, finish tiles, build gallery, reel rail, process |
 | `/wrap-studio` | The configurator — bike, service, colour, photos, estimate, send |
+| `/vinyl-catalog` | Metro film CMS browse (D1) — start a project from any film |
+| `/project` | Game-like vinyl project onboarding → save or Stripe order |
+| `/project-thanks` | Project checkout success (`noindex`) |
 | `/gallery` | Filterable photo and video masonry with lightbox |
 | `/services` | Wrap, protection, and cinema services (+ 3 detail pages) |
 | `/pricing` | Package tiers, single-service prices, Stripe build deposit |
@@ -282,9 +285,37 @@ Public Metro-style browse lives at [`/vinyl-catalog`](./public/vinyl-catalog.htm
 
 Hourly Worker cron scrapes Metro product prices into D1. Download the garage sheet anytime: `GET /api/films/pricing.csv`.
 
+### Project checkout (motorcycle + helmet)
+
+[`/project`](./public/project.html) is the e-commerce onboarding path: pick a film from the catalog → motorcycle or helmet → setup → details → **save** (localStorage + Firebase `customers/{uid}/projects`) or **order** via Stripe Checkout.
+
+Pricing (mirrored in [`kisala-config.js`](./public/js/kisala-config.js) `projectCheckout` and [`src/project-quote.ts`](./src/project-quote.ts)):
+
+- **Vinyl** = Metro roll cost × **1.40** (40% markup), rolls = `max(1, ceil(linearFeet / 25))`
+- **Labour** = set price by difficulty 1–5 (bike fairing band for motorcycles; film finish difficulty for helmets)
+
+Worker endpoints:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/api/quote/project` | Preview quote (live Metro cost from D1) |
+| POST | `/api/checkout/project` | Create pending D1 order + Stripe Checkout Session |
+| GET | `/api/checkout/session` | Confirm payment / mark order paid |
+| POST | `/api/webhooks/stripe` | Stripe webhook (`checkout.session.completed`) |
+| GET | `/api/orders/:id` | Public order status |
+
+Orders live in D1 `project_orders` ([`migrations/0003_project_orders.sql`](./migrations/0003_project_orders.sql)). Set secrets:
+
+```bash
+npx wrangler secret put STRIPE_SECRET_KEY
+npx wrangler secret put STRIPE_WEBHOOK_SECRET
+```
+
+Point the Stripe webhook at `https://<worker>/api/webhooks/stripe` for `checkout.session.completed`. Success lands on `/project-thanks` (`noindex`).
+
 ### Founder at-cost pricing
 
-Until **5 completed orders** (`site_meta.completed_orders`), the public films API includes `price_usd` / `roll_price_usd` and `founderPricingActive: true`. After that, prices are omitted from the catalog UI (CSV export still includes them for the garage).
+Until **5 completed orders** (`site_meta.completed_orders`), the public films API also includes supplier `price_usd` / `roll_price_usd` for reference. **Sell price** (`sell_price_usd` = cost × 1.4) is always public. After the founder window, cost fields are omitted from the catalog UI (CSV export still includes them for the garage).
 
 Mark a completed build (burns one founder slot):
 

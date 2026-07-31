@@ -96,6 +96,75 @@
   }
 
   /**
+   * Client-side preview for /project checkout.
+   * Mirror of src/project-quote.ts — Worker recomputes with live Metro cost.
+   */
+  function projectQuotePreview(opts) {
+    const pc = CONFIG.projectCheckout;
+    if (!pc) return null;
+    const surface = opts && opts.surface;
+    const coverage =
+      surface === "helmet" ? "full" : opts.coverage === "accent" ? "accent" : "full";
+    const markup = pc.vinylMarkup || 1.4;
+    const length = pc.rollLengthFt || 25;
+    const width = pc.rollWidthFt || 5;
+    const cost = Number(opts && opts.rollCostUsd);
+    if (!Number.isFinite(cost) || cost <= 0) return null;
+
+    const clamp = (n) => Math.min(5, Math.max(1, Math.round(Number(n) || 3)));
+    let difficulty;
+    let labourUsd;
+    let linearFeet;
+    let difficultyLabel;
+
+    if (surface === "helmet") {
+      difficulty = clamp(opts.filmDifficulty || 2);
+      labourUsd = (pc.helmetLabour && pc.helmetLabour[difficulty]) || 250;
+      linearFeet = pc.helmetLinearFeet || 3;
+      difficultyLabel = `Helmet · film level ${difficulty}/5`;
+    } else if (surface === "motorcycle") {
+      difficulty = clamp(opts.bikeDifficulty || 3);
+      const table =
+        (pc.motorcycleLabour && pc.motorcycleLabour[coverage]) || {};
+      labourUsd = table[difficulty] || 1450;
+      if (coverage === "accent") {
+        linearFeet = pc.accentLinearFeet || 8;
+        difficultyLabel = `Accent package · bike level ${difficulty}/5`;
+      } else {
+        const body = (opts && opts.bodyClass) || "unknown";
+        linearFeet =
+          (pc.fullFeetByBody && pc.fullFeetByBody[body]) ||
+          (pc.fullFeetByBody && pc.fullFeetByBody.unknown) ||
+          18;
+        difficultyLabel = `Full wrap · bike level ${difficulty}/5`;
+      }
+    } else {
+      return null;
+    }
+
+    const rolls = Math.max(1, Math.ceil(linearFeet / length));
+    const vinylSellUsd = Math.round(cost * rolls * markup * 100) / 100;
+    const totalUsd = Math.round((labourUsd + vinylSellUsd) * 100) / 100;
+
+    return {
+      surface,
+      coverage,
+      difficulty,
+      difficultyLabel,
+      labourUsd,
+      linearFeet,
+      rolls,
+      rollWidthFt: width,
+      rollLengthFt: length,
+      rollCostUsd: cost,
+      vinylMarkup: markup,
+      vinylSellUsd,
+      totalUsd,
+      amountCents: Math.round(totalUsd * 100),
+    };
+  }
+
+  /**
    * Path lookup with a few virtual keys on top of the raw object:
    *   services.<key>.low|high|from|range   the active column
    *   addons.<key>                         the active price
@@ -220,6 +289,7 @@
     zonePickupFrom,
     transport,
     depositQuote,
+    projectQuotePreview,
     apply,
   };
 

@@ -178,6 +178,36 @@ window.KISALA_CONFIG = {
     },
   ],
 
+  /* ---- Vinyl project checkout (Stripe) ---------------------------------
+     Full project price = set labour (by difficulty) + vinyl (Metro cost × markup).
+     Motorcycle difficulty comes from motorcycles.json labourBands (1–5).
+     Helmet difficulty comes from film finish (Gloss=1 … Color Shift=5).
+     Keep mirrored in src/project-quote.ts — the Worker recomputes before Stripe. */
+  projectCheckout: {
+    vinylMarkup: 1.4, // Metro roll cost + 40% profit
+    rollWidthFt: 5,
+    rollLengthFt: 25,
+    helmetLinearFeet: 3,
+    accentLinearFeet: 8,
+    motorcycleLabour: {
+      full: { 1: 850, 2: 1100, 3: 1450, 4: 1850, 5: 2400 },
+      accent: { 1: 350, 2: 450, 3: 575, 4: 750, 5: 950 },
+    },
+    helmetLabour: { 1: 175, 2: 200, 3: 250, 4: 325, 5: 400 },
+    fullFeetByBody: {
+      naked_minimal: 12,
+      cruiser_simple: 15,
+      half_faired: 18,
+      adventure_touring: 22,
+      full_sport: 20,
+      touring_complex: 30,
+      scooter_enclosed: 16,
+      dirt_mx: 12,
+      sidecar_utv: 25,
+      unknown: 18,
+    },
+  },
+
   /* ---- Build deposit (Stripe Checkout) ---------------------------------
      Deposit = percent × (service starting price + vinyl material).
      Material assumes a minimum 5ft × 25ft cast roll per film item the project

@@ -105,5 +105,34 @@
       const { db } = await boot();
       await db.collection("customers").doc(uid).collection("builds").doc(buildId).delete();
     },
+    async pullProjects(uid) {
+      const { db } = await boot();
+      const snap = await db.collection("customers").doc(uid).collection("projects").get();
+      const projects = {};
+      snap.forEach((doc) => {
+        projects[doc.id] = { id: doc.id, ...(doc.data() || {}) };
+      });
+      return projects;
+    },
+    async pushProject(uid, projectId, payload) {
+      const { db } = await boot();
+      await db
+        .collection("customers")
+        .doc(uid)
+        .collection("projects")
+        .doc(projectId)
+        .set(
+          {
+            ...payload,
+            updatedAt: Date.now(),
+            cloudUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        );
+    },
+    async deleteProject(uid, projectId) {
+      const { db } = await boot();
+      await db.collection("customers").doc(uid).collection("projects").doc(projectId).delete();
+    },
   };
 })();

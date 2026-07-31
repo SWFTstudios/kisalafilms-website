@@ -6,6 +6,7 @@ Allow: /
 Disallow: /404
 Disallow: /deposit-thanks
 Disallow: /lookbook/film
+Disallow: /project-thanks
 Disallow: /styleguide
 Disallow: /thanks
 Disallow: /wrap-quote/

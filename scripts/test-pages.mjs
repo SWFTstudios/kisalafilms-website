@@ -96,7 +96,8 @@ function load(page, { mutateConfig } = {}) {
   );
 
   for (const src of sources) {
-    const file = join(PUBLIC, src);
+    if (!src || /^https?:\/\//i.test(src) || src.startsWith("//")) continue;
+    const file = join(PUBLIC, src.replace(/^\//, ""));
     if (!existsSync(file)) throw new Error(`${page} references a missing script: ${src}`);
     window.eval(readFileSync(file, "utf8"));
 
@@ -790,6 +791,7 @@ function fire(win, el, type) {
   const NOINDEX = new Set([
     "thanks.html",
     "deposit-thanks.html",
+    "project-thanks.html",
     "styleguide.html",
     "404.html",
     "wrap-quote/index.html",
@@ -1225,6 +1227,56 @@ function fire(win, el, type) {
         assertEqual(el.textContent, String(remaining), `${page} slot count`)
       );
     }
+  });
+}
+
+/* ---- Vinyl project checkout (set labour + cost×1.4) -------------------- */
+{
+  const win = load("project.html");
+
+  check("project page wires mission onboarding", () => {
+    assert(win.document.querySelector("[data-project-root]"), "project root missing");
+    assert(win.document.querySelector("[data-mission='0']"), "film stage missing");
+    assert(win.document.querySelector("[data-surface='helmet']"), "helmet surface missing");
+    assert(win.document.querySelector("[data-project-pay]"), "Stripe CTA missing");
+    const html = readFileSync(join(PUBLIC, "project.html"), "utf8");
+    assert(/\/js\/project-onboarding\.js/.test(html), "project-onboarding.js missing");
+    assert(/\/js\/bike-search\.js/.test(html), "bike-search.js missing");
+  });
+
+  check("projectCheckout config + preview prices a mid bike full wrap", () => {
+    assert(win.KISALA_CONFIG.projectCheckout, "projectCheckout missing");
+    assertEqual(win.KISALA_CONFIG.projectCheckout.vinylMarkup, 1.4, "vinyl markup");
+    const q = win.KisalaConfig.projectQuotePreview({
+      surface: "motorcycle",
+      coverage: "full",
+      bikeDifficulty: 3,
+      bodyClass: "half_faired",
+      rollCostUsd: 450,
+    });
+    assert(q, "preview quote missing");
+    assertEqual(q.labourUsd, 1450, "diff-3 full labour");
+    assertEqual(q.rolls, 1, "18ft → 1 roll");
+    assertEqual(q.vinylSellUsd, 630, "450 × 1.4");
+    assertEqual(q.totalUsd, 2080, "labour + vinyl");
+  });
+
+  check("projectCheckout preview prices a helmet wrap by film difficulty", () => {
+    const q = win.KisalaConfig.projectQuotePreview({
+      surface: "helmet",
+      filmDifficulty: 4,
+      rollCostUsd: 400,
+    });
+    assert(q, "helmet quote missing");
+    assertEqual(q.labourUsd, 325, "helmet film-diff 4 labour");
+    assertEqual(q.rolls, 1, "3ft → 1 roll");
+    assertEqual(q.vinylSellUsd, 560, "400 × 1.4");
+    assertEqual(q.totalUsd, 885, "helmet total");
+  });
+
+  check("project-thanks is noindex", () => {
+    const html = readFileSync(join(PUBLIC, "project-thanks.html"), "utf8");
+    assert(/noindex/.test(html), "project-thanks should be noindex");
   });
 }
 
