@@ -29,12 +29,11 @@
   const availLabel = (inStock) => (inStock ? "In stock" : "Out of stock");
   const availClass = (inStock) => (inStock ? "kf-avail--in" : "kf-avail--out");
   const formatRoll = (r) => {
-    if (!founderPricingActive) return "—";
-    const n = r.roll_price_usd ?? r.price_usd;
+    const n = r.sell_price_usd ?? r.roll_price_usd ?? r.price_usd;
     if (n === null || n === undefined || n === "") return "—";
     const num = Number(n);
     if (!Number.isFinite(num)) return "—";
-    return "$" + num.toLocaleString("en-US", { maximumFractionDigits: 2 });
+    return "$" + num.toLocaleString("en-US", { maximumFractionDigits: 0 });
   };
   const SORTS = {
     name: (a, b) => String(a.name || "").localeCompare(String(b.name || "")),
@@ -49,8 +48,8 @@
       Number(!!b.in_stock) - Number(!!a.in_stock) ||
       String(a.name || "").localeCompare(String(b.name || "")),
     price: (a, b) =>
-      (Number(a.roll_price_usd ?? a.price_usd ?? 1e12) || 1e12) -
-        (Number(b.roll_price_usd ?? b.price_usd ?? 1e12) || 1e12) ||
+      (Number(a.sell_price_usd ?? a.roll_price_usd ?? a.price_usd ?? 1e12) || 1e12) -
+        (Number(b.sell_price_usd ?? b.roll_price_usd ?? b.price_usd ?? 1e12) || 1e12) ||
       String(a.name || "").localeCompare(String(b.name || "")),
   };
   const filtered = () => {
@@ -137,8 +136,8 @@
       const body = document.createElement("div");
       body.className = "kf-lookbook-card-body";
       const priceLine =
-        founderPricingActive && roll !== "—"
-          ? '<span class="kf-roll-price">Roll · at cost ' + escapeHtml(roll) + "</span>"
+        roll !== "—"
+          ? '<span class="kf-roll-price">Roll · ' + escapeHtml(roll) + "</span>"
           : "";
       body.innerHTML =
         "<h3>" +
@@ -232,17 +231,18 @@
       familiesFromApi = Array.isArray(data.colorFamilies) ? data.colorFamilies : [];
       founderPricingActive = !!data.founderPricingActive;
       if (founderBanner) {
-        if (founderPricingActive) {
-          founderBanner.hidden = false;
-          founderBanner.textContent =
-            "Founder pricing · first " +
-            (data.founderLimit || 5) +
-            " completed builds get vinyl at Metro roll cost (" +
-            (data.founderSlotsRemaining ?? "?") +
-            " slots left).";
-        } else founderBanner.hidden = true;
+        founderBanner.hidden = false;
+        founderBanner.textContent =
+          "Vinyl priced at Metro roll cost + 40%. Motorcycle & helmet wraps use set labour by difficulty. Start a project from any film." +
+          (founderPricingActive
+            ? " Founder window: " +
+              (data.founderSlotsRemaining ?? "?") +
+              " of " +
+              (data.founderLimit || 5) +
+              " at-cost slots still show supplier cost for reference."
+            : "");
       }
-      if (sortSelect && founderPricingActive) {
+      if (sortSelect && !sortSelect.querySelector('option[value="price"]')) {
         const opt = document.createElement("option");
         opt.value = "price";
         opt.textContent = "Roll price";

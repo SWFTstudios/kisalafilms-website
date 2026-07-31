@@ -2324,3 +2324,252 @@ body.lb-lock { overflow: hidden; }
   font-size: 1.05rem;
 }
 .kf-roll-price-lg strong { color: var(--kf-white); }
+
+/* ---- Vinyl project onboarding (mission flow) -------------------------- */
+.kf-project {
+  padding: 48px 0 96px;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(232, 39, 31, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(255, 255, 255, 0.04), transparent 50%),
+    var(--kf-black, #000);
+}
+.kf-project-shell {
+  display: grid;
+  gap: 36px;
+}
+@media (min-width: 960px) {
+  .kf-project-shell {
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+    align-items: start;
+    gap: 48px;
+  }
+}
+.kf-project-title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  margin: 8px 0 12px;
+}
+.kf-project-lede { max-width: 34ch; color: var(--kf-silver, #a8a8a8); }
+.kf-project-steps {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.kf-project-steps li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--kf-silver, #a8a8a8);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+.kf-project-steps li.is-active,
+.kf-project-steps li.is-done {
+  opacity: 1;
+  color: var(--kf-white, #fff);
+}
+.kf-project-steps li.is-active .kf-step-num { color: var(--kf-red, #e8271f); }
+.kf-step-num {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 1.8em;
+}
+.kf-project-xp { margin-top: 28px; }
+.kf-project-xp-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.kf-project-xp-bar > span {
+  display: block;
+  height: 100%;
+  width: 20%;
+  background: linear-gradient(90deg, var(--kf-red, #e8271f), #ff6b45);
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.kf-project-xp-label {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kf-silver, #a8a8a8);
+}
+.kf-project-film-card {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+}
+.kf-project-film-card img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.kf-project-film-name { margin: 4px 0; font-weight: 600; }
+.kf-project-stage {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 10, 10, 0.65);
+  padding: clamp(20px, 4vw, 40px);
+  min-height: 420px;
+  animation: kfMissionIn 0.45s ease both;
+}
+.kf-mission-panel[hidden] { display: none !important; }
+.kf-mission-panel.is-active { animation: kfMissionIn 0.4s ease both; }
+@keyframes kfMissionIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.kf-mission-panel h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+}
+.kf-mission-actions { margin: 18px 0; }
+.kf-mission-field {
+  display: grid;
+  gap: 6px;
+  margin: 14px 0;
+}
+.kf-mission-field span {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kf-silver, #a8a8a8);
+}
+.kf-mission-field em { font-style: normal; opacity: 0.6; text-transform: none; letter-spacing: 0; }
+.kf-mission-field input,
+.kf-mission-field select,
+.kf-mission-field textarea {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #0a0a0a;
+  color: #fff;
+  font: inherit;
+}
+.kf-mission-field textarea { min-height: 96px; resize: vertical; }
+.kf-mission-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+  align-items: center;
+}
+.kf-mission-nav--split { justify-content: space-between; }
+.kf-mission-cards {
+  display: grid;
+  gap: 14px;
+  margin: 22px 0;
+}
+@media (min-width: 640px) {
+  .kf-mission-cards { grid-template-columns: 1fr 1fr; }
+}
+.kf-mission-card {
+  text-align: left;
+  padding: 18px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.kf-mission-card:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+.kf-mission-card.is-active {
+  border-color: var(--kf-red, #e8271f);
+  background: rgba(232, 39, 31, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(232, 39, 31, 0.35);
+}
+.kf-mission-card-kicker {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--kf-red, #e8271f);
+  margin-bottom: 8px;
+}
+.kf-mission-card strong {
+  display: block;
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+.kf-mission-card span:last-child {
+  display: block;
+  color: var(--kf-silver, #a8a8a8);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.kf-bike-grid {
+  display: grid;
+  gap: 12px;
+}
+@media (min-width: 720px) {
+  .kf-bike-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.kf-mission-form-grid {
+  display: grid;
+  gap: 8px 16px;
+}
+@media (min-width: 720px) {
+  .kf-mission-form-grid { grid-template-columns: 1fr 1fr; }
+}
+.kf-mission-preview {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.kf-mission-preview-inner {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.kf-mission-preview-inner img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+}
+.kf-quote-board {
+  margin-top: 8px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+}
+.kf-quote-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.kf-quote-lines li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.95rem;
+}
+.kf-quote-lines li.kf-quote-total {
+  border-bottom: 0;
+  padding-top: 16px;
+  font-size: 1.15rem;
+}
+.kf-project-error {
+  color: #ff8a80;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 138, 128, 0.35);
+  background: rgba(255, 80, 80, 0.08);
+}
+.kf-project-banner {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid rgba(232, 39, 31, 0.45);
+  background: rgba(232, 39, 31, 0.08);
+}

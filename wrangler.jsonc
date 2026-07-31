@@ -24,6 +24,7 @@
     }
   ],
   /* Set with: wrangler secret put STRIPE_SECRET_KEY
+     Stripe webhooks (project checkout paid): wrangler secret put STRIPE_WEBHOOK_SECRET
      Optional: wrangler secret put SITE_URL  (defaults to the request host)
      Films import: wrangler secret put FILMS_IMPORT_TOKEN
      Founder admin (mark completed orders / force price sync):

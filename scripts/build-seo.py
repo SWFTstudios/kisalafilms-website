@@ -30,6 +30,7 @@ SHARE_IMAGE = f"{SITE}/images/brand/kisala-films-logo.png"
 NOINDEX = {
   "thanks.html",
   "deposit-thanks.html",
+  "project-thanks.html",
   "styleguide.html",
   "404.html",
   "wrap-quote/index.html",
@@ -40,6 +41,8 @@ NOINDEX = {
 PRIORITY = {
     "index.html": "1.0",
     "wrap-studio.html": "0.9",
+    "project.html": "0.9",
+    "vinyl-catalog.html": "0.9",
     "pricing.html": "0.9",
     "services.html": "0.8",
     "gallery.html": "0.8",

@@ -56,11 +56,16 @@
       const installNotes = film.install_notes || "";
       const recommended = film.recommended_for || "";
       const notes = film.notes || "";
-      const showPrice = !!data.founderPricingActive;
-      const roll = film.roll_price_usd ?? film.price_usd;
-      const rollLabel =
-        showPrice && roll !== null && roll !== undefined && Number.isFinite(Number(roll))
-          ? `$${Number(roll).toLocaleString("en-US", { maximumFractionDigits: 2 })}`
+      const showCost = !!data.founderPricingActive;
+      const sell = film.sell_price_usd;
+      const cost = film.roll_price_usd ?? film.price_usd;
+      const sellLabel =
+        sell !== null && sell !== undefined && Number.isFinite(Number(sell))
+          ? `$${Number(sell).toLocaleString("en-US", { maximumFractionDigits: 0 })}`
+          : "";
+      const costLabel =
+        showCost && cost !== null && cost !== undefined && Number.isFinite(Number(cost))
+          ? `$${Number(cost).toLocaleString("en-US", { maximumFractionDigits: 2 })}`
           : "";
 
       document.title = `${name} | Kisala Films`;
@@ -72,6 +77,7 @@
         );
       }
 
+      const projectHref = `/project?film=${encodeURIComponent(film.handle)}`;
       const wrapHref = `/wrap-studio?finish=${encodeURIComponent(finish)}&film=${encodeURIComponent(
         film.handle
       )}`;
@@ -113,11 +119,15 @@
         );
       }
 
-      const priceBlock = rollLabel
-        ? `<p class="kf-roll-price-lg">Roll · at cost <strong>${escapeHtml(rollLabel)}</strong> <span class="kf-film-stock-src">founder rate · ${escapeHtml(String(data.founderSlotsRemaining ?? ""))} slots left</span></p>`
-        : showPrice
-          ? `<p class="p">Roll price syncing from Metro — check back after the hourly price job runs.</p>`
-          : `<p class="p">Material is quoted with your build (founder at-cost window closed).</p>`;
+      const priceBlock = sellLabel
+        ? `<p class="kf-roll-price-lg">Roll · <strong>${escapeHtml(
+            sellLabel
+          )}</strong> <span class="kf-film-stock-src">Metro cost + 40%</span>${
+            costLabel
+              ? ` <span class="kf-film-stock-src">· supplier ${escapeHtml(costLabel)}</span>`
+              : ""
+          }</p>`
+        : `<p class="p">Roll price syncing from Metro — check back after the hourly price job runs.</p>`;
 
       root.innerHTML = `
         <div class="kf-film-layout">
@@ -141,8 +151,11 @@
             ${blocks.join("")}
             <div class="btn-row">
               <a class="btn btn-primary" href="${escapeHtml(
+                projectHref
+              )}" data-track="cta_click" data-track-label="film-to-project">Start project</a>
+              <a class="btn btn-ghost" href="${escapeHtml(
                 wrapHref
-              )}" data-track="cta_click" data-track-label="film-to-wrap-studio">Build your project</a>
+              )}" data-track="cta_click" data-track-label="film-to-wrap-studio">Wrap Studio quote</a>
               <a class="btn btn-ghost" href="/vinyl-catalog.html">All films</a>
               <a class="btn btn-ghost" href="${escapeHtml(
                 metroHref
