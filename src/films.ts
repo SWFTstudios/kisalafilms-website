@@ -1,4 +1,5 @@
 import { VINYL_MARKUP, sellFromCost } from "./project-quote";
+import { findStaticFilm, loadStaticFilms, type AssetsFetcher } from "./static-films";
 
 export type FilmRow = {
   handle: string;
@@ -198,7 +199,12 @@ export async function incrementCompletedOrders(
   return setCompletedOrders(db, current.completedOrders + 1);
 }
 
-export async function listFilms(db: D1Database, url: URL): Promise<Response> {
+export async function listFilms(
+  db: D1Database,
+  url: URL,
+  assets?: AssetsFetcher,
+  request?: Request
+): Promise<Response> {
   const finish = (url.searchParams.get("finish") || "").trim();
   const stock = (url.searchParams.get("stock") || "all").trim().toLowerCase();
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
@@ -254,6 +260,105 @@ export async function listFilms(db: D1Database, url: URL): Promise<Response> {
     .bind(...binds)
     .first<{ n: number }>();
 
+  const d1Total = countRow?.n ?? 0;
+
+  // D1 empty (or never imported) — serve the bundled Metro catalogue so the
+  // public catalog is never blank on a fresh Worker / empty database.
+  if (d1Total === 0 && assets && request && !where.length) {
+    const founder = await getFounderPricing(db);
+    const staticCatalog = await loadStaticFilms(assets, request);
+    const slice = staticCatalog.films.slice(offset, offset + limit);
+    return json(
+      {
+        source: "static",
+        total: staticCatalog.films.length,
+        count: slice.length,
+        limit,
+        offset,
+        finishes: staticCatalog.finishes,
+        productTypes: Array.from(
+          new Set(staticCatalog.films.map((f) => f.product_type).filter(Boolean))
+        ).sort((a, b) => a.localeCompare(b)),
+        brands: staticCatalog.brands,
+        colorFamilies: staticCatalog.colorFamilies,
+        collections: Array.from(
+          new Set(staticCatalog.films.map((f) => f.collection).filter(Boolean))
+        ).sort((a, b) => a.localeCompare(b)),
+        ...founder,
+        films: slice,
+        note: "Serving bundled Metro catalogue — import into D1 with scripts/import-films-d1.py for live prices.",
+      },
+      200,
+      { "Cache-Control": "public, max-age=60" }
+    );
+  }
+
+  if (d1Total === 0 && assets && request && where.length) {
+    const founder = await getFounderPricing(db);
+    const staticCatalog = await loadStaticFilms(assets, request);
+    let list = staticCatalog.films.slice();
+    if (finish && finish !== "all") {
+      list = list.filter((f) => f.finish.toLowerCase() === finish.toLowerCase());
+    }
+    if (productType && productType !== "all") {
+      list = list.filter(
+        (f) => f.product_type.toLowerCase() === productType.toLowerCase()
+      );
+    }
+    if (collection && collection !== "all") {
+      list = list.filter(
+        (f) => f.collection.toLowerCase() === collection.toLowerCase()
+      );
+    }
+    if (brand && brand !== "all") {
+      list = list.filter((f) => f.brand.toLowerCase() === brand.toLowerCase());
+    }
+    if (colorFamily && colorFamily !== "all") {
+      list = list.filter(
+        (f) => f.color_family.toLowerCase() === colorFamily.toLowerCase()
+      );
+    }
+    if (stock === "in") list = list.filter((f) => f.in_stock);
+    if (stock === "out") list = list.filter((f) => !f.in_stock);
+    if (q) {
+      list = list.filter((f) =>
+        [f.name, f.brand, f.finish, f.sku, f.handle, f.color_family, f.product_type]
+          .join(" ")
+          .toLowerCase()
+          .includes(q)
+      );
+    }
+    list.sort(
+      (a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase()) ||
+        a.handle.localeCompare(b.handle)
+    );
+    const slice = list.slice(offset, offset + limit);
+    return json(
+      {
+        source: "static",
+        total: list.length,
+        count: slice.length,
+        limit,
+        offset,
+        finishes: staticCatalog.finishes,
+        productTypes: Array.from(
+          new Set(staticCatalog.films.map((f) => f.product_type).filter(Boolean))
+        ).sort((a, b) => a.localeCompare(b)),
+        brands: staticCatalog.brands,
+        colorFamilies: staticCatalog.colorFamilies,
+        collections: Array.from(
+          new Set(staticCatalog.films.map((f) => f.collection).filter(Boolean))
+        ).sort((a, b) => a.localeCompare(b)),
+        ...founder,
+        films: slice,
+        note: "Serving bundled Metro catalogue — import into D1 with scripts/import-films-d1.py for live prices.",
+      },
+      200,
+      { "Cache-Control": "public, max-age=60" }
+    );
+  }
+
   const rows = await db
     .prepare(
       `SELECT * FROM films ${whereSql} ORDER BY LOWER(name) ASC, handle ASC LIMIT ? OFFSET ?`
@@ -296,7 +401,7 @@ export async function listFilms(db: D1Database, url: URL): Promise<Response> {
   return json(
     {
       source: "d1",
-      total: countRow?.n ?? films.length,
+      total: d1Total,
       count: films.length,
       limit,
       offset,
@@ -313,26 +418,49 @@ export async function listFilms(db: D1Database, url: URL): Promise<Response> {
   );
 }
 
-export async function getFilm(db: D1Database, handle: string): Promise<Response> {
+export async function getFilm(
+  db: D1Database,
+  handle: string,
+  assets?: AssetsFetcher,
+  request?: Request
+): Promise<Response> {
   const row = await db
     .prepare(`SELECT * FROM films WHERE handle = ?`)
     .bind(handle)
     .first<FilmDbRow>();
 
-  if (!row) {
-    return json({ error: "Film not found.", handle }, 404);
+  if (row) {
+    const founder = await getFounderPricing(db);
+    return json(
+      {
+        source: "d1",
+        ...founder,
+        film: mapFilm(row, founder.founderPricingActive),
+      },
+      200,
+      { "Cache-Control": "public, max-age=60" }
+    );
   }
 
-  const founder = await getFounderPricing(db);
-  return json(
-    {
-      source: "d1",
-      ...founder,
-      film: mapFilm(row, founder.founderPricingActive),
-    },
-    200,
-    { "Cache-Control": "public, max-age=60" }
-  );
+  if (assets && request) {
+    const staticCatalog = await loadStaticFilms(assets, request);
+    const film = findStaticFilm(staticCatalog.films, handle);
+    if (film) {
+      const founder = await getFounderPricing(db);
+      return json(
+        {
+          source: "static",
+          ...founder,
+          film,
+          note: "Serving bundled Metro catalogue — import into D1 for live prices.",
+        },
+        200,
+        { "Cache-Control": "public, max-age=60" }
+      );
+    }
+  }
+
+  return json({ error: "Film not found.", handle }, 404);
 }
 
 export async function pricingCsv(db: D1Database): Promise<Response> {

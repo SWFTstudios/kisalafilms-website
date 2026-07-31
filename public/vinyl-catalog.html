@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Vinyl catalog | Kisala Films</title>
-  <meta name="description" content="Metro-style vinyl film catalog for Kisala Films — browse by type, finish, and stock. Founder builds get roll pricing at cost for the first five completed orders.">
+  <meta name="description" content="Metro vinyl film catalog for Kisala Films — browse by type, finish, and stock, then start a motorcycle or helmet wrap project.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -140,7 +140,7 @@
       <div class="kf-page-hero-copy">
         <p class="eyebrow" data-hero-anim>Vinyl films</p>
         <h1 data-hero-anim>Vinyl catalog</h1>
-        <p class="p-lg" data-hero-anim>Browse cast vinyl, PPF, caliper, and light wrap films — then start a motorcycle or helmet project. Vinyl sells at Metro cost + 40%; labour is a set price by difficulty.</p>
+        <p class="p-lg" data-hero-anim>Browse cast vinyl, PPF, caliper, and light wrap films from the Metro catalogue — then start a motorcycle or helmet project.</p>
       </div>
     </section>
 
@@ -219,7 +219,7 @@
         <div class="kf-inventory" data-reveal>
           <p class="eyebrow">Stock list</p>
           <h2>Colour options &amp; availability</h2>
-          <p class="p-lg">Colours from the Cloudflare D1 film CMS (Metro Restyling import). Public roll price is Metro cost + 40%. Refresh catalogue with <code>python3 scripts/import-films-d1.py</code>.</p>
+          <p class="p-lg">Colours from the bundled Metro catalogue (<code>/data/vinyl-colors.json</code>). Live roll prices overlay from D1 when synced — browsing never depends on the database.</p>
           <div class="sg-table-scroll">
             <table class="sg-table">
               <thead>
@@ -300,6 +300,7 @@
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
 
+  <script src="/js/vinyl-catalog-data.js"></script>
   <script src="/js/vinyl-catalog-page.js"></script>
   <script src="/js/motion.js"></script>
 </body>
