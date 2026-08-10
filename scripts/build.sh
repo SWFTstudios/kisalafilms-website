@@ -20,6 +20,10 @@ echo "==> Shop hub, collections and product pages"
 python3 scripts/build-shop-pages.py
 
 echo
+echo "==> v3 chrome (header, drawer, footer) from index.html"
+python3 scripts/build-v3-chrome.py
+
+echo
 echo "==> Shared scripts into every page"
 python3 scripts/wire-scripts.py
 

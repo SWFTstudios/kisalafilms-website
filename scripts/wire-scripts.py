@@ -36,7 +36,13 @@ BODY_TAG = '  <script src="/js/config-apply.js"></script>\n'
 # would have gone on advertising the founding rate after a switch to standard.
 # It is wired like any other page; only the redirect stubs are skipped.
 
-STYLESHEET = '  <link rel="stylesheet" href="/css/carsy.css">\n'
+# Two stylesheets are live while the v3 migration finishes. Anchor on whichever
+# one the page links, so a kfilms.css page gets its head scripts in the same
+# place a carsy.css page does rather than falling back to just-before-</head>.
+STYLESHEETS = (
+    '  <link rel="stylesheet" href="/css/kfilms.css">\n',
+    '  <link rel="stylesheet" href="/css/carsy.css">\n',
+)
 
 
 def is_redirect_stub(html: str) -> bool:
@@ -51,8 +57,9 @@ def wire(path: Path) -> str:
     changed = False
 
     if "/js/kisala-config.js" not in html:
-        if STYLESHEET in html:
-            html = html.replace(STYLESHEET, STYLESHEET + HEAD_TAGS, 1)
+        stylesheet = next((s for s in STYLESHEETS if s in html), None)
+        if stylesheet:
+            html = html.replace(stylesheet, stylesheet + HEAD_TAGS, 1)
         elif "</head>" in html:
             html = html.replace("</head>", HEAD_TAGS + "</head>", 1)
         else:

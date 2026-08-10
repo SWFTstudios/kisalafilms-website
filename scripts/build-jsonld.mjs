@@ -259,8 +259,14 @@ for (const [rel, build] of Object.entries(PAGES)) {
   let html = stripExisting(readFileSync(path, "utf8"));
 
   const graph = build(html);
-  const anchor = '  <link rel="stylesheet" href="/css/carsy.css">';
-  if (!html.includes(anchor)) {
+  // The site runs two stylesheets while the v3 migration finishes, so anchor on
+  // whichever one the page actually links. Anchoring on carsy.css alone used to
+  // skip every kfilms.css page silently, which froze the home page's structured
+  // data at whatever it said before it was restyled.
+  const anchor = ["/css/kfilms.css", "/css/carsy.css"]
+    .map((href) => `  <link rel="stylesheet" href="${href}">`)
+    .find((tag) => html.includes(tag));
+  if (!anchor) {
     console.error(`${rel}: no stylesheet anchor, skipped`);
     continue;
   }
