@@ -253,6 +253,32 @@ window.KISALA_CONFIG = {
     { id: "unsure", label: "Not sure yet", low: null, high: null },
   ],
 
+  /* ---- Quote request form (/quote) --------------------------------------
+     The lead funnel's own settings. Limits are enforced twice — once in
+     quote.js so the rider gets told immediately, and again in src/quote.ts,
+     because a client-side cap is a courtesy, not a control. Keep the two in
+     step: the Worker is the one that decides. */
+  quote: {
+    endpoint: "/api/quote",
+    uploads: {
+      maxFiles: 8,          // per uploader
+      maxFileMb: 5,
+      /* FormSubmit rejects a submission over 10MB and the field data needs
+         room, so the combined cap sits a megabyte under it. */
+      maxTotalMb: 9,
+      accept: ["image/jpeg", "image/png", "image/webp"],
+      acceptLabel: "JPG, PNG or WEBP",
+    },
+    /* Mailing a helmet in is architecturally ready but not offered yet: it
+       needs a return-shipping policy and someone to sign for it. Flip this to
+       true once that exists and the option appears on helmet-only requests. */
+    helmetShipping: {
+      enabled: false,
+      label: "Ship / mail my helmet",
+      note: "Post the helmet to the garage and we return it when it's done.",
+    },
+  },
+
   /* ---- Garage --------------------------------------------------------- */
   garage: {
     city: "Jersey City",

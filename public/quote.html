@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get a Quote — Motorcycle &amp; Helmet Wraps | K Films</title>
+  <meta name="description" content="Tell us about your bike or helmet and get a custom wrap quote from K Films in Jersey City. No payment required, and photos welcome.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#050505">
+  <link rel="icon" href="/images/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/kfilms.css">
+  <link rel="stylesheet" href="/css/quote.css">
+  <script src="/js/kisala-config.js"></script>
+  <script src="/js/analytics.js"></script>
+</head>
+<body class="kfilms">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- CHROME:HEADER start — synced by scripts/build-v3-chrome.py, edit index.html -->
+  <!-- CHROME:HEADER end -->
+
+  <main id="main" class="kf-main-offset">
+
+    <div class="kf-container q-layout">
+
+      <div class="q-main">
+        <header class="q-intro">
+          <p class="eyebrow">Get a quote</p>
+          <h1>Tell us about your build</h1>
+          <p class="p-lg">A couple of minutes, no payment, no obligation. The more you tell us, the closer the number comes back.</p>
+        </header>
+
+        <!-- Without JavaScript this posts natively as multipart/form-data to
+             FormSubmit, which is the only way the photo attachments survive.
+             quote.js intercepts and posts the same FormData to /api/quote so the
+             rider gets validation, a loading state and a real failure state. -->
+        <form id="quote-form"
+              class="q-form"
+              method="POST"
+              enctype="multipart/form-data"
+              action="https://formsubmit.co/elombe@swftstudios.com"
+              accept-charset="UTF-8"
+              novalidate>
+
+          <input type="hidden" name="_subject" value="K Films — quote request">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/quote-thanks">
+          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
+          <input type="hidden" name="project_summary" data-summary-field value="">
+
+          <!-- Step 1 ------------------------------------------------------ -->
+          <fieldset class="q-step" id="step-item">
+            <legend>
+              <span class="q-step-num">Step 1</span>
+              What are you looking to wrap?
+            </legend>
+
+            <div class="q-choices q-choices--3" role="radiogroup" aria-labelledby="step-item-label">
+              <label class="q-choice">
+                <input type="radio" name="item_type" value="Bike" required data-item-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Bike</span>
+                  <span class="q-choice-note">The motorcycle only</span>
+                </span>
+              </label>
+              <label class="q-choice">
+                <input type="radio" name="item_type" value="Helmet" data-item-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Helmet</span>
+                  <span class="q-choice-note">The lid only</span>
+                </span>
+              </label>
+              <label class="q-choice">
+                <input type="radio" name="item_type" value="Both" data-item-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Both</span>
+                  <span class="q-choice-note">Matched bike and helmet</span>
+                </span>
+              </label>
+            </div>
+            <p class="q-error" data-error-for="item_type" hidden></p>
+          </fieldset>
+
+          <!-- Step 2 ------------------------------------------------------ -->
+          <fieldset class="q-step">
+            <legend>
+              <span class="q-step-num">Step 2</span>
+              What service do you need?
+            </legend>
+            <p class="q-legend-note">Pick as many as apply. Not sure is a valid answer.</p>
+
+            <div class="q-choices q-choices--2">
+              <label class="q-choice q-choice--compact">
+                <input type="checkbox" name="services" value="Vinyl wrap" data-service-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Vinyl wrap</span>
+                  <span class="q-choice-note">Cast film over the bodywork</span>
+                </span>
+              </label>
+              <label class="q-choice q-choice--compact">
+                <input type="checkbox" name="services" value="PPF" data-service-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">PPF</span>
+                  <span class="q-choice-note">Clear paint protection film</span>
+                </span>
+              </label>
+              <label class="q-choice q-choice--compact">
+                <input type="checkbox" name="services" value="Colour change" data-service-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Colour change</span>
+                  <span class="q-choice-note">A different colour, paint untouched</span>
+                </span>
+              </label>
+              <label class="q-choice q-choice--compact">
+                <input type="checkbox" name="services" value="Custom graphics / livery" data-service-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Custom graphics / livery</span>
+                  <span class="q-choice-note">Stripes, numbers, race-style layouts</span>
+                </span>
+              </label>
+              <label class="q-choice q-choice--compact">
+                <input type="checkbox" name="services" value="Decals" data-service-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Decals</span>
+                  <span class="q-choice-note">Cut lettering, badges, chrome delete</span>
+                </span>
+              </label>
+              <label class="q-choice q-choice--compact">
+                <input type="checkbox" name="services" value="Not sure" data-service-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Not sure</span>
+                  <span class="q-choice-note">Talk me through the options</span>
+                </span>
+              </label>
+              <label class="q-choice q-choice--compact">
+                <input type="checkbox" name="services" value="Other" data-service-input data-reveals="service-other">
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Other</span>
+                  <span class="q-choice-note">Something not listed</span>
+                </span>
+              </label>
+            </div>
+
+            <div class="q-conditional" id="service-other" hidden>
+              <div class="fld">
+                <label for="service_other">What else are you after?</label>
+                <input type="text" id="service_other" name="service_other" autocomplete="off">
+              </div>
+            </div>
+
+            <p class="q-error" data-error-for="services" hidden></p>
+          </fieldset>
+
+          <!-- Step 3 ------------------------------------------------------ -->
+          <fieldset class="q-step q-conditional" id="step-bike" hidden>
+            <legend>
+              <span class="q-step-num">Step 3</span>
+              What are you riding?
+            </legend>
+            <p class="q-legend-note">Type it in — no dropdown gymnastics. If you&rsquo;re not certain of the year, get close.</p>
+
+            <div class="q-grid">
+              <div class="fld">
+                <label for="bike_make">Make</label>
+                <input type="text" id="bike_make" name="bike_make" autocomplete="off" placeholder="Honda" data-required-when="bike">
+                <p class="q-error" data-error-for="bike_make" hidden></p>
+              </div>
+              <div class="fld">
+                <label for="bike_model">Model</label>
+                <input type="text" id="bike_model" name="bike_model" autocomplete="off" placeholder="CBR600F4i" data-required-when="bike">
+                <p class="q-error" data-error-for="bike_model" hidden></p>
+              </div>
+              <div class="fld">
+                <label for="bike_year">Year</label>
+                <input type="text" id="bike_year" name="bike_year" inputmode="numeric" autocomplete="off" placeholder="2004" maxlength="4">
+                <p class="q-error" data-error-for="bike_year" hidden></p>
+              </div>
+              <div class="fld">
+                <label for="bike_style">Motorcycle type</label>
+                <select id="bike_style" name="bike_style">
+                  <option value="">Select one</option>
+                  <option>Sport bike</option>
+                  <option>Naked</option>
+                  <option>Cruiser</option>
+                  <option>Touring</option>
+                  <option>Adventure</option>
+                  <option>Dirt bike</option>
+                  <option>Supermoto</option>
+                  <option>Scooter</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="q-step q-conditional" id="step-helmet" hidden>
+            <legend>
+              <span class="q-step-num" data-helmet-step-num>Step 3</span>
+              What helmet is it?
+            </legend>
+
+            <div class="q-grid">
+              <div class="fld">
+                <label for="helmet_brand">Helmet brand</label>
+                <input type="text" id="helmet_brand" name="helmet_brand" autocomplete="off" placeholder="Shoei" data-required-when="helmet">
+                <p class="q-error" data-error-for="helmet_brand" hidden></p>
+              </div>
+              <div class="fld">
+                <label for="helmet_model">Helmet model</label>
+                <input type="text" id="helmet_model" name="helmet_model" autocomplete="off" placeholder="RF-1400" data-required-when="helmet">
+                <p class="q-error" data-error-for="helmet_model" hidden></p>
+              </div>
+              <div class="fld">
+                <label for="helmet_size">Size</label>
+                <input type="text" id="helmet_size" name="helmet_size" autocomplete="off" placeholder="Large">
+              </div>
+              <div class="fld">
+                <label for="helmet_style">Helmet type</label>
+                <select id="helmet_style" name="helmet_style">
+                  <option value="">Select one</option>
+                  <option>Full face</option>
+                  <option>Modular</option>
+                  <option>Open face</option>
+                  <option>Motocross</option>
+                  <option>Adventure</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Step 4 ------------------------------------------------------ -->
+          <fieldset class="q-step">
+            <legend>
+              <span class="q-step-num" data-step-num="4">Step 4</span>
+              Tell us about your project
+            </legend>
+
+            <div class="fld">
+              <label for="description">Your idea</label>
+              <p class="fld-hint" id="description-hint">Colours, finish, graphics, specific panels, inspiration, or anything else we should know.</p>
+              <textarea id="description" name="description" aria-describedby="description-hint" data-required></textarea>
+              <p class="q-error" data-error-for="description" hidden></p>
+            </div>
+
+            <div class="q-grid q-grid--2" style="margin-top:24px">
+              <div class="fld">
+                <label for="finish">Desired finish</label>
+                <select id="finish" name="finish" data-summary-source="finish">
+                  <option value="">Not sure yet</option>
+                  <option>Gloss</option>
+                  <option>Satin</option>
+                  <option>Matte</option>
+                  <option>Metallic</option>
+                  <option>Chrome</option>
+                  <option>Carbon / textured</option>
+                  <option>Colour shift</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label for="desired_colour">Colour you have in mind <span class="q-optional">optional</span></label>
+                <input type="text" id="desired_colour" name="desired_colour" autocomplete="off" placeholder="Deep red, matte black…">
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Step 5 ------------------------------------------------------ -->
+          <fieldset class="q-step">
+            <legend>
+              <span class="q-step-num" data-step-num="5">Step 5</span>
+              Upload photos
+            </legend>
+            <p class="q-legend-note">Photos of what you have now, and anything you like the look of. <span data-upload-rules>Up to 8 images each.</span></p>
+
+            <div class="q-uploads">
+              <div class="q-upload" data-uploader="current">
+                <label class="q-upload-drop" for="photos_current" data-dropzone>
+                  <span class="q-upload-title">Your bike / helmet</span>
+                  <span class="q-upload-note">Drag images here, or choose files</span>
+                  <input type="file" id="photos_current" name="photos_current" multiple
+                         accept="image/jpeg,image/png,image/webp" class="visually-hidden">
+                </label>
+                <ul class="q-thumbs" data-thumbs aria-label="Photos of your bike or helmet"></ul>
+              </div>
+
+              <div class="q-upload" data-uploader="inspiration">
+                <label class="q-upload-drop" for="photos_inspiration" data-dropzone>
+                  <span class="q-upload-title">Design inspiration</span>
+                  <span class="q-upload-note">Colours, other bikes, artwork &mdash; anything</span>
+                  <input type="file" id="photos_inspiration" name="photos_inspiration" multiple
+                         accept="image/jpeg,image/png,image/webp" class="visually-hidden">
+                </label>
+                <ul class="q-thumbs" data-thumbs aria-label="Design inspiration images"></ul>
+              </div>
+            </div>
+
+            <p class="q-error" data-error-for="uploads" hidden></p>
+          </fieldset>
+
+          <!-- Step 6 ------------------------------------------------------ -->
+          <fieldset class="q-step">
+            <legend>
+              <span class="q-step-num" data-step-num="6">Step 6</span>
+              Pickup or drop-off?
+            </legend>
+
+            <div class="q-choices q-choices--2" role="radiogroup">
+              <label class="q-choice">
+                <input type="radio" name="handoff" value="Drop-off" required data-handoff-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">I&rsquo;ll drop it off</span>
+                  <span class="q-choice-note">Bring it to the Jersey City garage by appointment. No charge.</span>
+                </span>
+              </label>
+              <label class="q-choice">
+                <input type="radio" name="handoff" value="Pickup &amp; return" data-handoff-input data-reveals="handoff-pickup">
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title">Pickup &amp; return</span>
+                  <span class="q-choice-note">We collect it and bring it back when it&rsquo;s finished.</span>
+                </span>
+              </label>
+              <label class="q-choice" data-helmet-shipping hidden>
+                <input type="radio" name="handoff" value="Ship / mail helmet" data-handoff-input>
+                <span class="q-choice-body">
+                  <span class="q-choice-check" aria-hidden="true"></span>
+                  <span class="q-choice-title" data-shipping-label>Ship / mail my helmet</span>
+                  <span class="q-choice-note" data-shipping-note></span>
+                </span>
+              </label>
+            </div>
+
+            <div class="q-conditional" id="handoff-pickup" hidden>
+              <div class="q-grid q-grid--2">
+                <div class="fld">
+                  <label for="pickup_zip">Pickup ZIP code</label>
+                  <input type="text" id="pickup_zip" name="pickup_zip" inputmode="numeric" autocomplete="postal-code"
+                         maxlength="5" placeholder="07302" data-required-when="pickup">
+                  <p class="q-error" data-error-for="pickup_zip" hidden></p>
+                </div>
+              </div>
+              <p class="q-note">Pickup pricing is based on location and will be included in your quote.</p>
+            </div>
+
+            <p class="q-error" data-error-for="handoff" hidden></p>
+          </fieldset>
+
+          <!-- Step 7 ------------------------------------------------------ -->
+          <fieldset class="q-step">
+            <legend>
+              <span class="q-step-num" data-step-num="7">Step 7</span>
+              How do we reach you?
+            </legend>
+
+            <div class="q-grid q-grid--2">
+              <div class="fld">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" autocomplete="name" data-required>
+                <p class="q-error" data-error-for="name" hidden></p>
+              </div>
+              <div class="fld">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email" inputmode="email" data-required>
+                <p class="q-error" data-error-for="email" hidden></p>
+              </div>
+              <div class="fld">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel">
+                <p class="q-error" data-error-for="phone" hidden></p>
+              </div>
+              <div class="fld">
+                <label for="instagram">Instagram handle <span class="q-optional">optional</span></label>
+                <input type="text" id="instagram" name="instagram" autocomplete="off" placeholder="@yourhandle">
+              </div>
+            </div>
+
+            <fieldset class="q-subfield">
+              <legend class="fld-label">Preferred contact</legend>
+              <div class="q-pills">
+                <label class="q-pill">
+                  <input type="radio" name="preferred_contact" value="Text" checked>
+                  <span>Text</span>
+                </label>
+                <label class="q-pill">
+                  <input type="radio" name="preferred_contact" value="Call">
+                  <span>Call</span>
+                </label>
+                <label class="q-pill">
+                  <input type="radio" name="preferred_contact" value="Email">
+                  <span>Email</span>
+                </label>
+              </div>
+              <p class="q-error" data-error-for="preferred_contact" hidden></p>
+            </fieldset>
+          </fieldset>
+
+          <div class="q-submit">
+            <p class="q-form-error" data-form-error hidden role="alert"></p>
+            <button class="btn btn-primary q-submit-btn" type="submit" data-submit>
+              <span data-submit-label>Request my quote</span>
+              <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+            <p class="q-submit-note">No payment required. We&rsquo;ll review your project and contact you with pricing and next steps.</p>
+          </div>
+
+          <p class="q-live visually-hidden" role="status" aria-live="polite" data-live></p>
+        </form>
+
+        <!-- Replaces the form in place once the Worker has accepted the lead. -->
+        <section class="q-success" data-success hidden tabindex="-1" aria-labelledby="q-success-title">
+          <p class="eyebrow">Thank you</p>
+          <h2 id="q-success-title">Request received.</h2>
+          <p class="p-lg">We&rsquo;ll review your project and get back to you shortly.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="/">Back home</a>
+            <a class="btn btn-ghost" href="/gallery">View gallery</a>
+            <a class="btn btn-ghost" href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sticky on desktop, an inline recap above the submit button on phones. -->
+      <aside class="q-summary" data-summary aria-label="Your project so far">
+        <h2 class="q-summary-title">Your project</h2>
+        <dl class="q-summary-list">
+          <div class="q-summary-row" data-summary-row="item" hidden>
+            <dt>Item</dt><dd data-summary-out="item"></dd>
+          </div>
+          <div class="q-summary-row" data-summary-row="services" hidden>
+            <dt>Service</dt><dd data-summary-out="services"></dd>
+          </div>
+          <div class="q-summary-row" data-summary-row="bike" hidden>
+            <dt>Bike</dt><dd data-summary-out="bike"></dd>
+          </div>
+          <div class="q-summary-row" data-summary-row="helmet" hidden>
+            <dt>Helmet</dt><dd data-summary-out="helmet"></dd>
+          </div>
+          <div class="q-summary-row" data-summary-row="finish" hidden>
+            <dt>Finish</dt><dd data-summary-out="finish"></dd>
+          </div>
+          <div class="q-summary-row" data-summary-row="photos" hidden>
+            <dt>Photos</dt><dd data-summary-out="photos"></dd>
+          </div>
+          <div class="q-summary-row" data-summary-row="handoff" hidden>
+            <dt>Handoff</dt><dd data-summary-out="handoff"></dd>
+          </div>
+        </dl>
+        <p class="q-summary-empty" data-summary-empty>Your answers appear here as you go.</p>
+        <p class="q-summary-note">No pricing yet &mdash; every wrap is quoted on the actual bike.</p>
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- CHROME:FOOTER start — synced by scripts/build-v3-chrome.py, edit index.html -->
+  <!-- CHROME:FOOTER end -->
+
+  <script src="/js/config-apply.js"></script>
+  <script src="/js/nav.js"></script>
+  <script src="/js/site.js"></script>
+  <script src="/js/quote.js"></script>
+</body>
+</html>
