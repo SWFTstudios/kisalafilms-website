@@ -23,6 +23,7 @@ import {
   type ProjectCoverage,
   type ProjectSurface,
 } from "./project-quote";
+import { recordQuoteRequest } from "./quote";
 
 type Env = {
   ASSETS: {
@@ -689,6 +690,17 @@ export default {
         return json({ error: "POST only." }, 405);
       }
       return createDepositCheckout(request, env);
+    }
+
+    // Records a /quote lead. Deliberately not the delivery path — see quote.ts.
+    if (url.pathname === "/api/quote") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsApi(request) });
+      }
+      if (request.method !== "POST") {
+        return json({ error: "POST only." }, 405);
+      }
+      return withCors(await recordQuoteRequest(request, env), request);
     }
 
     if (url.pathname === "/api/quote/project") {

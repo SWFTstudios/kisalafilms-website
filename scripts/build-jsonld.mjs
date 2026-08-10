@@ -195,6 +195,14 @@ const PAGES = {
   ],
 
   "gallery.html": () => [breadcrumbs([["Home", "/"], ["Gallery", "/gallery.html"]])],
+  "quote.html": () => [
+    garage(),
+    breadcrumbs([["Home", "/"], ["Get a quote", "/quote.html"]]),
+  ],
+  "process.html": () => [
+    garage(),
+    breadcrumbs([["Home", "/"], ["Process", "/process.html"]]),
+  ],
   "about.html": () => [
     garage(),
     breadcrumbs([["Home", "/"], ["About", "/about.html"]]),

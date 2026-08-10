@@ -31,6 +31,7 @@ NOINDEX = {
   "thanks.html",
   "deposit-thanks.html",
   "project-thanks.html",
+  "quote-thanks.html",
   "styleguide.html",
   "404.html",
   "wrap-quote/index.html",
@@ -40,6 +41,8 @@ NOINDEX = {
 # Priority by role rather than a flat list: the conversion path first.
 PRIORITY = {
     "index.html": "1.0",
+    "quote.html": "0.9",
+    "process.html": "0.7",
     "wrap-studio.html": "0.9",
     "project.html": "0.9",
     "vinyl-catalog.html": "0.9",

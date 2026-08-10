@@ -789,10 +789,13 @@ function fire(win, el, type) {
 {
   const { readdirSync, statSync } = await import("node:fs");
 
+  // Mirrors NOINDEX in scripts/build-seo.py — the generator writes the tags,
+  // this asserts it did. Add a post-conversion page to both or neither.
   const NOINDEX = new Set([
     "thanks.html",
     "deposit-thanks.html",
     "project-thanks.html",
+    "quote-thanks.html",
     "styleguide.html",
     "404.html",
     "wrap-quote/index.html",
