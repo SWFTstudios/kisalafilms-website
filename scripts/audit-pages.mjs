@@ -97,13 +97,30 @@ function measure(width, tap) {
   const doc = document.documentElement;
   if (doc.scrollWidth > width + 1) {
     out.overflow = doc.scrollWidth;
+    /**
+     * Naming the culprit is the whole value of this line, and it used to name
+     * the wrong thing twice over. It listed anything past the edge in document
+     * order, so the closed nav drawer — parked off-screen at translateX(100%),
+     * near the top of every page — filled all six slots. And the drawer cannot
+     * be the cause: it is position:fixed, so it is outside the document's scroll
+     * extent and contributes nothing to scrollWidth.
+     *
+     * So skip fixed subtrees, and report whatever overflows its own container
+     * rather than whatever sits past the viewport edge — the element that
+     * cannot fit where it was put is the one to go and look at.
+     */
+    const fixed = (el) => {
+      for (let n = el; n && n !== document.body; n = n.parentElement) {
+        if (getComputedStyle(n).position === "fixed") return true;
+      }
+      return false;
+    };
     out.spilling = [...document.querySelectorAll("body *")]
-      .filter((el) => {
-        const r = el.getBoundingClientRect();
-        return r.width > 0 && (r.right > width + 1 || r.left < -1);
-      })
+      .filter((el) => el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1 && !fixed(el))
+      .map((el) => ({ el, over: el.scrollWidth - el.clientWidth }))
+      .sort((a, b) => b.over - a.over)
       .slice(0, 6)
-      .map((el) => `${name(el)} right=${Math.round(el.getBoundingClientRect().right)}`);
+      .map(({ el, over }) => `${name(el)} +${over}px over its ${el.clientWidth}px box`);
   }
 
   const controls = [
