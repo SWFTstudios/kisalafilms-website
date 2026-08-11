@@ -188,6 +188,17 @@
       if (sessionId) q.set("session_id", sessionId);
       if (orderId) q.set("order_id", orderId);
 
+      // Nothing to look up means nothing to ask for. Without this the page
+      // still fired the request on a bare visit, and the endpoint has no
+      // choice but to reject it — a round trip whose only outcome was a
+      // console error, on top of the fallback copy we were going to show
+      // anyway.
+      if (!sessionId && !orderId) {
+        if (lede) lede.textContent = "Payment received — Elombe will email you to book the slot.";
+        if (board) board.innerHTML = '<p class="meta">Order reference: —</p>';
+        return;
+      }
+
       fetch("/api/checkout/session?" + q.toString())
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
