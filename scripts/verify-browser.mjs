@@ -367,11 +367,13 @@ try {
         "no vinyl-cards--list class"
       ));
 
-    // Save two films from the grid.
-    const saveButtons = await page.$$("[data-browse-grid] [data-save]");
+    // Add two films to the build from the grid. Adding is what saves now — the
+    // catalogue dropped its separate save button, and the tray's × is the only
+    // [data-save] left.
+    const saveButtons = await page.$$("[data-browse-grid] [data-add-build]");
     await saveButtons[0].evaluate((el) => el.click());
     await saveButtons[1].evaluate((el) => el.click());
-    await check("saving two films records both", async () =>
+    await check("adding two films to the build records both", async () =>
       assertEqual(
         await page.$eval("[data-saved-films-field]", (el) => Number(el.dataset.count || 0)),
         2,
