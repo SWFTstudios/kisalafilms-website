@@ -1818,8 +1818,14 @@ body.kf-typing .kf-sticky-cta {
   color: var(--kf-muted);
 }
 
-/* A button that has to read as a link because it sits inside a sentence. */
+/* A button that has to read as a link, because switching between logging in
+   and signing up is a change of mode rather than a change of page. It reads
+   like prose but it is not prose — it is the only route to an account on this
+   page, so it gets a tap target rather than a text baseline. */
 button.linkish {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--kf-tap);
   background: none;
   border: 0;
   padding: 0;
@@ -3264,7 +3270,6 @@ body.lb-lock { overflow: hidden; }
 }
 .kf-vinyl-subnav-search-label { display: block; }
 .kf-vinyl-subnav .kf-vinyl-catalog-search {
-  min-height: 42px;
   background: rgba(255, 255, 255, 0.04);
 }
 .kf-vinyl-subnav-filters {
@@ -3276,10 +3281,14 @@ body.lb-lock { overflow: hidden; }
   padding-bottom: 2px;
 }
 .kf-vinyl-subnav-filters::-webkit-scrollbar { display: none; }
+/* A scrolling row of filter chips is the one place on the site where the
+   temptation to shrink a control is strongest — every pixel of height buys
+   more of the grid below. It is also the row a rider swipes and stabs at
+   one-handed, so it holds the tap size and the grid gives up the space. */
 .kf-vinyl-filter-btn {
   flex: 0 0 auto;
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: var(--kf-tap);
+  padding: 0 14px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: transparent;
   color: var(--kf-silver, #a8a8a8);
