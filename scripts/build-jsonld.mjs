@@ -232,6 +232,7 @@ const PAGES = {
     breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Partial & accents", "/services/accent-package.html"]]),
   ],
   "services/transformation-film.html": () => [
+    offer("filmOnly", "Motorcycle build photography and film", "Photos and video of the strip-down, the install and the finished bike."),
     breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Transformation film", "/services/transformation-film.html"]]),
   ],
 };

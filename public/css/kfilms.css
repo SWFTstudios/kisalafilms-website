@@ -1642,6 +1642,30 @@ body.kf-typing .kf-sticky-cta {
   margin-bottom: 0;
 }
 
+/* The price a service page leads with. A rider deciding whether to ask for a
+   quote wants a number before they want prose, and the range is the honest
+   answer — the figure moves with the bike and with how much comes off. */
+.kf-hero-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  margin: 1.5rem 0 0;
+}
+
+.kf-hero-price-amount {
+  font-family: var(--kf-font-display);
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--kf-white);
+}
+
+.kf-hero-price-note {
+  font-size: 0.9rem;
+  color: var(--kf-silver);
+}
+
 /* ——— FAQ accordion ——— */
 /* site.js owns the open/closed state and the aria wiring. */
 .faq-list {

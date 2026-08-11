@@ -32,6 +32,40 @@
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "Service",
+        "name": "Motorcycle build photography and film",
+        "description": "Photos and video of the strip-down, the install and the finished bike.",
+        "serviceType": "Motorcycle build photography and film",
+        "provider": {
+          "@id": "https://kisalafilms-website.elombe.workers.dev/#garage"
+        },
+        "areaServed": [
+          {
+            "@type": "City",
+            "name": "Jersey City"
+          },
+          {
+            "@type": "City",
+            "name": "Brooklyn"
+          },
+          {
+            "@type": "City",
+            "name": "New York"
+          }
+        ],
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "USD",
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "priceCurrency": "USD",
+            "minPrice": 350,
+            "maxPrice": 900
+          },
+          "availability": "https://schema.org/LimitedAvailability"
+        }
+      },
+      {
         "@type": "BreadcrumbList",
         "itemListElement": [
           {
@@ -129,6 +163,10 @@
         <p class="eyebrow">Alongside the wrap</p>
         <h1>Project film</h1>
         <p class="p-lg">Photos and video of your build &mdash; the strip-down, the install and the bike finished. Shot because the work is worth documenting, not as an upsell.</p>
+        <p class="kf-hero-price">
+          <span class="kf-hero-price-amount" data-cfg="services.filmOnly.range">$350–$900</span>
+          <span class="kf-hero-price-note">Added to a wrap it starts at <span data-cfg="addons.transformationFilm">$350</span>; a photo set on its own is <span data-cfg="addons.photoSet">$200</span>.</span>
+        </p>
         <div class="btn-row">
           <a class="btn btn-primary" href="/quote" data-track="cta_click" data-track-label="film-hero">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
           <a class="btn btn-ghost" href="/gallery" data-track="cta_click" data-track-label="services-transformation-film-to-gallery">See the work</a>
