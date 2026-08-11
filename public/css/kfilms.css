@@ -85,6 +85,14 @@ body.kfilms.nav-lock {
   overflow: hidden;
 }
 
+/* Any component that sets display beats the user agent's [hidden] rule, so a
+   flex row or a grid stays on screen after JavaScript hides it. This is the one
+   place in the stylesheet !important is the right answer: hidden means hidden,
+   and the alternative is patching it per component and missing one. */
+[hidden] {
+  display: none !important;
+}
+
 img,
 video {
   max-width: 100%;
@@ -1768,6 +1776,99 @@ body.kf-typing .kf-sticky-cta {
   display: block;
 }
 
+/* Errors and status lines that JavaScript writes into. Kept apart from
+   .form-note because that one is display:none until a class arrives, which
+   would swallow a message whose only signal is the hidden attribute coming
+   off. */
+.form-alert {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--kf-red);
+}
+
+.form-alert--muted {
+  color: var(--kf-muted);
+}
+
+/* A button that has to read as a link because it sits inside a sentence. */
+button.linkish {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+button.linkish:hover {
+  opacity: 0.85;
+}
+
+/* ——— Saved builds ———
+   login.js and wrap-studio-garage.js both write this list, so the shape lives
+   here rather than on either page. */
+.studio-garage-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.studio-garage-empty {
+  font-size: 0.85rem;
+  color: var(--kf-muted);
+}
+
+.studio-garage-card {
+  background: var(--kf-black);
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+}
+
+.studio-garage-card.is-active {
+  border-color: var(--kf-red-border);
+}
+
+.studio-garage-card-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-height: var(--kf-tap);
+  padding: 12px 14px;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.studio-garage-card-btn strong {
+  font-family: var(--kf-font-display);
+  font-size: 0.88rem;
+  letter-spacing: var(--kf-track-tight);
+  text-transform: uppercase;
+}
+
+.studio-garage-card-btn span {
+  font-size: 0.8rem;
+  color: var(--kf-muted);
+}
+
+.studio-garage-card-bar {
+  height: 2px;
+  background: var(--kf-border);
+}
+
+.studio-garage-card-bar i {
+  display: block;
+  height: 100%;
+  background: var(--kf-red);
+}
+
 /* ——— Generic page furniture ———
    Four shapes the content pages kept reinventing: a copy/aside split, a grid of
    small facts, a bordered card, and a bordered panel to sit a form in. */
@@ -1829,6 +1930,24 @@ body.kf-typing .kf-sticky-cta {
   margin-top: 24px;
   font-size: 0.92rem;
   color: var(--kf-muted);
+}
+
+/* Used by the pages that are one short statement and a way out: 404 and the
+   three confirmation pages. */
+.kf-centered {
+  max-width: 44rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.kf-centered .eyebrow,
+.kf-centered .btn-row {
+  justify-content: center;
+}
+
+.kf-centered .p-lg,
+.kf-centered .p {
+  margin-inline: auto;
 }
 
 .kf-list {
@@ -2566,7 +2685,6 @@ body.kf-typing .kf-sticky-cta {
   .masonry-item { margin: 0; }
 }
 
-.masonry-item[hidden] { display: none !important; }
 
 .tile {
   display: block;
@@ -2677,7 +2795,6 @@ body.kf-typing .kf-sticky-cta {
   background: rgba(0, 0, 0, 0.94);
 }
 
-.lightbox[hidden] { display: none; }
 body.lb-lock { overflow: hidden; }
 
 .lb-stage {
@@ -3491,7 +3608,6 @@ html.kf-vinyl-filter-open {
   min-height: 420px;
   animation: kfMissionIn 0.45s ease both;
 }
-.kf-mission-panel[hidden] { display: none !important; }
 .kf-mission-panel.is-active { animation: kfMissionIn 0.4s ease both; }
 @keyframes kfMissionIn {
   from { opacity: 0; transform: translateY(12px); }

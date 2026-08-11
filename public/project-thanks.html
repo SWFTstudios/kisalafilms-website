@@ -7,8 +7,8 @@
   <meta name="description" content="Your vinyl wrap project is paid. Elombe will confirm the appointment and order film.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <meta name="theme-color" content="#000000">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#050505">
   <link rel="icon" href="/images/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
@@ -25,11 +25,13 @@
   <meta name="twitter:title" content="Project ordered — Kisala Films">
   <meta name="twitter:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
   <meta name="twitter:description" content="Your vinyl wrap project is paid. Elombe will confirm the appointment and order film.">
-  <link rel="stylesheet" href="/css/carsy.css">
+  <link rel="stylesheet" href="/css/kfilms.css">
   <script src="/js/kisala-config.js"></script>
   <script src="/js/analytics.js"></script>
 </head>
-<body class="carsy">
+<body class="kfilms">
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container header-bar">
@@ -48,19 +50,25 @@
   </header>
 
   <main>
-    <section class="page-hero">
-      <div class="container">
-        <p class="eyebrow">Mission complete</p>
+
+  <section class="page-hero">
+    <div class="kf-container">
+      <div class="kf-centered">
+        <p class="eyebrow">Order placed</p>
         <h1>Project ordered</h1>
-        <p class="p-lg" data-thanks-lede>Confirming your payment…</p>
-        <div class="kf-quote-board" data-thanks-order style="max-width:520px;margin-top:24px"></div>
-        <div class="btn-row" style="margin-top:28px">
+        <p class="p-lg" data-thanks-lede>Confirming your payment&hellip;</p>
+      </div>
+      <div class="kf-quote-board kf-centered" data-thanks-order></div>
+      <div class="kf-centered">
+        <div class="btn-row">
           <a class="btn btn-primary" href="/vinyl-catalog" data-track="cta_click" data-track-label="project-thanks-to-vinyl-catalog">Back to catalog</a>
           <a class="btn btn-ghost" href="/contact" data-track="cta_click" data-track-label="project-thanks-to-contact">Contact the garage</a>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
+
+</main>
 
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
