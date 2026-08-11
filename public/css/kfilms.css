@@ -306,6 +306,7 @@ h1, h2, h3, h4, h5, h6,
 .link-arrow {
   display: inline-flex;
   align-items: center;
+  min-height: var(--kf-tap);
   gap: 10px;
   font-family: var(--kf-font-display);
   font-size: 0.75rem;
@@ -379,6 +380,11 @@ h1, h2, h3, h4, h5, h6,
 
 .nav-cluster a,
 .nav-dd-btn {
+  display: inline-flex;
+  align-items: center;
+  /* The bar is only 72–88px tall, so a nav item cannot have the full 44px of
+     padding around it. Filling the bar's height is the honest maximum. */
+  min-height: var(--kf-tap);
   font-family: var(--kf-font-display);
   font-size: 0.95rem;
   font-weight: 600;
@@ -430,6 +436,9 @@ h1, h2, h3, h4, h5, h6,
   display: flex;
   justify-content: center;
   align-items: center;
+  /* The mark is only ~28px tall, but it is the way back to the home page and
+     wants a thumb-sized target around it. */
+  min-height: var(--kf-tap);
 }
 
 .logo img {
@@ -1482,11 +1491,16 @@ body.kf-typing .kf-sticky-cta {
 .footer-links {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   margin-top: 14px;
 }
 
+/* A column of 24px links is a column of missed taps on a phone. Each row gets
+   a full tap target instead, and the gap goes with it so the spacing does not
+   double up. */
 .footer-links a {
+  display: flex;
+  align-items: center;
+  min-height: var(--kf-tap);
   font-size: 0.9rem;
   color: var(--kf-muted);
   transition: color var(--kf-duration) var(--kf-ease);
@@ -1514,9 +1528,16 @@ body.kf-typing .kf-sticky-cta {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  align-items: center;
   justify-content: space-between;
   font-size: 0.8rem;
   color: var(--kf-muted);
+}
+
+.footer-bottom a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--kf-tap);
 }
 
 .footer-bottom a:hover {
