@@ -619,7 +619,7 @@
       .map((p) => (guide && guide.parts[p] ? guide.parts[p].label : p))
       .join(", ");
     return [
-      "Kisala Films wrap inquiry",
+      "K Films wrap inquiry",
       "",
       `Name: ${val("name")}`,
       `Phone: ${val("phone")}`,
@@ -640,7 +640,7 @@
 
   function buildMailtoHref() {
     const subjectEl = FORM.querySelector('input[name="_subject"]');
-    const subject = encodeURIComponent((subjectEl && subjectEl.value) || "Kisala Films - wrap inquiry");
+    const subject = encodeURIComponent((subjectEl && subjectEl.value) || "K Films - wrap inquiry");
     const body = encodeURIComponent(buildSummaryText());
     return `mailto:${TO_EMAIL}?subject=${subject}&body=${body}`;
   }

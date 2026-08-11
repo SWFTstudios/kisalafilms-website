@@ -26,7 +26,7 @@
         </div>
       </div>
     `;
-    document.title = "Colour not found | Kisala Films";
+    document.title = "Colour not found | K Films";
   };
 
   if (!handle) {
@@ -58,12 +58,12 @@
           ? `$${Number(sell).toLocaleString("en-US", { maximumFractionDigits: 0 })}`
           : "";
 
-      document.title = `${name} | Kisala Films`;
+      document.title = `${name} | K Films`;
       const descEl = document.querySelector('meta[name="description"]');
       if (descEl) {
         descEl.setAttribute(
           "content",
-          `${name} — ${[brand, finish].filter(Boolean).join(" · ")}. Vinyl catalog · Kisala Films.`
+          `${name} — ${[brand, finish].filter(Boolean).join(" · ")}. Vinyl catalog · K Films.`
         );
       }
 

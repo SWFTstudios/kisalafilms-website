@@ -32,7 +32,7 @@ CITIES = [
     {
         "slug": "jersey-city",
         "zone": "jersey-city",
-        "title": "Motorcycle Wraps in Jersey City, NJ — Kisala Films",
+        "title": "Motorcycle Wraps in Jersey City, NJ — K Films",
         "description": (
             "Motorcycle wrap film in Jersey City, NJ. Cast vinyl colour changes, chrome "
             "delete and tank protection from a one-person garage. Ride in by appointment "
@@ -43,7 +43,7 @@ CITIES = [
         "intro": (
             "This is the garage. Not a franchise counter with a queue behind it &mdash; one "
             "bench, one installer, and your bike on it for two or three days. Every wrap "
-            "Kisala Films does is cut and installed here in Jersey City, whether the bike "
+            "K Films does is cut and installed here in Jersey City, whether the bike "
             "started in Bergen-Lafayette or came over from Bushwick in the van."
         ),
         "local": [
@@ -97,7 +97,7 @@ CITIES = [
     {
         "slug": "brooklyn",
         "zone": "brooklyn",
-        "title": "Motorcycle Wraps for Brooklyn Riders — Kisala Films",
+        "title": "Motorcycle Wraps for Brooklyn Riders — K Films",
         "description": (
             "Motorcycle wrap film for Brooklyn riders. Bike collected from Brooklyn from $75, "
             "wrapped in cast vinyl at the Jersey City garage, and delivered back. Colour "
@@ -106,7 +106,7 @@ CITIES = [
         "eyebrow": "Brooklyn, NY",
         "h1": "Motorcycle wraps for Brooklyn riders",
         "intro": (
-            "Straight answer first: there is no Kisala Films shop in Brooklyn. There is one "
+            "Straight answer first: there is no K Films shop in Brooklyn. There is one "
             "garage, and it&rsquo;s in Jersey City. What Brooklyn gets is the van &mdash; I "
             "collect the bike from your kerb, wrap it on the bench in Jersey City, and bring "
             "it back. I&rsquo;d rather tell you that than dress up a pickup radius as a second "
@@ -171,7 +171,7 @@ CITIES = [
     {
         "slug": "new-york-city",
         "zone": "nyc",
-        "title": "Motorcycle Wraps for New York City Riders — Kisala Films",
+        "title": "Motorcycle Wraps for New York City Riders — K Films",
         "description": (
             "Motorcycle wrap film for NYC riders. Bike collected from Manhattan, Queens, the "
             "Bronx or Staten Island from $75, wrapped in cast vinyl at the Jersey City garage, "
@@ -190,7 +190,7 @@ CITIES = [
             (
                 "One garage, and it isn't in the city",
                 "Manhattan, Queens, the Bronx, Staten Island &mdash; pickup starts at {pickup}, "
-                "or {roundtrip} with return delivery. There is no Kisala Films bay in the five "
+                "or {roundtrip} with return delivery. There is no K Films bay in the five "
                 "boroughs and I&rsquo;m not going to imply there is. The bench is in Jersey City "
                 "and that&rsquo;s where your bike gets wrapped.",
             ),
@@ -346,7 +346,7 @@ def jsonld(city: dict) -> str:
       {{
         "@type": "AutoBodyShop",
         "@id": "{SITE}/#garage",
-        "name": "Kisala Films",
+        "name": "K Films",
         "description": "Motorcycle wrap film and transformation film, by appointment, from a one-person garage in Jersey City, NJ.",
         "url": "{SITE}/",
         "email": "elombe@swftstudios.com",

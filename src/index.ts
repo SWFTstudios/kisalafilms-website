@@ -284,7 +284,7 @@ async function createDepositCheckout(
   params.set("metadata[deposit_amount]", String(quote.amount));
   params.set(
     "payment_intent_data[description]",
-    `Kisala Films — ${quote.label}`
+    `K Films — ${quote.label}`
   );
   params.set(
     "payment_intent_data[metadata][package]",
@@ -443,7 +443,7 @@ async function createProjectCheckout(
   params.set("metadata[film_handle]", film.handle);
   params.set("metadata[film_count]", String(films.length));
   params.set("metadata[total_usd]", String(quote.totalUsd));
-  params.set("payment_intent_data[description]", `Kisala Films — ${productName}`);
+  params.set("payment_intent_data[description]", `K Films — ${productName}`);
   params.set("payment_intent_data[metadata][order_id]", id);
 
   const stripeRes = await fetch("https://api.stripe.com/v1/checkout/sessions", {

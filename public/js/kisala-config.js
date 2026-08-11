@@ -1,5 +1,5 @@
 /**
- * Kisala Films — the one file to edit.
+ * K Films — the one file to edit.
  *
  * Every price, pickup fee, service zone and availability flag on the site comes
  * from here. Loaded synchronously in <head> ahead of every other script, so the

@@ -57,7 +57,7 @@ const GARAGE_ID = `${SITE}/#garage`;
 const garage = () => ({
   "@type": "AutoBodyShop",
   "@id": GARAGE_ID,
-  name: "Kisala Films",
+  name: "K Films",
   description:
     "Motorcycle wrap film and transformation film, by appointment, from a one-person garage in Jersey City, NJ.",
   url: `${SITE}/`,
@@ -169,7 +169,7 @@ const PAGES = {
       "@type": "WebSite",
       "@id": `${SITE}/#website`,
       url: `${SITE}/`,
-      name: "Kisala Films",
+      name: "K Films",
       publisher: { "@id": GARAGE_ID },
     },
   ],

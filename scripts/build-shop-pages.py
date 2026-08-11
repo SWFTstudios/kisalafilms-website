@@ -658,8 +658,8 @@ def main() -> None:
 
     # Hub
     hub = page_shell(
-        title="Shop — Photoshoot, Wrap & Merch | Kisala Films",
-        description="Shop Kisala Films: photoshoot packages, vinyl wrap finishes, and the K Merch drop.",
+        title="Shop — Photoshoot, Wrap & Merch | K Films",
+        description="Shop K Films: photoshoot packages, vinyl wrap finishes, and the K Merch drop.",
         head=head_t,
         body=hub_body(catalog),
         crumbs=[("Home", "/"), ("Shop", "/shop")],
@@ -674,8 +674,8 @@ def main() -> None:
             write(
                 path,
                 page_shell(
-                    title="Photoshoot — Shop | Kisala Films",
-                    description="Transformation film, photo sets, and film-only packages from the Kisala Films garage.",
+                    title="Photoshoot — Shop | K Films",
+                    description="Transformation film, photo sets, and film-only packages from the K Films garage.",
                     head=head_t,
                     body=photoshoot_collection_body(catalog["photoshoot"]),
                     crumbs=[("Home", "/"), ("Shop", "/shop"), ("Photoshoot", "/shop/photoshoot")],
@@ -692,7 +692,7 @@ def main() -> None:
                 write(
                     path,
                     page_shell(
-                        title=f"{p['title']} — Photoshoot | Kisala Films",
+                        title=f"{p['title']} — Photoshoot | K Films",
                         description=p["blurb"],
                         head=head_t,
                         body=photoshoot_product_body(p),
@@ -715,7 +715,7 @@ def main() -> None:
             write(
                 path,
                 page_shell(
-                    title="Vinyl Wrap Finishes — Shop | Kisala Films",
+                    title="Vinyl Wrap Finishes — Shop | K Films",
                     description="Cast vinyl finishes presented like a wheel line — gloss, satin, matte, metallic, colour shift, chrome and textured.",
                     head=head_t,
                     body=wrap_collection_body(catalog["wrap"]),
@@ -733,7 +733,7 @@ def main() -> None:
                 write(
                     path,
                     page_shell(
-                        title=f"{w['title']} Vinyl Wrap — Shop | Kisala Films",
+                        title=f"{w['title']} Vinyl Wrap — Shop | K Films",
                         description=w["tagline"] + " " + w["detail"],
                         head=head_t,
                         body=wrap_product_body(w, catalog["wrap"]),
@@ -756,7 +756,7 @@ def main() -> None:
             write(
                 path,
                 page_shell(
-                    title=f"K Merch — {merch_data.get('drop', 'K Merch')} | Kisala Films",
+                    title=f"K Merch — {merch_data.get('drop', 'K Merch')} | K Films",
                     description="Clothes that express and inspire individuals of all walks of life to explore the unknown and carve out the life they seek in this world. Comfy heavyweight t-shirts and hoodies that look and feel good.",
                     head=head_t,
                     body=merch_collection_body(merch_data, products),
@@ -775,7 +775,7 @@ def main() -> None:
                 write(
                     path,
                     page_shell(
-                        title=f"{p['title']} — K Merch | Kisala Films",
+                        title=f"{p['title']} — K Merch | K Films",
                         description=f"{p['title']} in {p['color']}. {p['quote']}",
                         head=head_t,
                         body=merch_product_body(p, products),

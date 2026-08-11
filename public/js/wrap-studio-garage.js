@@ -262,7 +262,7 @@
   function compileBuildSheet(draft) {
     const f = draft.fields || {};
     const lines = [
-      "Kisala Films — your wrap build sheet",
+      "K Films — your wrap build sheet",
       "====================================",
       "",
       `Build: ${draft.label || "Untitled"}`,
@@ -303,7 +303,7 @@
       f.notes || "—",
       "",
       "Resume anytime: https://kisalafilms-website.elombe.workers.dev/wrap-studio",
-      "(Builds sync to your Kisala Films account when signed in; otherwise they stay on this device.)",
+      "(Builds sync to your K Films account when signed in; otherwise they stay on this device.)",
     ];
     return lines.join("\n");
   }

@@ -694,7 +694,7 @@ function fire(win, el, type) {
         const text = bodies.get(page);
         assert(/Jersey City/.test(text), "should still name where the work happens");
         assert(
-          /no (Kisala Films )?(shop|bay)|One garage|no second shop|isn.t in the city/i.test(text),
+          /no (K Films )?(shop|bay)|One garage|no second shop|isn.t in the city/i.test(text),
           "should state plainly that there is no shop in this city"
         );
       });
