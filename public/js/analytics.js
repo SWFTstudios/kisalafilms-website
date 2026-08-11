@@ -94,6 +94,12 @@
       track("wrap_studio_lead", { label: "wrap-studio", value: 1 });
     }
 
+    if (/^\/quote-thanks(\.html)?$/.test(path)) {
+      // Same reasoning as above: /quote posts natively, so landing here is the
+      // only proof the request and its photos actually left the browser.
+      track("quote_lead", { label: "quote", value: 1 });
+    }
+
     const local = document.querySelector("[data-local-zone]");
     if (local) {
       track("view_local_page", { label: local.getAttribute("data-local-zone") });

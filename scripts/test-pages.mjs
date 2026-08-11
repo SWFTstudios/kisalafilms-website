@@ -46,7 +46,7 @@ function assertEqual(actual, expected, message) {
  * Load a page and run its scripts in document order. jsdom would fetch the
  * /js/* URLs over HTTP, so the tags are resolved off disk instead.
  */
-function load(page, { mutateConfig } = {}) {
+function load(page, { mutateConfig, search = "" } = {}) {
   const html = readFileSync(join(PUBLIC, page), "utf8");
 
   // Clicking a real link makes jsdom log "Not implemented: navigation"; that is
@@ -60,7 +60,7 @@ function load(page, { mutateConfig } = {}) {
   });
 
   const dom = new JSDOM(html, {
-    url: `https://kisalafilms.test/${page}`,
+    url: `https://kisalafilms.test/${page}${search}`,
     runScripts: "outside-only",
     pretendToBeVisual: true,
     virtualConsole,
@@ -374,11 +374,21 @@ function fire(win, el, type) {
     click(toggle);
     await settle();
 
+    // Pinning the catalogue size to a literal turns a supplier sync into three
+    // red tests, so the expectations come from the data the page just loaded.
+    // What is being checked is that the readout agrees with the catalogue, not
+    // that the catalogue is any particular size.
+    const total = () => win.KisalaVinyl.all().length;
+    const countReads = (n) =>
+      new RegExp(`(?:of )?${n.toLocaleString("en-US")} films|(?:of )?${n} films`).test(
+        text(win, "[data-browse-count]")
+      );
+
     check("opening the panel loads and renders the catalogue", () => {
       assert(!panel.hidden, "panel should be open");
-      assertEqual(win.KisalaVinyl.all().length, 1102, "catalogue size");
+      assert(total() > 500, `catalogue looks truncated at ${total()} films`);
       assertEqual(cards().length, 24, "first page of cards");
-      assert(/of 1,?102 films|1102 films/.test(text(win, "[data-browse-count]")), `count read "${text(win, "[data-browse-count]")}"`);
+      assert(countReads(total()), `count read "${text(win, "[data-browse-count]")}"`);
     });
 
     check("family and finish chips render from the data", () => {
@@ -388,11 +398,14 @@ function fire(win, el, type) {
       assert(swatch, "family chips should carry a colour dot");
     });
 
+    let blueCount = 0;
+
     check("a family filter narrows the list", () => {
       const chipFor = (id) => chips("[data-family-filters]").find((c) => c.getAttribute("data-chip") === id);
       click(chipFor("blue"));
-      assertEqual(win.KisalaVinyl.all().filter((c) => c.c === "blue").length, 149, "blue films in the catalogue");
-      assert(/of 149 films/.test(text(win, "[data-browse-count]")), "count should reflect the filter");
+      blueCount = win.KisalaVinyl.all().filter((c) => c.c === "blue").length;
+      assert(blueCount > 20 && blueCount < total(), `blue filed ${blueCount} of ${total()} films`);
+      assert(countReads(blueCount), `count should reflect the filter, read "${text(win, "[data-browse-count]")}"`);
 
       // Re-queried, not held from before the click: the chip row must survive a
       // filter toggle in place so keyboard focus is not thrown away.
@@ -412,13 +425,13 @@ function fire(win, el, type) {
       const satin = chips("[data-finish-filters]").find((c) => c.getAttribute("data-chip") === "Satin");
       click(satin);
       const expected = win.KisalaVinyl.all().filter((c) => c.c === "blue" && c.f === "Satin").length;
-      assert(expected > 0 && expected < 149, `combined filter returned ${expected}`);
+      assert(expected > 0 && expected < blueCount, `combined filter returned ${expected}`);
       assert(new RegExp(`of ${expected} films|^${expected} films`).test(text(win, "[data-browse-count]")), "combined count");
     });
 
     check("clearing filters restores the full list", () => {
       click(root.querySelector("[data-browse-clear]"));
-      assert(/of 1,?102 films|1102 films/.test(text(win, "[data-browse-count]")), "count after clearing");
+      assert(countReads(total()), `count after clearing read "${text(win, "[data-browse-count]")}"`);
       assertEqual(chips("[data-family-filters]").filter((c) => c.classList.contains("on")).length, 0, "chips still active");
     });
 
@@ -681,7 +694,7 @@ function fire(win, el, type) {
         const text = bodies.get(page);
         assert(/Jersey City/.test(text), "should still name where the work happens");
         assert(
-          /no (Kisala Films )?(shop|bay)|One garage|no second shop|isn.t in the city/i.test(text),
+          /no (K Films )?(shop|bay)|One garage|no second shop|isn.t in the city/i.test(text),
           "should state plainly that there is no shop in this city"
         );
       });
@@ -785,14 +798,268 @@ function fire(win, el, type) {
   });
 }
 
+/* ---- Quote form --------------------------------------------------------- */
+{
+  /**
+   * Form-scoped field lookup. The page-wide `field()` helper resolves
+   * [name="description"] to the <meta> tag in the head long before it reaches
+   * the textarea, which is exactly the trap quote.js avoids by reading
+   * form.elements.
+   */
+  const qField = (win, name) =>
+    win.document.getElementById("quote-form").elements[name];
+
+  const qPick = (win, name, value) => {
+    const el = [...win.document.querySelectorAll(`input[name="${name}"]`)].find(
+      (input) => input.value === value
+    );
+    el.checked = true;
+    fire(win, el, "change");
+    return el;
+  };
+
+  /** Fill everything a valid bike request needs, so a test can break one thing. */
+  function validBikeRequest(win) {
+    const pick = (name, value) => qPick(win, name, value);
+    const type = (name, value) => {
+      const el = qField(win, name);
+      el.value = value;
+      fire(win, el, "input");
+    };
+
+    pick("item_type", "Bike");
+    pick("services", "Vinyl wrap");
+    type("bike_make", "Honda");
+    type("bike_model", "CBR600F4i");
+    type("description", "Gloss black, tank and tail at minimum.");
+    pick("handoff", "Drop-off");
+    type("name", "Sam Rider");
+    type("email", "sam@example.com");
+    type("phone", "201-555-0134");
+  }
+
+  const submitEvent = (win) => {
+    const event = new win.Event("submit", { bubbles: true, cancelable: true });
+    win.document.getElementById("quote-form").dispatchEvent(event);
+    return event;
+  };
+
+  const errorFor = (win, name) =>
+    win.document.querySelector(`[data-error-for="${name}"]`);
+
+  check("the bike step only appears once a bike is involved", () => {
+    const win = load("quote.html");
+    const bike = win.document.getElementById("step-bike");
+    const helmet = win.document.getElementById("step-helmet");
+    assert(bike.hidden && helmet.hidden, "both conditional steps should start hidden");
+
+    qPick(win, "item_type", "Bike");
+    assert(!bike.hidden, "the bike step should appear");
+    assert(helmet.hidden, "the helmet step should stay hidden for a bike-only request");
+  });
+
+  check("picking Both reveals bike and helmet", () => {
+    const win = load("quote.html");
+    qPick(win, "item_type", "Both");
+    assert(!win.document.getElementById("step-bike").hidden, "bike step");
+    assert(!win.document.getElementById("step-helmet").hidden, "helmet step");
+  });
+
+  check("the visible steps renumber so there is never a gap", () => {
+    const win = load("quote.html");
+    qPick(win, "item_type", "Helmet");
+
+    const numbers = [...win.document.querySelectorAll(".q-step")]
+      .filter((step) => !step.hidden)
+      .map((step) => step.querySelector(".q-step-num")?.textContent);
+    const expected = numbers.map((_, i) => `Step ${i + 1}`);
+    assertEqual(numbers.join(","), expected.join(","), "step numbering");
+  });
+
+  check("a deep link from /services preselects the item", () => {
+    const win = load("quote.html", { search: "?item=helmet" });
+    const helmet = win.document.querySelector('input[name="item_type"][value="Helmet"]');
+    assert(helmet.checked, "?item=helmet should tick Helmet");
+    assert(!win.document.getElementById("step-helmet").hidden, "and reveal the helmet step");
+  });
+
+  check("helmet shipping stays off while the config flag is off", () => {
+    const win = load("quote.html");
+    assertEqual(
+      win.KISALA_CONFIG.quote.helmetShipping.enabled,
+      false,
+      "the shipping flag should ship disabled"
+    );
+    qPick(win, "item_type", "Helmet");
+
+    const option = win.document.querySelector("[data-helmet-shipping]");
+    assert(option.hidden, "shipping should not be offered until the policy exists");
+    assert(option.querySelector("input").disabled, "and its input should be disabled");
+  });
+
+  check("an empty form is stopped before it can post", () => {
+    const win = load("quote.html");
+    const event = submitEvent(win);
+    assert(event.defaultPrevented, "submission should be blocked");
+    assert(!errorFor(win, "item_type").hidden, "the item error should show");
+    assert(!errorFor(win, "description").hidden, "the description error should show");
+    assert(!errorFor(win, "email").hidden, "the email error should show");
+  });
+
+  check("a bike request must say which bike", () => {
+    const win = load("quote.html");
+    validBikeRequest(win);
+    const make = qField(win, "bike_make");
+    make.value = "";
+    fire(win, make, "input");
+
+    assert(submitEvent(win).defaultPrevented, "submission should be blocked");
+    assert(!errorFor(win, "bike_make").hidden, "the make error should show");
+    assert(make.closest(".fld").classList.contains("has-error"), "the field should be marked");
+    assertEqual(make.getAttribute("aria-invalid"), "true", "aria-invalid");
+  });
+
+  check("pickup requires a ZIP, drop-off does not", () => {
+    const win = load("quote.html");
+    validBikeRequest(win);
+    qPick(win, "handoff", "Pickup & return");
+
+    assert(!win.document.getElementById("handoff-pickup").hidden, "the ZIP field should appear");
+    assert(submitEvent(win).defaultPrevented, "submission should be blocked without a ZIP");
+    assert(!errorFor(win, "pickup_zip").hidden, "the ZIP error should show");
+  });
+
+  check("choosing text or call requires a number", () => {
+    const win = load("quote.html");
+    validBikeRequest(win);
+    const phone = qField(win, "phone");
+    phone.value = "";
+    fire(win, phone, "input");
+
+    assert(submitEvent(win).defaultPrevented, "submission should be blocked");
+    assert(!errorFor(win, "phone").hidden, "the phone error should show");
+
+    // The same form is fine once email is the channel instead.
+    qPick(win, "preferred_contact", "Email");
+    assert(!submitEvent(win).defaultPrevented, "email-only contact should be allowed through");
+  });
+
+  check("fixing a field clears its error without another submit", () => {
+    const win = load("quote.html");
+    submitEvent(win);
+    const description = qField(win, "description");
+    assert(!errorFor(win, "description").hidden, "precondition: the error is showing");
+
+    description.value = "Satin black over the fairings.";
+    fire(win, description, "change");
+    assert(errorFor(win, "description").hidden, "the error should clear on change");
+    assert(
+      !description.closest(".fld").classList.contains("has-error"),
+      "the field marking should clear too"
+    );
+  });
+
+  check("a complete request is allowed to post natively", () => {
+    const win = load("quote.html");
+    validBikeRequest(win);
+    const event = submitEvent(win);
+    assert(!event.defaultPrevented, "a valid form must reach FormSubmit unimpeded");
+    assertEqual(
+      win.document.getElementById("quote-form").getAttribute("action"),
+      "https://formsubmit.co/elombe@swftstudios.com",
+      "the native action is the delivery path"
+    );
+  });
+
+  check("submitting records the lead at /api/quote without blocking", () => {
+    const win = load("quote.html");
+    const calls = [];
+    win.fetch = (url, init) => {
+      calls.push({ url, init });
+      return Promise.resolve({ ok: true, json: async () => ({ ok: true }) });
+    };
+
+    validBikeRequest(win);
+    submitEvent(win);
+
+    assertEqual(calls.length, 1, "one record call");
+    assertEqual(calls[0].url, "/api/quote", "endpoint");
+    assertEqual(calls[0].init.keepalive, true, "keepalive, or the navigation kills it");
+    const body = JSON.parse(calls[0].init.body);
+    assertEqual(body.item_type, "Bike", "item type");
+    assertEqual(body.bike_make, "Honda", "bike make");
+    assertEqual(body.email, "sam@example.com", "email");
+  });
+
+  check("a second submit cannot double-send", () => {
+    const win = load("quote.html");
+    const calls = [];
+    win.fetch = (url, init) => {
+      calls.push({ url, init });
+      return Promise.resolve({ ok: true, json: async () => ({ ok: true }) });
+    };
+
+    validBikeRequest(win);
+    submitEvent(win);
+    const second = submitEvent(win);
+
+    assert(second.defaultPrevented, "the second submit should be swallowed");
+    assertEqual(calls.length, 1, "still one record call");
+    assert(win.document.querySelector("[data-submit]").disabled, "the button should be disabled");
+  });
+
+  check("the summary tracks what has been filled in", () => {
+    const win = load("quote.html");
+    assert(!win.document.querySelector("[data-summary-empty]").hidden, "starts empty");
+
+    validBikeRequest(win);
+    assertEqual(summary(win, "item"), "Bike", "item row");
+    assertEqual(summary(win, "services"), "Vinyl wrap", "services row");
+    assertEqual(summary(win, "bike"), "Honda CBR600F4i", "bike row");
+    assert(win.document.querySelector("[data-summary-empty]").hidden, "placeholder should go");
+
+    const hidden = win.document.querySelector("[data-summary-field]");
+    assert(/item: Bike/.test(hidden.value), "the hidden summary should carry into the email");
+  });
+
+  check("the redirect lands on the host the rider is actually on", () => {
+    const win = load("quote.html");
+    assertEqual(
+      qField(win, "_next").value,
+      "https://kisalafilms.test/quote-thanks",
+      "_next should follow the current origin"
+    );
+  });
+
+  check("the no-JS path is intact", () => {
+    // Everything above tests the enhanced form. This asserts the floor beneath
+    // it: the markup alone still posts, with the attachments, to a real inbox.
+    const html = readFileSync(join(PUBLIC, "quote.html"), "utf8");
+    assert(/method="POST"/.test(html), "no method on the form");
+    assert(/enctype="multipart\/form-data"/.test(html), "attachments need multipart");
+    assert(/action="https:\/\/formsubmit\.co\//.test(html), "no native action");
+    assert(/name="_next"/.test(html), "no redirect target");
+    assert(/name="_honey"/.test(html), "no honeypot");
+  });
+
+  check("the thanks page fires the quote conversion", () => {
+    const win = load("quote-thanks.html");
+    const names = win.__events.map((e) => e.name);
+    assert(names.includes("quote_lead"), `expected quote_lead, saw ${names.join(", ") || "none"}`);
+  });
+}
+
 /* ---- Technical SEO ------------------------------------------------------ */
 {
   const { readdirSync, statSync } = await import("node:fs");
 
+  // Mirrors NOINDEX in scripts/build-seo.py — the generator writes the tags,
+  // this asserts it did. Add a post-conversion page to both or neither.
   const NOINDEX = new Set([
     "thanks.html",
     "deposit-thanks.html",
     "project-thanks.html",
+    "quote-thanks.html",
     "styleguide.html",
     "404.html",
     "wrap-quote/index.html",
@@ -879,6 +1146,28 @@ function fire(win, el, type) {
     expected.forEach((path) => assert(listed.includes(path), `sitemap is missing ${path}`));
     listed.forEach((path) => assert(expected.includes(path), `sitemap lists ${path}, which is not a page`));
     assertEqual(listed.length, expected.length, "sitemap entry count");
+  });
+
+  check("every image the pages ask for exists on disk", () => {
+    // A <source> that 404s does not fall back to the <img> beside it — the
+    // browser has already committed to that candidate, so the page renders the
+    // alt text and nothing logs. A missing webp variant is therefore invisible
+    // to every other check here.
+    const missing = [];
+    for (const [rel, html] of pages) {
+      const refs = new Set();
+      for (const [, list] of html.matchAll(/\bsrcset="([^"]+)"/g)) {
+        list.split(",").forEach((c) => refs.add(c.trim().split(/\s+/)[0]));
+      }
+      for (const [, url] of html.matchAll(/<(?:img|source|video)[^>]*\bsrc="([^"]+)"/g)) {
+        refs.add(url);
+      }
+      for (const url of refs) {
+        if (!url.startsWith("/") || url.startsWith("//")) continue;
+        if (!existsSync(join(PUBLIC, url.slice(1)))) missing.push(`${rel} → ${url}`);
+      }
+    }
+    assertEqual(missing.length, 0, `missing files: ${missing.join(", ")}`);
   });
 
   check("the sitemap is valid XML and points robots at itself", () => {

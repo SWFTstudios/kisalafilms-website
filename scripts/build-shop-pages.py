@@ -51,18 +51,58 @@ def esc(text: str) -> str:
     return html.escape(text, quote=True)
 
 
-def chrome() -> tuple[str, str, str]:
+def quote_cta(label: str, heading: str, lede: str) -> str:
+    """The closing block every v3 page ends on.
+
+    The shop sells merch and photo packages; the business sells wraps. Every
+    page down here still needs one door back to the thing that pays for the
+    garage.
+    """
+    return f"""  <section class="kf-cta">
+    <div class="kf-container kf-cta-grid">
+      <div class="reveal">
+        <h2>{heading}</h2>
+        <p class="p-lg">{lede}</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/quote" data-track="cta_click" data-track-label="{esc(label)}">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="kf-cta-notes reveal">
+        <div class="kf-cta-note">
+          <h3>Bikes and helmets</h3>
+          <p>Colour changes, graphics, PPF and helmet wraps, all from one bench.</p>
+        </div>
+        <div class="kf-cta-note">
+          <h3>Jersey City</h3>
+          <p>Ride it in, or the van collects it from Brooklyn and NYC.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+"""
+
+
+HEADER_BLOCK = (
+    "  <!-- CHROME:HEADER start — synced by scripts/build-v3-chrome.py, edit index.html -->\n"
+    "  <!-- CHROME:HEADER end -->\n"
+)
+FOOTER_BLOCK = (
+    "  <!-- CHROME:FOOTER start — synced by scripts/build-v3-chrome.py, edit index.html -->\n"
+    "  <!-- CHROME:FOOTER end -->\n"
+)
+
+
+def head_template() -> str:
+    """The <head> of shop.html, which every page below it is a sibling of."""
     raw = SOURCE.read_text(encoding="utf-8")
     head = re.search(r"<!DOCTYPE html>.*?<head>\n(.*?)</head>", raw, re.S)
-    header = re.search(r"(<header class=\"site-header\">.*?</aside>\s*)", raw, re.S)
-    footer = re.search(r"(<footer class=\"site-footer\">.*?</html>\s*)", raw, re.S)
-    if not (head and header and footer):
-        raise SystemExit("Could not read the chrome out of shop.html")
-    return head.group(1), header.group(1), footer.group(1)
+    if not head:
+        raise SystemExit("Could not read the <head> out of shop.html")
+    return head.group(1)
 
 
-def head_for(title: str, description: str, head_template: str) -> str:
-    head = head_template
+def head_for(title: str, description: str, template: str) -> str:
+    head = template
     for pattern in INHERITED:
         head = re.sub(pattern, "", head)
     # Scripts are re-inserted by page_shell so they cannot stack across rebuilds.
@@ -110,21 +150,11 @@ def page_shell(
     *,
     title: str,
     description: str,
-    head_template: str,
-    header: str,
+    head: str,
     body: str,
-    footer: str,
     crumbs: list[tuple[str, str]],
     extra_scripts: str = "",
 ) -> str:
-    # Footer block from chrome() includes scripts through </html>. Strip the
-    # trailing scripts so we can re-add a consistent set, then append extras.
-    footer_only = re.sub(
-        r"\n  <script src=.*?</html>\s*\Z",
-        "\n",
-        footer,
-        flags=re.S,
-    )
     scripts = (
         '  <script src="/js/config-apply.js"></script>\n'
         '  <script src="/js/nav.js"></script>\n'
@@ -136,15 +166,19 @@ def page_shell(
         "<!DOCTYPE html>\n"
         '<html lang="en">\n'
         "<head>\n"
-        f"{head_for(title, description, head_template)}"
+        f"{head_for(title, description, head)}"
         f"{breadcrumbs(*crumbs)}"
         '  <script src="/js/kisala-config.js"></script>\n'
         '  <script src="/js/analytics.js"></script>\n'
         "</head>\n"
-        '<body class="carsy">\n\n'
-        f"{header.rstrip()}\n\n"
-        f"{body.lstrip()}\n"
-        f"{footer_only.rstrip()}\n"
+        '<body class="kfilms">\n\n'
+        '  <a class="skip-link" href="#main">Skip to content</a>\n\n'
+        f"{HEADER_BLOCK}"
+        '\n  <main id="main">\n\n'
+        f"{body.lstrip()}"
+        "\n  </main>\n\n"
+        f"{FOOTER_BLOCK}"
+        "\n"
         f"{scripts}"
     )
 
@@ -153,15 +187,15 @@ def collection_cards(catalog: dict) -> str:
     cards = []
     for c in catalog["collections"]:
         cards.append(
-            f"""        <a class="shop-collection-card" href="/shop/{esc(c['slug'])}">
-          <div class="shop-collection-shot">
+            f"""        <a class="kf-product-card" href="/shop/{esc(c['slug'])}">
+          <div class="kf-product-media">
             <img src="{esc(c['image'])}" alt="" width="900" height="600" loading="lazy">
-            <span class="shop-collection-eyebrow">{esc(c['eyebrow'])}</span>
+            <span class="kf-tag">{esc(c['eyebrow'])}</span>
           </div>
-          <div class="shop-collection-body">
-            <h2 class="h3">{esc(c['title'])}</h2>
-            <p class="p">{esc(c['tagline'])}</p>
-            <span class="link-arrow">{esc(c['cta'])} &rarr;</span>
+          <div class="kf-product-body">
+            <div class="kf-product-head"><h2>{esc(c['title'])}</h2></div>
+            <p>{esc(c['tagline'])}</p>
+            <span class="link-arrow">{esc(c['cta'])}</span>
           </div>
         </a>"""
         )
@@ -170,21 +204,22 @@ def collection_cards(catalog: dict) -> str:
 
 def hub_body(catalog: dict) -> str:
     return f"""  <section class="page-hero">
-    <div class="container">
+    <div class="kf-container">
       <p class="eyebrow">Shop</p>
       <h1>Three ways in.</h1>
       <p class="p-lg">Photoshoot packages, vinyl finishes, and the K Merch drop. Pick a collection — each one opens into its own products.</p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="shop-collection-grid">
+  <section class="kf-section">
+    <div class="kf-container">
+      <div class="kf-product-grid">
 {collection_cards(catalog)}
       </div>
     </div>
   </section>
-"""
+
+{quote_cta("shop-hub", "Here for a wrap, not a shirt?", "The shop is the side of the garage that ships. The bike side starts with a quote.")}"""
 
 
 def photoshoot_collection_body(items: list[dict]) -> str:
@@ -195,37 +230,38 @@ def photoshoot_collection_body(items: list[dict]) -> str:
         else:
             price_html = esc(p["priceLabel"])
         cards.append(
-            f"""        <a class="look-card shop-product-card" href="/shop/photoshoot/{esc(p['slug'])}">
-          <div class="look-shot">
-            <span class="look-kind">{esc(p['kind'])}</span>
+            f"""        <a class="kf-product-card" href="/shop/photoshoot/{esc(p['slug'])}">
+          <div class="kf-product-media">
             <img src="{esc(p['image'])}" alt="{esc(p['title'])}" width="800" height="1000" loading="lazy">
+            <span class="kf-tag">{esc(p['kind'])}</span>
           </div>
-          <div class="look-body">
-            <div class="look-head">
-              <h2 class="h3">{esc(p['title'])}</h2>
-              <span class="look-price">{price_html}</span>
+          <div class="kf-product-body">
+            <div class="kf-product-head">
+              <h2>{esc(p['title'])}</h2>
+              <span class="kf-product-price">{price_html}</span>
             </div>
-            <p class="look-blurb">{esc(p['blurb'])}</p>
-            <p class="look-reserve"><span class="link-arrow">View package &rarr;</span></p>
+            <p>{esc(p['blurb'])}</p>
+            <span class="link-arrow">View package</span>
           </div>
         </a>"""
         )
     return f"""  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow"><a href="/shop">Shop</a> / Photoshoot</p>
+    <div class="kf-container">
+      <p class="eyebrow kf-crumbs"><a href="/shop">Shop</a> / Photoshoot</p>
       <h1>Photoshoot</h1>
       <p class="p-lg">The bike gets filmed the same way it gets wrapped. Transformation film, stills, and film-only packages.</p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="lookbook-grid">
+  <section class="kf-section">
+    <div class="kf-container">
+      <div class="kf-product-grid">
 {chr(10).join(cards)}
       </div>
     </div>
   </section>
-"""
+
+{quote_cta("shop-photoshoot", "The film follows the wrap.", "Every build gets shot. Start with the wrap and the camera comes with it.")}"""
 
 
 def photoshoot_product_body(p: dict) -> str:
@@ -238,73 +274,71 @@ def photoshoot_product_body(p: dict) -> str:
         price_html = f'Starting at <span data-cfg="{esc(p["priceCfg"])}">{esc(p["priceLabel"].split("at ",1)[-1])}</span>'
     else:
         price_html = esc(p["priceLabel"])
-    return f"""  <section class="page-hero page-hero--compact">
-    <div class="container">
-      <p class="eyebrow"><a href="/shop">Shop</a> / <a href="/shop/photoshoot">Photoshoot</a> / {esc(p['title'])}</p>
+    return f"""  <section class="page-hero">
+    <div class="kf-container">
+      <p class="eyebrow kf-crumbs"><a href="/shop">Shop</a> / <a href="/shop/photoshoot">Photoshoot</a> / {esc(p['title'])}</p>
       <h1>{esc(p['title'])}</h1>
       <p class="p-lg">{esc(p['blurb'])}</p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container detail-split">
-      <div>
+  <section class="kf-section">
+    <div class="kf-container kf-split">
+      <div class="kf-media-frame">
         <img src="{esc(p['image'])}" alt="{esc(p['title'])}" width="900" height="600" loading="eager">
       </div>
       <div>
         <p class="eyebrow">{esc(p['kind'])}</p>
-        <p class="tier-price">{price_html}</p>
+        <p class="kf-price-amount">{price_html}</p>
         <p class="p">{esc(p['detail'])}</p>
-        <ul class="include-list">
+        <ul class="kf-list">
 {includes}
         </ul>
         <div class="btn-row">
           <a class="btn btn-primary" href="{esc(p['studioHref'])}" data-track="cta_click" data-track-label="shop-photoshoot-{esc(p['slug'])}">Build your project</a>
-          <a class="btn btn-secondary" href="/gallery">See the gallery</a>
+          <a class="btn btn-ghost" href="/gallery">See the gallery</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section section-muted">
-    <div class="container">
-      <div class="section-head">
+  <section class="kf-section kf-section--surface kf-section--hairline">
+    <div class="kf-container">
+      <div class="kf-section-head reveal">
         <p class="eyebrow">In frame</p>
         <h2>How it looks</h2>
       </div>
-      <div class="thumb-grid">
+      <div class="kf-thumb-grid reveal">
 {gallery}
       </div>
     </div>
   </section>
-"""
+
+{quote_cta("shop-photoshoot-" + p['slug'], "Wrap it first.", "The best version of this shoot is the one that follows a fresh wrap out of the garage.")}"""
 
 
 def wrap_card(w: dict) -> str:
     chips = "".join(
-        f'<span class="wheel-finish-chip" style="background:{esc(c["hex"])}" title="{esc(c["name"])}"></span>'
+        f'<span style="background:{esc(c["hex"])}" title="{esc(c["name"])}"></span>'
         for c in w["colors"][:4]
     )
-    coverage = "".join(f"<li>{esc(x)}</li>" for x in w["coverage"])
     price = (
         f'Starting at <span data-cfg="{esc(w["startingFromCfg"])}">{esc(w["startingLabel"].split("at ",1)[-1])}</span>'
         if w.get("startingFromCfg")
         else esc(w["startingLabel"])
     )
-    return f"""        <a class="wheel-card" href="/shop/wrap/{esc(w['slug'])}">
-          <div class="wheel-card-media">
+    return f"""        <a class="kf-product-card" href="/shop/wrap/{esc(w['slug'])}">
+          <div class="kf-product-media">
             <img src="{esc(w['heroImage'])}" alt="{esc(w['title'])} vinyl finish" width="800" height="800" loading="lazy">
+            <span class="kf-tag">{esc(w['series'])}</span>
           </div>
-          <div class="wheel-card-body">
-            <p class="wheel-card-series">{esc(w['series'])}</p>
-            <h2 class="wheel-card-title">{esc(w['title'])}</h2>
-            <p class="wheel-card-tagline">{esc(w['tagline'])}</p>
-            <ul class="wheel-card-sizes">{coverage}</ul>
-            <p class="wheel-card-price">{price}</p>
-            <div class="wheel-card-finishes">
-              {chips}
-              <span class="wheel-card-finish-count">{esc(w['finishCount'])}</span>
+          <div class="kf-product-body">
+            <div class="kf-product-head">
+              <h2>{esc(w['title'])}</h2>
+              <span class="kf-product-price">{price}</span>
             </div>
+            <p>{esc(w['tagline'])}</p>
+            <p class="kf-swatch-row">{chips}<span>{esc(w['finishCount'])}</span></p>
           </div>
         </a>"""
 
@@ -312,27 +346,28 @@ def wrap_card(w: dict) -> str:
 def wrap_collection_body(items: list[dict]) -> str:
     cards = "\n".join(wrap_card(w) for w in items)
     return f"""  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow"><a href="/shop">Shop</a> / Wrap</p>
+    <div class="kf-container">
+      <p class="eyebrow kf-crumbs"><a href="/shop">Shop</a> / Wrap</p>
       <h1>Vinyl finishes</h1>
-      <p class="p-lg">Seven finishes, presented like a wheel line. Pick a finish, see featured colours and bikes, then open Wrap Studio with it already selected.</p>
+      <p class="p-lg">Seven finishes. Pick one, see featured colours and bikes, then open the Wrap Studio with it already selected — or send it straight to a quote.</p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="wheel-grid">
+  <section class="kf-section">
+    <div class="kf-container">
+      <div class="kf-product-grid">
 {cards}
       </div>
     </div>
   </section>
-"""
+
+{quote_cta("shop-wrap", "Know the finish you want?", "Name it on the quote form and I&rsquo;ll come back with the exact films that hit it and what they cost on your bike.")}"""
 
 
 def wrap_product_body(w: dict, siblings: list[dict]) -> str:
     coverage = "\n".join(f"            <li>{esc(x)}</li>" for x in w["coverage"])
     colors = "\n".join(
-        f"""          <figure class="wheel-color-card">
+        f"""          <figure class="kf-colour-card">
             <img src="{esc(c['image'])}" alt="{esc(c['name'])}" width="400" height="400" loading="lazy">
             <figcaption>
               <strong>{esc(c['name'])}</strong>
@@ -352,81 +387,74 @@ def wrap_product_body(w: dict, siblings: list[dict]) -> str:
     )
     studio = f"/wrap-studio?finish={quote(w['finishParam'])}"
     others = "\n".join(
-        f'          <a class="wheel-mini" href="/shop/wrap/{esc(s["slug"])}">'
-        f'<span class="finish-swatch {esc(s["swatchClass"])}" aria-hidden="true"></span>'
+        f'          <a class="kf-mini" href="/shop/wrap/{esc(s["slug"])}">'
+        f'<span class="kf-finish {esc(s["swatchClass"])}" aria-hidden="true"></span>'
         f'<span>{esc(s["title"])}</span></a>'
         for s in siblings
         if s["slug"] != w["slug"]
     )
-    return f"""  <section class="wheel-pdp">
-    <div class="container wheel-pdp-grid">
-      <div class="wheel-pdp-media">
-        <div class="wheel-pdp-hero">
-          <img src="{esc(w['heroImage'])}" alt="{esc(w['title'])} vinyl wrap film" width="1000" height="1000" loading="eager">
-        </div>
+    return f"""  <section class="page-hero">
+    <div class="kf-container kf-split kf-split--wide">
+      <div class="kf-media-frame">
+        <img src="{esc(w['heroImage'])}" alt="{esc(w['title'])} vinyl wrap film" width="1000" height="1000" loading="eager">
       </div>
-      <div class="wheel-pdp-buy">
-        <p class="eyebrow"><a href="/shop">Shop</a> / <a href="/shop/wrap">Wrap</a></p>
-        <p class="wheel-card-series">{esc(w['series'])}</p>
+      <div>
+        <p class="eyebrow kf-crumbs"><a href="/shop">Shop</a> / <a href="/shop/wrap">Wrap</a> / {esc(w['series'])}</p>
         <h1>{esc(w['title'])}</h1>
-        <p class="wheel-card-price wheel-pdp-price">{price}</p>
+        <p class="kf-price-amount">{price}</p>
         <p class="p-lg">{esc(w['tagline'])}</p>
         <p class="p">{esc(w['detail'])}</p>
-        <div class="wheel-pdp-block">
-          <h2 class="h6">Coverage</h2>
-          <ul class="wheel-card-sizes">
+        <h2 class="h6">Coverage</h2>
+        <ul class="kf-list">
 {coverage}
-          </ul>
-        </div>
-        <div class="wheel-pdp-block">
-          <h2 class="h6">Catalogue</h2>
-          <p class="p">{esc(w['finishCount'])} in the Metro Restyling feed — search the exact film in Wrap Studio.</p>
-        </div>
+        </ul>
+        <p class="kf-note">{esc(w['finishCount'])} in the Metro Restyling feed — search the exact film in the vinyl catalog.</p>
         <div class="btn-row">
-          <a class="btn btn-primary" href="{studio}" data-track="cta_click" data-track-label="shop-wrap-{esc(w['slug'])}">Build your project</a>
-          <a class="btn btn-secondary" href="/gallery">See it on bikes</a>
+          <a class="btn btn-primary" href="/quote" data-track="cta_click" data-track-label="shop-wrap-{esc(w['slug'])}">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="btn btn-ghost" href="{studio}">Build your project</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
+  <section class="kf-section">
+    <div class="kf-container">
+      <div class="kf-section-head reveal">
         <p class="eyebrow">Film gallery</p>
         <h2>{esc(w['title'])} colours</h2>
         <p class="p-lg">Featured films in this finish. Screens lie about colour — real swatches come with the quote.</p>
       </div>
-      <div class="wheel-color-grid">
+      <div class="kf-colour-grid reveal">
 {colors}
       </div>
     </div>
   </section>
 
-  <section class="section section-muted">
-    <div class="container">
-      <div class="section-head">
+  <section class="kf-section kf-section--surface kf-section--hairline">
+    <div class="kf-container">
+      <div class="kf-section-head reveal">
         <p class="eyebrow">On the bike</p>
         <h2>Vehicle gallery</h2>
       </div>
-      <div class="thumb-grid">
+      <div class="kf-thumb-grid reveal">
 {bikes}
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="section-head">
+  <section class="kf-section">
+    <div class="kf-container">
+      <div class="kf-section-head reveal">
         <p class="eyebrow">More finishes</p>
         <h2>Explore the line</h2>
       </div>
-      <div class="wheel-mini-row">
+      <div class="kf-mini-row reveal">
 {others}
       </div>
     </div>
   </section>
-"""
+
+{quote_cta("shop-wrap-" + w['slug'], "See it on your bike.", "Send the bike and this finish. You get real numbers and the exact films that hit the look.")}"""
 
 
 def merch_collection_body(drop: dict, products: list[dict]) -> str:
@@ -434,21 +462,20 @@ def merch_collection_body(drop: dict, products: list[dict]) -> str:
     for p in products:
         kind = "Tee" if p["kind"] == "tee" else "Hoodie"
         cards.append(
-            f"""        <a class="look-card shop-product-card" href="/shop/k-merch/{esc(p['id'])}" data-filter-item="{esc(p['kind'])}">
-          <div class="look-shot">
-            <span class="look-kind">{kind}</span>
+            f"""        <a class="kf-product-card" href="/shop/k-merch/{esc(p['id'])}" data-filter-item="{esc(p['kind'])}">
+          <div class="kf-product-media">
             <img src="{esc(p['images']['hero'])}" alt="{esc(p['title'])} in {esc(p['color'])}" width="800" height="1000" loading="lazy">
             <img src="{esc(p['images']['detail01'])}" alt="" width="800" height="1000" loading="lazy" aria-hidden="true">
+            <span class="kf-tag">{kind}</span>
           </div>
-          <div class="look-body">
-            <div class="look-head">
-              <h2 class="h3">{esc(p['title'])}</h2>
-              <span class="look-price">${p['price']}</span>
+          <div class="kf-product-body">
+            <div class="kf-product-head">
+              <h2>{esc(p['title'])}</h2>
+              <span class="kf-product-price">${p['price']}</span>
             </div>
-            <p class="look-quote">{esc(p['quote'])}</p>
-            <p class="look-colour"><span class="look-dot" style="background:{esc(p['colorHex'])}"></span>{esc(p['color'])}</p>
-            <p class="look-blurb">{esc(p['blurb'])}</p>
-            <p class="look-reserve"><span class="link-arrow">View piece &rarr;</span></p>
+            <p class="kf-product-colour"><span class="kf-dot" style="background:{esc(p['colorHex'])}"></span>{esc(p['color'])}</p>
+            <p>{esc(p['blurb'])}</p>
+            <span class="link-arrow">View piece</span>
           </div>
         </a>"""
         )
@@ -458,69 +485,71 @@ def merch_collection_body(drop: dict, products: list[dict]) -> str:
         for p in products
     )
     return f"""  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow"><a href="/shop">Shop</a> / K Merch</p>
+    <div class="kf-container">
+      <p class="eyebrow kf-crumbs"><a href="/shop">Shop</a> / K Merch</p>
       <h1>{esc(drop.get('drop', 'K Merch'))}</h1>
-      <p class="p-lg">Clothes that express and inspire individuals of all walks of life to explore the unknown and carve out the life they seek in this world.</p>
-      <p class="p-lg">Comfy heavyweight t-shirts and hoodies that look and feel good.</p>
+      <p class="p-lg">Clothes that express and inspire individuals of all walks of life to explore the unknown and carve out the life they seek in this world. Comfy heavyweight t-shirts and hoodies that look and feel good.</p>
       <p class="p">No cart and no checkout &mdash; this is a limited run, so you reserve a piece and I confirm sizing and payment directly.</p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="filter-tabs" data-filter-tabs>
-        <button type="button" class="on" data-filter="all">Everything</button>
-        <button type="button" data-filter="tee">Tees</button>
-        <button type="button" data-filter="hoodie">Hoodies</button>
+  <section class="kf-section">
+    <div class="kf-container">
+      <div class="filter-tabs" data-filter-tabs role="group" aria-label="Filter the drop">
+        <button type="button" class="on" data-filter="all" aria-pressed="true">Everything</button>
+        <button type="button" data-filter="tee" aria-pressed="false">Tees</button>
+        <button type="button" data-filter="hoodie" aria-pressed="false">Hoodies</button>
       </div>
-      <div class="lookbook-grid">
+      <div class="kf-product-grid">
 {chr(10).join(cards)}
       </div>
     </div>
   </section>
 
-  <section class="section section-muted reveal" id="reserve">
-    <div class="container book-grid">
-      <div>
+  <section class="kf-section kf-section--surface kf-section--hairline" id="reserve">
+    <div class="kf-container kf-split">
+      <div class="reveal">
         <p class="eyebrow">Reserve a piece</p>
         <h2>First run, cut to order</h2>
         <p class="p-lg">Tell me which piece and what size. I&rsquo;ll come back to confirm the run, the fit, and how to pay &mdash; nothing is charged from this page.</p>
       </div>
-      <form class="form" action="https://formsubmit.co/elombe@swftstudios.com" method="POST" accept-charset="UTF-8">
-        <input type="hidden" name="_subject" value="Kisala Films - merch reservation">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_next" value="{SITE}/shop/k-merch?sent=1#reserve">
-        <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
-        <div class="fld">
-          <label for="piece">Piece</label>
-          <select id="piece" name="piece" data-reserve-select required>
-            <option value="">Select a piece</option>
+      <div class="kf-panel reveal">
+        <form class="kf-form" action="https://formsubmit.co/elombe@swftstudios.com" method="POST" accept-charset="UTF-8">
+          <input type="hidden" name="_subject" value="K Films - merch reservation">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="{SITE}/shop/k-merch?sent=1#reserve">
+          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
+          <div class="fld">
+            <label for="piece">Piece</label>
+            <select id="piece" name="piece" data-reserve-select required>
+              <option value="">Select a piece</option>
 {options}
-          </select>
-        </div>
-        <div class="fld">
-          <label for="size">Size</label>
-          <select id="size" name="size" required>
-            <option value="">Select size</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="2XL">2XL</option>
-            <option value="Not sure">Not sure &mdash; help me pick</option>
-          </select>
-        </div>
-        <div class="fld"><label for="shop-name">Name</label><input id="shop-name" name="name" type="text" autocomplete="name" required></div>
-        <div class="fld"><label for="shop-email">Email</label><input id="shop-email" name="email" type="email" autocomplete="email" required></div>
-        <div class="fld"><label for="shop-notes">Anything else? <span class="fld-hint">optional</span></label><textarea id="shop-notes" name="notes" rows="3"></textarea></div>
-        <button class="btn btn-primary" type="submit">Reserve my piece</button>
-        <p class="form-note">Thanks &mdash; I&rsquo;ll confirm the run and your size.</p>
-      </form>
+            </select>
+          </div>
+          <div class="fld">
+            <label for="size">Size</label>
+            <select id="size" name="size" required>
+              <option value="">Select size</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="2XL">2XL</option>
+              <option value="Not sure">Not sure &mdash; help me pick</option>
+            </select>
+          </div>
+          <div class="fld"><label for="shop-name">Name</label><input id="shop-name" name="name" type="text" autocomplete="name" required></div>
+          <div class="fld"><label for="shop-email">Email</label><input id="shop-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="fld"><label for="shop-notes">Anything else? <span class="fld-hint">optional</span></label><textarea id="shop-notes" name="notes" rows="3"></textarea></div>
+          <button class="btn btn-primary" type="submit">Reserve my piece</button>
+          <p class="form-note">Thanks &mdash; I&rsquo;ll confirm the run and your size.</p>
+        </form>
+      </div>
     </div>
   </section>
-"""
+
+{quote_cta("shop-merch", "The garage does bikes, too.", "Merch is the small side of this. The wraps are the reason it exists.")}"""
 
 
 def merch_product_body(p: dict, products: list[dict]) -> str:
@@ -532,80 +561,82 @@ def merch_product_body(p: dict, products: list[dict]) -> str:
         f'{esc(x["title"])} &mdash; {esc(x["color"])} (${x["price"]})</option>'
         for x in products
     )
-    return f"""  <section class="page-hero page-hero--compact">
-    <div class="container">
-      <p class="eyebrow"><a href="/shop">Shop</a> / <a href="/shop/k-merch">K Merch</a> / {esc(p['title'])}</p>
+    return f"""  <section class="page-hero">
+    <div class="kf-container">
+      <p class="eyebrow kf-crumbs"><a href="/shop">Shop</a> / <a href="/shop/k-merch">K Merch</a> / {esc(p['title'])}</p>
       <h1>{esc(p['title'])}</h1>
       <p class="p-lg">{esc(p['quote'])}</p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container detail-split">
-      <div class="look-shot look-shot--pdp">
-        <span class="look-kind">{kind}</span>
+  <section class="kf-section">
+    <div class="kf-container kf-split">
+      <div class="kf-product-media">
         <img src="{esc(p['images']['hero'])}" alt="{esc(p['title'])} in {esc(p['color'])}" width="800" height="1000" loading="eager">
         <img src="{esc(p['images']['detail01'])}" alt="" width="800" height="1000" loading="lazy" aria-hidden="true">
+        <span class="kf-tag">{kind}</span>
       </div>
       <div>
-        <p class="tier-price">${p['price']}</p>
-        <p class="look-colour"><span class="look-dot" style="background:{esc(p['colorHex'])}"></span>{esc(p['color'])}</p>
+        <p class="kf-price-amount">${p['price']}</p>
+        <p class="kf-product-colour"><span class="kf-dot" style="background:{esc(p['colorHex'])}"></span>{esc(p['color'])}</p>
         <p class="p">{esc(p['blurb'])}</p>
-        <p class="p">Limited first run. Reserve below — I confirm sizing and payment directly. Nothing is charged from this page.</p>
+        <p class="p">Limited first run. Reserve below &mdash; I confirm sizing and payment directly. Nothing is charged from this page.</p>
         <div class="btn-row">
-          <a class="btn btn-primary" href="/wrap-studio" data-track="cta_click" data-track-label="shop-merch-{esc(p['id'])}-build">Build your project</a>
-          <a class="btn btn-secondary" href="#reserve" data-reserve="{esc(piece_val)}">Reserve yours</a>
+          <a class="btn btn-primary" href="#reserve" data-reserve="{esc(piece_val)}">Reserve yours</a>
           <a class="btn btn-ghost" href="/shop/k-merch">All K Merch</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section section-muted" id="reserve">
-    <div class="container book-grid">
-      <div>
+  <section class="kf-section kf-section--surface kf-section--hairline" id="reserve">
+    <div class="kf-container kf-split">
+      <div class="reveal">
         <p class="eyebrow">Reserve</p>
         <h2>{esc(p['title'])}</h2>
         <p class="p">Pick a size and leave your details. I&rsquo;ll come back to confirm.</p>
-        <div class="thumb-grid" style="grid-template-columns:repeat(2,1fr)">
+        <div class="kf-thumb-grid">
           <img src="{esc(p['images']['detail01'])}" alt="" width="400" height="500" loading="lazy">
           <img src="{esc(p['images']['detail02'])}" alt="" width="400" height="500" loading="lazy">
         </div>
       </div>
-      <form class="form" action="https://formsubmit.co/elombe@swftstudios.com" method="POST" accept-charset="UTF-8">
-        <input type="hidden" name="_subject" value="Kisala Films - merch reservation">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_next" value="{SITE}/shop/k-merch/{esc(p['id'])}?sent=1#reserve">
-        <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
-        <div class="fld">
-          <label for="piece">Piece</label>
-          <select id="piece" name="piece" data-reserve-select required>
-            <option value="">Select a piece</option>
+      <div class="kf-panel reveal">
+        <form class="kf-form" action="https://formsubmit.co/elombe@swftstudios.com" method="POST" accept-charset="UTF-8">
+          <input type="hidden" name="_subject" value="K Films - merch reservation">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="{SITE}/shop/k-merch/{esc(p['id'])}?sent=1#reserve">
+          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
+          <div class="fld">
+            <label for="piece">Piece</label>
+            <select id="piece" name="piece" data-reserve-select required>
+              <option value="">Select a piece</option>
 {options}
-          </select>
-        </div>
-        <div class="fld">
-          <label for="size">Size</label>
-          <select id="size" name="size" required>
-            <option value="">Select size</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="2XL">2XL</option>
-            <option value="Not sure">Not sure &mdash; help me pick</option>
-          </select>
-        </div>
-        <div class="fld"><label for="shop-name">Name</label><input id="shop-name" name="name" type="text" autocomplete="name" required></div>
-        <div class="fld"><label for="shop-email">Email</label><input id="shop-email" name="email" type="email" autocomplete="email" required></div>
-        <div class="fld"><label for="shop-notes">Anything else? <span class="fld-hint">optional</span></label><textarea id="shop-notes" name="notes" rows="3"></textarea></div>
-        <button class="btn btn-primary" type="submit">Reserve my piece</button>
-        <p class="form-note">Thanks &mdash; I&rsquo;ll confirm the run and your size.</p>
-      </form>
+            </select>
+          </div>
+          <div class="fld">
+            <label for="size">Size</label>
+            <select id="size" name="size" required>
+              <option value="">Select size</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="2XL">2XL</option>
+              <option value="Not sure">Not sure &mdash; help me pick</option>
+            </select>
+          </div>
+          <div class="fld"><label for="shop-name">Name</label><input id="shop-name" name="name" type="text" autocomplete="name" required></div>
+          <div class="fld"><label for="shop-email">Email</label><input id="shop-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="fld"><label for="shop-notes">Anything else? <span class="fld-hint">optional</span></label><textarea id="shop-notes" name="notes" rows="3"></textarea></div>
+          <button class="btn btn-primary" type="submit">Reserve my piece</button>
+          <p class="form-note">Thanks &mdash; I&rsquo;ll confirm the run and your size.</p>
+        </form>
+      </div>
     </div>
   </section>
-"""
+
+{quote_cta("shop-merch-" + p['id'], "Wrap the bike to match.", "Send what you ride and what you want it to look like.")}"""
 
 
 def write(path: Path, content: str) -> str:
@@ -621,21 +652,16 @@ def main() -> None:
     catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
     merch_data = json.loads(PRODUCTS.read_text(encoding="utf-8"))
     products = merch_data["products"]
-    head_t, header, footer = chrome()
-
-    # Patch footer "Shop the drop" to stay on /shop
-    footer = footer.replace('href="/shop">Shop the drop', 'href="/shop">Shop')
+    head_t = head_template()
 
     results = []
 
     # Hub
     hub = page_shell(
-        title="Shop — Photoshoot, Wrap & Merch | Kisala Films",
-        description="Shop Kisala Films: photoshoot packages, vinyl wrap finishes, and the K Merch drop.",
-        head_template=head_t,
-        header=header,
+        title="Shop — Photoshoot, Wrap & Merch | K Films",
+        description="Shop K Films: photoshoot packages, vinyl wrap finishes, and the K Merch drop.",
+        head=head_t,
         body=hub_body(catalog),
-        footer=footer,
         crumbs=[("Home", "/"), ("Shop", "/shop")],
     )
     results.append((SOURCE, write(SOURCE, hub)))
@@ -648,12 +674,10 @@ def main() -> None:
             write(
                 path,
                 page_shell(
-                    title="Photoshoot — Shop | Kisala Films",
-                    description="Transformation film, photo sets, and film-only packages from the Kisala Films garage.",
-                    head_template=head_t,
-                    header=header,
+                    title="Photoshoot — Shop | K Films",
+                    description="Transformation film, photo sets, and film-only packages from the K Films garage.",
+                    head=head_t,
                     body=photoshoot_collection_body(catalog["photoshoot"]),
-                    footer=footer,
                     crumbs=[("Home", "/"), ("Shop", "/shop"), ("Photoshoot", "/shop/photoshoot")],
                 ),
             ),
@@ -668,12 +692,10 @@ def main() -> None:
                 write(
                     path,
                     page_shell(
-                        title=f"{p['title']} — Photoshoot | Kisala Films",
+                        title=f"{p['title']} — Photoshoot | K Films",
                         description=p["blurb"],
-                        head_template=head_t,
-                        header=header,
+                        head=head_t,
                         body=photoshoot_product_body(p),
-                        footer=footer,
                         crumbs=[
                             ("Home", "/"),
                             ("Shop", "/shop"),
@@ -693,12 +715,10 @@ def main() -> None:
             write(
                 path,
                 page_shell(
-                    title="Vinyl Wrap Finishes — Shop | Kisala Films",
+                    title="Vinyl Wrap Finishes — Shop | K Films",
                     description="Cast vinyl finishes presented like a wheel line — gloss, satin, matte, metallic, colour shift, chrome and textured.",
-                    head_template=head_t,
-                    header=header,
+                    head=head_t,
                     body=wrap_collection_body(catalog["wrap"]),
-                    footer=footer,
                     crumbs=[("Home", "/"), ("Shop", "/shop"), ("Wrap", "/shop/wrap")],
                 ),
             ),
@@ -713,12 +733,10 @@ def main() -> None:
                 write(
                     path,
                     page_shell(
-                        title=f"{w['title']} Vinyl Wrap — Shop | Kisala Films",
+                        title=f"{w['title']} Vinyl Wrap — Shop | K Films",
                         description=w["tagline"] + " " + w["detail"],
-                        head_template=head_t,
-                        header=header,
+                        head=head_t,
                         body=wrap_product_body(w, catalog["wrap"]),
-                        footer=footer,
                         crumbs=[
                             ("Home", "/"),
                             ("Shop", "/shop"),
@@ -738,12 +756,10 @@ def main() -> None:
             write(
                 path,
                 page_shell(
-                    title=f"K Merch — {merch_data.get('drop', 'K Merch')} | Kisala Films",
+                    title=f"K Merch — {merch_data.get('drop', 'K Merch')} | K Films",
                     description="Clothes that express and inspire individuals of all walks of life to explore the unknown and carve out the life they seek in this world. Comfy heavyweight t-shirts and hoodies that look and feel good.",
-                    head_template=head_t,
-                    header=header,
+                    head=head_t,
                     body=merch_collection_body(merch_data, products),
-                    footer=footer,
                     crumbs=[("Home", "/"), ("Shop", "/shop"), ("K Merch", "/shop/k-merch")],
                     extra_scripts='  <script src="/js/shop.js"></script>\n',
                 ),
@@ -759,12 +775,10 @@ def main() -> None:
                 write(
                     path,
                     page_shell(
-                        title=f"{p['title']} — K Merch | Kisala Films",
+                        title=f"{p['title']} — K Merch | K Films",
                         description=f"{p['title']} in {p['color']}. {p['quote']}",
-                        head_template=head_t,
-                        header=header,
+                        head=head_t,
                         body=merch_product_body(p, products),
-                        footer=footer,
                         crumbs=[
                             ("Home", "/"),
                             ("Shop", "/shop"),

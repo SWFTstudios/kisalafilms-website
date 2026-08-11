@@ -1,0 +1,821 @@
+/* /wrap-studio — the build configurator.
+   Loads after kfilms.css and uses only its tokens. These components were built
+   against the carsy stylesheet and moved here unchanged in shape: the DOM they
+   style is wired to wrap-studio.js, wrap-studio-garage.js and vinyl-browser.js,
+   so restructuring the markup to reach for kfilms.css's generic components
+   would mean rewriting three modules to save a stylesheet. That is a trade the
+   configurator does not need. What changed is the palette, the type and the
+   spacing, which is what made it look like a different site. */
+
+/* Vinyl color search (Metro Restyling catalog) */
+.vinyl-search-wrap {
+  position: relative;
+}
+
+.vinyl-results {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  max-height: 280px;
+  overflow: auto;
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  display: flex;
+  flex-direction: column;
+}
+
+.vinyl-picked {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.vinyl-picked-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--kf-surface);
+}
+
+.vinyl-picked-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.vinyl-picked-copy strong {
+  font-size: .9rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.vinyl-picked-link {
+  font-size: .8rem;
+  color: var(--kf-red);
+  text-decoration: none;
+}
+
+.vinyl-picked-link:hover { color: var(--kf-white); }
+
+/* ===== Wrap Studio configurator ===== */
+.studio-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (min-width: 1000px) {
+  .studio-shell { grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; }
+}
+
+.studio-step {
+  border-top: 1px solid var(--kf-border);
+  padding: 40px 0;
+}
+
+.studio-step:first-of-type { border-top: 0; padding-top: 0; }
+
+.studio-step-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.studio-step-num {
+  font-family: var(--kf-font-display);
+  font-weight: 800;
+  font-size: .8rem;
+  letter-spacing: .14em;
+  color: var(--kf-red);
+}
+
+.studio-step .h3 { font-size: 1.4rem; margin: 0; }
+
+.studio-step > .p { margin-bottom: 26px; }
+
+/* Selectable option cards (service + finish) */
+.opt-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 620px) {
+  .opt-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1000px) {
+  .opt-grid--3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+.opt-card {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--kf-border);
+  background: linear-gradient(180deg, #101010, var(--kf-surface));
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.opt-card:hover { border-color: rgba(255,255,255,.28); transform: translateY(-2px); }
+
+.opt-card input { position: absolute; opacity: 0; pointer-events: none; }
+
+.opt-card:has(input:checked) {
+  border-color: var(--kf-red);
+  background: linear-gradient(180deg, rgba(232,39,31,.14), rgba(232,39,31,.04));
+}
+
+.opt-card:has(input:focus-visible) { outline: 2px solid var(--kf-red); outline-offset: 2px; }
+
+.opt-mark {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  border: 1px solid rgba(255,255,255,.4);
+  background: transparent;
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.opt-card input[type="radio"] ~ .opt-mark { border-radius: 50%; }
+
+.opt-card:has(input:checked) .opt-mark {
+  border-color: var(--kf-red);
+  background: linear-gradient(180deg, var(--kf-red-cta) 0%, var(--kf-red) 100%);
+  box-shadow: inset 0 0 0 3px var(--kf-surface);
+}
+
+.opt-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+.opt-title {
+  font-family: var(--kf-font-display);
+  font-weight: 700;
+  font-size: .95rem;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.opt-note { font-size: .85rem; color: var(--kf-muted); line-height: 1.5; }
+
+.opt-price {
+  font-family: var(--kf-font-display);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--kf-red);
+  text-transform: uppercase;
+}
+
+/* Photo upload */
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 44px 24px;
+  text-align: center;
+  border: 1px dashed rgba(255,255,255,.28);
+  background: linear-gradient(180deg, #0e0e0e, #080808);
+  transition: border-color .2s ease, background .2s ease;
+  cursor: pointer;
+}
+
+.dropzone:hover,
+.dropzone.is-over { border-color: var(--kf-red); background: rgba(232,39,31,.06); }
+
+.dropzone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dropzone-title {
+  font-family: var(--kf-font-display);
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: .95rem;
+}
+
+.dropzone-note { font-size: .85rem; color: var(--kf-muted); margin: 0; }
+
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.upload-meter {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  font-family: var(--kf-font-display);
+  font-size: .76rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--kf-muted);
+}
+
+.upload-meter.is-over { color: var(--kf-red-cta); }
+
+.upload-error {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--kf-red);
+  background: rgba(232,39,31,.1);
+  color: #ffd9d6;
+  font-size: .88rem;
+}
+
+.upload-error[hidden] { display: none; }
+
+/* Sticky build summary */
+.studio-summary {
+  border: 1px solid var(--kf-border);
+  background: linear-gradient(180deg, #101010, #080808);
+  padding: 24px;
+}
+
+@media (min-width: 1000px) {
+  .studio-summary { position: sticky; top: 96px; }
+}
+
+.studio-summary .h4 {
+  font-size: 1rem;
+  letter-spacing: .1em;
+  margin: 0 0 4px;
+}
+
+.studio-summary .summary-sub {
+  font-size: .8rem;
+  color: var(--kf-muted);
+  margin: 0 0 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 0;
+  border-top: 1px solid rgba(255,255,255,.07);
+  font-size: .88rem;
+}
+
+.summary-label {
+  font-family: var(--kf-font-display);
+  font-size: .72rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--kf-muted);
+  flex: 0 0 auto;
+}
+
+.summary-value { text-align: right; color: var(--kf-white); min-width: 0; word-break: break-word; }
+
+.summary-value.is-empty { color: #5a5a5a; }
+
+.summary-estimate {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid rgba(232, 39, 31, .45);
+  background: linear-gradient(180deg, rgba(232,39,31,.12), rgba(232,39,31,.02));
+}
+
+.summary-estimate .summary-label { display: block; margin-bottom: 6px; }
+
+.summary-estimate-value {
+  display: block;
+  font-family: var(--kf-font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+}
+
+.summary-estimate-note {
+  margin: 10px 0 0;
+  font-size: .76rem;
+  line-height: 1.55;
+  color: var(--kf-muted);
+}
+
+.summary-foot {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--kf-border);
+  font-size: .8rem;
+  color: var(--kf-muted);
+  line-height: 1.6;
+}
+
+.studio-submit { width: 100%; margin-top: 18px; }
+
+.studio-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 620px) {
+  .studio-fields { grid-template-columns: repeat(2, 1fr); }
+  .studio-fields .fld-wide { grid-column: 1 / -1; }
+}
+
+.studio-step .fld { margin: 0; }
+
+/* Consent + submit */
+/* The label is the target, not the 13px box inside it — a <label> wrapping its
+   own control already toggles on tap, so the row only has to be tall enough to
+   hit. On a phone the consent sentence wraps and clears 44px on its own; on a
+   wide screen it fits one line and used to leave a pinprick. */
+.studio-consent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: var(--kf-tap);
+  margin-top: 22px;
+  font-size: .88rem;
+  color: var(--kf-muted);
+  line-height: 1.6;
+}
+
+.studio-consent input {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  flex: 0 0 auto;
+  accent-color: var(--kf-red);
+}
+
+/* ===== Vinyl browser =====================================================
+   The browse panel over the same catalogue the typeahead searches. Reuses
+   .filter-tabs for the view toggle and .lightbox for the compare overlay. */
+.vinyl-browse { margin-top: 26px; }
+
+.vinyl-browse-toggle { width: 100%; }
+
+.vinyl-browse-panel {
+  margin-top: 20px;
+  padding: 22px 0 0;
+  border-top: 1px solid var(--kf-border);
+}
+
+.vinyl-browse-bar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+@media (min-width: 700px) {
+  .vinyl-browse-bar { grid-template-columns: 2fr 1fr 1fr; align-items: end; }
+}
+
+.vinyl-browse-label {
+  display: block;
+  margin: 0 0 10px;
+  font-family: var(--kf-font-display);
+  font-weight: 700;
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--kf-muted);
+}
+
+.vinyl-view-toggle { margin: 0; }
+
+/* Colour-family and finish chips. The dot is the colour of the family, not a
+   claim about any one film — every film keeps Metro's own photograph. */
+.swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.vinyl-browse-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  font-size: .84rem;
+  color: var(--kf-muted);
+}
+
+.vinyl-browse-reset {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--kf-red);
+  font-family: var(--kf-font-display);
+  font-weight: 700;
+  font-size: .74rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Grid and list are the same cards under a different track definition. */
+.vinyl-cards { display: grid; gap: 14px; }
+
+.vinyl-cards--grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+
+.vinyl-cards--list { grid-template-columns: 1fr; }
+
+.vinyl-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: var(--kf-surface);
+  border: 1px solid var(--kf-border);
+}
+
+.vinyl-cards--list .vinyl-card { flex-direction: row; align-items: center; }
+
+.vinyl-card-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--kf-black);
+}
+
+.vinyl-cards--list .vinyl-card-thumb { width: 72px; aspect-ratio: 1 / 1; flex: 0 0 auto; }
+
+.vinyl-card-thumb--empty { display: block; border: 1px dashed var(--kf-border); }
+
+.vinyl-card-body { flex: 1 1 auto; min-width: 0; }
+
+.vinyl-card-name {
+  margin: 0 0 4px;
+  font-family: var(--kf-font-display);
+  font-weight: 700;
+  font-size: .86rem;
+  line-height: 1.35;
+  color: var(--kf-white);
+}
+
+.vinyl-card-meta {
+  margin: 0 0 12px;
+  font-size: .78rem;
+  color: var(--kf-muted);
+}
+
+.vinyl-card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.vinyl-card-actions button {
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid var(--kf-border);
+  color: var(--kf-silver);
+  font-family: var(--kf-font-display);
+  font-weight: 600;
+  font-size: .7rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, background-color .2s ease;
+}
+
+.vinyl-card-actions button:hover { border-color: var(--kf-silver); color: var(--kf-white); }
+
+.vinyl-card-use { border-color: rgba(232, 39, 31, .55) !important; color: var(--kf-red) !important; }
+
+.vinyl-card-use:hover { background: var(--kf-red) !important; color: var(--kf-white) !important; }
+
+.vinyl-card-save.is-on,
+.vinyl-card-compare.is-on { border-color: var(--kf-red); color: var(--kf-white); background: rgba(232, 39, 31, .18); }
+
+.vinyl-card-link {
+  font-size: .72rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--kf-muted);
+}
+
+.vinyl-card-link:hover { color: var(--kf-red); }
+
+/* Shortlist */
+.vinyl-saved {
+  margin-top: 18px;
+  padding: 16px;
+  background: var(--kf-black);
+  border: 1px solid var(--kf-border);
+}
+
+.vinyl-saved-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.vinyl-saved-tally { font-size: .8rem; color: var(--kf-muted); }
+
+.vinyl-saved-compare {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--kf-red);
+  font-family: var(--kf-font-display);
+  font-weight: 700;
+  font-size: .74rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.vinyl-saved-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+
+.vinyl-saved-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .82rem;
+  color: var(--kf-silver);
+}
+
+.vinyl-saved-item img { object-fit: cover; flex: 0 0 auto; }
+
+.vinyl-saved-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.vinyl-saved-use,
+.vinyl-saved-drop {
+  background: none;
+  border: 0;
+  padding: 0 4px;
+  color: var(--kf-muted);
+  font-family: var(--kf-font-display);
+  font-weight: 700;
+  font-size: .74rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.vinyl-saved-use:hover { color: var(--kf-red); }
+
+.vinyl-saved-drop { font-size: 1.1rem; letter-spacing: 0; }
+
+.vinyl-saved-drop:hover { color: var(--kf-white); }
+
+/* Compare overlay — rides on .lightbox for the backdrop and close button */
+/* .lb-stage is a centring flex row, built to hold one image. The comparison
+   stacks a grid above its note, so the axis has to be overridden or the note
+   lands alongside the films instead of underneath them. */
+.vinyl-compare-stage {
+  display: block;
+  max-width: 1000px;
+  width: 100%;
+  overflow-y: auto;
+  max-height: 84vh;
+}
+
+.vinyl-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--compare-cols, 2), minmax(0, 1fr));
+  gap: 18px;
+}
+
+.vinyl-compare-col {
+  padding: 16px;
+  background: var(--kf-surface);
+  border: 1px solid var(--kf-border);
+}
+
+.vinyl-compare-col img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 14px; }
+
+.vinyl-compare-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--kf-border);
+  font-size: .8rem;
+}
+
+.vinyl-compare-row span { color: var(--kf-muted); }
+
+.vinyl-compare-row strong { color: var(--kf-white); text-align: right; }
+
+.vinyl-compare-col .btn { width: 100%; margin-top: 14px; }
+
+.vinyl-compare-note {
+  margin: 18px 0 0;
+  font-size: .8rem;
+  color: var(--kf-muted);
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .vinyl-compare-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Wrap Studio garage / save modal ================================== */
+.studio-garage {
+  margin: 0 0 22px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--kf-border);
+}
+
+.studio-garage-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.studio-garage-account {
+  margin: 4px 0 0;
+  font-size: .78rem;
+  color: var(--kf-muted);
+  line-height: 1.45;
+}
+
+.studio-garage-signup {
+  flex: 0 0 auto;
+  padding: 0 14px;
+}
+
+.studio-progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.studio-progress {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.studio-progress-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .78rem;
+  color: var(--kf-muted);
+}
+
+.studio-progress-item.is-done {
+  color: var(--kf-white);
+}
+
+.studio-progress-mark {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--kf-border);
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.studio-progress-item.is-done .studio-progress-mark {
+  background: var(--kf-red);
+  border-color: var(--kf-red);
+}
+
+.studio-garage-switch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.studio-garage-switch select,
+.studio-save-panel input[type="text"],
+.studio-save-panel input[type="email"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  background: var(--kf-surface);
+  border: 1px solid var(--kf-border);
+  color: var(--kf-white);
+  font: inherit;
+}
+
+.studio-garage-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.studio-garage-empty {
+  font-size: .78rem;
+  color: var(--kf-muted);
+}
+
+.studio-garage-card {
+  border: 1px solid var(--kf-border);
+  background: var(--kf-surface);
+}
+
+.studio-garage-card.is-active {
+  border-color: var(--kf-red);
+}
+
+.studio-garage-card-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.studio-garage-card-btn strong {
+  font-family: var(--kf-font-display);
+  font-size: .8rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.studio-garage-card-btn span {
+  font-size: .72rem;
+  color: var(--kf-muted);
+}
+
+.studio-garage-card-bar {
+  height: 3px;
+  background: #1a1a1a;
+}
+
+.studio-garage-card-bar i {
+  display: block;
+  height: 100%;
+  background: var(--kf-red);
+}
+
+.studio-garage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Tighter horizontally so four buttons fit the row, but not shorter: these
+   were 40px, and the garage controls are the ones a rider taps one-handed
+   with the bike in front of them. Height is the axis a thumb misses on. */
+.studio-garage-actions .btn {
+  padding: 0 12px;
+}
+
+.studio-save-modal {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.studio-save-panel {
+  width: min(520px, 100%);
+  max-height: min(90vh, 720px);
+  overflow: auto;
+  padding: 28px 24px;
+  background: #0c0c0c;
+  border: 1px solid var(--kf-border);
+}
+
+.studio-save-panel .h3 {
+  margin: 0 0 .35em;
+}
+
+.studio-save-panel .p {
+  margin-bottom: 18px;
+}
+
+.studio-save-panel .studio-fields {
+  margin-bottom: 8px;
+}
+
+.studio-save-panel .studio-consent {
+  margin: 16px 0;
+}

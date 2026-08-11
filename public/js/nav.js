@@ -4,6 +4,9 @@
   const toggle = document.querySelector("[data-nav-toggle]");
   const closes = document.querySelectorAll("[data-nav-close]");
 
+  const FOCUSABLE =
+    'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+
   const setOpen = (open) => {
     if (!panel) return;
     panel.classList.toggle("is-open", open);
@@ -11,17 +14,49 @@
     if (backdrop) backdrop.classList.toggle("is-open", open);
     if (toggle) toggle.setAttribute("aria-expanded", String(open));
     document.body.classList.toggle("nav-lock", open);
+
+    if (open) {
+      // Move focus into the drawer so a keyboard user is not left behind the
+      // backdrop, and remember where to put it back.
+      panel.querySelector(FOCUSABLE)?.focus();
+    } else if (toggle && panel.contains(document.activeElement)) {
+      toggle.focus();
+    }
   };
 
+  const isOpen = () => Boolean(panel?.classList.contains("is-open"));
+
   if (toggle) {
-    toggle.addEventListener("click", () => {
-      setOpen(!panel?.classList.contains("is-open"));
-    });
+    toggle.addEventListener("click", () => setOpen(!isOpen()));
   }
   closes.forEach((el) => el.addEventListener("click", () => setOpen(false)));
   backdrop?.addEventListener("click", () => setOpen(false));
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") setOpen(false);
+    if (e.key === "Escape") {
+      setOpen(false);
+      document.querySelectorAll(".nav-dd.open").forEach((dd) => {
+        dd.classList.remove("open");
+        dd.querySelector(".nav-dd-btn")?.setAttribute("aria-expanded", "false");
+      });
+      return;
+    }
+
+    // Keep Tab inside the drawer while it covers the page.
+    if (e.key !== "Tab" || !isOpen()) return;
+    const items = [...panel.querySelectorAll(FOCUSABLE)].filter(
+      (el) => el.offsetParent !== null
+    );
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
   document.querySelectorAll(".nav-acc").forEach((acc) => {
@@ -60,6 +95,47 @@
     }
   });
 
+  /* ---- Header opacity past the fold ------------------------------------ */
+  // motion.js does the same thing on the pages that still load it; both write
+  // the same class, so running twice is harmless.
+  const header = document.querySelector(".site-header");
+  if (header) {
+    const sync = () => header.classList.toggle("is-solid", window.scrollY > 24);
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+  }
+
+  /* ---- Sticky mobile quote bar ----------------------------------------- */
+  // Revealed once the hero CTA has scrolled away, hidden again at the footer
+  // so it never sits on top of the footer's own links, and suppressed while a
+  // form field has focus so it cannot cover the keyboard target.
+  const sticky = document.querySelector("[data-sticky-cta]");
+  if (sticky) {
+    const footer = document.querySelector(".site-footer");
+    sticky.hidden = false;
+
+    const sync = () => {
+      const passedHero = window.scrollY > window.innerHeight * 0.6;
+      const atFooter = footer
+        ? footer.getBoundingClientRect().top < window.innerHeight
+        : false;
+      sticky.classList.toggle("is-in", passedHero && !atFooter);
+    };
+
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync, { passive: true });
+
+    const typing = (on) => (e) => {
+      if (e.target.closest("input, textarea, select")) {
+        document.body.classList.toggle("kf-typing", on);
+      }
+    };
+    document.addEventListener("focusin", typing(true));
+    document.addEventListener("focusout", typing(false));
+  }
+
+  /* ---- Active nav item -------------------------------------------------- */
   // Workers Static Assets serves these pages extensionless, so /gallery.html
   // in an href arrives as /gallery in the address bar. Normalise both sides.
   const normalise = (pathname) =>
@@ -86,5 +162,8 @@
     ? exact
     : links.filter((l) => l.href && path !== "/" && l.href !== "/" && path.startsWith(l.href + "/"));
 
-  matches.forEach(({ el }) => el.classList.add("is-active"));
+  matches.forEach(({ el }) => {
+    el.classList.add("is-active");
+    if (el.matches(".nav-cluster > a")) el.setAttribute("aria-current", "page");
+  });
 })();

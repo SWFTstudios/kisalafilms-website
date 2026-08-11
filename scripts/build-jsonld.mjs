@@ -57,7 +57,7 @@ const GARAGE_ID = `${SITE}/#garage`;
 const garage = () => ({
   "@type": "AutoBodyShop",
   "@id": GARAGE_ID,
-  name: "Kisala Films",
+  name: "K Films",
   description:
     "Motorcycle wrap film and transformation film, by appointment, from a one-person garage in Jersey City, NJ.",
   url: `${SITE}/`,
@@ -169,7 +169,7 @@ const PAGES = {
       "@type": "WebSite",
       "@id": `${SITE}/#website`,
       url: `${SITE}/`,
-      name: "Kisala Films",
+      name: "K Films",
       publisher: { "@id": GARAGE_ID },
     },
   ],
@@ -195,6 +195,14 @@ const PAGES = {
   ],
 
   "gallery.html": () => [breadcrumbs([["Home", "/"], ["Gallery", "/gallery.html"]])],
+  "quote.html": () => [
+    garage(),
+    breadcrumbs([["Home", "/"], ["Get a quote", "/quote.html"]]),
+  ],
+  "process.html": () => [
+    garage(),
+    breadcrumbs([["Home", "/"], ["Process", "/process.html"]]),
+  ],
   "about.html": () => [
     garage(),
     breadcrumbs([["Home", "/"], ["About", "/about.html"]]),
@@ -224,6 +232,7 @@ const PAGES = {
     breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Partial & accents", "/services/accent-package.html"]]),
   ],
   "services/transformation-film.html": () => [
+    offer("filmOnly", "Motorcycle build photography and film", "Photos and video of the strip-down, the install and the finished bike."),
     breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Transformation film", "/services/transformation-film.html"]]),
   ],
 };
@@ -259,7 +268,11 @@ for (const [rel, build] of Object.entries(PAGES)) {
   let html = stripExisting(readFileSync(path, "utf8"));
 
   const graph = build(html);
-  const anchor = '  <link rel="stylesheet" href="/css/carsy.css">';
+  // Anchored to the stylesheet link. A page registered above that has no link to
+  // anchor to is a mistake worth shouting about rather than skipping quietly —
+  // silently skipping is how the home page's structured data once froze at what
+  // it said before the redesign.
+  const anchor = '  <link rel="stylesheet" href="/css/kfilms.css">';
   if (!html.includes(anchor)) {
     console.error(`${rel}: no stylesheet anchor, skipped`);
     continue;

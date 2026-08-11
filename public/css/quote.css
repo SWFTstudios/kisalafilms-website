@@ -1,0 +1,628 @@
+/* /quote — the lead funnel.
+   Loads after kfilms.css and uses its tokens; nothing here redefines a colour
+   or a font, so a change to the design system reaches this page too. */
+
+.q-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(32px, 4vw, 56px);
+  align-items: start;
+  padding: clamp(40px, 6vw, 72px) 0 clamp(64px, 9vw, 112px);
+}
+
+@media (min-width: 1000px) {
+  .q-layout {
+    grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+  }
+}
+
+.q-main {
+  min-width: 0;
+}
+
+.q-intro {
+  margin-bottom: clamp(32px, 4vw, 48px);
+}
+
+.q-intro h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  margin-bottom: 0.25em;
+}
+
+.q-intro .p-lg {
+  margin-bottom: 0;
+}
+
+/* ——— Steps ——— */
+.q-step {
+  margin: 0 0 clamp(28px, 3.5vw, 44px);
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  background: var(--kf-card);
+}
+
+.q-step > legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  padding: 0;
+  font-family: var(--kf-font-display);
+  font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--kf-white);
+}
+
+.q-step-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: var(--kf-track);
+  color: var(--kf-red);
+}
+
+.q-legend-note {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  color: var(--kf-muted);
+}
+
+.q-legend-note + .q-choices,
+.q-legend-note + .q-uploads {
+  margin-top: 20px;
+}
+
+.q-step > legend + .q-choices,
+.q-step > legend + .q-grid,
+.q-step > legend + .fld {
+  margin-top: 20px;
+}
+
+.q-optional {
+  font-family: var(--kf-font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--kf-muted);
+}
+
+/* ——— Choice cards (radio + checkbox) ——— */
+.q-choices {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 560px) {
+  .q-choices--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .q-choices--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.q-choice {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+/* The control stays in the layout and on top of the card so it keeps its
+   native semantics and the focus ring lands where the eye already is —
+   hiding it with display:none would take it out of the tab order. */
+.q-choice input {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  opacity: 0;
+  margin: 0;
+}
+
+.q-choice-body {
+  display: block;
+  min-height: var(--kf-tap);
+  padding: 16px 16px 16px 46px;
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  background: var(--kf-surface);
+  transition: border-color var(--kf-duration-fast) var(--kf-ease),
+    background var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-choice:hover .q-choice-body {
+  border-color: var(--kf-border-strong);
+  background: var(--kf-card-hover);
+}
+
+/* The tick box. Selection is never signalled by colour alone: the mark itself
+   appears, the border thickens and the title turns white. */
+.q-choice-check {
+  position: absolute;
+  top: 17px;
+  left: 16px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--kf-border-strong);
+  border-radius: 3px;
+  background: var(--kf-black);
+  transition: border-color var(--kf-duration-fast) var(--kf-ease),
+    background var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-choice input[type="radio"] + .q-choice-body .q-choice-check {
+  border-radius: 50%;
+}
+
+.q-choice-check::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  transform: rotate(-45deg) translate(1px, -1px) scale(0.5);
+  opacity: 0;
+  transition: opacity var(--kf-duration-fast) var(--kf-ease),
+    transform var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-choice-title {
+  display: block;
+  font-family: var(--kf-font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: var(--kf-track-tight);
+  text-transform: uppercase;
+  color: var(--kf-silver);
+  transition: color var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-choice-note {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--kf-muted);
+}
+
+.q-choice input:checked + .q-choice-body {
+  border-color: var(--kf-red);
+  background: var(--kf-card-hover);
+  box-shadow: inset 0 0 0 1px var(--kf-red);
+}
+
+.q-choice input:checked + .q-choice-body .q-choice-check {
+  border-color: var(--kf-red);
+  background: var(--kf-red);
+}
+
+.q-choice input:checked + .q-choice-body .q-choice-check::after {
+  opacity: 1;
+  transform: rotate(-45deg) translate(1px, -1px) scale(1);
+}
+
+.q-choice input:checked + .q-choice-body .q-choice-title {
+  color: var(--kf-white);
+}
+
+.q-choice input:focus-visible + .q-choice-body {
+  outline: 2px solid var(--kf-red-cta);
+  outline-offset: 2px;
+}
+
+.q-choice--compact .q-choice-body {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* ——— Pills (preferred contact) ——— */
+.q-subfield {
+  margin: 24px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.q-subfield > .fld-label {
+  display: block;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.q-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.q-pill {
+  position: relative;
+  cursor: pointer;
+}
+
+.q-pill input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.q-pill span {
+  display: flex;
+  align-items: center;
+  min-height: var(--kf-tap);
+  padding: 0 22px;
+  font-family: var(--kf-font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: var(--kf-track-tight);
+  text-transform: uppercase;
+  color: var(--kf-silver);
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  background: var(--kf-surface);
+  transition: border-color var(--kf-duration-fast) var(--kf-ease),
+    color var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-pill:hover span {
+  border-color: var(--kf-border-strong);
+}
+
+/* Checked pills carry a tick as well as the colour shift. */
+.q-pill input:checked + span {
+  color: var(--kf-white);
+  border-color: var(--kf-red);
+  box-shadow: inset 0 0 0 1px var(--kf-red);
+}
+
+.q-pill input:checked + span::before {
+  content: "✓";
+  margin-right: 8px;
+  color: var(--kf-red);
+}
+
+.q-pill input:focus-visible + span {
+  outline: 2px solid var(--kf-red-cta);
+  outline-offset: 2px;
+}
+
+/* ——— Field grids ——— */
+.q-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 560px) {
+  .q-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .q-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ——— Conditional blocks ——— */
+/* quote.js toggles [hidden]; the attribute alone is enough because nothing
+   here sets a competing display value. */
+.q-conditional[hidden] {
+  display: none;
+}
+
+.q-conditional:not(.q-step) {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px dashed var(--kf-border);
+  border-radius: var(--kf-radius);
+  background: var(--kf-surface);
+}
+
+.q-note {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: var(--kf-muted);
+}
+
+/* ——— Uploaders ——— */
+.q-uploads {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 760px) {
+  .q-uploads { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.q-upload-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 128px;
+  padding: 24px 18px;
+  text-align: center;
+  border: 1px dashed var(--kf-border-strong);
+  border-radius: var(--kf-radius);
+  background: var(--kf-surface);
+  cursor: pointer;
+  transition: border-color var(--kf-duration-fast) var(--kf-ease),
+    background var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-upload-drop:hover,
+.q-upload-drop.is-dragover {
+  border-color: var(--kf-red);
+  background: var(--kf-card-hover);
+}
+
+/* The input inside is visually hidden, so the ring has to be drawn here. */
+.q-upload-drop:focus-within {
+  outline: 2px solid var(--kf-red-cta);
+  outline-offset: 2px;
+}
+
+.q-upload-title {
+  font-family: var(--kf-font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: var(--kf-track-tight);
+  text-transform: uppercase;
+  color: var(--kf-white);
+}
+
+.q-upload-note {
+  font-size: 0.85rem;
+  color: var(--kf-muted);
+}
+
+.q-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.q-thumbs:empty {
+  display: none;
+}
+
+.q-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  overflow: hidden;
+  background: var(--kf-surface);
+}
+
+.q-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.q-thumb-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  font-size: 15px;
+  line-height: 1;
+  color: #ffffff;
+  background: rgba(5, 5, 5, 0.82);
+  border: 1px solid var(--kf-border-strong);
+  border-radius: 50%;
+  transition: background var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-thumb-remove:hover {
+  background: var(--kf-red);
+  border-color: var(--kf-red);
+}
+
+.q-thumb-name {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 4px 6px;
+  font-size: 0.65rem;
+  color: var(--kf-silver);
+  background: rgba(5, 5, 5, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ——— Errors ——— */
+.q-error {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: #ff6a6a;
+}
+
+/* A red word is not a message on its own, so each one is prefixed. */
+.q-error::before {
+  content: "! ";
+  font-weight: 700;
+}
+
+.q-error[hidden] {
+  display: none;
+}
+
+.fld.has-error input,
+.fld.has-error select,
+.fld.has-error textarea {
+  border-color: #ff6a6a;
+}
+
+.q-form-error {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  font-size: 0.92rem;
+  color: #ffb4b4;
+  border: 1px solid rgba(255, 106, 106, 0.5);
+  border-radius: var(--kf-radius);
+  background: rgba(226, 31, 38, 0.08);
+}
+
+.q-form-error[hidden] {
+  display: none;
+}
+
+/* ——— Submit ——— */
+.q-submit {
+  padding-top: 8px;
+}
+
+.q-submit-btn {
+  width: 100%;
+  min-height: 56px;
+  font-size: 1.05rem;
+}
+
+@media (min-width: 560px) {
+  .q-submit-btn { width: auto; min-width: 280px; }
+}
+
+.q-submit-btn[disabled] {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+.q-submit-note {
+  margin: 14px 0 0;
+  font-size: 0.85rem;
+  color: var(--kf-muted);
+}
+
+/* ——— Summary ——— */
+.q-summary {
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  background: var(--kf-surface);
+}
+
+/* On one column every answer is already on screen a few centimetres above,
+   so a recap underneath the submit button is noise rather than reassurance. */
+@media (max-width: 999px) {
+  .q-summary { display: none; }
+}
+
+@media (min-width: 1000px) {
+  .q-summary {
+    position: sticky;
+    top: calc(var(--kf-header-h) + 24px);
+  }
+}
+
+.q-summary-title {
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+  letter-spacing: var(--kf-track-tight);
+}
+
+.q-summary-list {
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.q-summary-row {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--kf-border);
+}
+
+.q-summary-row[hidden] {
+  display: none;
+}
+
+.q-summary-row dt {
+  font-family: var(--kf-font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: var(--kf-track);
+  text-transform: uppercase;
+  color: var(--kf-muted);
+  padding-top: 2px;
+}
+
+.q-summary-row dd {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--kf-white);
+}
+
+.q-summary-empty,
+.q-summary-note {
+  margin: 16px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--kf-muted);
+}
+
+.q-summary-empty[hidden] {
+  display: none;
+}
+
+/* ——— Thanks page ——— */
+.q-thanks {
+  padding: clamp(56px, 9vw, 112px) 0;
+}
+
+.q-thanks h1 {
+  font-size: clamp(2.75rem, 6.5vw, 5rem);
+}
+
+.q-next {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: clamp(32px, 4vw, 48px) 0 0;
+  padding: 0;
+}
+
+@media (min-width: 760px) {
+  .q-next { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.q-next li {
+  padding: 22px;
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  background: var(--kf-card);
+}
+
+.q-next h2 {
+  font-size: 1.05rem;
+  margin-bottom: 0.4em;
+}
+
+.q-next p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--kf-silver);
+}
+
+.q-next-num {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--kf-font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: var(--kf-track);
+  color: var(--kf-red);
+}
