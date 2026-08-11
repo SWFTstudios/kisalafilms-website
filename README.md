@@ -1,16 +1,18 @@
-# Kisala Films website
+# K Films website
 
-Motorcycle wrap studio and film house for **Elombe Kisala**, Jersey City NJ. Film means two things here: the vinyl that goes on the bike, and the film shot of it happening.
+Motorcycle and helmet wrap garage for **Elombe Kisala**, Jersey City NJ, serving riders across NYC and North Jersey.
 
-The site follows the Vossen Wheels pattern — show the product, prove it in the wild, capture the lead — mapped onto wraps: finish catalogue, build gallery, and a configurator that emails a build sheet.
+One job: turn a local rider into a quote request. Every page ends in a route to [`/quote`](./public/quote.html), and everything else on the site exists to make sending that form feel like an obvious idea rather than a risk.
 
 ## Stack
 
 - Static multi-page site in `public/`, no build step
-- Single design system: [`public/css/carsy.css`](./public/css/carsy.css) — dark premium, logo red `#e8271f`, Archivo + Mulish
+- Single design system: [`public/css/kfilms.css`](./public/css/kfilms.css) — near-black surfaces, one red accent `#e21f26`, Barlow Condensed + Inter. [`/styleguide`](./public/styleguide.html) renders the live tokens.
+  - [`public/css/quote.css`](./public/css/quote.css) and [`public/css/studio.css`](./public/css/studio.css) extend it for the two form-heavy pages. Both use its variables and define no colours or fonts of their own.
 - Vanilla JS, one module per concern:
-  - [`public/js/nav.js`](./public/js/nav.js) — sticky header, mobile drawer, active-state matching
-  - [`public/js/site.js`](./public/js/site.js) — FAQ accordions, scroll reveals, filter tabs
+  - [`public/js/nav.js`](./public/js/nav.js) — sticky header, mobile drawer with focus trapping, active-state matching, sticky mobile CTA
+  - [`public/js/site.js`](./public/js/site.js) — FAQ accordions, scroll reveals, filter tabs, mobile swipe strips
+  - [`public/js/quote.js`](./public/js/quote.js) — the quote form: conditional steps, photo uploads with previews, validation, live summary
   - [`public/js/wrap-studio.js`](./public/js/wrap-studio.js) — photo attachments, live build summary, ballpark estimate
   - [`public/js/gallery.js`](./public/js/gallery.js) — gallery intro and the photo/video/embed lightbox
   - [`public/js/bike-search.js`](./public/js/bike-search.js) — year/make/model dropdowns
@@ -25,9 +27,9 @@ The site follows the Vossen Wheels pattern — show the product, prove it in the
 - Deployed as a Cloudflare Worker with [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
 - Auto-deploys on push to `main` → https://kisalafilms-website.elombe.workers.dev
 
-Chrome (header, footer, `<head>`) is duplicated in each HTML file rather than templated. Edit one page's header and you must edit them all.
+Chrome (header, drawer, footer) is duplicated in each HTML file rather than templated, but it is not hand-edited: [`public/index.html`](./public/index.html) is the source of truth and [`scripts/build-v3-chrome.py`](./scripts/build-v3-chrome.py) copies the blocks between its `<!-- CHROME:HEADER -->` and `<!-- CHROME:FOOTER -->` markers into every other page carrying the same markers. **Edit the home page's header, then run `npm run build`.**
 
-`site.css` is dead — no page links it. `carsy.css` is the only stylesheet in play.
+There is no motion library. Page transitions, GSAP, ScrollTrigger and Lenis were all removed with v3 — reveals are a `.reveal` class and one IntersectionObserver in `site.js`, and everything else is a CSS transition. Nothing on the site loads a third-party script except the Google Fonts stylesheet and GA4.
 
 ## Develop locally
 
@@ -48,11 +50,14 @@ Worker `name` in `wrangler.jsonc` must stay `kisalafilms-website` to match the C
 
 ## Information architecture
 
-Primary nav: **Services · Gallery · Pricing · Shop · About · Contact**, with **Build your wrap** as the standing CTA.
+Primary nav: **Home · Services · Gallery · About · Process · FAQ**, with **Get a quote** as the standing CTA. The commercial pages that are not part of that story — Pricing, Shop, the vinyl catalog, the configurator, Login — stay reachable from the footer and the mobile drawer.
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Cinematic hero, service tiers, finish tiles, build gallery, reel rail, process |
+| `/` | Hero, services, why K Films, gallery strip, process, local band, final CTA |
+| `/quote` | **The conversion page.** Bike or helmet, what you want done, photos, contact — one form |
+| `/quote-thanks` | Quote success page, fires the conversion event (`noindex`) |
+| `/process` | What happens between sending the form and collecting the bike |
 | `/wrap-studio` | The configurator — bike, service, colour, photos, estimate, send |
 | `/vinyl-catalog` | Metro film CMS browse (D1) — start a project from any film |
 | `/project` | Game-like vinyl project onboarding → save or Stripe order |
@@ -71,9 +76,23 @@ Routes have no `.html` — see [URLs have no `.html`](#urls-have-no-html).
 
 Retired routes (`/films`, `/watch`, `/series`, `/dispatches`, `/inspo-museum`, `/work-with-me`) are meta-refresh redirect stubs.
 
+## The quote form
+
+[`/quote`](./public/quote.html) is the page the whole site funnels into, and the one to be most careful with. It asks for the least a real price depends on: bike or helmet, what you want done, photos, and how to reach you. Steps that do not apply are hidden and the remaining ones renumber, so a helmet-only request never sees a year/make/model field.
+
+**It posts natively as `multipart/form-data` to FormSubmit and must stay that way.** FormSubmit is the only path that delivers the photos, it sits behind a Cloudflare managed challenge so it cannot be proxied from the Worker, and its AJAX endpoint accepts a request with attachments and silently drops them. `quote.js` validates and curates the file list first, then gets out of the way — it does not submit the form, the browser does.
+
+That has a consequence worth internalising: **a JavaScript error must never be able to swallow a lead.** `validate()` runs inside a `try`/`catch`, and a validator that throws lets the submission through rather than blocking it. A half-checked request costs a follow-up email; a suppressed one costs the job. The form also works with JavaScript off — every field is present, nothing is gated behind a script, and `npm test` asserts that.
+
+Alongside the native post, `quote.js` fires a best-effort `fetch` with `keepalive` at `POST /api/quote`, which records the text fields in D1 ([`src/quote.ts`](./src/quote.ts), [`migrations/0004_quote_requests.sql`](./migrations/0004_quote_requests.sql)). It is deliberately fire-and-forget: the email is the delivery mechanism, the database is the record, and losing the record must not cost the email.
+
+Upload limits live in `quote.uploads` in the config — 8 photos per uploader, 5MB each, 9MB combined against FormSubmit's 10MB ceiling.
+
+`?item=helmet` or `?item=bike` preselects the type, so a service page can open the form part-answered.
+
 ## Wrap Studio
 
-`/wrap-studio` is the primary conversion path. A rider selects their bike from [`public/data/motorcycles.json`](./public/data/motorcycles.json), picks a service and add-ons, searches [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) for an exact film, attaches photos of the bike, and sends one build sheet.
+`/wrap-studio` is the older, longer configurator, kept because it prices a build in a way the quote form deliberately does not. A rider selects their bike from [`public/data/motorcycles.json`](./public/data/motorcycles.json), picks a service and add-ons, searches [`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) for an exact film, attaches photos of the bike, and sends one build sheet.
 
 **It submits as a native `multipart/form-data` POST, and it has to stay that way.** FormSubmit only delivers attachments through its standard endpoint; the AJAX endpoint accepts the request and silently drops the files. That is why this form does not use `inquiry-wizard.js` and redirects via `_next` to `/thanks` instead of staying on the page.
 
@@ -164,20 +183,20 @@ FormSubmit requires a one-time activation per address. The first submission trig
 
 Two different mechanisms, and the difference matters:
 
-- **Wrap Studio** posts natively as `multipart/form-data`, because that is the only endpoint that delivers the photo attachments. Anything added to that form has to be a plain form field.
+- **`/quote` and Wrap Studio** post natively as `multipart/form-data`, because that is the only endpoint that delivers the photo attachments. Anything added to either form has to be a plain form field.
 - **`/wrap-quote/`** posts through `fetch` to FormSubmit's AJAX endpoint via `inquiry-wizard.js`. It has no attachments, so it can stay on the page.
 
-`/wrap-quote/` forks its own stylesheet and its own markup, which makes it easy to forget. It is still on the shared config, so its two tier prices move with `pricingMode` like everywhere else — worth keeping that way, since it is the page paid traffic lands on and the last place you'd want to advertise a rate you've stopped honouring. `npm test` fails if a price there loses its `data-cfg`.
+`/wrap-quote/` forks its own markup and restates the design tokens in an inline `<style>`, which makes it easy to forget. It carries no site chrome on purpose — it is where paid traffic lands, and the only thing to do on it is fill in the form. **Its `:root` block is a copy of the one in `kfilms.css` and has to be changed in step with it.** It is still on the shared config, so its two tier prices move with `pricingMode` like everywhere else — worth keeping that way, since it is the page paid traffic lands on and the last place you'd want to advertise a rate you've stopped honouring. `npm test` fails if a price there loses its `data-cfg`.
 
 ## Build
 
-There is no bundler and no compile step — the HTML in `public/` is what ships. But because the chrome is copy-pasted into every page, the parts that must agree across all 28 of them are generated rather than hand-edited:
+There is no bundler and no compile step — the HTML in `public/` is what ships. But because the chrome is copy-pasted into every page, the parts that must agree across all of them are generated rather than hand-edited:
 
 ```bash
 npm run build   # then npm test
 ```
 
-That runs, in order: the city landing pages, the shared `<script>` tags, CTA tracking, internal links, canonicals/OG/robots/sitemap, and JSON-LD. **The order matters** — each step reads what the one before it wrote, so run the chain rather than a single script. Every step is idempotent and strips its own previous output, so re-running never stacks duplicates and a clean run prints `unchanged` for everything.
+That runs, in order: the shop and city landing pages, the header/drawer/footer chrome, the shared `<script>` tags, CTA tracking, internal links, canonicals/OG/robots/sitemap, and JSON-LD. **The order matters** — each step reads what the one before it wrote, so run the chain rather than a single script. The chrome step has to come before CTA tracking, or the tracking labels minted for the home page get copied onto every other page. Every step is idempotent and strips its own previous output, so re-running never stacks duplicates and a clean run prints `unchanged` for everything.
 
 **Run it after adding a page.** The sitemap is generated from the files actually present, so a new page is invisible to search until you do.
 
@@ -192,14 +211,17 @@ Cloudflare Static Assets serves `public/pricing.html` at `/pricing` and 307-redi
 ## Tests
 
 ```bash
-npm test                 # 106 checks, jsdom, no server needed
+npm test                 # 135 checks, jsdom, no server needed
 npm run verify:links     # crawls every internal link against a running site
-npm run verify:browser    # drives the Wrap Studio in real Chrome
+npm run verify:browser   # posts both forms for real in Chrome
+npm run audit            # responsive + a11y sweep at six widths in Chrome
 ```
 
-`npm test` loads each page under jsdom, runs its scripts, and asserts on the result: config hydration, transport fees, the summary and hidden lead fields, the vinyl browser, the city pages, gallery metadata, canonicals, structured data and the analytics events. It reads from `public/`, so it catches a stale generated file as readily as a broken script.
+`npm test` loads each page under jsdom, runs its scripts, and asserts on the result: config hydration, transport fees, the quote form's conditional steps and validation, the summary and hidden lead fields, the vinyl browser, the city pages, gallery metadata, canonicals, structured data, that every image a page asks for exists on disk, and the analytics events. It reads from `public/`, so it catches a stale generated file as readily as a broken script.
 
-The other two need `npm run dev` running in another terminal.
+The other three need `npm run dev` running in another terminal.
+
+`npm run audit` loads every page at 375/390/430/768/1024/1440 and reports what only a rendering engine can see: horizontal overflow, tap targets under 44px, images with no reserved dimensions, duplicate IDs, unlabelled fields, links with no accessible name, and console errors.
 
 `verify:browser` covers the three things jsdom cannot answer: that the hidden estimate fields bound with `form="wrap-studio"` really do submit, that the native multipart body really does carry the photo attachments, and that hydration lands before first paint. **It never contacts FormSubmit** — it repoints the form at a throwaway local server and inspects the multipart body it receives. `PRINT_LEAD=1` prints that captured build sheet, which is the quickest way to see exactly what an inquiry will look like in the inbox. It needs a Chrome binary; set `CHROME_PATH` if it isn't at `/usr/local/bin/google-chrome`.
 
