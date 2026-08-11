@@ -12,8 +12,9 @@ page is the source of truth, and the rest are written from it.
     <!-- CHROME:FOOTER start ... -->  ...  <!-- CHROME:FOOTER end -->
 
 is copied verbatim into every other page carrying the same markers. Pages
-without the markers (the carsy.css pages, the shop and city generators' output)
-are left alone.
+without them are left alone: the redirect stubs have no chrome, and
+/wrap-quote/ is a paid-ads landing page that deliberately carries none so a
+visitor has nowhere to go but the form.
 
 Run order matters: this has to come before wire-tracking.py, or the CTA labels
 minted for index.html get copied onto every other page. The chrome's own CTAs

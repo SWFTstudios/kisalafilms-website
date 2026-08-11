@@ -19,18 +19,46 @@ import puppeteer from "puppeteer-core";
 const BASE = process.env.BASE_URL || "http://127.0.0.1:8787";
 const CHROME = process.env.CHROME_PATH || "/usr/local/bin/google-chrome";
 
-/* The v3 pages. The older carsy.css pages are audited by eye until they are
-   redesigned; holding them to this bar today would only produce noise nobody
-   is going to act on. */
+/* Every page a rider can reach. This used to be the eight v3 pages, with the
+   rest excused as "audited by eye" while they were still on the old stylesheet;
+   they are all on one system now, so there is nothing left to excuse. Redirect
+   stubs are not listed because there is no layout to measure. */
 const ROUTES = [
   "/",
   "/services",
+  "/services/full-wraps",
+  "/services/accent-package",
+  "/services/transformation-film",
   "/gallery",
   "/about",
   "/process",
   "/faq",
   "/quote",
   "/quote-thanks",
+  "/pricing",
+  "/contact",
+  "/locations",
+  "/locations/jersey-city",
+  "/locations/brooklyn",
+  "/locations/new-york-city",
+  "/vinyl-catalog",
+  "/vinyl-catalog/film",
+  "/project",
+  "/project-thanks",
+  "/wrap-studio",
+  "/shop",
+  "/shop/wrap",
+  "/shop/wrap/gloss",
+  "/shop/k-merch",
+  "/shop/photoshoot",
+  "/testimonials",
+  "/journal",
+  "/login",
+  "/styleguide",
+  "/thanks",
+  "/deposit-thanks",
+  "/wrap-quote/",
+  "/404",
 ];
 
 /* Two small phones, a large phone, a tablet, a small laptop, a desktop. */

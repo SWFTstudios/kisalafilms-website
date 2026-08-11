@@ -150,20 +150,10 @@ def apply_to(path: Path) -> str:
     page = strip_existing(page)
     tags = build_tags(rel, read_title(page), read_description(page))
 
-    # Two stylesheets are live while the v3 migration finishes; anchor on
-    # whichever one this page links so the block lands in the same place on both.
-    anchor = next(
-        (
-            tag
-            for tag in (
-                '  <link rel="stylesheet" href="/css/kfilms.css">',
-                '  <link rel="stylesheet" href="/css/carsy.css">',
-            )
-            if tag in page
-        ),
-        None,
-    )
-    if anchor:
+    # Anchored above the stylesheet so the block lands in the same place on every
+    # page. /wrap-quote/ has inline styles and no link, hence the fallback.
+    anchor = '  <link rel="stylesheet" href="/css/kfilms.css">'
+    if anchor in page:
         page = page.replace(anchor, tags + anchor, 1)
     elif "</head>" in page:
         page = page.replace("</head>", tags + "</head>", 1)
