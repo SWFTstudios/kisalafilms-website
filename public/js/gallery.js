@@ -179,11 +179,41 @@
     if (e.target === modal || e.target === stage) close();
   });
 
+  const FOCUSABLE =
+    'a[href], button:not([disabled]), input:not([disabled]), select, textarea, video[controls], iframe, [tabindex]:not([tabindex="-1"])';
+
   document.addEventListener("keydown", (e) => {
     if (modal.hidden) return;
-    if (e.key === "Escape") close();
-    else if (e.key === "ArrowLeft") step(-1);
-    else if (e.key === "ArrowRight") step(1);
+
+    if (e.key === "Escape") {
+      close();
+      return;
+    }
+    if (e.key === "ArrowLeft") {
+      step(-1);
+      return;
+    }
+    if (e.key === "ArrowRight") {
+      step(1);
+      return;
+    }
+
+    // The viewer covers the page, so Tab has to stay inside it — otherwise
+    // focus walks off into a grid the user cannot see.
+    if (e.key !== "Tab") return;
+    const items = [...modal.querySelectorAll(FOCUSABLE)].filter(
+      (el) => !el.hidden && el.offsetParent !== null
+    );
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
   /* ---- Empty-state note (reacts to site.js filtering) ------------------- */
@@ -227,19 +257,22 @@
     else img.addEventListener("load", () => applyOgAspect(item), { once: true });
   });
 
-  /* ---- Build / Film mode tabs (Vossen-style) ---------------------------- */
-  document.querySelectorAll("[data-gallery-mode]").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      document.querySelectorAll("[data-gallery-mode]").forEach((t) => {
-        const on = t === tab;
-        t.classList.toggle("is-active", on);
-      });
-      const mode = tab.getAttribute("data-gallery-mode");
-      const filterKey = mode === "films" ? "films" : "all";
-      const filterBtn = document.querySelector(
-        `[data-filter-tabs] button[data-filter="${filterKey}"]`
+  /* ---- Hide filters with nothing behind them -----------------------------
+   * The markup lists every category the garage offers, including ones it has
+   * not shot yet, so a first helmet build lights up its filter without anyone
+   * editing this page. Until then the button would only lead to an empty grid,
+   * so it is removed rather than shown and disabled — a category that isn't
+   * there reads better than one that is there and does nothing.
+   */
+  if (tabs) {
+    const all = Array.from(grid.querySelectorAll(".masonry-item"));
+    tabs.querySelectorAll("button[data-filter]").forEach((btn) => {
+      const key = btn.getAttribute("data-filter");
+      if (key === "all") return;
+      const has = all.some((item) =>
+        (item.getAttribute("data-filter-item") || "").split(/\s+/).includes(key)
       );
-      filterBtn?.click();
+      if (!has) btn.remove();
     });
-  });
+  }
 })();

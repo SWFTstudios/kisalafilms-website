@@ -34,6 +34,9 @@
 
   const $ = (sel, root) => (root || form).querySelector(sel);
   const $$ = (sel, root) => Array.from((root || form).querySelectorAll(sel));
+  /* The summary aside is a sibling of the form, not a descendant, so it has to
+     be looked up from the document or every row silently stays empty. */
+  const $doc = (sel) => document.querySelector(sel);
 
   const live = $("[data-live]");
   const formError = $("[data-form-error]");
@@ -321,15 +324,15 @@
     let filled = 0;
 
     Object.keys(data).forEach((key) => {
-      const row = $(`[data-summary-row="${key}"]`);
-      const out = $(`[data-summary-out="${key}"]`);
+      const row = $doc(`[data-summary-row="${key}"]`);
+      const out = $doc(`[data-summary-out="${key}"]`);
       const value = data[key];
       if (out) out.textContent = value;
       if (row) row.hidden = !value;
       if (value) filled += 1;
     });
 
-    const empty = $("[data-summary-empty]");
+    const empty = $doc("[data-summary-empty]");
     if (empty) empty.hidden = filled > 0;
 
     // Carried into the email as one readable line, because FormSubmit's table
@@ -456,7 +459,9 @@
       }
       announce(`${real.length} field${real.length === 1 ? "" : "s"} need attention.`);
       first.focus({ preventScroll: true });
-      first.scrollIntoView({ block: "center", behavior: "smooth" });
+      if (typeof first.scrollIntoView === "function") {
+        first.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
       return false;
     }
 
@@ -521,7 +526,17 @@
       return;
     }
 
-    if (!validate()) {
+    // A validator that throws must not become a wall between the rider and the
+    // garage. Letting a half-checked request through costs a follow-up email;
+    // swallowing it costs the job.
+    let ok = true;
+    try {
+      ok = validate();
+    } catch (err) {
+      console.error("quote validation failed to run", err);
+    }
+
+    if (!ok) {
       e.preventDefault();
       return;
     }
