@@ -210,11 +210,19 @@
     return `Build ${Object.keys(garage.setups).length + 1}`;
   }
 
+  /**
+   * Fields hydrated from the config belong to the page, not to the rider's
+   * draft. `pricing_mode` is the one that bites: saved under founding pricing,
+   * restored months later, it would quote a rate we had stopped honouring.
+   */
+  const isConfigOwned = (el) => el.hasAttribute?.("data-cfg-attr") || el.hasAttribute?.("data-cfg");
+
   function collectDraft() {
     const fields = {};
     Array.from(form.elements).forEach((el) => {
       if (!el.name || el.name.startsWith("_")) return;
       if (el.type === "file") return;
+      if (isConfigOwned(el)) return;
       if (el.type === "checkbox" && el.name === "addons") return;
       if (el.type === "checkbox" && el.name === "consent") return;
       if (el.type === "radio") {
@@ -447,6 +455,9 @@
       if (["year", "make", "model", "addons"].includes(name)) return;
       const el = form.elements.namedItem(name);
       if (!el) return;
+      // Drafts saved before this rule still carry config-owned values; the live
+      // element decides, so a stale one is dropped rather than written back.
+      if (isConfigOwned(el)) return;
       if (el instanceof RadioNodeList || (el.length && el[0]?.type === "radio")) {
         Array.from(el).forEach((n) => {
           n.checked = n.value === value;

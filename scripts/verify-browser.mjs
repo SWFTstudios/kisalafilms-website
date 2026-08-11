@@ -159,6 +159,12 @@ async function open(path, { mode } = {}) {
     // pricingMode is read once into a closure const, so flipping it at runtime
     // does nothing. Rewrite the config on the wire instead — that exercises the
     // same path an owner takes when they edit the file, without touching disk.
+    //
+    // The cache has to go with it. By the time this runs, every route has been
+    // loaded once and kisala-config.js is sitting in the browser's memory cache;
+    // a cache hit emits no request event, so the patch silently does not happen
+    // and the page quotes founding while the test asks for standard.
+    await page.setCacheEnabled(false);
     await page.setRequestInterception(true);
     page.on("request", async (req) => {
       if (!req.url().endsWith("/js/kisala-config.js")) return req.continue();
@@ -420,8 +426,11 @@ try {
     });
     await tap(page, "[data-compare-close]");
 
-    // "Use this film" must still write the same hidden fields the typeahead does.
-    await tap(page, "[data-browse-grid] [data-use]");
+    // Adding a film to the build must write the same hidden fields the typeahead
+    // does. This was a separate "Use this film" button on a [data-use] hook; the
+    // catalogue folded the two actions together, and picking the colour is now
+    // part of what adding does.
+    await tap(page, "[data-browse-grid] [data-add-build]");
     await check("using a film from the browser fills the colour field", async () =>
       assert((await value(page, "[data-vinyl-label]")).length > 0, "vinyl_color is empty"));
     await check("the picked film reaches the summary", async () => {
