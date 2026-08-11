@@ -175,6 +175,24 @@
           <p class="p-lg">A couple of minutes, no payment, no obligation. The more you tell us, the closer the number comes back.</p>
         </header>
 
+        <!-- Ships hidden and is unhidden by quote.js. Without JavaScript this
+             form is one long page you scroll, and a progress bar over it would
+             be describing a journey nobody is on. -->
+        <div class="q-progress" data-progress hidden>
+          <div class="q-progress-head">
+            <p class="q-progress-count">
+              Step <span data-progress-current>1</span> of <span data-progress-total>7</span>
+            </p>
+            <p class="q-progress-name" data-progress-name></p>
+          </div>
+          <div class="q-progress-track" data-progress-track role="progressbar"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+               aria-label="Quote request progress">
+            <span class="q-progress-fill" data-progress-fill></span>
+          </div>
+          <ol class="q-progress-dots" data-progress-dots></ol>
+        </div>
+
         <!-- This always posts natively as multipart/form-data to FormSubmit,
              with or without JavaScript. FormSubmit sits behind a Cloudflare
              managed challenge, so only a real browser can reach it and the
@@ -352,7 +370,7 @@
 
           <fieldset class="q-step q-conditional" id="step-helmet" hidden>
             <legend>
-              <span class="q-step-num" data-helmet-step-num>Step 3</span>
+              <span class="q-step-num">Step 3</span>
               What helmet is it?
             </legend>
 
@@ -389,7 +407,7 @@
           <!-- Step 4 ------------------------------------------------------ -->
           <fieldset class="q-step">
             <legend>
-              <span class="q-step-num" data-step-num="4">Step 4</span>
+              <span class="q-step-num">Step 4</span>
               Tell us about your project
             </legend>
 
@@ -399,11 +417,20 @@
               <textarea id="description" name="description" aria-describedby="description-hint" data-required></textarea>
               <p class="q-error" data-error-for="description" hidden></p>
             </div>
+          </fieldset>
 
-            <div class="q-grid q-grid--2" style="margin-top:24px">
+          <!-- Step 5 ------------------------------------------------------ -->
+          <fieldset class="q-step" id="step-film">
+            <legend>
+              <span class="q-step-num">Step 5</span>
+              Finish and film
+            </legend>
+            <p class="q-legend-note">The finish decides the look; the film decides the exact shade. Answer as much of this as you know &mdash; &ldquo;not sure&rdquo; is a real answer, and samples come out of the drawer either way.</p>
+
+            <div class="q-grid q-grid--2">
               <div class="fld">
                 <label for="finish">Desired finish</label>
-                <select id="finish" name="finish" data-summary-source="finish">
+                <select id="finish" name="finish" data-finish-input>
                   <option value="">Not sure yet</option>
                   <option>Gloss</option>
                   <option>Satin</option>
@@ -419,12 +446,90 @@
                 <input type="text" id="desired_colour" name="desired_colour" autocomplete="off" placeholder="Deep red, matte black…">
               </div>
             </div>
+
+            <fieldset class="q-subfield">
+              <legend class="fld-label">What kind of film?</legend>
+              <p class="q-legend-note">Pick more than one for a mix. Vinyl over the bodywork with clear PPF on the leading edges is the usual pairing.</p>
+              <div class="q-choices q-choices--2">
+                <label class="q-choice q-choice--compact">
+                  <input type="checkbox" name="film_types" value="Vinyl wrap film" data-film-type-input>
+                  <span class="q-choice-body">
+                    <span class="q-choice-check" aria-hidden="true"></span>
+                    <span class="q-choice-title">Vinyl wrap film</span>
+                    <span class="q-choice-note">Colour and finish over the bodywork</span>
+                  </span>
+                </label>
+                <label class="q-choice q-choice--compact">
+                  <input type="checkbox" name="film_types" value="Coloured PPF" data-film-type-input>
+                  <span class="q-choice-body">
+                    <span class="q-choice-check" aria-hidden="true"></span>
+                    <span class="q-choice-title">Coloured PPF</span>
+                    <span class="q-choice-note">Colour with protection film&rsquo;s thickness and self-healing</span>
+                  </span>
+                </label>
+                <label class="q-choice q-choice--compact">
+                  <input type="checkbox" name="film_types" value="Clear PPF" data-film-type-input>
+                  <span class="q-choice-body">
+                    <span class="q-choice-check" aria-hidden="true"></span>
+                    <span class="q-choice-title">Clear PPF</span>
+                    <span class="q-choice-note">Invisible armour on the tank, nose and edges</span>
+                  </span>
+                </label>
+                <label class="q-choice q-choice--compact">
+                  <input type="checkbox" name="film_types" value="Not sure — recommend one" data-film-type-input>
+                  <span class="q-choice-body">
+                    <span class="q-choice-check" aria-hidden="true"></span>
+                    <span class="q-choice-title">Not sure</span>
+                    <span class="q-choice-note">Tell me what suits the bike and the budget</span>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- The film browser is an enhancement on top of the two fields
+                 above, and ships hidden so it never appears as a dead control.
+                 quote-films.js unhides it, and fetches the catalogue only when
+                 the panel is opened — it is half a megabyte, and this is the
+                 page the whole site funnels into. -->
+            <div class="q-films" data-film-picker hidden>
+              <div class="q-films-head">
+                <div class="q-films-head-copy">
+                  <p class="fld-label">Pick the exact film <span class="q-optional">optional</span></p>
+                  <p class="q-note" data-film-intro>Browse the films the garage actually buys, narrowed to the finish you chose.</p>
+                </div>
+                <button type="button" class="btn btn-ghost q-films-toggle"
+                        data-film-open aria-expanded="false" aria-controls="film-panel">
+                  Browse films
+                </button>
+              </div>
+
+              <ul class="q-films-picked" data-film-picked aria-label="Films you have picked"></ul>
+
+              <div class="q-films-panel" id="film-panel" data-film-panel hidden>
+                <div class="q-films-filters">
+                  <div class="fld">
+                    <label for="film_search">Search</label>
+                    <input type="search" id="film_search" class="q-films-search" data-film-search
+                           placeholder="Name, colour or brand" autocomplete="off">
+                  </div>
+                  <div class="q-films-chip-row" data-film-materials role="group" aria-label="Film type"></div>
+                  <div class="q-films-chip-row" data-film-families role="group" aria-label="Colour"></div>
+                </div>
+                <p class="q-films-status" data-film-status role="status"></p>
+                <ul class="q-films-grid" data-film-grid></ul>
+                <div class="q-films-foot">
+                  <button type="button" class="btn btn-ghost" data-film-more hidden>Show more</button>
+                </div>
+              </div>
+
+              <input type="hidden" name="film_choices" data-film-field value="">
+            </div>
           </fieldset>
 
           <!-- Step 5 ------------------------------------------------------ -->
           <fieldset class="q-step">
             <legend>
-              <span class="q-step-num" data-step-num="5">Step 5</span>
+              <span class="q-step-num">Step 6</span>
               Upload photos
             </legend>
             <p class="q-legend-note">Photos of what you have now, and anything you like the look of. <span data-upload-rules>Up to 8 images each.</span></p>
@@ -457,7 +562,7 @@
           <!-- Step 6 ------------------------------------------------------ -->
           <fieldset class="q-step">
             <legend>
-              <span class="q-step-num" data-step-num="6">Step 6</span>
+              <span class="q-step-num">Step 7</span>
               Pickup or drop-off?
             </legend>
 
@@ -506,7 +611,7 @@
           <!-- Step 7 ------------------------------------------------------ -->
           <fieldset class="q-step">
             <legend>
-              <span class="q-step-num" data-step-num="7">Step 7</span>
+              <span class="q-step-num">Step 8</span>
               How do we reach you?
             </legend>
 
@@ -552,6 +657,18 @@
             </fieldset>
           </fieldset>
 
+          <!-- Step navigation, unhidden by quote.js alongside the progress bar.
+               Deliberately type="button": nothing here may submit the form, and
+               a stray Enter in a text field must not either. -->
+          <div class="q-nav" data-nav hidden>
+            <button type="button" class="btn btn-ghost q-nav-back" data-back>
+              <span class="q-nav-arrow" aria-hidden="true">&larr;</span> Back
+            </button>
+            <button type="button" class="btn btn-primary q-nav-next" data-next>
+              Continue <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+
           <div class="q-submit">
             <p class="q-form-error" data-form-error hidden role="alert"></p>
             <button class="btn btn-primary q-submit-btn" type="submit" data-submit>
@@ -584,6 +701,9 @@
           </div>
           <div class="q-summary-row" data-summary-row="finish" hidden>
             <dt>Finish</dt><dd data-summary-out="finish"></dd>
+          </div>
+          <div class="q-summary-row" data-summary-row="film" hidden>
+            <dt>Film</dt><dd data-summary-out="film"></dd>
           </div>
           <div class="q-summary-row" data-summary-row="photos" hidden>
             <dt>Photos</dt><dd data-summary-out="photos"></dd>
@@ -661,5 +781,7 @@
   <script src="/js/nav.js"></script>
   <script src="/js/site.js"></script>
   <script src="/js/quote.js"></script>
+  <!-- After quote.js, which owns the summary this one feeds by firing change. -->
+  <script src="/js/quote-films.js"></script>
 </body>
 </html>

@@ -102,8 +102,190 @@
     });
 
     renumberSteps();
+    wizard.sync();
     updateSummary();
   }
+
+  /* ---- The wizard --------------------------------------------------------
+     One step at a time, with a progress bar — but strictly as an enhancement
+     over the long form underneath. Two rules keep that honest:
+
+     1. Every field stays in the DOM and stays enabled. Steps are hidden with a
+        class, never with `disabled`, so the native multipart POST still carries
+        all of them no matter which step is on screen. The form already sets
+        `novalidate`, which matters more than it looks: a `required` field the
+        browser cannot focus because its step is off screen would make Chrome
+        refuse to submit at all, and a swallowed lead is the one outcome this
+        page cannot have.
+     2. `hidden` keeps meaning what it meant before — "this step does not apply
+        to you" — and is owned by syncConditionals. The step you are *on* is a
+        separate axis, so a helmet-only request can never end up parked on the
+        bike step, and neither mechanism has to know about the other. */
+  const wizard = (() => {
+    const progress = document.querySelector("[data-progress]");
+    const nav = $("[data-nav]");
+    const submitBlock = $(".q-submit");
+    const backBtn = $("[data-back]");
+    const nextBtn = $("[data-next]");
+    const dotList = progress && progress.querySelector("[data-progress-dots]");
+    const fill = progress && progress.querySelector("[data-progress-fill]");
+    const track = progress && progress.querySelector("[data-progress-track]");
+    const currentOut = progress && progress.querySelector("[data-progress-current]");
+    const totalOut = progress && progress.querySelector("[data-progress-total]");
+    const nameOut = progress && progress.querySelector("[data-progress-name]");
+
+    /* No progress bar in the markup means no wizard, and the page falls back to
+       the scrolling form it already was. */
+    if (!progress || !nav || !backBtn || !nextBtn) {
+      return { active: false, sync() {}, revealFieldOf() {} };
+    }
+
+    const applicable = () => $$(".q-step").filter((step) => !step.hidden);
+    const visited = new Set();
+    let current = null;
+
+    /** The legend without its "Step 3" badge, for the progress bar's caption. */
+    function titleOf(step) {
+      const legend = step.querySelector("legend");
+      if (!legend) return "";
+      let text = "";
+      legend.childNodes.forEach((node) => {
+        if (node.nodeType === 1 && node.classList.contains("q-step-num")) return;
+        text += node.textContent;
+      });
+      return text.replace(/\s+/g, " ").trim();
+    }
+
+    function renderDots(list, index) {
+      if (!dotList) return;
+      dotList.textContent = "";
+      list.forEach((step, i) => {
+        const li = document.createElement("li");
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "q-progress-dot";
+        // Jumping back to a step already answered is free; jumping forward is
+        // not, because the steps in between have not been checked yet.
+        dot.disabled = !visited.has(step);
+        if (i === index) {
+          dot.classList.add("is-current");
+          dot.setAttribute("aria-current", "step");
+        }
+        if (i < index) dot.classList.add("is-done");
+        dot.setAttribute("aria-label", `Step ${i + 1}: ${titleOf(step)}`);
+        dot.addEventListener("click", () => show(applicable(), i));
+        li.appendChild(dot);
+        dotList.appendChild(li);
+      });
+    }
+
+    function render(list, index) {
+      const total = list.length;
+      const step = index + 1;
+      const pct = total > 1 ? Math.round((index / (total - 1)) * 100) : 100;
+
+      if (currentOut) currentOut.textContent = String(step);
+      if (totalOut) totalOut.textContent = String(total);
+      if (nameOut) nameOut.textContent = titleOf(list[index]);
+      if (fill) fill.style.width = `${pct}%`;
+      if (track) {
+        track.setAttribute("aria-valuenow", String(pct));
+        track.setAttribute("aria-valuetext", `Step ${step} of ${total}`);
+      }
+
+      const last = index === total - 1;
+      backBtn.hidden = index === 0;
+      nextBtn.hidden = last;
+      // The submit button only exists where submitting is the thing to do.
+      if (submitBlock) submitBlock.hidden = !last;
+
+      renderDots(list, index);
+    }
+
+    function show(list, target, opts) {
+      if (!list.length) return;
+      const index = Math.max(0, Math.min(target, list.length - 1));
+      current = list[index];
+      visited.add(current);
+
+      list.forEach((step) => step.classList.toggle("is-current", step === current));
+      render(list, index);
+
+      if (opts && opts.quiet) return;
+      // tabindex, because a fieldset is not focusable and moving focus is the
+      // only thing that tells a screen reader the page has changed under it.
+      current.setAttribute("tabindex", "-1");
+      current.focus({ preventScroll: true });
+      announce(`Step ${index + 1} of ${list.length}. ${titleOf(current)}.`);
+      if (typeof progress.scrollIntoView === "function") {
+        progress.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    }
+
+    form.classList.add("q-form--wizard");
+    progress.hidden = false;
+    nav.hidden = false;
+
+    nextBtn.addEventListener("click", () => {
+      const list = applicable();
+      const index = list.indexOf(current);
+      // Checking only this step's own fields, so a rider is never told about a
+      // question they have not been asked yet.
+      if (!validateStep(current)) return;
+      clearAllErrors();
+      show(list, index + 1);
+    });
+
+    backBtn.addEventListener("click", () => {
+      const list = applicable();
+      clearAllErrors();
+      show(list, list.indexOf(current) - 1);
+    });
+
+    /* Enter in a text field means "next", not "send". Without this the browser
+       implicitly submits from step 1 and the rider gets a wall of errors for
+       questions they were on their way to answering. */
+    form.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      const el = e.target;
+      if (!el.matches("input") || el.type === "file") return;
+      e.preventDefault();
+      if (!nextBtn.hidden) nextBtn.click();
+      else if (submitBtn) submitBtn.click();
+    });
+
+    return {
+      active: true,
+
+      /** Re-derive the step list after conditional steps appear or disappear. */
+      sync() {
+        const list = applicable();
+        if (!list.length) return;
+        let index = list.indexOf(current);
+        if (index < 0) {
+          // The step the rider was on stopped applying — most often the bike
+          // step after switching to a helmet. Take the place it used to hold,
+          // which keeps them where they were rather than back at the start. On
+          // the very first sync `current` is null and this lands on step one.
+          index = list.filter(
+            (step) =>
+              current &&
+              current.compareDocumentPosition(step) & Node.DOCUMENT_POSITION_PRECEDING
+          ).length;
+        }
+        show(list, index, { quiet: true });
+      },
+
+      /** Bring the step holding this field on screen so its error is visible. */
+      revealFieldOf(node) {
+        const step = node && node.closest(".q-step");
+        if (!step || step === current) return;
+        const list = applicable();
+        const index = list.indexOf(step);
+        if (index >= 0) show(list, index, { quiet: true });
+      },
+    };
+  })();
 
   /* ---- Uploads ----------------------------------------------------------- */
   /** Files the rider has actually chosen, per uploader, in the order added. */
@@ -308,16 +490,33 @@
     const handoff = checkedValues("handoff")[0] || "";
     const zip = val("pickup_zip");
 
+    /* The picker owns the films; this only reads the hidden field it writes, so
+       neither file has to know how the other works. One film per line. */
+    const chosen = filmLines();
+    const film = [
+      checkedValues("film_types").join(", "),
+      chosen.length ? `${chosen.length} film${chosen.length === 1 ? "" : "s"} picked` : "",
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
     return {
       item: itemValue(),
       services: services.join(", "),
       bike,
       helmet,
       finish: val("finish"),
+      film,
       photos: photos ? `${photos} attached` : "",
       handoff: handoff && zip ? `${handoff} — ${zip}` : handoff,
     };
   }
+
+  const filmLines = () =>
+    val("film_choices")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
 
   function updateSummary() {
     const data = summaryData();
@@ -394,10 +593,17 @@
 
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-  function validate() {
-    clearAllErrors();
-    const bad = [];
-    const note = (name, message) => bad.push(fail(name, message));
+  /**
+   * Every rule, as data, touching nothing.
+   *
+   * Split out from validate() so the same rules can answer two different
+   * questions: "can this send?" at submit, and "can the rider leave this step?"
+   * on Continue. One list means a step can never enforce something the submit
+   * does not, or let through something the submit will reject two steps later.
+   */
+  function problems() {
+    const found = [];
+    const note = (name, message) => found.push({ name, message });
 
     if (!itemValue()) note("item_type", "Pick what you're wrapping.");
     if (!checkedValues("services").length) {
@@ -447,25 +653,59 @@
       note("phone", `You picked ${contact.toLowerCase()} — leave a number we can reach.`);
     }
 
-    const real = bad.filter(Boolean);
-    if (real.length) {
-      const first = real[0];
-      if (formError) {
-        formError.textContent =
-          real.length === 1
-            ? "One field needs a look before this can send."
-            : `${real.length} fields need a look before this can send.`;
-        formError.hidden = false;
-      }
-      announce(`${real.length} field${real.length === 1 ? "" : "s"} need attention.`);
-      first.focus({ preventScroll: true });
-      if (typeof first.scrollIntoView === "function") {
-        first.scrollIntoView({ block: "center", behavior: "smooth" });
-      }
-      return false;
-    }
+    return found;
+  }
 
-    return true;
+  /** The node a rule points at, so a caller can ask which step it lives on. */
+  function nodeFor(name) {
+    const input = form.elements[name];
+    return input && input.length ? input[0] : input || null;
+  }
+
+  /**
+   * Show a set of problems and put the rider on the first one.
+   *
+   * `summarise` is off for a single step, because "3 fields need a look before
+   * this can send" is wrong when the rider is four steps from sending.
+   */
+  function report(list, summarise) {
+    const shown = list.map(({ name, message }) => fail(name, message)).filter(Boolean);
+    if (!shown.length) return true;
+
+    const first = shown[0];
+    if (summarise && formError) {
+      formError.textContent =
+        shown.length === 1
+          ? "One field needs a look before this can send."
+          : `${shown.length} fields need a look before this can send.`;
+      formError.hidden = false;
+    }
+    announce(`${shown.length} field${shown.length === 1 ? "" : "s"} need attention.`);
+
+    wizard.revealFieldOf(first);
+    first.focus({ preventScroll: true });
+    // jsdom has no layout, so it has no scrollIntoView. Guarded rather than
+    // wrapped, because a throw here would land in the submit handler's catch
+    // and be read as "validation could not run".
+    if (typeof first.scrollIntoView === "function") {
+      first.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+    return false;
+  }
+
+  function validate() {
+    clearAllErrors();
+    return report(problems(), true);
+  }
+
+  /** Only the rules whose field lives on this step. */
+  function validateStep(step) {
+    clearAllErrors();
+    const mine = problems().filter(({ name }) => {
+      const node = nodeFor(name);
+      return node && step.contains(node);
+    });
+    return report(mine, false);
   }
 
   /* ---- Submission --------------------------------------------------------- */
@@ -496,6 +736,8 @@
       description: val("description"),
       finish: val("finish"),
       desired_colour: val("desired_colour"),
+      film_types: checkedValues("film_types"),
+      film_choices: filmLines(),
       handoff: checkedValues("handoff")[0] || "",
       pickup_zip: val("pickup_zip"),
       name: val("name"),

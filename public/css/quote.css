@@ -42,6 +42,192 @@
   background: var(--kf-card);
 }
 
+/* Wizard mode, added by quote.js once it takes over the stepping. Without it
+   every step is on the page at once and the form is the long scroll it has
+   always been, which is the no-JS floor.
+
+   `display: none` and not `[hidden]`: the attribute already means "this step
+   does not apply to you" and is owned by the conditional logic, so the step you
+   happen to be on has to be a separate axis or the two collide. Nothing here
+   disables a field — every answer still posts, whichever step is on screen. */
+.q-form--wizard .q-step:not(.is-current) {
+  display: none;
+}
+
+.q-form--wizard .q-step {
+  margin-bottom: 24px;
+}
+
+.q-form--wizard .q-step:focus {
+  outline: none;
+}
+
+.q-form--wizard .q-step.is-current {
+  animation: q-step-in var(--kf-duration-fast) var(--kf-ease);
+}
+
+@keyframes q-step-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .q-form--wizard .q-step.is-current { animation: none; }
+}
+
+/* ——— Progress bar ——— */
+.q-progress {
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+.q-progress[hidden] {
+  display: none;
+}
+
+.q-progress-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 10px;
+}
+
+.q-progress-count {
+  margin: 0;
+  font-family: var(--kf-font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: var(--kf-track);
+  text-transform: uppercase;
+  color: var(--kf-red);
+}
+
+.q-progress-name {
+  margin: 0;
+  font-family: var(--kf-font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: var(--kf-track);
+  text-transform: uppercase;
+  color: var(--kf-muted);
+}
+
+.q-progress-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--kf-border);
+  overflow: hidden;
+}
+
+.q-progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--kf-red);
+  transition: width var(--kf-duration-fast) var(--kf-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .q-progress-fill { transition: none; }
+}
+
+.q-progress-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.q-progress-dots li {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 18px;
+}
+
+/* A dot is a jump back to a step already answered. The tap target is the full
+   height of the row, not the 4px it looks like. */
+.q-progress-dot {
+  flex: 1;
+  min-height: 24px;
+  padding: 10px 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.q-progress-dot::before {
+  content: "";
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--kf-border);
+  transition: background var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-progress-dot.is-done::before {
+  background: var(--kf-red);
+}
+
+.q-progress-dot.is-current::before {
+  background: var(--kf-white);
+}
+
+.q-progress-dot:disabled {
+  cursor: default;
+}
+
+.q-progress-dot:not(:disabled):hover::before {
+  background: var(--kf-silver);
+}
+
+.q-progress-dot:focus-visible {
+  outline: 2px solid var(--kf-red);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ——— Step navigation ——— */
+.q-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 clamp(20px, 3vw, 28px);
+}
+
+.q-nav[hidden] {
+  display: none;
+}
+
+/* Back sits on the left even when it is the only button, so Continue never
+   slides across the screen between steps. */
+.q-nav-back {
+  margin-right: auto;
+}
+
+.q-nav-back[hidden] {
+  display: none;
+}
+
+.q-nav-next[hidden] {
+  display: none;
+}
+
+.q-nav-next {
+  margin-left: auto;
+}
+
+.q-nav-arrow {
+  display: inline-block;
+}
+
 .q-step > legend {
   display: flex;
   flex-wrap: wrap;
@@ -574,6 +760,290 @@
 }
 
 .q-summary-empty[hidden] {
+  display: none;
+}
+
+/* ——— Film picker ——— */
+/* Ships hidden and is unhidden by quote-films.js. Without that file the finish
+   select and the colour field above it are the whole answer. */
+.q-films {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--kf-border);
+}
+
+.q-films[hidden] {
+  display: none;
+}
+
+.q-films-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.q-films-head-copy {
+  min-width: 0;
+  flex: 1 1 240px;
+}
+
+.q-films-head .fld-label {
+  margin: 0 0 4px;
+}
+
+.q-films-head .q-note {
+  margin: 0;
+}
+
+.q-films-toggle {
+  flex: 0 0 auto;
+}
+
+/* ——— Picked films ——— */
+.q-films-picked {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.q-films-picked:empty {
+  display: none;
+}
+
+.q-film-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--kf-tap);
+  padding: 6px 6px 6px 14px;
+  border: 1px solid var(--kf-red);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--kf-red) 12%, transparent);
+  font-size: 0.85rem;
+  line-height: 1.3;
+  color: var(--kf-white);
+}
+
+.q-film-pick-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 50%;
+  background: var(--kf-surface);
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--kf-white);
+  cursor: pointer;
+}
+
+.q-film-pick-remove:hover {
+  background: var(--kf-red);
+}
+
+.q-film-pick-remove:focus-visible {
+  outline: 2px solid var(--kf-white);
+  outline-offset: 2px;
+}
+
+/* ——— Panel and filters ——— */
+.q-films-panel {
+  margin-top: 20px;
+}
+
+.q-films-panel[hidden] {
+  display: none;
+}
+
+.q-films-filters {
+  display: grid;
+  gap: 12px;
+}
+
+.q-films-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.q-film-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: var(--kf-tap);
+  padding: 8px 14px;
+  border: 1px solid var(--kf-border-strong);
+  border-radius: 999px;
+  background: var(--kf-surface);
+  font-family: var(--kf-font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: var(--kf-track-tight);
+  text-transform: uppercase;
+  color: var(--kf-silver);
+  cursor: pointer;
+  transition: border-color var(--kf-duration-fast) var(--kf-ease),
+              color var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-film-chip:hover {
+  border-color: var(--kf-silver);
+  color: var(--kf-white);
+}
+
+/* Selection is never colour alone: the checked chip gains a tick as well. */
+.q-film-chip.is-on {
+  border-color: var(--kf-red);
+  color: var(--kf-white);
+  background: color-mix(in srgb, var(--kf-red) 14%, var(--kf-surface));
+}
+
+.q-film-chip.is-on::after {
+  content: "✕";
+  font-size: 0.7rem;
+  color: var(--kf-red);
+}
+
+.q-film-chip:focus-visible {
+  outline: 2px solid var(--kf-red);
+  outline-offset: 2px;
+}
+
+.q-film-chip-dot {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: 50%;
+}
+
+.q-films-search {
+  width: 100%;
+}
+
+.q-films-status {
+  margin: 16px 0 0;
+  font-size: 0.82rem;
+  color: var(--kf-muted);
+}
+
+/* ——— The grid ——— */
+.q-films-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.q-films-grid:empty {
+  display: none;
+}
+
+.q-film-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  background: var(--kf-surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--kf-duration-fast) var(--kf-ease),
+              background var(--kf-duration-fast) var(--kf-ease);
+}
+
+.q-film-btn:hover {
+  border-color: var(--kf-border-strong);
+  background: var(--kf-card-hover);
+}
+
+.q-film-btn.is-picked {
+  border-color: var(--kf-red);
+  background: color-mix(in srgb, var(--kf-red) 10%, var(--kf-surface));
+}
+
+.q-film-btn:focus-visible {
+  outline: 2px solid var(--kf-red);
+  outline-offset: 2px;
+}
+
+.q-film-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--kf-card);
+}
+
+.q-film-body {
+  display: block;
+  padding: 10px 12px 12px;
+}
+
+.q-film-name {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--kf-white);
+}
+
+.q-film-meta {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--kf-muted);
+}
+
+/* The tick that carries selection alongside the border colour. */
+.q-film-mark {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--kf-red);
+}
+
+.q-film-mark::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  width: 6px;
+  height: 11px;
+  border: solid var(--kf-white);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.q-film-btn.is-picked .q-film-mark {
+  display: block;
+}
+
+.q-films-foot {
+  margin-top: 16px;
+}
+
+.q-films-foot button[hidden] {
   display: none;
 }
 
