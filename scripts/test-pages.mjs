@@ -1040,7 +1040,330 @@ function fire(win, el, type) {
     assert(/action="https:\/\/formsubmit\.co\//.test(html), "no native action");
     assert(/name="_next"/.test(html), "no redirect target");
     assert(/name="_honey"/.test(html), "no honeypot");
+
+    // The wizard, the progress bar and the film browser are all enhancements,
+    // so each has to ship hidden. A progress bar over a form nobody is stepping
+    // through would be describing a journey that is not happening, and a
+    // "browse films" button with no script behind it is a dead control.
+    assert(/class="q-progress" data-progress hidden/.test(html), "progress bar must ship hidden");
+    assert(/class="q-nav" data-nav hidden/.test(html), "step nav must ship hidden");
+    assert(/class="q-films" data-film-picker hidden/.test(html), "film picker must ship hidden");
   });
+
+  /* ---- The wizard ------------------------------------------------------- */
+  const click = (win, el) => el.dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
+  const stepsOn = (win) => [...win.document.querySelectorAll(".q-step.is-current")];
+  const progressText = (win, key) => text(win, `[data-progress-${key}]`);
+  const applicableSteps = (win) =>
+    [...win.document.querySelectorAll(".q-step")].filter((step) => !step.hidden);
+
+  /** Click Continue until it disappears, i.e. walk to the last step. */
+  function walkToEnd(win) {
+    const next = win.document.querySelector("[data-next]");
+    for (let guard = 0; guard < 20 && !next.hidden; guard += 1) click(win, next);
+    return next.hidden;
+  }
+
+  check("the wizard takes over and shows one step at a time", () => {
+    const win = load("quote.html");
+    const form = win.document.getElementById("quote-form");
+
+    assert(form.classList.contains("q-form--wizard"), "the form should be in wizard mode");
+    assert(!win.document.querySelector("[data-progress]").hidden, "progress bar should be shown");
+    assert(!win.document.querySelector("[data-nav]").hidden, "step nav should be shown");
+    assertEqual(stepsOn(win).length, 1, "exactly one step should be current");
+    assertEqual(stepsOn(win)[0].id, "step-item", "and it should be the first one");
+
+    // Hiding a step must never mean disabling a field: the native multipart POST
+    // carries the whole form regardless of what is on screen, and a disabled
+    // input is one that silently stops being part of the lead.
+    const off = [...form.elements].filter(
+      (el) => el.disabled && el.name !== "handoff" // the un-offered shipping option
+    );
+    assertEqual(off.length, 0, `wizard disabled ${off.map((el) => el.name).join(", ")}`);
+  });
+
+  check("the progress bar counts the steps that actually apply", () => {
+    const win = load("quote.html");
+    assertEqual(progressText(win, "current"), "1", "starts on step 1");
+    assertEqual(
+      progressText(win, "total"),
+      String(applicableSteps(win).length),
+      "the total should be the applicable step count"
+    );
+    assertEqual(
+      progressText(win, "name"),
+      "What are you looking to wrap?",
+      "the caption should name the current step"
+    );
+
+    // Revealing the bike step has to move the finish line, not just add a card
+    // further down a page nobody is scrolling any more.
+    const before = Number(progressText(win, "total"));
+    qPick(win, "item_type", "Bike");
+    assertEqual(progressText(win, "total"), String(before + 1), "the bike step joins the count");
+  });
+
+  check("Continue only asks about the step you are on", () => {
+    const win = load("quote.html");
+    click(win, win.document.querySelector("[data-next]"));
+
+    assertEqual(progressText(win, "current"), "1", "an unanswered step should not advance");
+    assert(!errorFor(win, "item_type").hidden, "the question that was asked should error");
+    // The rider has not reached the contact step. Telling them their email is
+    // missing five steps early is how a form feels broken.
+    assert(errorFor(win, "email").hidden, "a later step's error must stay quiet");
+    assert(errorFor(win, "description").hidden, "and so must a later step's description");
+
+    qPick(win, "item_type", "Bike");
+    click(win, win.document.querySelector("[data-next]"));
+    assertEqual(progressText(win, "current"), "2", "answering it should let the rider through");
+    assert(errorFor(win, "item_type").hidden, "the cleared error should not linger");
+  });
+
+  check("Back returns without re-validating", () => {
+    const win = load("quote.html");
+    qPick(win, "item_type", "Helmet");
+    click(win, win.document.querySelector("[data-next]"));
+    assertEqual(progressText(win, "current"), "2", "precondition: moved on");
+
+    click(win, win.document.querySelector("[data-back]"));
+    assertEqual(progressText(win, "current"), "1", "Back should go back");
+    assert(
+      win.document.querySelector("[data-back]").hidden,
+      "and Back should hide itself on the first step"
+    );
+  });
+
+  check("the submit button only exists on the last step", () => {
+    const win = load("quote.html");
+    const submitBlock = win.document.querySelector(".q-submit");
+    assert(submitBlock.hidden, "submitting is not what step 1 is for");
+
+    validBikeRequest(win);
+    assert(walkToEnd(win), "Continue should run out on the last step");
+    assert(!submitBlock.hidden, "the last step is where the send lives");
+    assertEqual(
+      progressText(win, "current"),
+      progressText(win, "total"),
+      "the bar should read full"
+    );
+  });
+
+  check("a valid request still posts natively after being stepped through", () => {
+    const win = load("quote.html");
+    validBikeRequest(win);
+    walkToEnd(win);
+    assert(!submitEvent(win).defaultPrevented, "walking the wizard must not block the send");
+  });
+
+  check("submitting jumps back to the step holding the error", () => {
+    const win = load("quote.html");
+    validBikeRequest(win);
+    walkToEnd(win);
+
+    // Break something four steps back, the way a rider who edited and moved on
+    // would. The error is useless if it is announced on a step nobody can see.
+    const make = qField(win, "bike_make");
+    make.value = "";
+    fire(win, make, "input");
+
+    assert(submitEvent(win).defaultPrevented, "submission should be blocked");
+    assertEqual(stepsOn(win)[0].id, "step-bike", "the wizard should land on the bike step");
+    assert(!errorFor(win, "bike_make").hidden, "with the error visible on it");
+  });
+
+  check("a step that stops applying does not strand the rider on it", () => {
+    const win = load("quote.html");
+    qPick(win, "item_type", "Bike");
+    walkToEnd(win);
+    click(win, win.document.querySelector("[data-back]"));
+
+    // Switching to a helmet retires the bike step underneath them.
+    qPick(win, "item_type", "Helmet");
+    const current = stepsOn(win);
+    assertEqual(current.length, 1, "exactly one step should still be current");
+    assert(!current[0].hidden, "and it must be one that still applies");
+  });
+
+  check("Enter in a field advances instead of submitting early", () => {
+    const win = load("quote.html");
+    qPick(win, "item_type", "Bike");
+    const submitted = [];
+    win.document
+      .getElementById("quote-form")
+      .addEventListener("submit", (e) => submitted.push(e) || e.preventDefault());
+
+    const enter = new win.KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true });
+    qField(win, "name").dispatchEvent(enter);
+
+    assertEqual(submitted.length, 0, "Enter on step 1 must not try to send the form");
+    assertEqual(progressText(win, "current"), "2", "it should move to the next step");
+  });
+
+  /* ---- The film picker --------------------------------------------------- */
+  await (async () => {
+    const settle = () => new Promise((resolve) => setTimeout(resolve, 40));
+
+    const win = load("quote.html");
+    const d = win.document;
+    const form = d.getElementById("quote-form");
+    const panel = d.querySelector("[data-film-panel]");
+    const cards = () => [...d.querySelectorAll(".q-film-btn")];
+    const status = () => text(win, "[data-film-status]");
+    const chips = (group) => [...d.querySelectorAll(`[data-film-${group}] .q-film-chip`)];
+
+    const setFinish = (value) => {
+      const select = form.elements.finish;
+      select.value = value;
+      fire(win, select, "change");
+    };
+    const tickFilm = (value) => qPick(win, "film_types", value);
+
+    check("the film picker is a real control once JavaScript is here", () => {
+      assert(!d.querySelector("[data-film-picker]").hidden, "the picker should be unhidden");
+      assert(panel.hidden, "but the panel stays shut until it is asked for");
+    });
+
+    check("the catalogue is not fetched until the panel is opened", () => {
+      // Half a megabyte, on the page every route on the site funnels into. It
+      // has to stay off the critical path of a form nobody may even scroll to.
+      assertEqual(cards().length, 0, "nothing should render before opening");
+      assertEqual(
+        d.querySelector("[data-film-search]").value,
+        "",
+        "and no filter state should exist yet"
+      );
+    });
+
+    setFinish("Matte");
+    tickFilm("Vinyl wrap film");
+    tickFilm("Clear PPF");
+    click(win, d.querySelector("[data-film-open]"));
+    await settle();
+
+    check("opening the panel loads the catalogue and caps the grid", () => {
+      assert(!panel.hidden, "the panel should be open");
+      assertEqual(cards().length, 24, "one page of cards, not a thousand");
+      assert(/Showing 24 of \d+ films/.test(status()), `status read "${status()}"`);
+    });
+
+    check("the chosen finish narrows the grid and says so removably", () => {
+      const finishChip = chips("materials").find((chip) => /Matte only/.test(chip.textContent));
+      assert(finishChip, "the finish should appear as a chip");
+      assertEqual(finishChip.getAttribute("aria-pressed"), "true", "and start applied");
+
+      const narrowed = Number(status().match(/of (\d+) films/)[1]);
+      click(win, finishChip);
+      const widened = Number(status().match(/of (\d+) films/)[1]);
+      assert(
+        widened > narrowed,
+        `switching the finish off should widen the grid, ${narrowed} -> ${widened}`
+      );
+      click(win, finishChip);
+    });
+
+    check("the film_types answer seeds the material filter", () => {
+      const on = chips("materials")
+        .filter((chip) => chip.classList.contains("is-on"))
+        .map((chip) => chip.textContent.replace(/[✕×]/g, "").trim());
+      assert(on.includes("Vinyl wrap"), `vinyl should be pre-applied, saw ${on.join(", ")}`);
+      assert(on.includes("Clear PPF"), `clear PPF should be pre-applied, saw ${on.join(", ")}`);
+      assert(!on.includes("Coloured PPF"), "and nothing the rider did not ask for");
+    });
+
+    check("every finish the form offers matches films the garage can buy", () => {
+      /* FINISH_MATCH in quote-films.js is hand-written against the supplier's
+         own vocabulary — "Super Gloss" is gloss to a rider, colour shift is a
+         family rather than a finish. A resync that renames a finish would
+         silently open an empty grid on a real answer, so each option is checked
+         against the catalogue that just loaded rather than against a literal. */
+      const select = form.elements.finish;
+      const offered = [...select.options].map((option) => option.value).filter(Boolean);
+      assert(offered.length >= 7, `expected the full finish list, saw ${offered.length}`);
+
+      const empty = [];
+      offered.forEach((value) => {
+        setFinish(value);
+        if (!cards().length) empty.push(value);
+      });
+      assertEqual(empty.length, 0, `no films for: ${empty.join(", ")}`);
+      setFinish("Matte");
+    });
+
+    check("search narrows within the chosen finish", () => {
+      const before = Number(status().match(/of (\d+) films/)[1]);
+      const search = d.querySelector("[data-film-search]");
+      search.value = "3m";
+      fire(win, search, "input");
+
+      const after = Number(status().match(/(\d+) films?/)[1]);
+      assert(after < before, `search should narrow, ${before} -> ${after}`);
+      search.value = "";
+      fire(win, search, "input");
+    });
+
+    check("picking films writes them into the form and the summary", () => {
+      click(win, cards()[0]);
+      click(win, cards()[1]);
+
+      const lines = form.elements.film_choices.value.split("\n").filter(Boolean);
+      assertEqual(lines.length, 2, "two films should be recorded");
+      // Each line has to stand on its own in an email and in a database column:
+      // the name to recognise, the vendor and finish to price, the URL to order.
+      lines.forEach((line) => {
+        assert(/ — /.test(line), `line is not readable: ${line}`);
+        assert(/https:\/\//.test(line), `line carries no supplier URL: ${line}`);
+      });
+
+      assertEqual(
+        summary(win, "film"),
+        "Vinyl wrap film, Clear PPF · 2 films picked",
+        "the summary should carry both answers"
+      );
+      assertEqual(d.querySelectorAll(".q-film-pick").length, 2, "and show them as chips");
+    });
+
+    check("a picked film can be taken back off", () => {
+      click(win, d.querySelector(".q-film-pick-remove"));
+      assertEqual(
+        form.elements.film_choices.value.split("\n").filter(Boolean).length,
+        1,
+        "one film should remain"
+      );
+      assertEqual(summary(win, "film"), "Vinyl wrap film, Clear PPF · 1 film picked", "singular");
+    });
+
+    check("the shortlist has a ceiling", () => {
+      const search = d.querySelector("[data-film-search]");
+      search.value = "";
+      fire(win, search, "input");
+      cards().slice(0, 12).forEach((card) => click(win, card));
+
+      const kept = form.elements.film_choices.value.split("\n").filter(Boolean);
+      assert(kept.length <= 6, `a shortlist of ${kept.length} is not a shortlist`);
+      assert(/limit/.test(status()), `the rider should be told why, saw "${status()}"`);
+    });
+
+    check("the film answers reach the lead record", () => {
+      const calls = [];
+      win.fetch = (url, init) => {
+        calls.push({ url, init });
+        return Promise.resolve({ ok: true, json: async () => ({ ok: true }) });
+      };
+
+      validBikeRequest(win);
+      submitEvent(win);
+
+      const body = JSON.parse(calls[0].init.body);
+      assert(
+        body.film_types.includes("Vinyl wrap film"),
+        `film types missing, saw ${JSON.stringify(body.film_types)}`
+      );
+      assertEqual(body.film_choices.length, 6, "the picked films should be recorded");
+      assert(/film:/.test(body.summary), "and named in the summary line the inbox reads");
+    });
+  })();
 
   check("the thanks page fires the quote conversion", () => {
     const win = load("quote-thanks.html");
