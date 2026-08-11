@@ -50,6 +50,24 @@ const assert = (cond, message) => {
 const assertEqual = (actual, expected, label) => {
   if (actual !== expected) throw new Error(`${label}: expected ${expected}, got ${actual}`);
 };
+/**
+ * Run one section, recording a throw as a failure instead of aborting the run.
+ *
+ * Only the assertions inside check() were ever guarded; the setup between them
+ * was not, so a single stale selector took the whole script down and hid every
+ * section after it. That is how the vinyl browser's drift ended up masking the
+ * pages that come later.
+ */
+async function section(name, fn) {
+  console.log(`\n${name}`);
+  try {
+    await fn();
+  } catch (error) {
+    failures.push(`${name} could not run: ${error.message}`);
+    console.log(`  FAIL  ${name} could not run: ${error.message}`);
+  }
+}
+
 /** Digits only, so "$1,650 – $2,400" compares as a number. */
 const num = (s) => Number((String(s).match(/\d/g) || ["0"]).join(""));
 
@@ -180,8 +198,7 @@ const prices = (page) =>
 
 try {
   /* ---- 1. Hydration ------------------------------------------------------- */
-  console.log("\nConfig hydration");
-  {
+  await section("Config hydration", async () => {
     const page = await open("/pricing");
     const slots = await page.$$eval("[data-cfg]", (els) =>
       els.map((el) => [el.dataset.cfg, el.textContent.trim()])
@@ -194,7 +211,7 @@ try {
     await check("the founding band is present in founding mode", async () =>
       assert(await page.$('[data-cfg-show="founding"]'), "no founding band"));
     await page.close();
-  }
+  });
 
   /* ---- 2. Transport ------------------------------------------------------- */
   console.log("\nTransport");
@@ -223,11 +240,18 @@ try {
   await page.click('input[name="service"][value="Full colour-change wrap"]');
   await page.select("#pickup_zone", brooklyn);
 
-  /** Year -> make -> model, each select only populated once the one before it is set. */
+  /**
+   * Year is typed, then make and model are chosen — model only populates once a
+   * make is set. Year stopped being a <select> when it became a numeric input,
+   * which is why this types rather than selects.
+   */
   async function pickBike() {
     const second = (selector) =>
       page.$eval(`${selector} option:nth-child(2)`, (o) => o.value);
-    for (const id of ["#year", "#make", "#model"]) {
+
+    await page.type("#year", "2018");
+
+    for (const id of ["#make", "#model"]) {
       await page.waitForFunction(
         (sel) => {
           const el = document.querySelector(sel);
@@ -270,8 +294,7 @@ try {
   });
 
   /* ---- 3. Catalogue browser ---------------------------------------------- */
-  console.log("\nVinyl browser");
-  {
+  await section("Vinyl browser", async () => {
     await tap(page, "[data-browse-toggle]");
     await page.waitForSelector("[data-browse-grid] .vinyl-card", { timeout: 15000 });
 
@@ -403,11 +426,10 @@ try {
       const row = await summary(page, "colour");
       assert(!/Not selected/.test(row), `colour row reads "${row}"`);
     });
-  }
+  });
 
   /* ---- 4. Native multipart submit ---------------------------------------- */
-  console.log("\nNative multipart submit");
-  {
+  await section("Native multipart submit", async () => {
     await page.select("#finish", await page.$eval("#finish option:nth-child(2)", (o) => o.value));
     await page.type("#name", "Verification Rider");
     await page.type("#email", "rider@example.test");
@@ -502,12 +524,11 @@ try {
         `_next is "${fields.get("_next")}" — should be the extensionless URL`
       );
     });
-  }
+  });
   await page.close();
 
   /* ---- 5. Pricing mode --------------------------------------------------- */
-  console.log("\nPricing mode");
-  {
+  await section("Pricing mode", async () => {
     const founding = await open("/pricing");
     const before = new Map(await prices(founding));
     await founding.close();
@@ -545,11 +566,171 @@ try {
       await studio.close();
     });
     await standard.close();
-  }
+  });
+
+  /* ---- 5b. The quote form, submitted for real ----------------------------
+   * jsdom covers the conditional logic and the validation faster than a browser
+   * can. What it cannot answer is the only question that decides whether this
+   * form earns its keep: does a real browser put the rider's photos on the wire?
+   * FormSubmit is behind a Cloudflare challenge, so nothing but a browser can
+   * deliver them, and nothing but a browser can prove it.
+   *
+   * The action is repointed at the local sink first, so this never contacts
+   * FormSubmit and never sends mail.
+   */
+  await section("Quote form", async () => {
+    const before = submissions.length;
+    const page = await open("/quote");
+
+    await page.evaluate((sink) => {
+      const form = document.getElementById("quote-form");
+      form.setAttribute("action", sink);
+      form.querySelector('input[name="_next"]').value = sink;
+    }, SINK);
+
+    const pick = (name, value) =>
+      page.evaluate(
+        (n, v) => {
+          const el = [...document.querySelectorAll(`input[name="${n}"]`)].find(
+            (input) => input.value === v
+          );
+          el.click();
+        },
+        name,
+        value
+      );
+
+    await pick("item_type", "Both");
+
+    await check("choosing both reveals the bike and the helmet steps", async () => {
+      const shown = await page.evaluate(() => ({
+        bike: !document.getElementById("step-bike").hidden,
+        helmet: !document.getElementById("step-helmet").hidden,
+      }));
+      assert(shown.bike, "the bike step stayed hidden");
+      assert(shown.helmet, "the helmet step stayed hidden");
+    });
+
+    await pick("services", "Vinyl wrap");
+    await pick("services", "Custom graphics / livery");
+    await page.type("#bike_make", "Honda");
+    await page.type("#bike_model", "CBR600F4i");
+    await page.type("#bike_year", "2004");
+    await page.select("#bike_style", "Sport bike");
+    await page.type("#helmet_brand", "Shoei");
+    await page.type("#helmet_model", "RF-1400");
+    await page.type("#description", "Gloss black base with a red race stripe.");
+    await page.select("#finish", "Gloss");
+
+    const currentInput = await page.$("#photos_current");
+    await currentInput.uploadFile(...photos);
+    const inspoInput = await page.$("#photos_inspiration");
+    await inspoInput.uploadFile(photos[0]);
+
+    await check("uploaded photos show as removable thumbnails", async () => {
+      const counts = await page.evaluate(() => ({
+        current: document.querySelectorAll('[data-uploader="current"] .q-thumb').length,
+        inspiration: document.querySelectorAll('[data-uploader="inspiration"] .q-thumb').length,
+        removers: document.querySelectorAll(".q-thumb-remove").length,
+      }));
+      assertEqual(counts.current, 2, "thumbnails for the bike photos");
+      assertEqual(counts.inspiration, 1, "thumbnail for the inspiration photo");
+      assertEqual(counts.removers, 3, "every thumbnail needs a remove control");
+    });
+
+    await check("removing a photo takes it out of the FileList, not just the UI", async () => {
+      // The native POST reads input.files, so a thumbnail disappearing while the
+      // file still rides along would send a photo the rider deleted.
+      await page.click('[data-uploader="current"] .q-thumb-remove');
+      const state = await page.evaluate(() => ({
+        thumbs: document.querySelectorAll('[data-uploader="current"] .q-thumb').length,
+        files: document.getElementById("photos_current").files.length,
+      }));
+      assertEqual(state.thumbs, 1, "thumbnails left");
+      assertEqual(state.files, 1, "files left on the input");
+    });
+
+    await check("the summary fills in as the form is answered", async () => {
+      const rows = await page.evaluate(() =>
+        Object.fromEntries(
+          [...document.querySelectorAll("[data-summary-out]")].map((el) => [
+            el.dataset.summaryOut,
+            el.textContent.trim(),
+          ])
+        )
+      );
+      assertEqual(rows.item, "Both", "item row");
+      assertEqual(rows.bike, "2004 Honda CBR600F4i", "bike row");
+      assertEqual(rows.helmet, "Shoei RF-1400", "helmet row");
+      assertEqual(rows.photos, "2 attached", "photo count");
+    });
+
+    await check("an incomplete form does not leave the page", async () => {
+      await tap(page, "[data-submit]");
+      await new Promise((r) => setTimeout(r, 300));
+      assert(page.url().endsWith("/quote"), `navigated to ${page.url()}`);
+      const shown = await page.$$eval("[data-error-for]", (els) =>
+        els.filter((el) => !el.hidden).map((el) => el.dataset.errorFor)
+      );
+      assert(shown.includes("handoff"), `expected a handoff error, saw ${shown.join(", ")}`);
+    });
+
+    await pick("handoff", "Pickup & return");
+    await page.type("#pickup_zip", "07302");
+    await page.type("#name", "Sam Rider");
+    await page.type("#email", "sam@example.com");
+    await page.type("#phone", "201-555-0134");
+
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+      tap(page, "[data-submit]"),
+    ]);
+
+    // Landing on the sink makes the browser ask it for a favicon too, so the
+    // last thing it recorded is not necessarily the submission.
+    const multipart = submissions
+      .slice(before)
+      .filter((s) => /multipart\/form-data/.test(s.contentType));
+
+    await check("the completed form posts as multipart, which carries the photos", () => {
+      assertEqual(multipart.length, 1, `multipart submissions captured out of ${submissions.length - before} requests`);
+    });
+
+    const posted = parseMultipart(multipart[0]);
+
+    await check("the photos arrive as real attachments", () => {
+      assertEqual(posted.files.length, 2, `attachments: ${JSON.stringify(posted.files)}`);
+      posted.files.forEach((f) => assert(f.bytes > 0, `${f.filename} arrived empty`));
+      const fields = posted.files.map((f) => f.name).sort();
+      assertEqual(fields.join(","), "photos_current,photos_inspiration", "attachment fields");
+    });
+
+    await check("the removed photo is not among them", () => {
+      assertEqual(
+        posted.files.filter((f) => f.name === "photos_current").length,
+        1,
+        "the deleted photo was posted anyway"
+      );
+    });
+
+    await check("every answer is on the wire", () => {
+      const f = posted.fields;
+      assertEqual(f.get("item_type"), "Both", "item_type");
+      assertEqual(f.get("services"), "Vinyl wrap, Custom graphics / livery", "services");
+      assertEqual(f.get("bike_make"), "Honda", "bike_make");
+      assertEqual(f.get("helmet_brand"), "Shoei", "helmet_brand");
+      assertEqual(f.get("handoff"), "Pickup & return", "handoff");
+      assertEqual(f.get("pickup_zip"), "07302", "pickup_zip");
+      assertEqual(f.get("email"), "sam@example.com", "email");
+      assert(/item: Both/.test(f.get("project_summary") || ""), "the summary line is missing");
+      assertEqual(f.get("_honey"), "", "the honeypot should post empty");
+    });
+
+    await page.close();
+  });
 
   /* ---- 6. Every page loads clean ----------------------------------------- */
-  console.log("\nEvery page");
-  {
+  await section("Every page", async () => {
     const routes = [
       "/",
       "/wrap-studio",
@@ -559,6 +740,9 @@ try {
       "/services/accent-package",
       "/services/transformation-film",
       "/gallery",
+      "/process",
+      "/quote",
+      "/quote-thanks",
       "/shop",
       "/about",
       "/journal",
@@ -651,7 +835,7 @@ try {
         assert(state.ga, "no GA4 tag");
       });
     }
-  }
+  });
 } finally {
   await browser.close();
   sink.close();
