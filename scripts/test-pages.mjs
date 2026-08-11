@@ -374,11 +374,21 @@ function fire(win, el, type) {
     click(toggle);
     await settle();
 
+    // Pinning the catalogue size to a literal turns a supplier sync into three
+    // red tests, so the expectations come from the data the page just loaded.
+    // What is being checked is that the readout agrees with the catalogue, not
+    // that the catalogue is any particular size.
+    const total = () => win.KisalaVinyl.all().length;
+    const countReads = (n) =>
+      new RegExp(`(?:of )?${n.toLocaleString("en-US")} films|(?:of )?${n} films`).test(
+        text(win, "[data-browse-count]")
+      );
+
     check("opening the panel loads and renders the catalogue", () => {
       assert(!panel.hidden, "panel should be open");
-      assertEqual(win.KisalaVinyl.all().length, 1102, "catalogue size");
+      assert(total() > 500, `catalogue looks truncated at ${total()} films`);
       assertEqual(cards().length, 24, "first page of cards");
-      assert(/of 1,?102 films|1102 films/.test(text(win, "[data-browse-count]")), `count read "${text(win, "[data-browse-count]")}"`);
+      assert(countReads(total()), `count read "${text(win, "[data-browse-count]")}"`);
     });
 
     check("family and finish chips render from the data", () => {
@@ -388,11 +398,14 @@ function fire(win, el, type) {
       assert(swatch, "family chips should carry a colour dot");
     });
 
+    let blueCount = 0;
+
     check("a family filter narrows the list", () => {
       const chipFor = (id) => chips("[data-family-filters]").find((c) => c.getAttribute("data-chip") === id);
       click(chipFor("blue"));
-      assertEqual(win.KisalaVinyl.all().filter((c) => c.c === "blue").length, 149, "blue films in the catalogue");
-      assert(/of 149 films/.test(text(win, "[data-browse-count]")), "count should reflect the filter");
+      blueCount = win.KisalaVinyl.all().filter((c) => c.c === "blue").length;
+      assert(blueCount > 20 && blueCount < total(), `blue filed ${blueCount} of ${total()} films`);
+      assert(countReads(blueCount), `count should reflect the filter, read "${text(win, "[data-browse-count]")}"`);
 
       // Re-queried, not held from before the click: the chip row must survive a
       // filter toggle in place so keyboard focus is not thrown away.
@@ -412,13 +425,13 @@ function fire(win, el, type) {
       const satin = chips("[data-finish-filters]").find((c) => c.getAttribute("data-chip") === "Satin");
       click(satin);
       const expected = win.KisalaVinyl.all().filter((c) => c.c === "blue" && c.f === "Satin").length;
-      assert(expected > 0 && expected < 149, `combined filter returned ${expected}`);
+      assert(expected > 0 && expected < blueCount, `combined filter returned ${expected}`);
       assert(new RegExp(`of ${expected} films|^${expected} films`).test(text(win, "[data-browse-count]")), "combined count");
     });
 
     check("clearing filters restores the full list", () => {
       click(root.querySelector("[data-browse-clear]"));
-      assert(/of 1,?102 films|1102 films/.test(text(win, "[data-browse-count]")), "count after clearing");
+      assert(countReads(total()), `count after clearing read "${text(win, "[data-browse-count]")}"`);
       assertEqual(chips("[data-family-filters]").filter((c) => c.classList.contains("on")).length, 0, "chips still active");
     });
 
@@ -1133,6 +1146,28 @@ function fire(win, el, type) {
     expected.forEach((path) => assert(listed.includes(path), `sitemap is missing ${path}`));
     listed.forEach((path) => assert(expected.includes(path), `sitemap lists ${path}, which is not a page`));
     assertEqual(listed.length, expected.length, "sitemap entry count");
+  });
+
+  check("every image the pages ask for exists on disk", () => {
+    // A <source> that 404s does not fall back to the <img> beside it — the
+    // browser has already committed to that candidate, so the page renders the
+    // alt text and nothing logs. A missing webp variant is therefore invisible
+    // to every other check here.
+    const missing = [];
+    for (const [rel, html] of pages) {
+      const refs = new Set();
+      for (const [, list] of html.matchAll(/\bsrcset="([^"]+)"/g)) {
+        list.split(",").forEach((c) => refs.add(c.trim().split(/\s+/)[0]));
+      }
+      for (const [, url] of html.matchAll(/<(?:img|source|video)[^>]*\bsrc="([^"]+)"/g)) {
+        refs.add(url);
+      }
+      for (const url of refs) {
+        if (!url.startsWith("/") || url.startsWith("//")) continue;
+        if (!existsSync(join(PUBLIC, url.slice(1)))) missing.push(`${rel} → ${url}`);
+      }
+    }
+    assertEqual(missing.length, 0, `missing files: ${missing.join(", ")}`);
   });
 
   check("the sitemap is valid XML and points robots at itself", () => {

@@ -339,16 +339,53 @@ h1, h2, h3, h4, h5, h6,
   transform: translateX(4px);
 }
 
+/* A back link points the other way, and the arrow leads rather than trails. */
+.link-arrow--back {
+  flex-direction: row-reverse;
+}
+
+.link-arrow--back::after {
+  content: "←";
+}
+
+.link-arrow--back:hover::after {
+  transform: translateX(-4px);
+}
+
 /* ——— Header (logo left, nav centre, location + CTA right) ——— */
 .site-header {
   position: fixed;
   inset: 0 0 auto;
   z-index: 100;
   color: var(--kf-white);
-  background: linear-gradient(to bottom, rgba(5, 5, 5, 0.75), rgba(5, 5, 5, 0));
   transition: background var(--kf-duration-mid) var(--kf-ease),
     border-color var(--kf-duration-mid) var(--kf-ease);
   border-bottom: 1px solid transparent;
+}
+
+/* The scrim that keeps the nav legible over a photograph. It lives on a
+   pseudo-element so it can run past the bar and fade to nothing in open space;
+   painted inside the header it has to reach zero at the bar's own edge, and
+   that last step from 1/255 to 0 draws a hairline across the hero. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -60px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 5, 5, 0.78),
+    rgba(5, 5, 5, 0.42) 55%,
+    rgba(5, 5, 5, 0)
+  );
+  transition: opacity var(--kf-duration-mid) var(--kf-ease);
+}
+
+/* Once the bar is solid the scrim is redundant, and its tail would smear a
+   band down the page. */
+.site-header.is-solid::before {
+  opacity: 0;
 }
 
 /* nav.js adds this past the fold so the bar reads against light photography. */

@@ -7,8 +7,8 @@
   <meta name="description" content="Vinyl wrap colour detail from the Kisala Films vinyl-catalog — finish, stock status from Metro Restyling, and garage notes.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <meta name="theme-color" content="#000000">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#050505">
   <link rel="icon" href="/images/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
@@ -29,188 +29,164 @@
   <script src="/js/kisala-config.js"></script>
   <script src="/js/analytics.js"></script>
 </head>
-<body class="kfilms" data-barba="wrapper">
+<body class="kfilms">
 
-  <div class="kf-page-transition" data-kf-transition aria-hidden="true">
-    <div class="kf-pt-panel kf-pt-panel--left" data-kf-pt-left></div>
-    <div class="kf-pt-panel kf-pt-panel--right" data-kf-pt-right></div>
-    <div class="kf-pt-line" data-kf-pt-line aria-hidden="true"></div>
-  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-<header class="site-header">
+  <!-- CHROME:HEADER start — synced by scripts/build-v3-chrome.py, edit index.html -->
+  <header class="site-header">
     <div class="header-shell">
-      <nav class="nav-cluster nav-cluster--left" aria-label="Primary left">
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Films</button>
-          <div class="nav-dd-menu">
-            <a href="/gallery">Build gallery</a>
-            <a href="/services/transformation-film">Transformation film</a>
-            <a href="/journal">Journal</a>
-          </div>
-        </div>
+      <a class="logo" href="/" aria-label="K Films — home">
+        <img src="/images/brand/k-films-signature-white.png" alt="K Films" width="1003" height="714">
+      </a>
+
+      <nav class="nav-cluster nav-cluster--centre" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
         <a href="/gallery">Gallery</a>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
-          <div class="nav-dd-menu">
-            <a href="/services">All services</a>
-            <a href="/services/full-wraps">Full colour-change wraps</a>
-            <a href="/services/accent-package">Partial &amp; accents</a>
-            <a href="/services#chrome">Chrome delete</a>
-            <a href="/services#protect">Tank guard &amp; PPF</a>
-            <a href="/services/transformation-film">Transformation film</a>
-          </div>
-        </div>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Wraps</button>
-          <div class="nav-dd-menu">
-            <a href="/vinyl-catalog">Film vinyl-catalog</a>
-            <a href="/shop/wrap">Finish catalogue</a>
-            <a href="/wrap-studio">Build your wrap</a>
-          </div>
-        </div>
+        <a href="/about">About</a>
+        <a href="/process">Process</a>
+        <a href="/faq">FAQ</a>
       </nav>
 
-      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745"></a>
+      <div class="nav-cluster nav-cluster--right">
+        <p class="nav-location">Jersey City, NJ</p>
+        <a class="btn btn-primary nav-cta" href="/quote">Get a quote</a>
+      </div>
 
-      <nav class="nav-cluster nav-cluster--right" aria-label="Primary right">
-        <a href="/shop">Shop</a>
-        <a href="/pricing">Pricing</a>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
-          <div class="nav-dd-menu">
-            <a href="/about">Who I am</a>
-            <a href="/testimonials">Rider notes</a>
-            <a href="/faq">FAQ</a>
-            <a href="/locations">The garage</a>
-          </div>
-        </div>
-        <a href="/login">Login</a>
-        <a href="/contact">Contact</a>
-        <a class="btn btn-primary nav-cta" href="/wrap-studio">Build your wrap</a>
-      </nav>
-
-      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
         <span></span><span></span>
       </button>
     </div>
   </header>
   <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
-  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
+  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Menu">
     <div class="nav-panel-head">
-      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745"></a>
+      <a class="logo" href="/" aria-label="K Films — home">
+        <img src="/images/brand/k-films-signature-white.png" alt="K Films" width="1003" height="714">
+      </a>
       <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
     </div>
-    <nav class="nav-panel-body">
-      <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">&#9660;</span></button>
-        <div class="nav-acc-panel">
-          <a href="/services">All services</a>
-          <a href="/services/full-wraps">Full colour-change wraps</a>
-          <a href="/services/accent-package">Partial &amp; accents</a>
-          <a href="/services#chrome">Chrome delete</a>
-          <a href="/services#protect">Tank guard &amp; PPF</a>
-          <a href="/services/transformation-film">Transformation film</a>
-        </div>
-      </div>
-      <a class="nav-row" href="/wrap-studio">Wrap Studio</a>
+    <nav class="nav-panel-body" aria-label="Mobile">
+      <a class="nav-row" href="/">Home</a>
+      <a class="nav-row" href="/services">Services</a>
       <a class="nav-row" href="/gallery">Gallery</a>
-      <a class="nav-row" href="/vinyl-catalog">Film vinyl-catalog</a>
-      <a class="nav-row" href="/pricing">Pricing</a>
-      <a class="nav-row" href="/shop">Shop</a>
+      <a class="nav-row" href="/about">About</a>
+      <a class="nav-row" href="/process">Process</a>
+      <a class="nav-row" href="/faq">FAQ</a>
       <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">&#9660;</span></button>
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>More</span><span class="chev">&#9660;</span></button>
         <div class="nav-acc-panel">
-          <a href="/about">Who I am</a>
-          <a href="/journal">Journal</a>
-          <a href="/testimonials">Rider notes</a>
-          <a href="/faq">FAQ</a>
+          <a href="/wrap-studio">Wrap Studio</a>
+          <a href="/vinyl-catalog">Vinyl catalog</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/shop">Shop</a>
           <a href="/locations">The garage</a>
+          <a href="/contact">Contact</a>
         </div>
       </div>
-      <a class="nav-row" href="/login">Login</a>
-      <a class="nav-row" href="/contact">Contact</a>
-      <a class="btn btn-primary nav-panel-cta" href="/wrap-studio">Build your wrap</a>
+      <a class="btn btn-primary nav-panel-cta" href="/quote">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+      <p class="nav-panel-location">Based in Jersey City, NJ</p>
     </nav>
   </aside>
+  <!-- CHROME:HEADER end -->
 
-  
-  <main data-barba="container" data-barba-namespace="vinyl-catalog-film" class="barba-container">
+  <main id="main" class="kf-main-offset">
 
     <section class="kf-section kf-film-detail">
       <div class="kf-container">
-        <p class="eyebrow" data-hero-anim><a class="link-arrow" href="/vinyl-catalog" style="letter-spacing:inherit">Back to vinyl-catalog</a></p>
+        <p><a class="link-arrow link-arrow--back" href="/vinyl-catalog">Back to the catalog</a></p>
 
-        <div data-film-root data-reveal>
+        <div data-film-root>
           <p class="kf-vinyl-catalog-meta">Loading colour…</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="kf-cta" aria-labelledby="film-cta-title">
+      <div class="kf-container kf-cta-grid">
+        <div class="reveal">
+          <h2 id="film-cta-title">Want this one on your bike?</h2>
+          <p class="p-lg">Tell me the bike or helmet and I&rsquo;ll price the job in this film.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="/quote" data-track="cta_click" data-track-label="film-detail-cta">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn-ghost" href="/vinyl-catalog" data-track="cta_click" data-track-label="vinyl-catalog-film-to-vinyl-catalog">Keep browsing</a>
+          </div>
+        </div>
+        <div class="kf-cta-notes reveal">
+          <div class="kf-cta-note">
+            <h3>See it in person</h3>
+            <p>Screens lie about metallics and colour shifts. Ask for a sample and judge it in daylight.</p>
+          </div>
         </div>
       </div>
     </section>
 
   </main>
 
-<footer class="site-footer">
+  <!-- CHROME:FOOTER start — synced by scripts/build-v3-chrome.py, edit index.html -->
+  <footer class="site-footer">
     <div class="footer-grid">
       <div>
-        <h2 class="h5">Wrap</h2>
+        <h2 class="h5">Wraps</h2>
         <div class="footer-links">
-          <a href="/vinyl-catalog">Film vinyl-catalog</a>
-          <a href="/services/full-wraps">Full colour-change</a>
-          <a href="/services/accent-package">Partial &amp; accents</a>
-          <a href="/services#protect">Tank guard &amp; PPF</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/wrap-studio">Build your wrap</a>
+          <a href="/services#motorcycle-wraps">Motorcycle wraps</a>
+          <a href="/services#helmet-wraps">Helmet wraps</a>
+          <a href="/services#colour-change">Colour changes</a>
+          <a href="/services#graphics">Graphics &amp; liveries</a>
+          <a href="/services#ppf">PPF</a>
+          <a href="/services#decals">Decals</a>
         </div>
       </div>
       <div>
-        <h2 class="h5">Film</h2>
+        <h2 class="h5">Studio</h2>
         <div class="footer-links">
           <a href="/gallery">Gallery</a>
-          <a href="/services/transformation-film">Transformation film</a>
-          <a href="/journal">Journal</a>
-          <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
-          <a href="/shop">Shop the drop</a>
-          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
+          <a href="/process">Process</a>
+          <a href="/about">About</a>
+          <a href="/faq">FAQ</a>
+          <a href="/wrap-studio">Wrap Studio</a>
+          <a href="/vinyl-catalog">Vinyl catalog</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/shop">Shop</a>
         </div>
       </div>
       <div>
-        <h2 class="h5">Stay on the list</h2>
-        <p class="p">Build drops, new finishes, and the films that come out of the garage.</p>
-        <form class="form" action="https://formsubmit.co/elombe@swftstudios.com" method="POST" accept-charset="UTF-8">
-          <input type="hidden" name="_subject" value="Kisala Films - email subscribe">
-          <input type="hidden" name="_template" value="table">
-          <input type="hidden" name="_captcha" value="false">
-          <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/?subscribed=1">
-          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
-          <div class="fld"><input type="email" name="email" placeholder="Email address" aria-label="Email" required></div>
-          <button class="btn btn-primary" type="submit">Subscribe</button>
-          <p class="form-note">Thanks — you’re on the list.</p>
-        </form>
+        <h2 class="h5">Where we work</h2>
+        <div class="footer-links">
+          <a href="/locations/jersey-city">Jersey City</a>
+          <a href="/locations/brooklyn">Brooklyn</a>
+          <a href="/locations/new-york-city">New York City</a>
+          <a href="/locations">The garage</a>
+          <a href="/contact">Contact</a>
+        </div>
       </div>
       <div class="footer-hours">
-        <h2 class="h5">The garage</h2>
-        <p>Jersey City, NJ · by appointment</p>
+        <h2 class="h5">Get in touch</h2>
+        <p>Jersey City, NJ &middot; by appointment</p>
         <p><a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a></p>
-        <p>Monday to Friday: 10:00 AM – 6:00 PM</p>
+        <p><a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a></p>
+        <p>Monday to Friday: 10:00 AM &ndash; 6:00 PM</p>
         <p>Saturday/Sunday: by appointment</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 Kisala Films · Jersey City, NJ · Film means vinyl — and cinema.</span>
+      <span>&copy; 2026 K Films &middot; Jersey City, NJ &middot; Custom motorcycle &amp; helmet wraps.</span>
       <a href="/styleguide">Style guide</a>
     </div>
   </footer>
 
-  
-  <script src="https://cdn.jsdelivr.net/npm/@barba/core@2.10.3/dist/barba.umd.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <div class="kf-sticky-cta" data-sticky-cta hidden>
+    <a class="btn btn-primary" href="/quote" data-track="cta_click" data-track-label="sticky-mobile">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+  </div>
+  <!-- CHROME:FOOTER end -->
+
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
+  <script src="/js/site.js"></script>
   <script src="/js/vinyl-catalog-data.js"></script>
   <script src="/js/vinyl-build.js"></script>
   <script src="/js/vinyl-catalog-film.js"></script>
-  <script src="/js/motion.js"></script>
 
 </body>
 </html>

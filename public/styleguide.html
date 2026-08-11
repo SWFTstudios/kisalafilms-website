@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Style Guide — Kisala Films</title>
-  <meta name="description" content="Vossen-inspired design tokens for Kisala Films — dark premium system.">
+  <title>Style Guide — K Films</title>
+  <meta name="description" content="The v3 design tokens, type scale and components behind every K Films page.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <meta name="theme-color" content="#000000">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#050505">
   <link rel="icon" href="/images/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
@@ -17,230 +17,301 @@
   <meta name="robots" content="noindex, nofollow">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Kisala Films">
-  <meta property="og:description" content="Vossen-inspired design tokens for Kisala Films — dark premium system.">
-  <meta property="og:title" content="Style Guide — Kisala Films">
+  <meta property="og:description" content="The v3 design tokens, type scale and components behind every K Films page.">
+  <meta property="og:title" content="Style Guide — K Films">
   <meta property="og:url" content="https://kisalafilms-website.elombe.workers.dev/styleguide">
   <meta property="og:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Style Guide — Kisala Films">
+  <meta name="twitter:title" content="Style Guide — K Films">
   <meta name="twitter:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
-  <meta name="twitter:description" content="Vossen-inspired design tokens for Kisala Films — dark premium system.">
+  <meta name="twitter:description" content="The v3 design tokens, type scale and components behind every K Films page.">
   <link rel="stylesheet" href="/css/kfilms.css">
   <script src="/js/kisala-config.js"></script>
   <script src="/js/analytics.js"></script>
 </head>
-<body class="kfilms" data-barba="wrapper">
+<body class="kfilms">
 
-  <div class="kf-page-transition" data-kf-transition aria-hidden="true">
-    <div class="kf-pt-panel kf-pt-panel--left" data-kf-pt-left></div>
-    <div class="kf-pt-panel kf-pt-panel--right" data-kf-pt-right></div>
-    <div class="kf-pt-line" data-kf-pt-line aria-hidden="true"></div>
-  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="site-header is-solid">
+  <!-- CHROME:HEADER start — synced by scripts/build-v3-chrome.py, edit index.html -->
+  <header class="site-header">
     <div class="header-shell">
-      <nav class="nav-cluster nav-cluster--left" aria-label="Primary left">
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Films</button>
-          <div class="nav-dd-menu">
-            <a href="/gallery">Build gallery</a>
-            <a href="/services/transformation-film">Transformation film</a>
-            <a href="/journal">Journal</a>
-          </div>
-        </div>
+      <a class="logo" href="/" aria-label="K Films — home">
+        <img src="/images/brand/k-films-signature-white.png" alt="K Films" width="1003" height="714">
+      </a>
+
+      <nav class="nav-cluster nav-cluster--centre" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
         <a href="/gallery">Gallery</a>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
-          <div class="nav-dd-menu">
-            <a href="/services">All services</a>
-            <a href="/services/full-wraps">Full colour-change wraps</a>
-            <a href="/services/accent-package">Partial &amp; accents</a>
-            <a href="/services#chrome">Chrome delete</a>
-            <a href="/services#protect">Tank guard &amp; PPF</a>
-            <a href="/services/transformation-film">Transformation film</a>
-          </div>
-        </div>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Wraps</button>
-          <div class="nav-dd-menu">
-            <a href="/vinyl-catalog">Vinyl catalog</a>
-            <a href="/shop/wrap">Finish catalogue</a>
-            <a href="/wrap-studio">Build your wrap</a>
-          </div>
-        </div>
+        <a href="/about">About</a>
+        <a href="/process">Process</a>
+        <a href="/faq">FAQ</a>
       </nav>
 
-      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745"></a>
+      <div class="nav-cluster nav-cluster--right">
+        <p class="nav-location">Jersey City, NJ</p>
+        <a class="btn btn-primary nav-cta" href="/quote">Get a quote</a>
+      </div>
 
-      <nav class="nav-cluster nav-cluster--right" aria-label="Primary right">
-        <a href="/shop">Shop</a>
-        <a href="/pricing">Pricing</a>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
-          <div class="nav-dd-menu">
-            <a href="/about">Who I am</a>
-            <a href="/testimonials">Rider notes</a>
-            <a href="/faq">FAQ</a>
-            <a href="/locations">The garage</a>
-          </div>
-        </div>
-        <a href="/login">Login</a>
-        <a href="/contact">Contact</a>
-        <a class="btn btn-primary nav-cta" href="/wrap-studio">Build your wrap</a>
-      </nav>
-
-      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
         <span></span><span></span>
       </button>
     </div>
   </header>
   <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
-  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
+  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Menu">
     <div class="nav-panel-head">
-      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745"></a>
+      <a class="logo" href="/" aria-label="K Films — home">
+        <img src="/images/brand/k-films-signature-white.png" alt="K Films" width="1003" height="714">
+      </a>
       <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
     </div>
-    <nav class="nav-panel-body">
+    <nav class="nav-panel-body" aria-label="Mobile">
       <a class="nav-row" href="/">Home</a>
+      <a class="nav-row" href="/services">Services</a>
       <a class="nav-row" href="/gallery">Gallery</a>
-      <a class="nav-row" href="/vinyl-catalog">Vinyl catalog</a>
-      <a class="nav-row" href="/shop">Shop</a>
-      <a class="nav-row" href="/wrap-studio">Wrap Studio</a>
-      <a class="btn btn-primary nav-panel-cta" href="/wrap-studio">Build your wrap</a>
+      <a class="nav-row" href="/about">About</a>
+      <a class="nav-row" href="/process">Process</a>
+      <a class="nav-row" href="/faq">FAQ</a>
+      <div class="nav-acc">
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>More</span><span class="chev">&#9660;</span></button>
+        <div class="nav-acc-panel">
+          <a href="/wrap-studio">Wrap Studio</a>
+          <a href="/vinyl-catalog">Vinyl catalog</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/shop">Shop</a>
+          <a href="/locations">The garage</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+      <a class="btn btn-primary nav-panel-cta" href="/quote">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+      <p class="nav-panel-location">Based in Jersey City, NJ</p>
     </nav>
   </aside>
+  <!-- CHROME:HEADER end -->
 
-  <main data-barba="container" data-barba-namespace="styleguide" class="barba-container">
+  <main id="main">
 
     <section class="page-hero">
       <div class="kf-container">
-        <p class="eyebrow" data-hero-anim>System</p>
-        <h1 data-hero-anim>Style Guide</h1>
-        <p class="p-lg" data-hero-anim>Vossen-inspired Kisala Films system — black canvas, logo red accent, Archivo + Mulish, full-bleed desktop layout.</p>
+        <p class="eyebrow">System</p>
+        <h1>Style guide</h1>
+        <p class="p-lg">The v3 design system: near-black canvas, one red accent, Barlow Condensed over Inter. Everything on the site is built from what is on this page, and nothing here is a picture of the tokens &mdash; the swatches and samples are rendered by the same variables the pages use.</p>
       </div>
     </section>
 
-    <section class="kf-section" data-reveal>
+    <section class="kf-section" aria-labelledby="sg-colour">
       <div class="kf-container">
-        <h2>Color palette</h2>
-        <div class="sg-swatch-row" data-reveal-stagger>
-          <div class="sg-swatch" style="background:#000;color:#fff" data-reveal="scale">#000000</div>
-          <div class="sg-swatch" style="background:#0a0a0a;color:#fff" data-reveal="scale">#0a0a0a</div>
-          <div class="sg-swatch" style="background:#111;color:#fff" data-reveal="scale">#111111</div>
-          <div class="sg-swatch" style="background:#e8271f;color:#fff" data-reveal="scale">#e8271f</div>
-          <div class="sg-swatch" style="background:#fff;color:#000" data-reveal="scale">#ffffff</div>
-          <div class="sg-swatch" style="background:#c8c8c8;color:#000" data-reveal="scale">#c8c8c8</div>
-          <div class="sg-swatch" style="background:#8a8a8a;color:#000" data-reveal="scale">#8a8a8a</div>
+        <p class="eyebrow">Colour</p>
+        <h2 id="sg-colour">Palette</h2>
+        <p class="p">Dark surfaces separate by a hair, not by contrast &mdash; the photography does the work. Red is the only chromatic colour in the system and it marks one thing per screen: the action you want taken.</p>
+        <div class="sg-swatch-row">
+          <div class="sg-swatch" style="background:var(--kf-black);color:var(--kf-white)">--kf-black</div>
+          <div class="sg-swatch" style="background:var(--kf-surface);color:var(--kf-white)">--kf-surface</div>
+          <div class="sg-swatch" style="background:var(--kf-surface-2);color:var(--kf-white)">--kf-surface-2</div>
+          <div class="sg-swatch" style="background:var(--kf-card);color:var(--kf-white)">--kf-card</div>
+          <div class="sg-swatch" style="background:var(--kf-red);color:#fff">--kf-red</div>
+          <div class="sg-swatch" style="background:var(--kf-red-cta);color:#fff">--kf-red-cta</div>
+          <div class="sg-swatch" style="background:var(--kf-white);color:var(--kf-black)">--kf-white</div>
+          <div class="sg-swatch" style="background:var(--kf-silver);color:var(--kf-black)">--kf-silver</div>
+          <div class="sg-swatch" style="background:var(--kf-muted);color:var(--kf-black)">--kf-muted</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="kf-section" aria-labelledby="sg-tokens">
+      <div class="kf-container">
+        <p class="eyebrow">Variables</p>
+        <h2 id="sg-tokens">Tokens</h2>
+        <p class="p">All of them live in the <code>:root</code> block at the top of <a href="/css/kfilms.css">kfilms.css</a>. A page that hardcodes a hex or a font name has gone off-system.</p>
+        <div class="sg-token-list">
+          <div>--kf-black #050505 &middot; --kf-surface #0a0a0a &middot; --kf-surface-2 #111111</div>
+          <div>--kf-card #0d0d0d &middot; --kf-card-hover #121212</div>
+          <div>--kf-border rgba(255,255,255,.12) &middot; --kf-border-strong rgba(255,255,255,.28)</div>
+          <div>--kf-white #f5f5f5 &middot; --kf-silver #b7b7b7 &middot; --kf-muted #777777</div>
+          <div>--kf-red #e21f26 &middot; --kf-red-cta #f1262d</div>
+          <div>--kf-font-display Barlow Condensed &middot; --kf-font-body Inter</div>
+          <div>--kf-track .18em &middot; --kf-track-tight .08em &middot; --kf-track-btn .03em</div>
+          <div>--kf-gutter clamp(20px, 4vw, 64px) &middot; --kf-section-y clamp(64px, 10vw, 128px)</div>
+          <div>--kf-header-h 72px, 88px from 1100px up &middot; --kf-radius 4px</div>
+          <div>--kf-ease cubic-bezier(.22, 1, .36, 1) &middot; --kf-duration .45s / .28s / .18s</div>
+          <div>--kf-tap 44px &mdash; the floor for anything you can press</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="kf-section" aria-labelledby="sg-type">
+      <div class="kf-container">
+        <p class="eyebrow">Type</p>
+        <h2 id="sg-type">Typography</h2>
+        <p class="p">Barlow Condensed, uppercase, for anything structural. Inter for anything you read a sentence of. The two never swap jobs.</p>
+        <div class="sg-type-sample h1">Heading 1 &mdash; page statements</div>
+        <div class="sg-type-sample h2">Heading 2 &mdash; section titles</div>
+        <div class="sg-type-sample h3">Heading 3 &mdash; card and block titles</div>
+        <div class="sg-type-sample h4">Heading 4</div>
+        <div class="sg-type-sample h5">Heading 5 &mdash; tracked uppercase</div>
+        <div class="sg-type-sample h6">Heading 6</div>
+        <p class="eyebrow">Eyebrow label</p>
+        <p class="p-lg">Paragraph large &mdash; the lead line under a heading, in near-white.</p>
+        <p class="p">Paragraph &mdash; body copy in silver, sized to stay readable on a phone in a garage.</p>
+        <p class="meta">Meta &mdash; captions, counts and asides.</p>
+      </div>
+    </section>
+
+    <section class="kf-section" aria-labelledby="sg-buttons">
+      <div class="kf-container">
+        <p class="eyebrow">Actions</p>
+        <h2 id="sg-buttons">Buttons and links</h2>
+        <p class="p">One primary per view. Ghost carries everything secondary, and the link arrow is for moving deeper into a page rather than committing to anything.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/quote">Primary <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="btn btn-ghost" href="/services">Ghost</a>
+          <a class="link-arrow" href="/gallery">Link arrow</a>
+          <a class="link-arrow link-arrow--back" href="/">Back link</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="kf-section" aria-labelledby="sg-blocks">
+      <div class="kf-container">
+        <p class="eyebrow">Components</p>
+        <h2 id="sg-blocks">Content blocks</h2>
+        <p class="p">The page builders: a card grid, a tile grid for short facts, and a panel for anything boxed such as a form.</p>
+
+        <h3 class="h5">Cards</h3>
+        <div class="kf-cards">
+          <div class="kf-card">
+            <h3 class="h5">Card</h3>
+            <p>A titled block with a paragraph. Used for services, journal entries and anything list-like with a sentence attached.</p>
+          </div>
+          <div class="kf-card">
+            <h3 class="h5">Card</h3>
+            <p>Cards sit on --kf-card and lift their border on hover when they are links.</p>
+          </div>
         </div>
 
-        <h2 data-reveal>Tokens</h2>
-        <div class="sg-token-list" data-reveal="fade">
-          <div>--kf-black / --kf-surface / --kf-surface-2</div>
-          <div>--kf-red #e8271f (accent only)</div>
-          <div>--kf-font-display: Archivo &middot; --kf-font-body: Mulish</div>
-          <div>--kf-gutter: clamp(20px, 4vw, 64px)</div>
-          <div>--kf-section-y: clamp(72px, 12vw, 140px)</div>
+        <h3 class="h5">Tiles</h3>
+        <div class="kf-tiles">
+          <div class="kf-tile"><h3 class="h6">Tile</h3><p>Short fact.</p></div>
+          <div class="kf-tile"><h3 class="h6">Tile</h3><p>Short fact.</p></div>
+          <div class="kf-tile"><h3 class="h6">Tile</h3><p>Short fact.</p></div>
+          <div class="kf-tile"><h3 class="h6">Tile</h3><p>Short fact.</p></div>
         </div>
 
-        <h2 data-reveal>Typography</h2>
-        <div class="sg-type-sample h1" data-reveal>Heading 1 — thin display</div>
-        <div class="sg-type-sample h2" data-reveal>Heading 2 — section titles</div>
-        <div class="sg-type-sample h3" data-reveal>Heading 3</div>
-        <div class="sg-type-sample h4" data-reveal>Heading 4</div>
-        <div class="sg-type-sample h5" data-reveal>Heading 5 — tracked uppercase</div>
-        <p class="eyebrow" data-reveal="fade">Eyebrow label</p>
-        <p class="p-lg" data-reveal>Paragraph large — lead copy for intros and hero support.</p>
-        <p class="p" data-reveal>Paragraph — secondary body in muted silver.</p>
-
-        <h2 style="margin-top:48px" data-reveal>Buttons</h2>
-        <div class="btn-row" data-reveal>
-          <a class="btn btn-primary" href="#">Primary</a>
-          <a class="btn btn-ghost" href="#">Ghost</a>
-          <a class="btn btn-secondary" href="#">Secondary</a>
-          <a class="link-arrow" href="#">Link arrow</a>
+        <h3 class="h5">Panel</h3>
+        <div class="kf-panel">
+          <h3 class="h4">Panel</h3>
+          <p class="p">A bordered surface for forms and anything that needs to read as a container rather than as content.</p>
+          <p class="kf-chip">Chip</p>
         </div>
+      </div>
+    </section>
 
-        <h2 style="margin-top:64px" data-reveal>Layout rules</h2>
-        <div class="sg-table-scroll" data-reveal>
+    <section class="kf-section" aria-labelledby="sg-layout">
+      <div class="kf-container">
+        <p class="eyebrow">Structure</p>
+        <h2 id="sg-layout">Layout rules</h2>
+        <div class="sg-table-scroll">
           <table class="sg-table">
             <thead>
               <tr><th>Surface</th><th>Rule</th></tr>
             </thead>
             <tbody>
-              <tr><td>Hero</td><td>100svh full-bleed media; brand + one headline + one support line + CTA</td></tr>
-              <tr><td>Nav</td><td>Centered logo; left/right clusters; all-caps tracked links</td></tr>
-              <tr><td>Columns</td><td>50/50 edge-to-edge tiles; no card chrome</td></tr>
-              <tr><td>Accent</td><td>Logo red only for brand marks, primary buttons, and link arrows</td></tr>
-              <tr><td>Motion</td><td>Lenis + GSAP ScrollTrigger + Barba film-gate wipe; honor prefers-reduced-motion</td></tr>
+              <tr><td>Hero</td><td>Full-bleed photograph, one headline, one support line, one primary CTA</td></tr>
+              <tr><td>Header</td><td>Logo left, nav centre, quote CTA right; transparent over a hero, solid once scrolled</td></tr>
+              <tr><td>Container</td><td>.kf-container caps at 1400px and carries --kf-gutter on both sides</td></tr>
+              <tr><td>Sections</td><td>.kf-section pads --kf-section-y top and bottom; no other vertical rhythm</td></tr>
+              <tr><td>Accent</td><td>Red for the brand mark, the primary button and link arrows &mdash; nothing else</td></tr>
+              <tr><td>Motion</td><td>CSS transitions plus one IntersectionObserver in site.js; every reveal is a .reveal class and prefers-reduced-motion turns them off</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2 data-reveal>Spacing</h2>
-        <div class="sg-table-scroll" data-reveal>
+        <h2 class="h4">Spacing</h2>
+        <div class="sg-table-scroll">
           <table class="sg-table">
             <thead>
               <tr><th>Breakpoint</th><th>Section pad</th><th>Gutter</th><th>Max content</th></tr>
             </thead>
             <tbody>
-              <tr><td>≥1100px</td><td>~140px</td><td>up to 64px</td><td>1400px</td></tr>
-              <tr><td>768–1099px</td><td>~96px</td><td>~4vw</td><td>fluid</td></tr>
-              <tr><td>&lt;768px</td><td>~72px</td><td>20px+</td><td>100%</td></tr>
+              <tr><td>&ge;1100px</td><td>128px</td><td>64px</td><td>1400px</td></tr>
+              <tr><td>768&ndash;1099px</td><td>~10vw</td><td>~4vw</td><td>fluid</td></tr>
+              <tr><td>&lt;768px</td><td>64px</td><td>20px</td><td>100%</td></tr>
             </tbody>
           </table>
         </div>
 
-        <div class="sg-nav" data-reveal>
+        <div class="sg-nav">
           <a class="link-arrow" href="/">Home</a>
+          <a class="link-arrow" href="/quote">Quote</a>
           <a class="link-arrow" href="/gallery">Gallery</a>
-          <a class="link-arrow" href="/shop/k-merch">Apparel</a>
+          <a class="link-arrow" href="/css/kfilms.css">kfilms.css</a>
         </div>
       </div>
     </section>
 
   </main>
 
+  <!-- CHROME:FOOTER start — synced by scripts/build-v3-chrome.py, edit index.html -->
   <footer class="site-footer">
     <div class="footer-grid">
       <div>
-        <h2 class="h5">Wrap</h2>
+        <h2 class="h5">Wraps</h2>
         <div class="footer-links">
-          <a href="/services/full-wraps">Full colour-change</a>
-          <a href="/services/accent-package">Partial &amp; accents</a>
-          <a href="/wrap-studio">Build your wrap</a>
+          <a href="/services#motorcycle-wraps">Motorcycle wraps</a>
+          <a href="/services#helmet-wraps">Helmet wraps</a>
+          <a href="/services#colour-change">Colour changes</a>
+          <a href="/services#graphics">Graphics &amp; liveries</a>
+          <a href="/services#ppf">PPF</a>
+          <a href="/services#decals">Decals</a>
         </div>
       </div>
       <div>
-        <h2 class="h5">Film</h2>
+        <h2 class="h5">Studio</h2>
         <div class="footer-links">
           <a href="/gallery">Gallery</a>
-          <a href="/shop">Shop the drop</a>
+          <a href="/process">Process</a>
+          <a href="/about">About</a>
+          <a href="/faq">FAQ</a>
+          <a href="/wrap-studio">Wrap Studio</a>
+          <a href="/vinyl-catalog">Vinyl catalog</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/shop">Shop</a>
         </div>
       </div>
       <div>
-        <h2 class="h5">System</h2>
+        <h2 class="h5">Where we work</h2>
         <div class="footer-links">
-          <a href="/css/kfilms.css">kfilms.css</a>
-          <a href="/">Homepage</a>
+          <a href="/locations/jersey-city">Jersey City</a>
+          <a href="/locations/brooklyn">Brooklyn</a>
+          <a href="/locations/new-york-city">New York City</a>
+          <a href="/locations">The garage</a>
+          <a href="/contact">Contact</a>
         </div>
       </div>
       <div class="footer-hours">
-        <h2 class="h5">The garage</h2>
+        <h2 class="h5">Get in touch</h2>
         <p>Jersey City, NJ &middot; by appointment</p>
+        <p><a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a></p>
+        <p><a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a></p>
+        <p>Monday to Friday: 10:00 AM &ndash; 6:00 PM</p>
+        <p>Saturday/Sunday: by appointment</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 Kisala Films &middot; Style guide (noindex)</span>
+      <span>&copy; 2026 K Films &middot; Jersey City, NJ &middot; Custom motorcycle &amp; helmet wraps.</span>
       <a href="/styleguide">Style guide</a>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@barba/core@2.10.3/dist/barba.umd.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <div class="kf-sticky-cta" data-sticky-cta hidden>
+    <a class="btn btn-primary" href="/quote" data-track="cta_click" data-track-label="sticky-mobile">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+  </div>
+  <!-- CHROME:FOOTER end -->
+
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
-  <script src="/js/motion.js"></script>
+  <script src="/js/site.js"></script>
 </body>
 </html>
