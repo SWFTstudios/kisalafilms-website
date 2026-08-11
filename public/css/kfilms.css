@@ -161,6 +161,14 @@ h1, h2, h3, h4, h5, h6,
   text-transform: uppercase;
   margin: 0 0 0.35em;
   color: var(--kf-white);
+  /* Display type this large has a floor it cannot shrink below, so on a 375px
+     phone a long enough word is simply wider than the column — "STRAIGHTFORWARD"
+     on /pricing was 33px over, and the whole page scrolled sideways because of
+     it. Hyphenate where the browser knows how, and break the word where it does
+     not. An awkward break costs a moment's reading; a page that slides under the
+     thumb costs the rider's patience on the one device most of them arrive on. */
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 /* Hero scale: ~52–68px on phones, ~80–110px on desktop. */
