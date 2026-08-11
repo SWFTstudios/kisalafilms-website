@@ -7,8 +7,8 @@
   <meta name="description" content="Transformation film, photo sets, and film-only packages from the Kisala Films garage.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <meta name="theme-color" content="#000000">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#050505">
   <link rel="icon" href="/images/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
@@ -25,7 +25,7 @@
   <meta name="twitter:title" content="Photoshoot — Shop | Kisala Films">
   <meta name="twitter:image" content="https://kisalafilms-website.elombe.workers.dev/images/brand/kisala-films-logo.png">
   <meta name="twitter:description" content="Transformation film, photo sets, and film-only packages from the Kisala Films garage.">
-  <link rel="stylesheet" href="/css/carsy.css">
+  <link rel="stylesheet" href="/css/kfilms.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -59,188 +59,208 @@
   <script src="/js/kisala-config.js"></script>
   <script src="/js/analytics.js"></script>
 </head>
-<body class="carsy">
+<body class="kfilms">
 
-<header class="site-header">
-    <div class="container header-bar">
-      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745"></a>
-      <nav class="nav-desktop" aria-label="Primary">
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">Services</button>
-          <div class="nav-dd-menu">
-      <a href="/services">All services</a>
-      <a href="/services/full-wraps">Full colour-change wraps</a>
-      <a href="/services/accent-package">Partial &amp; accents</a>
-      <a href="/services#chrome">Chrome delete</a>
-      <a href="/services#protect">Tank guard &amp; PPF</a>
-      <a href="/services/transformation-film">Transformation film</a>
-          </div>
-        </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- CHROME:HEADER start — synced by scripts/build-v3-chrome.py, edit index.html -->
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="logo" href="/" aria-label="K Films — home">
+        <img src="/images/brand/k-films-signature-white.png" alt="K Films" width="1003" height="714">
+      </a>
+
+      <nav class="nav-cluster nav-cluster--centre" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
         <a href="/gallery">Gallery</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/shop">Shop</a>
-        <div class="nav-dd">
-          <button type="button" class="nav-dd-btn" aria-expanded="false">About</button>
-          <div class="nav-dd-menu">
-      <a href="/about">Who I am</a>
-      <a href="/journal">Journal</a>
-      <a href="/testimonials">Rider notes</a>
-      <a href="/faq">FAQ</a>
-      <a href="/locations">The garage</a>
-          </div>
-        </div>
-        <a href="/contact">Contact</a>
-        <a class="btn btn-primary nav-cta" href="/wrap-studio">Build your wrap</a>
+        <a href="/about">About</a>
+        <a href="/process">Process</a>
+        <a href="/faq">FAQ</a>
       </nav>
-      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false">
+
+      <div class="nav-cluster nav-cluster--right">
+        <p class="nav-location">Jersey City, NJ</p>
+        <a class="btn btn-primary nav-cta" href="/quote">Get a quote</a>
+      </div>
+
+      <button class="nav-toggle" type="button" data-nav-toggle aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
         <span></span><span></span>
       </button>
     </div>
   </header>
   <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
-  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Mobile menu">
+  <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Menu">
     <div class="nav-panel-head">
-      <a class="logo" href="/"><img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745"></a>
+      <a class="logo" href="/" aria-label="K Films — home">
+        <img src="/images/brand/k-films-signature-white.png" alt="K Films" width="1003" height="714">
+      </a>
       <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
     </div>
-    <nav class="nav-panel-body">
-      <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>Services</span><span class="chev">&#9660;</span></button>
-        <div class="nav-acc-panel">
-      <a href="/services">All services</a>
-      <a href="/services/full-wraps">Full colour-change wraps</a>
-      <a href="/services/accent-package">Partial &amp; accents</a>
-      <a href="/services#chrome">Chrome delete</a>
-      <a href="/services#protect">Tank guard &amp; PPF</a>
-      <a href="/services/transformation-film">Transformation film</a>
-        </div>
-      </div>
-      <a class="nav-row" href="/wrap-studio">Wrap Studio</a>
+    <nav class="nav-panel-body" aria-label="Mobile">
+      <a class="nav-row" href="/">Home</a>
+      <a class="nav-row" href="/services">Services</a>
       <a class="nav-row" href="/gallery">Gallery</a>
-      <a class="nav-row" href="/pricing">Pricing</a>
-      <a class="nav-row" href="/shop">Shop</a>
+      <a class="nav-row" href="/about">About</a>
+      <a class="nav-row" href="/process">Process</a>
+      <a class="nav-row" href="/faq">FAQ</a>
       <div class="nav-acc">
-        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>About</span><span class="chev">&#9660;</span></button>
+        <button type="button" class="nav-acc-btn" aria-expanded="false"><span>More</span><span class="chev">&#9660;</span></button>
         <div class="nav-acc-panel">
-      <a href="/about">Who I am</a>
-      <a href="/journal">Journal</a>
-      <a href="/testimonials">Rider notes</a>
-      <a href="/faq">FAQ</a>
-      <a href="/locations">The garage</a>
+          <a href="/wrap-studio">Wrap Studio</a>
+          <a href="/vinyl-catalog">Vinyl catalog</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/shop">Shop</a>
+          <a href="/locations">The garage</a>
+          <a href="/contact">Contact</a>
         </div>
       </div>
-      <a class="nav-row" href="/contact">Contact</a>
-      <a class="btn btn-primary nav-panel-cta" href="/wrap-studio">Build your wrap</a>
+      <a class="btn btn-primary nav-panel-cta" href="/quote">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+      <p class="nav-panel-location">Based in Jersey City, NJ</p>
     </nav>
   </aside>
+  <!-- CHROME:HEADER end -->
+
+  <main id="main">
 
 <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow"><a href="/shop">Shop</a> / Photoshoot</p>
+    <div class="kf-container">
+      <p class="eyebrow kf-crumbs"><a href="/shop">Shop</a> / Photoshoot</p>
       <h1>Photoshoot</h1>
       <p class="p-lg">The bike gets filmed the same way it gets wrapped. Transformation film, stills, and film-only packages.</p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="lookbook-grid">
-        <a class="look-card shop-product-card" href="/shop/photoshoot/transformation-film">
-          <div class="look-shot">
-            <span class="look-kind">Cinema</span>
+  <section class="kf-section">
+    <div class="kf-container">
+      <div class="kf-product-grid">
+        <a class="kf-product-card" href="/shop/photoshoot/transformation-film">
+          <div class="kf-product-media">
             <img src="/images/thumb-transformation-mid.jpg" alt="Transformation Film" width="800" height="1000" loading="lazy">
+            <span class="kf-tag">Cinema</span>
           </div>
-          <div class="look-body">
-            <div class="look-head">
-              <h2 class="h3">Transformation Film</h2>
-              <span class="look-price">Starting at <span data-cfg="addons.transformationFilm">$350</span></span>
+          <div class="kf-product-body">
+            <div class="kf-product-head">
+              <h2>Transformation Film</h2>
+              <span class="kf-product-price">Starting at <span data-cfg="addons.transformationFilm">$350</span></span>
             </div>
-            <p class="look-blurb">From strip to premiere — a cinematic edit that turns the wrap into an episode.</p>
-            <p class="look-reserve"><span class="link-arrow">View package &rarr;</span></p>
+            <p>From strip to premiere — a cinematic edit that turns the wrap into an episode.</p>
+            <span class="link-arrow">View package</span>
           </div>
         </a>
-        <a class="look-card shop-product-card" href="/shop/photoshoot/photo-set">
-          <div class="look-shot">
-            <span class="look-kind">Stills</span>
+        <a class="kf-product-card" href="/shop/photoshoot/photo-set">
+          <div class="kf-product-media">
             <img src="/images/refs/ref-01-front-3q.jpg" alt="Photo Set" width="800" height="1000" loading="lazy">
+            <span class="kf-tag">Stills</span>
           </div>
-          <div class="look-body">
-            <div class="look-head">
-              <h2 class="h3">Photo Set</h2>
-              <span class="look-price">Starting at <span data-cfg="addons.photoSet">$200</span></span>
+          <div class="kf-product-body">
+            <div class="kf-product-head">
+              <h2>Photo Set</h2>
+              <span class="kf-product-price">Starting at <span data-cfg="addons.photoSet">$200</span></span>
             </div>
-            <p class="look-blurb">A still set of the finished bike — garage light, night metal, and the details that sell the finish.</p>
-            <p class="look-reserve"><span class="link-arrow">View package &rarr;</span></p>
+            <p>A still set of the finished bike — garage light, night metal, and the details that sell the finish.</p>
+            <span class="link-arrow">View package</span>
           </div>
         </a>
-        <a class="look-card shop-product-card" href="/shop/photoshoot/film-photo-only">
-          <div class="look-shot">
-            <span class="look-kind">Package</span>
+        <a class="kf-product-card" href="/shop/photoshoot/film-photo-only">
+          <div class="kf-product-media">
             <img src="/images/thumb-night-pov.jpg" alt="Film &amp; Photo Only" width="800" height="1000" loading="lazy">
+            <span class="kf-tag">Package</span>
           </div>
-          <div class="look-body">
-            <div class="look-head">
-              <h2 class="h3">Film &amp; Photo Only</h2>
-              <span class="look-price">Starting at <span data-cfg="services.filmOnly.from">$350</span></span>
+          <div class="kf-product-body">
+            <div class="kf-product-head">
+              <h2>Film &amp; Photo Only</h2>
+              <span class="kf-product-price">Starting at <span data-cfg="services.filmOnly.from">$350</span></span>
             </div>
-            <p class="look-blurb">No wrap this time — just the camera on your bike. Film, stills, or both.</p>
-            <p class="look-reserve"><span class="link-arrow">View package &rarr;</span></p>
+            <p>No wrap this time — just the camera on your bike. Film, stills, or both.</p>
+            <span class="link-arrow">View package</span>
           </div>
         </a>
       </div>
     </div>
   </section>
 
-<footer class="site-footer">
-    <div class="container footer-grid">
+  <section class="kf-cta">
+    <div class="kf-container kf-cta-grid">
+      <div class="reveal">
+        <h2>The film follows the wrap.</h2>
+        <p class="p-lg">Every build gets shot. Start with the wrap and the camera comes with it.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/quote" data-track="cta_click" data-track-label="shop-photoshoot">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="kf-cta-notes reveal">
+        <div class="kf-cta-note">
+          <h3>Bikes and helmets</h3>
+          <p>Colour changes, graphics, PPF and helmet wraps, all from one bench.</p>
+        </div>
+        <div class="kf-cta-note">
+          <h3>Jersey City</h3>
+          <p>Ride it in, or the van collects it from Brooklyn and NYC.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- CHROME:FOOTER start — synced by scripts/build-v3-chrome.py, edit index.html -->
+  <footer class="site-footer">
+    <div class="footer-grid">
       <div>
-        <h2 class="h5">Wrap</h2>
+        <h2 class="h5">Wraps</h2>
         <div class="footer-links">
-          <a href="/services/full-wraps">Full colour-change</a>
-          <a href="/services/accent-package">Partial &amp; accents</a>
-          <a href="/services#protect">Tank guard &amp; PPF</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/wrap-studio">Build your wrap</a>
+          <a href="/services#motorcycle-wraps">Motorcycle wraps</a>
+          <a href="/services#helmet-wraps">Helmet wraps</a>
+          <a href="/services#colour-change">Colour changes</a>
+          <a href="/services#graphics">Graphics &amp; liveries</a>
+          <a href="/services#ppf">PPF</a>
+          <a href="/services#decals">Decals</a>
         </div>
       </div>
       <div>
-        <h2 class="h5">Film</h2>
+        <h2 class="h5">Studio</h2>
         <div class="footer-links">
           <a href="/gallery">Gallery</a>
-          <a href="/services/transformation-film">Transformation film</a>
-          <a href="/journal">Journal</a>
-          <a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a>
+          <a href="/process">Process</a>
+          <a href="/about">About</a>
+          <a href="/faq">FAQ</a>
+          <a href="/wrap-studio">Wrap Studio</a>
+          <a href="/vinyl-catalog">Vinyl catalog</a>
+          <a href="/pricing">Pricing</a>
           <a href="/shop">Shop</a>
-          <a href="https://rollerreels.com" rel="noopener">Roller Reels</a>
         </div>
       </div>
       <div>
-        <h2 class="h5">Stay on the list</h2>
-        <p class="p">Build drops, new finishes, and the films that come out of the garage.</p>
-        <form class="form" action="https://formsubmit.co/elombe@swftstudios.com" method="POST" accept-charset="UTF-8">
-          <input type="hidden" name="_subject" value="Kisala Films - email subscribe">
-          <input type="hidden" name="_template" value="table">
-          <input type="hidden" name="_captcha" value="false">
-          <input type="hidden" name="_next" value="https://kisalafilms-website.elombe.workers.dev/?subscribed=1">
-          <input type="text" name="_honey" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none !important" inputmode="none">
-          <div class="fld"><input type="email" name="email" placeholder="Email address" aria-label="Email" required></div>
-          <button class="btn btn-primary" type="submit">Subscribe</button>
-          <p class="form-note">Thanks — you&rsquo;re on the list.</p>
-        </form>
+        <h2 class="h5">Where we work</h2>
+        <div class="footer-links">
+          <a href="/locations/jersey-city">Jersey City</a>
+          <a href="/locations/brooklyn">Brooklyn</a>
+          <a href="/locations/new-york-city">New York City</a>
+          <a href="/locations">The garage</a>
+          <a href="/contact">Contact</a>
+        </div>
       </div>
       <div class="footer-hours">
-        <h2 class="h5">The garage</h2>
+        <h2 class="h5">Get in touch</h2>
         <p>Jersey City, NJ &middot; by appointment</p>
         <p><a href="mailto:elombe@swftstudios.com">elombe@swftstudios.com</a></p>
+        <p><a href="https://www.instagram.com/kisalafilms/" rel="noopener" target="_blank">Instagram</a></p>
         <p>Monday to Friday: 10:00 AM &ndash; 6:00 PM</p>
         <p>Saturday/Sunday: by appointment</p>
       </div>
     </div>
-    <div class="container footer-bottom">
-      <span>&copy; 2026 Kisala Films &middot; Jersey City, NJ &middot; Film means vinyl &mdash; and cinema.</span>
+    <div class="footer-bottom">
+      <span>&copy; 2026 K Films &middot; Jersey City, NJ &middot; Custom motorcycle &amp; helmet wraps.</span>
       <a href="/styleguide">Style guide</a>
     </div>
   </footer>
+
+  <div class="kf-sticky-cta" data-sticky-cta hidden>
+    <a class="btn btn-primary" href="/quote" data-track="cta_click" data-track-label="sticky-mobile">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+  </div>
+  <!-- CHROME:FOOTER end -->
+
   <script src="/js/config-apply.js"></script>
   <script src="/js/nav.js"></script>
   <script src="/js/site.js"></script>

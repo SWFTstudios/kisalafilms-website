@@ -1977,6 +1977,252 @@ body.kf-typing .kf-sticky-cta {
   justify-self: start;
 }
 
+/* ——— Shop ———
+   One card shape covers collections, photoshoot packages, wrap finishes and
+   merch, because they are all the same object: a picture, a name, a price and
+   a link into the thing. */
+.kf-crumbs a {
+  color: inherit;
+}
+
+.kf-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 20px;
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.kf-product-card {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+  background: var(--kf-surface);
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  overflow: hidden;
+  transition: border-color var(--kf-duration-fast) var(--kf-ease),
+    transform var(--kf-duration-fast) var(--kf-ease);
+}
+
+.kf-product-card:hover,
+.kf-product-card:focus-visible {
+  border-color: var(--kf-red-border);
+  transform: translateY(-3px);
+}
+
+.kf-product-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--kf-black);
+}
+
+.kf-product-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A second image in the media box is the alternate shot: it sits on top and
+   fades in on hover, so a card with only one image behaves normally. */
+.kf-product-media img + img {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--kf-duration) var(--kf-ease);
+}
+
+.kf-product-card:hover .kf-product-media img + img {
+  opacity: 1;
+}
+
+.kf-product-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 22px 24px;
+}
+
+.kf-product-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.kf-product-head h2,
+.kf-product-head h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.kf-product-price {
+  font-family: var(--kf-font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: var(--kf-track-tight);
+  color: var(--kf-white);
+  white-space: nowrap;
+}
+
+.kf-product-body p {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--kf-silver);
+}
+
+.kf-product-colour {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--kf-muted);
+}
+
+.kf-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--kf-border-strong);
+}
+
+.kf-swatch-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--kf-muted);
+}
+
+.kf-swatch-row span[style] {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--kf-border-strong);
+}
+
+.kf-thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: clamp(24px, 3vw, 36px);
+}
+
+.kf-thumb-grid img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 8 / 5;
+  object-fit: cover;
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+}
+
+.kf-colour-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+  margin-top: clamp(24px, 3vw, 36px);
+}
+
+.kf-colour-card {
+  margin: 0;
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+  overflow: hidden;
+  background: var(--kf-surface);
+}
+
+.kf-colour-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.kf-colour-card figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+}
+
+.kf-colour-card figcaption span {
+  color: var(--kf-muted);
+  font-size: 0.78rem;
+}
+
+.kf-mini-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(20px, 3vw, 32px);
+}
+
+.kf-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--kf-tap);
+  padding: 8px 16px 8px 10px;
+  font-family: var(--kf-font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: var(--kf-track-tight);
+  text-transform: uppercase;
+  color: var(--kf-silver);
+  text-decoration: none;
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+}
+
+.kf-mini:hover,
+.kf-mini:focus-visible {
+  color: var(--kf-white);
+  border-color: var(--kf-border-strong);
+}
+
+.kf-media-frame img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+}
+
+/* Finish swatches. Drawn rather than photographed so a finish always has a
+   swatch, even one with no product shot yet, and so the seven read as one set
+   instead of seven different lighting setups. */
+.kf-finish {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.kf-finish::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.28) 0%, transparent 34%, transparent 66%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+.finish-gloss { background: radial-gradient(120% 100% at 30% 12%, #6e6e6e 0%, #1c1c1c 46%, #050505 100%); }
+.finish-satin { background: linear-gradient(160deg, #4a4a4a 0%, #262626 48%, #101010 100%); }
+.finish-matte { background: linear-gradient(160deg, #2c2c2c 0%, #1e1e1e 52%, #151515 100%); }
+.finish-matte::after { opacity: 0.12; }
+.finish-metallic { background: linear-gradient(140deg, #9aa0a6 0%, #4c5257 34%, #d0d4d8 52%, #3a3f44 74%, #7e858b 100%); }
+.finish-shift { background: linear-gradient(135deg, #7b2ff7 0%, #e8271f 34%, #f2a516 58%, #12b8a6 82%, #2b6ef6 100%); }
+.finish-chrome { background: linear-gradient(180deg, #f4f6f8 0%, #9fa7ae 24%, #3d4348 46%, #e6eaee 62%, #7d858c 82%, #cfd5da 100%); }
+.finish-textured {
+  background:
+    repeating-linear-gradient(45deg, #1a1a1a 0 5px, #101010 5px 10px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 0 5px, transparent 5px 10px);
+}
+
 /* ——— Style guide ——— */
 .sg-swatch-row {
   display: grid;
