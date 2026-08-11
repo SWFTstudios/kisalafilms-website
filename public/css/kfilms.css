@@ -51,23 +51,6 @@ html {
   scroll-padding-top: var(--kf-header-h);
 }
 
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
 body.kfilms {
   margin: 0;
   min-height: 100%;
@@ -2467,128 +2450,20 @@ button.linkish:hover {
   }
 }
 
-[data-hero-anim] {
-  opacity: 0;
-  transform: translateY(28px);
-}
-
-[data-reveal],
-[data-reveal="up"] {
-  opacity: 0;
-  transform: translateY(28px);
-}
-
-[data-reveal="fade"] {
-  opacity: 0;
-  transform: none;
-}
-
-[data-reveal="scale"] {
-  opacity: 0;
-  transform: scale(1.04);
-}
-
-[data-reveal="clip"] {
-  opacity: 1;
-  clip-path: inset(12% 12% 12% 12%);
-  transform: none;
-}
-
 .kf-hero,
 .kf-page-hero {
   overflow: hidden;
 }
 
 .kf-hero-media,
-.kf-hero-video,
 .kf-page-hero > img {
   will-change: transform;
 }
 
-/* ——— Film-gate page transition ——— */
-.kf-page-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 9990;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.kf-page-transition.is-active {
-  pointer-events: all;
-  visibility: visible;
-}
-
-.kf-pt-panel {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50.2%;
-  background: var(--kf-black);
-  will-change: transform;
-}
-
-.kf-pt-panel--left {
-  left: 0;
-  transform: translateX(-101%);
-}
-
-.kf-pt-panel--right {
-  right: 0;
-  transform: translateX(101%);
-}
-
-.kf-pt-line {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  margin-left: -0.5px;
-  background: var(--kf-red);
-  opacity: 0;
-  transform: scaleY(0);
-  transform-origin: center center;
-  will-change: transform, opacity;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  [data-hero-anim],
-  [data-reveal],
-  [data-reveal="up"],
-  [data-reveal="fade"],
-  [data-reveal="scale"],
-  [data-reveal="clip"] {
-    opacity: 1;
-    transform: none;
-    clip-path: none;
-  }
-
-  .kf-loader,
-  .kf-page-transition {
-    display: none !important;
-  }
-
-  .kf-split-tile:hover .kf-split-poster,
-  .kf-split-tile:hover .kf-split-slides img.is-active,
-  .kf-gallery-item:hover img,
-  .kf-apparel-card:hover img {
-    transform: none;
-  }
-
-  .kf-split-video,
-  .kf-split-embed {
-    display: none !important;
-  }
-
   html {
     scroll-behavior: auto;
   }
-}
-
-/* Barba leave/enter */
-.barba-container {
-  min-height: 100%;
 }
 
 /* ——— Gallery page ——— */
