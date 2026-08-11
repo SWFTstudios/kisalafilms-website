@@ -55,6 +55,24 @@ function list(value: unknown, max: number): string {
     .slice(0, max);
 }
 
+/**
+ * A newline-joined list, capped on both axes.
+ *
+ * `list()` would flatten these onto one line, and a shortlist of six films each
+ * carrying a URL is only readable one per line. Capping the number of lines as
+ * well as the total length is what stops a posted array of ten thousand entries
+ * from becoming a row.
+ */
+function lines(value: unknown, maxLines: number, max: number): string {
+  const source = Array.isArray(value) ? value : String(value ?? "").split("\n");
+  return source
+    .slice(0, maxLines)
+    .map((entry) => text(entry, CAP.medium))
+    .filter(Boolean)
+    .join("\n")
+    .slice(0, max);
+}
+
 function count(value: unknown): number {
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0) return 0;
@@ -90,6 +108,11 @@ function normalise(body: Record<string, unknown>) {
     description: text(body.description, CAP.long),
     finish: text(body.finish, CAP.short),
     desiredColour: text(body.desired_colour, CAP.short),
+    filmTypes: list(body.film_types, CAP.medium),
+    /* One picked film per line. Each carries a name, a SKU, a vendor and a
+       supplier URL, so the cap is per-line generous rather than per-field
+       tight — six of them is a long string and still a legitimate answer. */
+    filmChoices: lines(body.film_choices, 6, CAP.long),
     handoff: text(body.handoff, CAP.short),
     pickupZip: text(body.pickup_zip, 10),
     name: text(body.name, CAP.short),
@@ -147,11 +170,12 @@ export async function recordQuoteRequest(
          id, created_at, item_type, services, service_other,
          bike_make, bike_model, bike_year, bike_style,
          helmet_brand, helmet_model, helmet_size, helmet_style,
-         description, finish, desired_colour, handoff, pickup_zip,
+         description, finish, desired_colour, film_types, film_choices,
+         handoff, pickup_zip,
          customer_name, customer_email, customer_phone, instagram,
          preferred_contact, photo_count, summary, page,
          referer, user_agent, country
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
       .bind(
         record.id,
@@ -170,6 +194,8 @@ export async function recordQuoteRequest(
         record.description,
         record.finish,
         record.desiredColour,
+        record.filmTypes,
+        record.filmChoices,
         record.handoff,
         record.pickupZip,
         record.name,
