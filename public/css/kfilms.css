@@ -1823,6 +1823,160 @@ body.kf-typing .kf-sticky-cta {
   margin-bottom: 8px;
 }
 
+/* A note that qualifies what is above it, never the main line of a section. */
+.kf-note {
+  max-width: 52rem;
+  margin-top: 24px;
+  font-size: 0.92rem;
+  color: var(--kf-muted);
+}
+
+.kf-list {
+  margin: 20px 0 24px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 0.95rem;
+  color: var(--kf-silver);
+}
+
+.kf-list li {
+  padding-left: 18px;
+  position: relative;
+}
+
+.kf-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  background: var(--kf-red);
+}
+
+/* A small square label, unlike .kf-tag which is positioned over an image. */
+.kf-chip {
+  align-self: flex-start;
+  padding: 5px 10px;
+  font-family: var(--kf-font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: var(--kf-track);
+  text-transform: uppercase;
+  color: var(--kf-silver);
+  border: 1px solid var(--kf-border-strong);
+}
+
+.kf-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.kf-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: clamp(20px, 2.5vw, 28px);
+  background: var(--kf-black);
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+}
+
+.kf-card h3 {
+  margin: 4px 0 0;
+  font-size: 1.15rem;
+}
+
+.kf-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--kf-silver);
+}
+
+/* ——— Price cards ——— */
+.kf-price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+@media (min-width: 900px) {
+  .kf-price-grid--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.kf-price-card {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(24px, 3vw, 34px);
+  background: var(--kf-surface);
+  border: 1px solid var(--kf-border);
+  border-radius: var(--kf-radius);
+}
+
+.kf-price-card--featured {
+  border-color: var(--kf-red-border);
+  background: linear-gradient(180deg, rgba(232, 39, 31, 0.07), transparent 45%), var(--kf-surface);
+}
+
+.kf-price-card h3 {
+  margin: 18px 0 0;
+  font-size: 1.35rem;
+}
+
+.kf-price-amount {
+  margin: 6px 0 0;
+  font-family: var(--kf-font-display);
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--kf-white);
+}
+
+/* Pushes the card's action to the bottom so a row of cards lines up however
+   long the copy above happens to run. */
+.kf-price-card .btn {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.kf-price-card .kf-note {
+  margin-top: 10px;
+}
+
+/* ——— Callout banner ——— */
+.kf-banner {
+  display: grid;
+  gap: 20px;
+  align-items: center;
+  padding: clamp(24px, 3.5vw, 36px);
+  border: 1px solid var(--kf-red-border);
+  border-radius: var(--kf-radius);
+  background: linear-gradient(120deg, rgba(232, 39, 31, 0.1), transparent 60%), var(--kf-surface);
+}
+
+@media (min-width: 900px) {
+  .kf-banner {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.kf-banner p.p {
+  max-width: 46rem;
+  margin-bottom: 0;
+}
+
+.kf-banner .btn {
+  justify-self: start;
+}
+
 /* ——— Style guide ——— */
 .sg-swatch-row {
   display: grid;
