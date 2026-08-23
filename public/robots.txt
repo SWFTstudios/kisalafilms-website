@@ -5,6 +5,7 @@ User-agent: *
 Allow: /
 Disallow: /404
 Disallow: /deposit-thanks
+Disallow: /internal/brand-style-guide
 Disallow: /lookbook/film
 Disallow: /project-thanks
 Disallow: /quote-thanks

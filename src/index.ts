@@ -35,6 +35,7 @@ type Env = {
   SITE_URL?: string;
   FILMS_IMPORT_TOKEN?: string;
   FOUNDER_ADMIN_TOKEN?: string;
+  STYLEGUIDE_PASSWORD?: string;
 };
 
 const JSON_HEADERS = {
@@ -83,6 +84,30 @@ function adminAuthed(request: Request, env: Env): boolean {
   if (!token) return false;
   const auth = request.headers.get("Authorization") || "";
   return auth === `Bearer ${token}`;
+}
+
+// Gate for /internal/* — pages meant for the studio, not search engines or
+// anyone who stumbles on the URL. Fails closed: with no secret set, every
+// request is refused rather than served unprotected.
+function internalDocsAuthed(request: Request, env: Env): boolean {
+  if (!env.STYLEGUIDE_PASSWORD) return false;
+  const auth = request.headers.get("Authorization") || "";
+  if (!auth.startsWith("Basic ")) return false;
+  let decoded: string;
+  try {
+    decoded = atob(auth.slice(6));
+  } catch {
+    return false;
+  }
+  const suppliedPassword = decoded.slice(decoded.indexOf(":") + 1);
+  return timingSafeEqual(suppliedPassword, env.STYLEGUIDE_PASSWORD);
+}
+
+function internalDocsUnauthorized(): Response {
+  return new Response("Authentication required.", {
+    status: 401,
+    headers: { "WWW-Authenticate": 'Basic realm="K Films internal", charset="UTF-8"' },
+  });
 }
 
 function orderId(): string {
@@ -670,6 +695,14 @@ export default {
 
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === "/internal" || url.pathname.startsWith("/internal/")) {
+      if (!internalDocsAuthed(request, env)) return internalDocsUnauthorized();
+      const res = await env.ASSETS.fetch(request);
+      const headers = new Headers(res.headers);
+      headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+      return new Response(res.body, { status: res.status, headers });
+    }
 
     if (url.pathname === "/lookbook" || url.pathname === "/lookbook/") {
       return redirect("/vinyl-catalog" + url.search);
