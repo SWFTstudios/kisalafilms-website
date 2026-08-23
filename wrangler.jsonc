@@ -28,7 +28,10 @@
      Optional: wrangler secret put SITE_URL  (defaults to the request host)
      Films import: wrangler secret put FILMS_IMPORT_TOKEN
      Founder admin (mark completed orders / force price sync):
-     wrangler secret put FOUNDER_ADMIN_TOKEN */
+     wrangler secret put FOUNDER_ADMIN_TOKEN
+     Internal docs (HTTP basic auth for everything under /internal/, e.g.
+     the brand style guide — unset means /internal/* refuses all requests):
+     wrangler secret put STYLEGUIDE_PASSWORD */
   "vars": {
     "SITE_URL": "https://kisalafilms-website.elombe.workers.dev"
   }

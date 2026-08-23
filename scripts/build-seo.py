@@ -36,6 +36,7 @@ NOINDEX = {
   "404.html",
   "wrap-quote/index.html",
   "lookbook/film.html",
+  "internal/brand-style-guide.html",
 }
 
 # Priority by role rather than a flat list: the conversion path first.
