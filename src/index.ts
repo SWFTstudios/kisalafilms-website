@@ -704,15 +704,16 @@ export default {
       return new Response(res.body, { status: res.status, headers });
     }
 
+    // Legacy vinyl lookbook → Theatre in the 2027 Webflow theme
     if (url.pathname === "/lookbook" || url.pathname === "/lookbook/") {
-      return redirect("/vinyl-catalog" + url.search);
+      return redirect("/theatre" + url.search);
     }
     if (
       url.pathname === "/lookbook/film" ||
       url.pathname === "/lookbook/film/" ||
       url.pathname === "/lookbook/film.html"
     ) {
-      return redirect("/vinyl-catalog/film.html" + url.search);
+      return redirect("/theatre" + url.search);
     }
 
     if (url.pathname === "/api/checkout/deposit") {
