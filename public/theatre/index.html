@@ -890,21 +890,36 @@ a.slider-gallery_button,
     try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
   }
 
+  function getTheatreDept(id) {
+    if (!id) return null;
+    return (
+      document.getElementById(id) ||
+      document.querySelector('.theatre-list .theatre-dept[data-theatre-id="' + id + '"]')
+    );
+  }
+
+  function getTheatreMedia(id, root) {
+    if (!id) return null;
+    var scope = root || document;
+    return (
+      scope.querySelector('.theatre-list a.theatre-dept-media[data-theatre-id="' + id + '"]') ||
+      scope.querySelector('#' + id + ' .theatre-dept-media') ||
+      scope.querySelector('.theatre-list [data-theatre-id="' + id + '"]')
+    );
+  }
+
   function scrollHomeToTheatreId(id) {
     if (!id || HASHES.indexOf(id) === -1) return;
-    var el =
-      document.getElementById(id) ||
-      document.querySelector('.theatre-list .theatre-dept[data-theatre-id="' + id + '"]') ||
-      document.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
+    var el = getTheatreDept(id);
     if (!el) return;
     if (window.lenis && typeof window.lenis.scrollTo === 'function') {
       try {
-        window.lenis.scrollTo(el, { immediate: true, offset: -window.innerHeight * 0.25 });
+        window.lenis.scrollTo(el, { immediate: true, offset: 0 });
       } catch (e) {
-        try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (err) {}
+        try { el.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (err) {}
       }
     } else {
-      try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
+      try { el.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (e) {}
     }
     if (typeof ScrollTrigger !== 'undefined') {
       try { ScrollTrigger.refresh(); } catch (e) {}
@@ -1107,10 +1122,7 @@ a.slider-gallery_button,
       el.classList.remove('active-flip-item');
     });
     if (!id) return null;
-    var el =
-      document.getElementById(id) ||
-      document.querySelector('.theatre-list .theatre-dept[data-theatre-id="' + id + '"]') ||
-      document.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
+    var el = getTheatreMedia(id);
     if (el) el.classList.add('active-flip-item');
     return el;
   }
@@ -1151,7 +1163,16 @@ a.slider-gallery_button,
     var state = Flip.getState($visual);
     incoming.find('.visual').remove();
     $visual.appendTo(incoming);
-    return Flip.from(state, { duration: 0.55, ease: 'power1.inOut' });
+    return Flip.from(state, {
+      duration: 0.55,
+      ease: 'power1.inOut',
+      absolute: true,
+      onComplete: function () {
+        gsap.set($visual, {
+          clearProps: 'position,top,left,width,height,transform,maxWidth,maxHeight'
+        });
+      }
+    });
   }
 
   function resetWebflow(data) {
@@ -1323,7 +1344,7 @@ a.slider-gallery_button,
             }
             var incoming = markActive(id);
             if (!incoming && data.next.container) {
-              incoming = data.next.container.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
+              incoming = getTheatreMedia(id, data.next.container);
               if (incoming) incoming.classList.add('active-flip-item');
             }
             data.next.container.classList.add('fixed');
