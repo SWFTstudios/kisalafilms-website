@@ -923,18 +923,33 @@ a.slider-gallery_button,
     if (!id || HASHES.indexOf(id) === -1) return;
     var el = getTheatreDept(id);
     if (!el) return;
-    if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+    function applyScroll() {
+      el = getTheatreDept(id) || el;
+      if (!el) return;
+      if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+        try {
+          window.lenis.scrollTo(el, { immediate: true, offset: 0 });
+          return;
+        } catch (e) {}
+      }
       try {
-        window.lenis.scrollTo(el, { immediate: true, offset: 0 });
+        var top = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+        window.scrollTo(0, Math.max(0, top));
       } catch (e) {
         try { el.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (err) {}
       }
-    } else {
-      try { el.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (e) {}
     }
-    if (typeof ScrollTrigger !== 'undefined') {
-      try { ScrollTrigger.refresh(); } catch (e) {}
-    }
+    // Wait for ScrollTrigger pins from kfilmsInitHome to settle, then scroll (and re-apply once).
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (typeof ScrollTrigger !== 'undefined') {
+          try { ScrollTrigger.refresh(true); } catch (e) {}
+        }
+        applyScroll();
+        setTimeout(applyScroll, 50);
+        setTimeout(applyScroll, 200);
+      });
+    });
   }
 
   function resolveReturnTheatreId(data) {
@@ -1205,6 +1220,11 @@ a.slider-gallery_button,
 
   function finishHomeReturn(data, returnId) {
     window.__kfilmsTransitionFinished = 'home-return';
+    if (returnId) {
+      persistFlipId(returnId);
+      window.__kfilmsReturnTheatreId = returnId;
+      markActive(returnId);
+    }
     if (data.next && data.next.container) {
       data.next.container.classList.remove('fixed');
     }
@@ -1214,6 +1234,7 @@ a.slider-gallery_button,
     bindFlipPointer(data.next && data.next.container);
     if (window.kfilmsInitHome) window.kfilmsInitHome(data.next.container);
     if (window.lenis && window.lenis.start) try { window.lenis.start(); } catch (e) {}
+    // Scroll after init — ScrollTrigger.refresh in kfilmsInitHome otherwise wins and leaves page at top.
     if (returnId) scrollHomeToTheatreId(returnId);
     setTimeout(function () {
       document.querySelectorAll('.active-flip-item').forEach(function (el) {
@@ -1222,7 +1243,7 @@ a.slider-gallery_button,
       window.__kfilmsFlipId = null;
       window.__kfilmsReturnTheatreId = null;
       try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
-    }, 100);
+    }, 450);
   }
 
   function finishTheatreEnter(data, id) {
@@ -1256,7 +1277,19 @@ a.slider-gallery_button,
       if (data.next && data.next.container) {
         data.next.container.classList.remove('fixed');
       }
+      // Flip transitions own cleanup in finishHomeReturn / finishTheatreEnter.
       if (window.__kfilmsTransitionFinished) {
+        return;
+      }
+      // Theatre Close can land here if transition finished before the flag was set —
+      // never force top-of-page when returning to a theatre dept.
+      var returnId = null;
+      if (data.next && data.next.namespace === 'home' &&
+          data.current && data.current.namespace === 'theatre') {
+        returnId = resolveReturnTheatreId(data);
+      }
+      if (returnId) {
+        finishHomeReturn(data, returnId);
         return;
       }
       document.querySelectorAll('.active-flip-item').forEach(function (el) {
@@ -1361,8 +1394,15 @@ a.slider-gallery_button,
             var $ = window.jQuery;
             var id = resolveLeavingTheatreId(data);
             setCursorActive(false);
+            // Set early so hooks.after never window.scrollTo(0,0) before onComplete.
+            window.__kfilmsTransitionFinished = 'home-return';
             persistFlipId(id);
             window.__kfilmsReturnTheatreId = id;
+            if (id && data.next && data.next.url && window.history && window.history.replaceState) {
+              try {
+                window.history.replaceState(null, '', (data.next.url.path || '/') + '#' + id);
+              } catch (e) {}
+            }
             prepareVisuals(data.next.container);
             var outgoing = data.current.container.querySelector(
               '.kf-slide-bg[data-theatre-id="' + id + '"]'
