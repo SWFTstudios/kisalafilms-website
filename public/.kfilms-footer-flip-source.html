@@ -14,9 +14,12 @@
 .visual_wrap{width:100%;height:100%;position:absolute;inset:0}
 .visual{z-index:1;width:100%;height:100%;object-fit:cover;background:#000;position:absolute;inset:0;overflow:hidden}
 .active-flip-item{z-index:2}
-[data-barba="container"].fixed{position:fixed;inset:0;width:100%;z-index:10}
+.active-flip-item .visual{z-index:20}
+[data-barba="container"].fixed{position:fixed;inset:0;width:100%;height:100%;z-index:10;overflow:hidden}
 .cms-page_img-wrap{width:100vw;height:100vh;position:relative;overflow:hidden;flex:none}
 .cms-hero{width:100vw;height:100vh;flex:none;position:relative;overflow:hidden}
+.cms-page.fixed .section-height{height:100vh;min-height:100vh;overflow:hidden}
+.cms-page.fixed .sticky-element{position:relative;margin-bottom:0;height:100vh}
 .cms-page_img-wrap .visual{border-radius:0;position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
 .cms-page .item-name{display:none}
 .heading_wrap{z-index:2;width:100%;height:100%;background-image:linear-gradient(rgba(31,31,31,0) 62%,rgba(31,31,31,.9) 88%,#1f1f1f 96%);flex-direction:column;justify-content:space-between;align-items:flex-start;padding:2.7em;display:flex;position:absolute;inset:0}
@@ -757,18 +760,71 @@
     });
   }
 
-  function flip(outgoing, incoming, opts) {
-    if (!outgoing || !incoming || typeof Flip === 'undefined') return;
-    var visual = outgoing.querySelector('.visual');
-    if (!visual) return;
-    var state = Flip.getState(visual);
-    var incomingVisual = incoming.querySelector('.visual');
-    if (incomingVisual) incomingVisual.remove();
-    incoming.appendChild(visual);
-    Flip.from(state, {
-      duration: (opts && opts.duration) || 0.55,
-      ease: (opts && opts.ease) || 'power2.inOut',
+  function markActiveDept(dept) {
+    if (!dept) return null;
+    flipItems().forEach(function (item) {
+      item.classList.remove('active-flip-item');
     });
+    dept.classList.add('active-flip-item');
+    return dept;
+  }
+
+  function prepareCmsHero(container) {
+    if (!container) return null;
+    window.scrollTo(0, 0);
+    container.classList.add('fixed');
+    container.style.overflow = 'hidden';
+    var wrap =
+      container.querySelector('.cms-page_img-wrap') ||
+      container.querySelector('.cms-hero');
+    if (!wrap) return null;
+    wrap.style.width = '100vw';
+    wrap.style.height = '100vh';
+    wrap.style.minWidth = '100vw';
+    wrap.style.minHeight = '100vh';
+    wrap.style.position = 'relative';
+    wrap.style.overflow = 'hidden';
+    wrap.style.flex = 'none';
+    void wrap.offsetHeight;
+    return wrap;
+  }
+
+  function flip(outgoing, incoming, opts) {
+    if (!outgoing || !incoming || typeof Flip === 'undefined') return null;
+    var visual =
+      outgoing.classList && outgoing.classList.contains('visual')
+        ? outgoing
+        : outgoing.querySelector('.visual');
+    if (!visual) return null;
+
+    var state = Flip.getState(visual, { props: 'borderRadius' });
+    var incomingVisual = incoming.querySelector('.visual');
+    if (incomingVisual && incomingVisual !== visual) incomingVisual.remove();
+    incoming.appendChild(visual);
+    gsap.set(visual, { borderRadius: 0 });
+
+    return Flip.from(state, {
+      absolute: true,
+      duration: (opts && opts.duration) || 0.6,
+      ease: (opts && opts.ease) || 'power2.inOut',
+      scale: true,
+      simple: true,
+    });
+  }
+
+  function bindFlipTriggers() {
+    if (window.__kfilmsFlipTriggersBound) return;
+    window.__kfilmsFlipTriggersBound = true;
+    document.addEventListener(
+      'click',
+      function (e) {
+        var link = e.target.closest && e.target.closest('.theatre-dept-media, .theatre-dept-link, a.theatre-dept-media');
+        if (!link) return;
+        var dept = link.closest('.theatre-dept');
+        if (dept) markActiveDept(dept);
+      },
+      true
+    );
   }
 
   function destroyCmsHorizontal() {
@@ -905,11 +961,13 @@
           to: { custom: function (data) { return nsOf(data.next.container, data.next.namespace) === 'cms-page'; } },
           enter: function (data) {
             makeItemActive();
-            data.next.container.classList.add('fixed');
             var active = document.querySelector('.active-flip-item');
-            var wrap = data.next.container.querySelector('.cms-page_img-wrap');
-            if (active && wrap) flip(active, wrap, { duration: 0.55, ease: 'power2.inOut' });
-            return gsap.to(data.current.container, { opacity: 0, duration: 0.55 });
+            var wrap = prepareCmsHero(data.next.container);
+            var visual = active && (active.querySelector('.visual_wrap .visual') || active.querySelector('.visual'));
+            if (visual && wrap) {
+              flip(visual, wrap, { duration: 0.6, ease: 'power2.inOut' });
+            }
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.6, ease: 'power2.inOut' });
           }
         },
         {
@@ -928,8 +986,8 @@
             }
             var wrap = data.current.container.querySelector('.cms-page_img-wrap');
             var dest = active ? active.querySelector('.visual_wrap') : null;
-            if (wrap && dest) flip(wrap, dest, { duration: 0.55, ease: 'power2.inOut' });
-            return gsap.to(data.current.container, { opacity: 0, duration: 0.55 });
+            if (wrap && dest) flip(wrap, dest, { duration: 0.6, ease: 'power2.inOut' });
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.6, ease: 'power2.inOut' });
           }
         },
         {
@@ -945,6 +1003,7 @@
     });
 
     createSwiper();
+    bindFlipTriggers();
     if (document.querySelector('.cms-page')) {
       window.kfilmsInitCmsPage(document.querySelector('[data-barba="container"]') || document);
     }
