@@ -892,7 +892,10 @@ a.slider-gallery_button,
 
   function scrollHomeToTheatreId(id) {
     if (!id || HASHES.indexOf(id) === -1) return;
-    var el = document.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
+    var el =
+      document.getElementById(id) ||
+      document.querySelector('.theatre-list .theatre-dept[data-theatre-id="' + id + '"]') ||
+      document.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
     if (!el) return;
     if (window.lenis && typeof window.lenis.scrollTo === 'function') {
       try {
@@ -1104,7 +1107,10 @@ a.slider-gallery_button,
       el.classList.remove('active-flip-item');
     });
     if (!id) return null;
-    var el = document.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
+    var el =
+      document.getElementById(id) ||
+      document.querySelector('.theatre-list .theatre-dept[data-theatre-id="' + id + '"]') ||
+      document.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
     if (el) el.classList.add('active-flip-item');
     return el;
   }
