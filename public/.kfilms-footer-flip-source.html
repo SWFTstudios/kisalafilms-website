@@ -1,0 +1,1153 @@
+<script>
+(function () {
+  if (document.getElementById('kfilms-menu-v2')) return;
+  var s = document.createElement('style');
+  s.id = 'kfilms-menu-v2';
+  s.textContent = '.site-menu-overlay {\n  position: fixed;\n  inset: 0;\n  z-index: 1001;\n  display: flex;\n  justify-content: flex-end;\n  opacity: 0;\n  visibility: hidden;\n  pointer-events: none;\n  transition: opacity 0.35s ease, visibility 0.35s ease;\n  mix-blend-mode: normal;\n  isolation: isolate;\n}\n.site-menu-overlay.is-open {\n  opacity: 1;\n  visibility: visible;\n  pointer-events: auto;\n}\n.site-menu-backdrop {\n  position: absolute;\n  inset: 0;\n  background: rgba(0, 0, 0, 0.55);\n  -webkit-backdrop-filter: blur(6px);\n  backdrop-filter: blur(6px);\n  cursor: pointer;\n}\n.site-menu-panel {\n  position: relative;\n  z-index: 1;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  width: 100%;\n  height: 100%;\n  padding: 5rem 1.5rem 5.5rem;\n  background: var(--bg-elevated);\n  color: var(--text);\n  transform: translateY(10px);\n  transition: transform 0.35s ease;\n}\n.site-menu-overlay.is-open .site-menu-panel {\n  transform: none;\n}\n.site-menu-close {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2.5rem;\n  height: 2.5rem;\n  margin: 2rem auto 0;\n  padding: 0;\n  border: 0;\n  background: none;\n  color: inherit;\n  font-size: 1.5rem;\n  line-height: 1;\n  cursor: pointer;\n  order: 3;\n}\n.site-menu-close:hover { opacity: 0.7; }\n.site-menu-nav {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 1.1rem;\n  order: 1;\n}\n.site-menu-item {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 0.15rem;\n  color: inherit;\n  text-decoration: none;\n}\n.site-menu-item_label {\n  display: none;\n  font-family: var(--font-sans);\n  font-size: 0.7rem;\n  font-weight: 400;\n  letter-spacing: 0.04em;\n  color: var(--text-muted);\n  text-transform: none;\n}\n.site-menu-item_title {\n  font-family: var(--font-display);\n  font-size: clamp(1.75rem, 7vw, 2.75rem);\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  line-height: 1.05;\n}\n.site-menu-item:hover { opacity: 0.7; }\n.site-menu-theme {\n  order: 2;\n  margin-top: 2rem;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.75rem;\n  font-family: var(--font-sans);\n  font-size: 0.8125rem;\n  font-weight: 500;\n  background: none;\n  border: 0;\n  color: var(--text-muted);\n  padding: 0;\n  cursor: pointer;\n  width: fit-content;\n  text-decoration: underline;\n  text-underline-offset: 0.2em;\n}\n.site-menu-theme:hover { opacity: 0.85; color: var(--text); }\n@media (min-width: 768px) {\n  .site-menu-panel {\n    width: min(42vw, 30rem);\n    align-items: flex-end;\n    text-align: right;\n    padding: 4.5rem 2.75rem 3rem;\n    transform: translateX(16px);\n    box-shadow: -24px 0 60px rgba(0, 0, 0, 0.35);\n  }\n  .site-menu-overlay.is-open .site-menu-panel {\n    transform: none;\n  }\n  .site-menu-close {\n    position: absolute;\n    top: 1.5rem;\n    right: 1.75rem;\n    margin: 0;\n    order: 0;\n  }\n  .site-menu-nav {\n    align-items: flex-end;\n    gap: 1.35rem;\n    width: 100%;\n  }\n  .site-menu-item {\n    align-items: flex-end;\n  }\n  .site-menu-item_label {\n    display: block;\n  }\n  .site-menu-item_title {\n    font-size: clamp(2rem, 3.2vw, 3rem);\n    letter-spacing: -0.02em;\n    text-transform: none;\n  }\n  .site-menu-theme {\n    margin-top: 2.5rem;\n  }\n}\n.kf-static-page {\n  padding: 7rem 1.5rem 4rem;\n  min-height: 100vh;\n  color: var(--text);\n  background: var(--bg);\n}\n.kf-static-page section,\nbody > section {\n  padding: 7rem 1.5rem 4rem;\n  max-width: 72rem;\n  margin: 0 auto;\n}\n.kf-static-page h1,\nbody > section > h1 {\n  font-family: var(--font-display);\n  font-size: clamp(2.5rem, 6vw, 5rem);\n  font-weight: 600;\n  line-height: 1.05;\n  letter-spacing: -0.02em;\n  margin: 0 0 1rem;\n}\n.kf-static-page h2,\nbody > section > h2 {\n  font-family: var(--font-display);\n  font-size: clamp(1.5rem, 3vw, 2.25rem);\n  margin: 2.5rem 0 0.5rem;\n}\n.kf-static-page h3,\nbody > section > h3 {\n  font-family: var(--font-sans);\n  font-size: 1.125rem;\n  font-weight: 500;\n  margin: 2rem 0 0.35rem;\n}\n.kf-static-page p,\nbody > section > p {\n  font-size: 1rem;\n  line-height: 1.5;\n  color: var(--text-muted);\n  max-width: 36rem;\n  margin: 0 0 0.75rem;\n}\n.kf-gallery-grid,\nbody > section > div {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 0.75rem;\n  margin-top: 2.5rem;\n}\n@media (min-width: 768px) {\n  .kf-gallery-grid,\n  body > section > div {\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n    gap: 1rem;\n  }\n  .kf-static-page,\n  body > section {\n    padding-left: 2.5rem;\n    padding-right: 2.5rem;\n  }\n}\nbody > section > div > a,\nbody > section > div > div {\n  display: flex;\n  align-items: flex-end;\n  min-height: 10rem;\n  padding: 1rem;\n  background: var(--bg-elevated);\n  border: 1px solid var(--border);\n  color: inherit;\n  text-decoration: none;\n  font-family: var(--font-sans);\n  font-size: 0.875rem;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n}\nbody > section > div > a:hover { opacity: 0.85; }\n.sg-section { padding: 4rem 1.5rem; border-bottom: 1px solid var(--border); }\n.sg-section h2 { margin: 0 0 1.5rem; }\n.sg-swatch-row { display: flex; flex-wrap: wrap; gap: 1rem; }\n.sg-swatch {\n  flex: 1 1 140px;\n  min-height: 120px;\n  padding: 1rem;\n  border: 1px solid var(--border);\n  display: flex;\n  flex-direction: column;\n  justify-content: flex-end;\n  gap: 0.25rem;\n}\n.sg-note { font-size: 0.8125rem; color: var(--text-muted); max-width: 40rem; line-height: 1.5; }\nbody.menu-open { overflow: hidden; }';
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function () {
+  if (document.getElementById('kfilms-flip20')) return;
+  var s = document.createElement('style');
+  s.id = 'kfilms-flip20';
+  s.textContent = `/* Flip 2.0 theatre vertical stack + cms-page */
+.kf-flip-stack{position:relative;width:100%;display:flex;flex-direction:column}
+.theatre-dept{display:grid!important}
+.theatre-dept-media{position:relative;overflow:hidden}
+.theatre-dept-media .visual_wrap{position:absolute;inset:0;width:100%;height:100%}
+.theatre-dept-media .visual{z-index:1;width:100%;height:100%;object-fit:cover;background:#000;border-radius:8px;position:absolute;inset:0;overflow:hidden}
+.theatre-dept-media .visual img,.theatre-dept-media .theatre-dept-img,.visual img,.visual video{width:100%;height:100%;object-fit:cover;display:block}
+.theatre-dept .item-name{position:static;left:auto;bottom:auto;z-index:auto;margin:0;font:inherit;letter-spacing:inherit;text-transform:none;color:inherit;text-shadow:none;display:inline}
+.visual_wrap{width:100%;height:100%;position:absolute;inset:0}
+.visual{z-index:1;width:100%;height:100%;object-fit:cover;background:#000;position:absolute;inset:0;overflow:hidden}
+.active-flip-item{z-index:2}
+.active-flip-item .visual{z-index:20}
+[data-barba="container"].fixed{position:fixed;inset:0;width:100%;height:100%;z-index:10;overflow:hidden}
+.cms-page_img-wrap{width:100%;height:100%;position:absolute;inset:0;overflow:hidden;flex:none}
+.cms-hero{width:100vw;height:100vh;flex:none;position:relative;overflow:hidden}
+.cms-page.fixed .section-height{height:100vh;min-height:100vh;overflow:hidden}
+.cms-page.fixed .sticky-element{position:relative;margin-bottom:0;height:100vh;overflow:hidden}
+.cms-page.fixed .track,
+.cms-page.fixed .track-flex{height:100vh;align-items:stretch}
+.cms-hero > .container.is-wide{width:100%;height:100%;max-width:none;padding:0;margin:0;position:absolute;inset:0;display:block}
+.cms-page_img-wrap .visual{border-radius:0;position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
+.cms-page .item-name{display:none}
+.heading_wrap{z-index:2;width:100%;height:100%;background-image:linear-gradient(rgba(31,31,31,0) 62%,rgba(31,31,31,.9) 88%,#1f1f1f 96%);flex-direction:column;justify-content:space-between;align-items:flex-start;padding:2.7em;display:flex;position:absolute;inset:0}
+.button.flip-close{z-index:3;color:#1f1f1f;background:#d5fb70;border-radius:100vw;padding:1.1em 1.5em;font-size:.9em;font-weight:500;text-decoration:none;display:inline-block}
+.cms-page_heading{width:100%;max-width:22.2em;font-size:clamp(1.6rem,4vw,2.1em);line-height:1.2;margin:0;color:#fff}
+.section-height{width:100%;height:500vw}
+.sticky-element.disable-overflow{width:100%;height:100vh;justify-content:flex-start;align-items:stretch;margin-bottom:-100vh;display:flex;position:sticky;top:0;overflow:hidden}
+.track{flex:none;justify-content:flex-start;align-items:stretch;display:flex;position:relative}
+.track-flex{justify-content:flex-start;align-items:stretch;margin-right:-100vw;display:flex}
+.track-flex > section:first-child,.track-flex > .cms-hero{width:100vw;height:100vh;flex:none;position:relative;overflow:hidden}
+.section._90vw{width:90vw;flex:none}
+.container.is-wide{width:100%;height:100vh;flex-direction:column;justify-content:flex-start;align-items:flex-start;display:flex;position:relative}
+.panel1,.panel2,.panel3,.panel4,.panel5{height:100%;flex:none;display:flex;justify-content:center;align-items:center}
+.panel1{width:100vw;background:rgba(0,0,0,.5);color:#fff}
+.panel2{width:100vw;background:#fff;color:#1f1f1f}
+.panel3{width:200vw;background:#bbab00;color:#1f1f1f}
+.panel4{width:130vh;background:#141414;color:#fff}
+.panel5{width:70vw;background:rgba(46,31,133,.5);color:#fff}
+.container.is-rich{padding:10em 2rem;max-width:54em;margin:0 auto}
+.panel1 h1,.panel2 h1,.panel3 h1,.panel4 h1,.panel5 h1{font-size:clamp(2rem,6vw,4rem);margin:0;text-align:center;padding:1rem}
+.cms-page_img-wrap .visual img{width:100%;height:100%;object-fit:cover;display:block}
+/* Theatre sticky stage expansion (reinforce + survive overflow-x:clip ancestors) */
+.theatre-pin{position:relative;width:100%;height:250vh;min-height:250vh}
+.theatre-stage{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:center;width:100%;height:100vh;overflow:hidden}
+.theatre-reel{flex-shrink:0;aspect-ratio:auto;will-change:width,height;background:#2a2a2a;overflow:hidden}
+.page-wrapper,.main-wrapper{overflow:visible}
+`;
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function () {
+  if (window.__kfilmsSiteHeaderReady) return;
+  window.__kfilmsSiteHeaderReady = true;
+  var THEME_KEY = 'kfilms-theme';
+  var FORMAT_KEY = 'kfilms-time-format';
+  function getStoredTheme() {
+    try {
+      var t = localStorage.getItem(THEME_KEY);
+      if (t === 'day' || t === 'night') return t;
+    } catch (e) {}
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return 'day';
+    return 'night';
+  }
+  function applyTheme(theme) {
+    document.documentElement.classList.remove('theme-day', 'theme-night');
+    document.documentElement.classList.add(theme === 'day' ? 'theme-day' : 'theme-night');
+    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+    var btn = document.querySelector('.site-menu-theme');
+    if (btn) btn.textContent = theme === 'day' ? 'Switch to Night' : 'Switch to Day';
+  }
+  function getFormat() {
+    try {
+      var f = localStorage.getItem(FORMAT_KEY);
+      if (f === '12' || f === '24') return f;
+    } catch (e) {}
+    return '12';
+  }
+  function setFormat(fmt) {
+    try { localStorage.setItem(FORMAT_KEY, fmt); } catch (e) {}
+  }
+  function formatTime(date, fmt) {
+    var h = date.getHours();
+    var m = date.getMinutes();
+    var s = date.getSeconds();
+    var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+    if (fmt === '24') return pad(h) + ':' + pad(m) + ':' + pad(s);
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12;
+    if (h12 === 0) h12 = 12;
+    return h12 + ':' + pad(m) + ':' + pad(s) + ' ' + ampm;
+  }
+  function menuItem(href, label, title) {
+    return (
+      '<li>' +
+        '<a class="site-menu-item" href="' + href + '">' +
+          '<span class="site-menu-item_label">(' + label + ')</span>' +
+          '<span class="site-menu-item_title">' + title + '</span>' +
+        '</a>' +
+      '</li>'
+    );
+  }
+  function ensureOverlay() {
+    var overlay = document.querySelector('.site-menu-overlay');
+    if (overlay) {
+      if (!overlay.querySelector('.site-menu-panel')) {
+        overlay.remove();
+        overlay = null;
+      } else {
+        return overlay;
+      }
+    }
+    overlay = document.createElement('div');
+    overlay.className = 'site-menu-overlay';
+    overlay.id = 'site-menu-overlay';
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML =
+      '<div class="site-menu-backdrop" data-menu-close="1"></div>' +
+      '<div class="site-menu-panel" role="dialog" aria-modal="true" aria-label="Site menu">' +
+        '<button type="button" class="site-menu-close" aria-label="Close menu" data-menu-close="1">&times;</button>' +
+        '<nav aria-label="Site">' +
+          '<ul class="site-menu-nav">' +
+            menuItem('/', 'Home', 'Home') +
+            menuItem('/gallery', 'Gallery', 'Gallery') +
+            menuItem('/theatre', 'Theatre', 'Theatre') +
+            menuItem('/about', 'About', 'About') +
+            menuItem('/blog', 'Blog', 'Blog') +
+            menuItem('/shop', 'Shop', 'Shop') +
+          '</ul>' +
+        '</nav>' +
+        '<button type="button" class="site-menu-theme">Switch to Day</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+  function setMenuOpen(open) {
+    var header = document.querySelector('.site-header');
+    var overlay = ensureOverlay();
+    if (header) header.classList.toggle('is-open', open);
+    overlay.classList.toggle('is-open', open);
+    overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+    document.body.classList.toggle('menu-open', open);
+    var menuBtn = document.querySelector('.site-header_menu');
+    if (menuBtn) {
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+  }
+  function initHeader(header) {
+    if (header.getAttribute('data-site-header-ready')) return;
+    header.setAttribute('data-site-header-ready', '1');
+    var clock = header.querySelector('.site-clock');
+    var menuBtn = header.querySelector('.site-header_menu');
+    var overlay = ensureOverlay();
+    var fmt = getFormat();
+    function tick() {
+      if (clock) {
+        var textNode = clock.childNodes[0];
+        var label = formatTime(new Date(), fmt);
+        if (textNode && textNode.nodeType === 3) textNode.textContent = label;
+        else clock.textContent = label;
+      }
+    }
+    tick();
+    setInterval(tick, 1000);
+    if (clock) {
+      clock.setAttribute('aria-label', 'Toggle 12 or 24 hour time');
+      clock.setAttribute('role', 'button');
+      clock.addEventListener('click', function (e) {
+        e.preventDefault();
+        fmt = fmt === '12' ? '24' : '12';
+        setFormat(fmt);
+        tick();
+      });
+    }
+    if (menuBtn) {
+      menuBtn.setAttribute('aria-expanded', 'false');
+      menuBtn.setAttribute('aria-controls', 'site-menu-overlay');
+      menuBtn.setAttribute('aria-label', 'Open menu');
+      menuBtn.setAttribute('role', 'button');
+      menuBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        setMenuOpen(!document.body.classList.contains('menu-open'));
+      });
+    }
+    var themeBtn = overlay.querySelector('.site-menu-theme');
+    if (themeBtn && !themeBtn.getAttribute('data-bound')) {
+      themeBtn.setAttribute('data-bound', '1');
+      themeBtn.addEventListener('click', function () {
+        var next = document.documentElement.classList.contains('theme-day') ? 'night' : 'day';
+        applyTheme(next);
+      });
+    }
+    overlay.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { setMenuOpen(false); });
+    });
+    overlay.querySelectorAll('[data-menu-close]').forEach(function (el) {
+      el.addEventListener('click', function () { setMenuOpen(false); });
+    });
+    if (!window.__kfilmsMenuEscBound) {
+      window.__kfilmsMenuEscBound = true;
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') setMenuOpen(false);
+      });
+    }
+  }
+  applyTheme(getStoredTheme());
+  function boot() {
+    document.querySelectorAll('.site-header').forEach(initHeader);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+(function () {
+  if (window.__kfilmsHomeScrollReady) return;
+  window.__kfilmsHomeScrollReady = true;
+
+  var homeMm = null;
+  var marqueeTween = null;
+  var marqueeBoostHandler = null;
+  var theatrePinTween = null;
+
+  function ensurePlugins() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return false;
+    gsap.registerPlugin(ScrollTrigger);
+    return true;
+  }
+
+  function scopeRoot(root) {
+    if (root && root.querySelector) return root;
+    return document.querySelector('[data-barba="container"]') || document;
+  }
+
+  function hasHomeMarkers(scope) {
+    return !!(
+      scope.querySelector('.horizontal') ||
+      scope.querySelector('.marquee-track') ||
+      scope.querySelector('.theatre-pin') ||
+      scope.querySelector('.about-intro-media') ||
+      scope.querySelector('.theatre-list, [data-theatre-grid]')
+    );
+  }
+
+  window.kfilmsDestroyHome = function () {
+    if (homeMm && homeMm.revert) {
+      try { homeMm.revert(); } catch (e) {}
+    }
+    homeMm = null;
+    if (marqueeTween) {
+      try { marqueeTween.kill(); } catch (e) {}
+      marqueeTween = null;
+    }
+    if (marqueeBoostHandler) {
+      try {
+        if (marqueeBoostHandler.kill) marqueeBoostHandler.kill();
+      } catch (e) {}
+      marqueeBoostHandler = null;
+    }
+    if (window.lenis) {
+      try {
+        if (typeof window.lenis.destroy === 'function') window.lenis.destroy();
+        else if (typeof window.lenis.stop === 'function') window.lenis.stop();
+      } catch (e) {}
+      window.lenis = null;
+    }
+    if (theatrePinTween) {
+      try {
+        if (theatrePinTween.scrollTrigger) theatrePinTween.scrollTrigger.kill();
+        if (theatrePinTween.kill) theatrePinTween.kill();
+      } catch (e) {}
+      theatrePinTween = null;
+    }
+    if (typeof ScrollTrigger === 'undefined') return;
+    ScrollTrigger.getAll().forEach(function (st) {
+      var t = st.trigger;
+      if (!t) {
+        st.kill();
+        return;
+      }
+      if (
+        t.closest &&
+        (t.closest('.horizontal') ||
+          t.closest('.about-intro-media') ||
+          t.closest('.theatre-pin') ||
+          t.closest('.theatre-stage') ||
+          t.closest('.theatre-list, [data-theatre-grid]') ||
+          t.closest('.marquee-section'))
+      ) {
+        st.kill();
+      }
+    });
+    var clearRoot = document.querySelector('[data-barba="container"]') || document;
+    gsap.set(
+      clearRoot.querySelectorAll(
+        '.theatre-dept-label, .theatre-dept-links, .theatre-dept-desc, .theatre-dept-media, .theatre-dept-line, .theatre-list-intro > *'
+      ),
+      { clearProps: 'opacity,transform,translate' }
+    );
+    gsap.set(clearRoot.querySelectorAll('.theatre-reel'), {
+      clearProps: 'width,height,aspectRatio,maxWidth,maxHeight',
+    });
+    gsap.set(clearRoot.querySelectorAll('.theatre-stage'), {
+      clearProps: 'transform',
+    });
+  };
+
+  function initAboutWipe(scope) {
+    var media = scope.querySelector('.about-intro-media');
+    var image = scope.querySelector('.about-image-placeholder');
+    if (!media || !image) return;
+    gsap.fromTo(
+      image,
+      { clipPath: 'inset(0 100% 0 0)' },
+      {
+        clipPath: 'inset(0 0% 0 0)',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: media,
+          start: 'top 80%',
+          end: 'top 30%',
+          scrub: true,
+        },
+      }
+    );
+  }
+
+  function initMarquee(scope) {
+    var track = scope.querySelector('.marquee-track');
+    if (!track) return;
+
+    if (!track.getAttribute('data-kf-marquee-ready')) {
+      var originals = Array.prototype.slice.call(track.children);
+      originals.forEach(function (child) {
+        track.appendChild(child.cloneNode(true));
+      });
+      track.setAttribute('data-kf-marquee-ready', '1');
+    }
+
+    marqueeTween = gsap.to(track, {
+      x: function () {
+        return -track.scrollWidth / 2;
+      },
+      duration: 45,
+      ease: 'none',
+      repeat: -1,
+    });
+
+    var idleTimer;
+    function boostFromVelocity(velocity) {
+      var boost = Math.min(Math.abs(velocity) / 600, 3);
+      var target = 1 + boost;
+      gsap.to(marqueeTween, {
+        timeScale: target,
+        duration: 0.35,
+        overwrite: true,
+        ease: 'power2.out',
+      });
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function () {
+        gsap.to(marqueeTween, {
+          timeScale: 1,
+          duration: 0.8,
+          overwrite: true,
+          ease: 'power2.out',
+        });
+      }, 120);
+    }
+
+    marqueeBoostHandler = ScrollTrigger.create({
+      onUpdate: function (self) {
+        boostFromVelocity(self.getVelocity());
+      },
+    });
+  }
+
+  function initTheatrePin(scope) {
+    var pin = scope.querySelector('.theatre-pin');
+    var stage = scope.querySelector('.theatre-stage');
+    var reel = scope.querySelector('.theatre-reel');
+    if (!pin || !reel) return;
+
+    if (theatrePinTween) {
+      try {
+        if (theatrePinTween.scrollTrigger) theatrePinTween.scrollTrigger.kill();
+        if (theatrePinTween.kill) theatrePinTween.kill();
+      } catch (e) {}
+      theatrePinTween = null;
+    }
+
+    // CSS sticky stage + scrubbed size. Do NOT ScrollTrigger-pin the stage —
+    // pinning the sticky child collapses the scrub distance.
+    pin.style.height = '250vh';
+    pin.style.minHeight = '250vh';
+    pin.style.position = 'relative';
+    if (stage) {
+      stage.style.position = 'sticky';
+      stage.style.top = '0px';
+      stage.style.height = '100vh';
+      stage.style.width = '100%';
+      stage.style.display = 'flex';
+      stage.style.alignItems = 'center';
+      stage.style.justifyContent = 'center';
+      stage.style.overflow = 'hidden';
+      stage.style.zIndex = '5';
+    }
+
+    function getStartSize() {
+      var vw = window.innerWidth;
+      return Math.round(vw < 768 ? vw * 0.55 : vw * 0.4);
+    }
+
+    function applySize(progress) {
+      var p = Math.max(0, Math.min(1, progress || 0));
+      var start = getStartSize();
+      var w = start + (window.innerWidth - start) * p;
+      var h = start + (window.innerHeight - start) * p;
+      gsap.set(reel, {
+        width: w,
+        height: h,
+        aspectRatio: 'auto',
+        maxWidth: 'none',
+        maxHeight: 'none',
+      });
+    }
+
+    applySize(0);
+
+    theatrePinTween = ScrollTrigger.create({
+      trigger: pin,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: true,
+      invalidateOnRefresh: true,
+      onUpdate: function (self) {
+        applySize(self.progress);
+      },
+      onRefresh: function (self) {
+        applySize(self.progress);
+      },
+    });
+  }
+
+  function initTheatreList(scope) {
+    var depts = gsap.utils.toArray(scope.querySelectorAll('.theatre-dept'));
+    if (!depts.length) return;
+
+    var intro = scope.querySelector('.theatre-list-intro');
+    if (intro) {
+      gsap.from(intro.children, {
+        opacity: 0,
+        y: 24,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'power2.out',
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: intro,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        },
+      });
+    }
+
+    depts.forEach(function (dept) {
+      var line = dept.querySelector('.theatre-dept-line');
+      var label = dept.querySelector('.theatre-dept-label');
+      var links = dept.querySelector('.theatre-dept-links');
+      var desc = dept.querySelector('.theatre-dept-desc');
+      var media = dept.querySelector('.theatre-dept-media');
+
+      if (line) {
+        gsap.fromTo(
+          line,
+          { scaleX: 0 },
+          {
+            scaleX: 1,
+            ease: 'power2.out',
+            duration: 1,
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: dept,
+              start: 'top 75%',
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+      }
+
+      var fadeItems = [label, links, desc, media].filter(Boolean);
+      if (fadeItems.length) {
+        gsap.from(fadeItems, {
+          opacity: 0,
+          y: 28,
+          duration: 0.75,
+          stagger: 0.12,
+          ease: 'power2.out',
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: dept,
+            start: 'top 75%',
+            toggleActions: 'play none none none',
+          },
+        });
+      }
+    });
+  }
+
+  function initHorizontal(scope) {
+    homeMm = gsap.matchMedia();
+    homeMm.add('(min-width: 769px)', function () {
+      var horizontal = scope.querySelector('.horizontal');
+      if (!horizontal) return;
+
+      var horizontalContent = horizontal.querySelector('.horizontal_wrapper');
+      if (!horizontalContent) return;
+
+      var tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: horizontal,
+          start: 'top top',
+          end: function () {
+            return '+=' + (horizontalContent.scrollWidth - window.innerWidth);
+          },
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl.to(horizontalContent, {
+        x: function () {
+          return -(horizontalContent.scrollWidth - window.innerWidth);
+        },
+        ease: 'none',
+      });
+
+      var wallPieces = gsap.utils.toArray(scope.querySelectorAll('[class*="wall-piece-"]'));
+      var pieceTriggers = [];
+
+      wallPieces.forEach(function (piece) {
+        var anim = gsap.fromTo(
+          piece,
+          { scale: 0.35 },
+          {
+            scale: 1,
+            duration: 0.9,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: piece,
+              containerAnimation: tl,
+              start: 'left 85%',
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+        if (anim.scrollTrigger) pieceTriggers.push(anim.scrollTrigger);
+      });
+
+      return function () {
+        pieceTriggers.forEach(function (st) {
+          st.kill();
+        });
+        if (tl.scrollTrigger) tl.scrollTrigger.kill();
+        tl.kill();
+        gsap.set(horizontalContent, { clearProps: 'x' });
+        gsap.set(wallPieces, { clearProps: 'scale' });
+      };
+    });
+  }
+
+  window.kfilmsInitHome = function (root) {
+    if (!ensurePlugins()) return false;
+    var scope = scopeRoot(root);
+    if (!hasHomeMarkers(scope)) {
+      scope = document;
+      if (!hasHomeMarkers(scope)) return false;
+    }
+
+    window.kfilmsDestroyHome();
+
+    initAboutWipe(scope);
+    initMarquee(scope);
+    initHorizontal(scope);
+    initTheatrePin(scope);
+    initTheatreList(scope);
+
+    function refresh() {
+      if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh(true);
+    }
+    requestAnimationFrame(function () {
+      refresh();
+      if ((location.hash || '').match(/^#video-/)) {
+        requestAnimationFrame(function () {
+          if (typeof window.kfilmsScrollToTheatreHash === 'function') {
+            window.kfilmsScrollToTheatreHash();
+          } else {
+            var el = document.getElementById((location.hash || '').slice(1));
+            if (el) {
+              try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
+            }
+          }
+        });
+      }
+      setTimeout(refresh, 120);
+      setTimeout(refresh, 400);
+    });
+    return true;
+  };
+
+  function boot() {
+    var tries = 0;
+    function attempt() {
+      tries += 1;
+      if (!ensurePlugins()) {
+        if (tries < 80) setTimeout(attempt, 50);
+        return;
+      }
+      var container =
+        document.querySelector('[data-barba-namespace="grid-page"]') ||
+        document.querySelector('[data-barba-namespace="home"]') ||
+        document.querySelector('[data-barba="container"]') ||
+        document;
+      if (window.kfilmsInitHome(container)) return;
+      if (tries < 80) setTimeout(attempt, 50);
+    }
+    attempt();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+
+<script src="https://unpkg.com/@barba/core@2.9.7/dist/barba.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
+<script>
+(function () {
+  if (window.__kfilmsFlip20Ready) return;
+  window.__kfilmsFlip20Ready = true;
+
+  var mySlider = null;
+
+  function ensureLibs() {
+    var ok = typeof barba !== 'undefined' && typeof gsap !== 'undefined' && typeof Flip !== 'undefined';
+    if (ok && gsap.registerPlugin) {
+      try { gsap.registerPlugin(Flip); if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger); } catch (e) {}
+    }
+    return ok;
+  }
+
+  function flipItems() {
+    return Array.prototype.slice.call(document.querySelectorAll('.theatre-dept, .swiper-slide.is-list, .w-dyn-item'));
+  }
+
+  function resolveFlipScrollTarget() {
+    var hash = (location.hash || '').replace(/^#/, '');
+    if (hash) {
+      var byId = document.getElementById(hash);
+      if (byId) {
+        byId.classList.add('active-flip-item');
+        return byId;
+      }
+      var byTheatre = document.querySelector('[data-theatre-id="' + hash.replace(/^video-/, '') + '"], [data-theatre-id="' + hash + '"]');
+      if (byTheatre) {
+        byTheatre.classList.add('active-flip-item');
+        return byTheatre;
+      }
+    }
+    return document.querySelector('.active-flip-item');
+  }
+
+  function scrollToActiveFlipItem() {
+    var active = resolveFlipScrollTarget();
+    if (!active) return;
+    try {
+      active.scrollIntoView({ block: 'center', behavior: 'auto' });
+    } catch (e) {
+      try {
+        var top = active.getBoundingClientRect().top + (window.pageYOffset || 0) - window.innerHeight * 0.2;
+        window.scrollTo(0, Math.max(0, top));
+      } catch (e2) {}
+    }
+  }
+
+  /** While grid is position:fixed, translate so active row is viewport-centered before Flip. */
+  function prepareReturnTarget(container) {
+    if (!container) return null;
+    makeItemActive();
+    var active = resolveFlipScrollTarget();
+    if (!active) return null;
+
+    container.style.transform = '';
+    void container.offsetHeight;
+
+    var rect = active.getBoundingClientRect();
+    var naturalCenter = rect.top + rect.height / 2;
+    var viewportCenter = window.innerHeight / 2;
+    var dy = viewportCenter - naturalCenter;
+    container.style.transform = 'translateY(' + dy + 'px)';
+    void container.offsetHeight;
+
+    // When fixed is cleared, scroll so the same row stays centered
+    window.__kfilmsReturnScrollY = Math.max(0, Math.round(naturalCenter - viewportCenter));
+    return active;
+  }
+
+  function clearReturnPrep(container) {
+    if (container) {
+      container.classList.remove('fixed');
+      container.style.transform = '';
+    }
+  }
+
+  window.kfilmsScrollToTheatreHash = function () {
+    if (!(location.hash || '').match(/^#video-/)) return false;
+    scrollToActiveFlipItem();
+    return !!document.querySelector('.active-flip-item');
+  };
+
+  function createSwiper() {
+    if (typeof Swiper === 'undefined') return null;
+    var el = document.querySelector('[data-theatre-grid] .swiper, .kf-flip-grid .swiper');
+    if (!el) return null;
+    if (mySlider && mySlider.destroy) {
+      try { mySlider.destroy(true, true); } catch (e) {}
+      mySlider = null;
+    }
+    mySlider = new Swiper(el, {
+      direction: 'horizontal',
+      slidesPerView: 1,
+      keyboard: true,
+      freeMode: true,
+      centeredSlides: true,
+      mousewheel: true,
+      breakpoints: {
+        480: { slidesPerView: 2 },
+        768: { slidesPerView: 3 }
+      },
+      speed: 300
+    });
+    mySlider.on('progress', function (e) {
+      var fill = document.querySelector('.progress-bar_fill');
+      if (fill) fill.style.width = (e.progress * 100) + '%';
+    });
+    return mySlider;
+  }
+
+  function resetWebflow(data) {
+    try {
+      var parser = new DOMParser();
+      var dom = parser.parseFromString(data.next.html, 'text/html');
+      var webflowPageId = dom.documentElement.getAttribute('data-wf-page');
+      if (webflowPageId) document.documentElement.setAttribute('data-wf-page', webflowPageId);
+      if (window.Webflow) {
+        if (window.Webflow.destroy) window.Webflow.destroy();
+        if (window.Webflow.ready) window.Webflow.ready();
+        if (window.Webflow.require) {
+          var ix2 = window.Webflow.require('ix2');
+          if (ix2 && ix2.init) ix2.init();
+        }
+      }
+    } catch (e) {}
+  }
+
+  function makeItemActive() {
+    var cms = document.querySelector('.cms-page');
+    if (!cms) return;
+    var nameEl = cms.querySelector('.item-name');
+    var cmsPageName = nameEl ? (nameEl.textContent || '').trim() : '';
+    flipItems().forEach(function (item) {
+      item.classList.remove('active-flip-item');
+      var n = item.querySelector('.item-name');
+      if (n && (n.textContent || '').trim() === cmsPageName) {
+        item.classList.add('active-flip-item');
+      }
+    });
+  }
+
+  function markActiveDept(dept) {
+    if (!dept) return null;
+    flipItems().forEach(function (item) {
+      item.classList.remove('active-flip-item');
+    });
+    dept.classList.add('active-flip-item');
+    var fromVisual = dept.querySelector('.visual_wrap .visual');
+    if (fromVisual) window.__kfilmsFlipFromVisual = fromVisual;
+    return dept;
+  }
+
+  function resolveFromVisual() {
+    var stored = window.__kfilmsFlipFromVisual;
+    if (stored && stored.isConnected) return stored;
+    var active = document.querySelector('.active-flip-item');
+    if (!active) return null;
+    return active.querySelector('.visual_wrap .visual') || active.querySelector('.visual');
+  }
+
+  function prepareCmsHero(container) {
+    if (!container) return null;
+    window.scrollTo(0, 0);
+    container.classList.add('fixed');
+    container.style.overflow = 'hidden';
+
+    var track = container.querySelector('.track-flex') || container.querySelector('.track');
+    if (track && typeof gsap !== 'undefined') {
+      try { gsap.set(track, { x: 0 }); } catch (e) {
+        track.style.transform = 'translateX(0)';
+      }
+    }
+
+    // First panel in the horizontal theatre collection track
+    var firstPanel =
+      container.querySelector('.track-flex > .cms-hero') ||
+      container.querySelector('.track-flex > section:first-child') ||
+      container.querySelector('.track-flex > :first-child');
+    if (!firstPanel) return null;
+
+    firstPanel.style.width = '100vw';
+    firstPanel.style.height = '100vh';
+    firstPanel.style.minWidth = '100vw';
+    firstPanel.style.minHeight = '100vh';
+    firstPanel.style.flex = 'none';
+    firstPanel.style.position = 'relative';
+    firstPanel.style.overflow = 'hidden';
+
+    var shell = firstPanel.querySelector('.container.is-wide');
+    if (shell) {
+      shell.style.width = '100%';
+      shell.style.height = '100%';
+      shell.style.maxWidth = 'none';
+      shell.style.padding = '0';
+      shell.style.margin = '0';
+      shell.style.position = 'absolute';
+      shell.style.inset = '0';
+    }
+
+    var wrap = firstPanel.querySelector('.cms-page_img-wrap') || firstPanel;
+    wrap.style.width = '100%';
+    wrap.style.height = '100%';
+    wrap.style.position = 'absolute';
+    wrap.style.inset = '0';
+    wrap.style.overflow = 'hidden';
+    void firstPanel.offsetHeight;
+    return wrap;
+  }
+
+  /** Shared-element Flip: list .visual_wrap>.visual → first-track .cms-page_img-wrap */
+  function flipListToHero(fromVisual, wrap, opts) {
+    if (!fromVisual || !wrap || typeof Flip === 'undefined') return null;
+    var state = Flip.getState(fromVisual, { props: 'borderRadius' });
+    var existing = wrap.querySelector('.visual');
+    if (existing && existing !== fromVisual) existing.remove();
+    wrap.appendChild(fromVisual);
+    gsap.set(fromVisual, { borderRadius: 0 });
+    return Flip.from(state, {
+      absolute: true,
+      duration: (opts && opts.duration) || 0.6,
+      ease: (opts && opts.ease) || 'power2.inOut',
+    });
+  }
+
+  function flip(outgoing, incoming, opts) {
+    if (!outgoing || !incoming || typeof Flip === 'undefined') return null;
+    var visual =
+      outgoing.classList && outgoing.classList.contains('visual')
+        ? outgoing
+        : outgoing.querySelector('.visual');
+    if (!visual) return null;
+
+    var state = (opts && opts.state) || Flip.getState(visual, { props: 'borderRadius' });
+    var incomingVisual = incoming.querySelector('.visual');
+    if (incomingVisual && incomingVisual !== visual) incomingVisual.remove();
+    incoming.appendChild(visual);
+    if (opts && opts.endBorderRadius != null) {
+      gsap.set(visual, { borderRadius: opts.endBorderRadius });
+    }
+
+    return Flip.from(state, {
+      absolute: true,
+      duration: (opts && opts.duration) || 0.6,
+      ease: (opts && opts.ease) || 'power2.inOut',
+    });
+  }
+
+  function bindFlipTriggers() {
+    if (window.__kfilmsFlipTriggersBound) return;
+    window.__kfilmsFlipTriggersBound = true;
+    document.addEventListener(
+      'click',
+      function (e) {
+        var link = e.target.closest && e.target.closest('.theatre-dept-media, .theatre-dept-link, a.theatre-dept-media');
+        if (!link) return;
+        var dept = link.closest('.theatre-dept');
+        if (dept) markActiveDept(dept);
+      },
+      true
+    );
+  }
+
+  function destroyCmsHorizontal() {
+    if (window.__kfilmsCmsSt) {
+      try { window.__kfilmsCmsSt.kill(); } catch (e) {}
+      window.__kfilmsCmsSt = null;
+    }
+  }
+
+  function initCmsHorizontal(root) {
+    destroyCmsHorizontal();
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+    var scope = root || document;
+    var height = scope.querySelector('.section-height');
+    var track = scope.querySelector('.track-flex') || scope.querySelector('.track');
+    if (!height || !track) return;
+    gsap.registerPlugin(ScrollTrigger);
+    var tween = gsap.to(track, {
+      x: function () { return -(track.scrollWidth - window.innerWidth); },
+      ease: 'none',
+      scrollTrigger: {
+        trigger: height,
+        start: 'top top',
+        end: function () { return '+=' + Math.max(window.innerHeight, track.scrollWidth); },
+        scrub: 1,
+        pin: scope.querySelector('.sticky-element') || true,
+        invalidateOnRefresh: true
+      }
+    });
+    window.__kfilmsCmsSt = tween.scrollTrigger;
+  }
+
+  window.kfilmsInitCmsPage = function (root) {
+    initCmsHorizontal(root);
+  };
+
+  function onEnterGrid(data) {
+    createSwiper();
+    var active = document.querySelector('.active-flip-item');
+    if (mySlider && active) {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.swiper-slide.is-list'));
+      var idx = slides.indexOf(active);
+      if (idx >= 0) mySlider.slideTo(idx, 0);
+    }
+    if (typeof window.kfilmsInitHome === 'function') {
+      window.kfilmsInitHome(data.next.container);
+    }
+  }
+
+  function bootBarba() {
+    if (!ensureLibs()) return false;
+    if (window.__kfilmsBarbaInited) {
+      createSwiper();
+      return true;
+    }
+    window.__kfilmsBarbaInited = true;
+
+      function nsOf(container, fallback) {
+    if (!container) return fallback || '';
+    var attr = container.getAttribute('data-barba-namespace');
+    if (attr) return attr;
+    if (container.classList.contains('cms-page') || container.querySelector('.cms-page')) return 'cms-page';
+    if (container.classList.contains('kf-flip-grid') || container.classList.contains('kf-flip-stack') || container.querySelector('[data-theatre-grid], .kf-flip-grid, .kf-flip-stack')) return 'grid-page';
+    if (container.querySelector('.theatre-list, .hero-section, .horizontal')) return 'grid-page';
+    return fallback || '';
+  }
+
+    
+    barba.hooks.after(function (data) {
+      var ns = data.next ? nsOf(data.next.container, data.next.namespace) : '';
+      var fromCms = data.current && nsOf(data.current.container, data.current.namespace) === 'cms-page';
+      var hasTheatreHash = !!(location.hash || '').match(/^#video-/);
+      var returningToRow = ns === 'grid-page' && (fromCms || hasTheatreHash);
+      var returnY = window.__kfilmsReturnScrollY;
+
+      if (data.next && data.next.container) {
+        if (returningToRow) {
+          clearReturnPrep(data.next.container);
+          if (typeof returnY === 'number' && !isNaN(returnY)) {
+            window.scrollTo(0, returnY);
+          } else {
+            scrollToActiveFlipItem();
+            returnY =
+              (window.pageYOffset || document.documentElement.scrollTop || 0);
+          }
+          window.__kfilmsReturnScrollY = null;
+        } else {
+          data.next.container.classList.remove('fixed');
+          data.next.container.style.transform = '';
+        }
+      }
+
+      if (!returningToRow) {
+        document.querySelectorAll('.active-flip-item').forEach(function (el) {
+          el.classList.remove('active-flip-item');
+        });
+        window.scrollTo(0, 0);
+      }
+
+      resetWebflow(data);
+      if (ns === 'grid-page') {
+        requestAnimationFrame(function () {
+          onEnterGrid(data);
+          if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh(true);
+          if (returningToRow && typeof returnY === 'number') {
+            requestAnimationFrame(function () {
+              window.scrollTo(0, returnY);
+            });
+          }
+        });
+      } else if (ns === 'cms-page') {
+        requestAnimationFrame(function () {
+          window.kfilmsInitCmsPage(data.next.container);
+        });
+      }
+    });
+
+    barba.hooks.beforeLeave(function (data) {
+      if (data.current && nsOf(data.current.container, data.current.namespace) === 'grid-page') {
+        if (typeof window.kfilmsDestroyHome === 'function') window.kfilmsDestroyHome();
+      }
+      if (data.current && nsOf(data.current.container, data.current.namespace) === 'cms-page') {
+        destroyCmsHorizontal();
+      }
+    });
+
+    barba.init({
+      preventRunning: true,
+      transitions: [
+        {
+          name: 'grid-to-cms',
+          sync: true,
+          from: { custom: function (data) { return nsOf(data.current.container, data.current.namespace) === 'grid-page'; } },
+          to: { custom: function (data) { return nsOf(data.next.container, data.next.namespace) === 'cms-page'; } },
+          enter: function (data) {
+            makeItemActive();
+            // Capture First while thumb is still in list .visual_wrap
+            var fromVisual = resolveFromVisual();
+            if (!fromVisual) {
+              var active = document.querySelector('.active-flip-item');
+              fromVisual = active && active.querySelector('.visual_wrap .visual');
+            }
+            var state =
+              fromVisual && typeof Flip !== 'undefined'
+                ? Flip.getState(fromVisual, { props: 'borderRadius' })
+                : null;
+
+            var wrap = prepareCmsHero(data.next.container);
+            if (fromVisual && wrap && state) {
+              var existing = wrap.querySelector('.visual');
+              if (existing && existing !== fromVisual) existing.remove();
+              wrap.appendChild(fromVisual);
+              gsap.set(fromVisual, { borderRadius: 0 });
+              Flip.from(state, {
+                absolute: true,
+                duration: 0.6,
+                ease: 'power2.inOut',
+              });
+              window.__kfilmsFlipFromVisual = null;
+            } else if (fromVisual && wrap) {
+              flipListToHero(fromVisual, wrap, { duration: 0.6, ease: 'power2.inOut' });
+              window.__kfilmsFlipFromVisual = null;
+            }
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.6, ease: 'power2.inOut' });
+          }
+        },
+        {
+          name: 'cms-to-grid',
+          sync: true,
+          from: { custom: function (data) { return nsOf(data.current.container, data.current.namespace) === 'cms-page'; } },
+          to: { custom: function (data) { return nsOf(data.next.container, data.next.namespace) === 'grid-page'; } },
+          enter: function (data) {
+            createSwiper();
+            data.next.container.classList.add('fixed');
+            var active = prepareReturnTarget(data.next.container);
+            if (mySlider && active) {
+              var slides = Array.prototype.slice.call(document.querySelectorAll('.swiper-slide.is-list'));
+              var idx = slides.indexOf(active);
+              if (idx >= 0) mySlider.slideTo(idx, 0);
+            }
+            var wrap = data.current.container.querySelector('.cms-page_img-wrap');
+            var fromVisual = wrap && wrap.querySelector('.visual');
+            var dest = active ? active.querySelector('.visual_wrap') : null;
+            if (fromVisual && dest) {
+              var returnState = Flip.getState(fromVisual, { props: 'borderRadius' });
+              dest.appendChild(fromVisual);
+              gsap.set(fromVisual, { borderRadius: 8 });
+              Flip.from(returnState, {
+                absolute: true,
+                duration: 0.6,
+                ease: 'power2.inOut',
+              });
+            }
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.6, ease: 'power2.inOut' });
+          }
+        },
+        {
+          name: 'default',
+          leave: function (data) {
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.25 });
+          },
+          enter: function (data) {
+            gsap.fromTo(data.next.container, { opacity: 0 }, { opacity: 1, duration: 0.25 });
+          }
+        }
+      ]
+    });
+
+    createSwiper();
+    bindFlipTriggers();
+    if (document.querySelector('.cms-page')) {
+      window.kfilmsInitCmsPage(document.querySelector('[data-barba="container"]') || document);
+    }
+    return true;
+  }
+
+  function tryBoot() {
+    var tries = 0;
+    function attempt() {
+      tries += 1;
+      if (bootBarba()) return;
+      if (tries < 50) setTimeout(attempt, 100);
+    }
+    attempt();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tryBoot);
+  else tryBoot();
+})();
+</script>
