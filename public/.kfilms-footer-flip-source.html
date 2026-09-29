@@ -36,6 +36,11 @@
 .container.is-rich{padding:10em 2rem;max-width:54em;margin:0 auto}
 .panel1 h1,.panel2 h1,.panel3 h1,.panel4 h1,.panel5 h1{font-size:clamp(2rem,6vw,4rem);margin:0;text-align:center;padding:1rem}
 .cms-page_img-wrap .visual img{width:100%;height:100%;object-fit:cover;display:block}
+/* Theatre sticky stage expansion (reinforce + survive overflow-x:clip ancestors) */
+.theatre-pin{position:relative;width:100%;height:250vh;min-height:250vh}
+.theatre-stage{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:center;width:100%;height:100vh;overflow:hidden}
+.theatre-reel{flex-shrink:0;aspect-ratio:auto;will-change:width,height;background:#2a2a2a;overflow:hidden}
+.page-wrapper,.main-wrapper{overflow-x:clip;overflow-y:visible}
 `;
   document.head.appendChild(s);
 })();
@@ -189,6 +194,7 @@
   var homeMm = null;
   var marqueeTween = null;
   var marqueeBoostHandler = null;
+  var theatrePinTween = null;
 
   function ensurePlugins() {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return false;
@@ -239,6 +245,13 @@
       try { window.lenis.off('scroll', marqueeBoostHandler); } catch (e) {}
       marqueeBoostHandler = null;
     }
+    if (theatrePinTween) {
+      try {
+        if (theatrePinTween.scrollTrigger) theatrePinTween.scrollTrigger.kill();
+        theatrePinTween.kill();
+      } catch (e) {}
+      theatrePinTween = null;
+    }
     if (typeof ScrollTrigger === 'undefined') return;
     ScrollTrigger.getAll().forEach(function (st) {
       var t = st.trigger;
@@ -251,6 +264,7 @@
         (t.closest('.horizontal') ||
           t.closest('.about-intro-media') ||
           t.closest('.theatre-pin') ||
+          t.closest('.theatre-stage') ||
           t.closest('.theatre-list, [data-theatre-grid]') ||
           t.closest('.marquee-section'))
       ) {
@@ -264,6 +278,12 @@
       ),
       { clearProps: 'opacity,transform,translate' }
     );
+    gsap.set(clearRoot.querySelectorAll('.theatre-reel'), {
+      clearProps: 'width,height,aspectRatio,maxWidth,maxHeight',
+    });
+    gsap.set(clearRoot.querySelectorAll('.theatre-stage'), {
+      clearProps: 'transform',
+    });
   };
 
   function initAboutWipe(scope) {
@@ -344,15 +364,29 @@
 
   function initTheatrePin(scope) {
     var pin = scope.querySelector('.theatre-pin');
+    var stage = scope.querySelector('.theatre-stage');
     var reel = scope.querySelector('.theatre-reel');
     if (!pin || !reel) return;
 
-    function getStartSize() {
-      var vw = window.innerWidth;
-      return vw < 768 ? vw * 0.55 : vw * 0.4;
+    if (theatrePinTween) {
+      try {
+        if (theatrePinTween.scrollTrigger) theatrePinTween.scrollTrigger.kill();
+        theatrePinTween.kill();
+      } catch (e) {}
+      theatrePinTween = null;
     }
 
-    gsap.fromTo(
+    gsap.set(reel, { clearProps: 'width,height,aspectRatio,maxWidth,maxHeight' });
+    gsap.set(reel, { aspectRatio: 'auto' });
+
+    function getStartSize() {
+      var vw = window.innerWidth;
+      return Math.round(vw < 768 ? vw * 0.55 : vw * 0.4);
+    }
+
+    // Pin the stage with ScrollTrigger (pinSpacing:false ≈ CSS sticky).
+    // More reliable than position:sticky when ancestors use overflow-x: clip.
+    theatrePinTween = gsap.fromTo(
       reel,
       {
         width: function () {
@@ -361,7 +395,6 @@
         height: function () {
           return getStartSize();
         },
-        aspectRatio: '1 / 1',
       },
       {
         width: function () {
@@ -370,14 +403,20 @@
         height: function () {
           return window.innerHeight;
         },
-        aspectRatio: 'auto',
         ease: 'none',
+        immediateRender: false,
         scrollTrigger: {
           trigger: pin,
           start: 'top top',
           end: 'bottom bottom',
           scrub: true,
+          pin: stage || true,
+          pinSpacing: false,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
+          onRefreshInit: function () {
+            gsap.set(reel, { aspectRatio: 'auto' });
+          },
         },
       }
     );

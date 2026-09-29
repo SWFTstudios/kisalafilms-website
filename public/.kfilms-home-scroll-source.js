@@ -5,6 +5,7 @@
   var homeMm = null;
   var marqueeTween = null;
   var marqueeBoostHandler = null;
+  var theatrePinTween = null;
 
   function ensurePlugins() {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return false;
@@ -38,7 +39,7 @@
       scope.querySelector('.marquee-track') ||
       scope.querySelector('.theatre-pin') ||
       scope.querySelector('.about-intro-media') ||
-      scope.querySelector('.theatre-list')
+      scope.querySelector('.theatre-list, [data-theatre-grid]')
     );
   }
 
@@ -55,6 +56,13 @@
       try { window.lenis.off('scroll', marqueeBoostHandler); } catch (e) {}
       marqueeBoostHandler = null;
     }
+    if (theatrePinTween) {
+      try {
+        if (theatrePinTween.scrollTrigger) theatrePinTween.scrollTrigger.kill();
+        theatrePinTween.kill();
+      } catch (e) {}
+      theatrePinTween = null;
+    }
     if (typeof ScrollTrigger === 'undefined') return;
     ScrollTrigger.getAll().forEach(function (st) {
       var t = st.trigger;
@@ -67,7 +75,8 @@
         (t.closest('.horizontal') ||
           t.closest('.about-intro-media') ||
           t.closest('.theatre-pin') ||
-          t.closest('.theatre-list') ||
+          t.closest('.theatre-stage') ||
+          t.closest('.theatre-list, [data-theatre-grid]') ||
           t.closest('.marquee-section'))
       ) {
         st.kill();
@@ -76,10 +85,16 @@
     var clearRoot = document.querySelector('[data-barba="container"]') || document;
     gsap.set(
       clearRoot.querySelectorAll(
-        '.theatre-list .theatre-dept-label, .theatre-list .theatre-dept-links, .theatre-list .theatre-dept-desc, .theatre-list .theatre-dept-media, .theatre-list .theatre-dept-line, .theatre-list-intro > *'
+        '.theatre-dept-label, .theatre-dept-links, .theatre-dept-desc, .theatre-dept-media, .theatre-dept-line, .theatre-list-intro > *'
       ),
       { clearProps: 'opacity,transform,translate' }
     );
+    gsap.set(clearRoot.querySelectorAll('.theatre-reel'), {
+      clearProps: 'width,height,aspectRatio,maxWidth,maxHeight',
+    });
+    gsap.set(clearRoot.querySelectorAll('.theatre-stage'), {
+      clearProps: 'transform',
+    });
   };
 
   function initAboutWipe(scope) {
@@ -160,15 +175,29 @@
 
   function initTheatrePin(scope) {
     var pin = scope.querySelector('.theatre-pin');
+    var stage = scope.querySelector('.theatre-stage');
     var reel = scope.querySelector('.theatre-reel');
     if (!pin || !reel) return;
 
-    function getStartSize() {
-      var vw = window.innerWidth;
-      return vw < 768 ? vw * 0.55 : vw * 0.4;
+    if (theatrePinTween) {
+      try {
+        if (theatrePinTween.scrollTrigger) theatrePinTween.scrollTrigger.kill();
+        theatrePinTween.kill();
+      } catch (e) {}
+      theatrePinTween = null;
     }
 
-    gsap.fromTo(
+    gsap.set(reel, { clearProps: 'width,height,aspectRatio,maxWidth,maxHeight' });
+    gsap.set(reel, { aspectRatio: 'auto' });
+
+    function getStartSize() {
+      var vw = window.innerWidth;
+      return Math.round(vw < 768 ? vw * 0.55 : vw * 0.4);
+    }
+
+    // Pin the stage with ScrollTrigger (pinSpacing:false ≈ CSS sticky).
+    // More reliable than position:sticky when ancestors use overflow-x: clip.
+    theatrePinTween = gsap.fromTo(
       reel,
       {
         width: function () {
@@ -177,7 +206,6 @@
         height: function () {
           return getStartSize();
         },
-        aspectRatio: '1 / 1',
       },
       {
         width: function () {
@@ -186,14 +214,20 @@
         height: function () {
           return window.innerHeight;
         },
-        aspectRatio: 'auto',
         ease: 'none',
+        immediateRender: false,
         scrollTrigger: {
           trigger: pin,
           start: 'top top',
           end: 'bottom bottom',
           scrub: true,
+          pin: stage || true,
+          pinSpacing: false,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
+          onRefreshInit: function () {
+            gsap.set(reel, { aspectRatio: 'auto' });
+          },
         },
       }
     );
@@ -351,7 +385,8 @@
   };
 
   function boot() {
-    var container = document.querySelector('[data-barba-namespace="home"]') ||
+    var container = document.querySelector('[data-barba-namespace="grid-page"]') ||
+      document.querySelector('[data-barba-namespace="home"]') ||
       document.querySelector('[data-barba="container"]');
     if (container && hasHomeMarkers(container)) {
       window.kfilmsInitHome(container);
