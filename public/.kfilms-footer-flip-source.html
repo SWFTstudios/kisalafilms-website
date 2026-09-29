@@ -769,7 +769,17 @@
       item.classList.remove('active-flip-item');
     });
     dept.classList.add('active-flip-item');
+    var fromVisual = dept.querySelector('.visual_wrap .visual');
+    if (fromVisual) window.__kfilmsFlipFromVisual = fromVisual;
     return dept;
+  }
+
+  function resolveFromVisual() {
+    var stored = window.__kfilmsFlipFromVisual;
+    if (stored && stored.isConnected) return stored;
+    var active = document.querySelector('.active-flip-item');
+    if (!active) return null;
+    return active.querySelector('.visual_wrap .visual') || active.querySelector('.visual');
   }
 
   function prepareCmsHero(container) {
@@ -780,7 +790,7 @@
 
     var track = container.querySelector('.track-flex') || container.querySelector('.track');
     if (track && typeof gsap !== 'undefined') {
-      try { gsap.set(track, { x: 0, clearProps: '' }); } catch (e) {
+      try { gsap.set(track, { x: 0 }); } catch (e) {
         track.style.transform = 'translateX(0)';
       }
     }
@@ -821,6 +831,21 @@
     return wrap;
   }
 
+  /** Shared-element Flip: list .visual_wrap>.visual → first-track .cms-page_img-wrap */
+  function flipListToHero(fromVisual, wrap, opts) {
+    if (!fromVisual || !wrap || typeof Flip === 'undefined') return null;
+    var state = Flip.getState(fromVisual, { props: 'borderRadius' });
+    var existing = wrap.querySelector('.visual');
+    if (existing && existing !== fromVisual) existing.remove();
+    wrap.appendChild(fromVisual);
+    gsap.set(fromVisual, { borderRadius: 0 });
+    return Flip.from(state, {
+      absolute: true,
+      duration: (opts && opts.duration) || 0.6,
+      ease: (opts && opts.ease) || 'power2.inOut',
+    });
+  }
+
   function flip(outgoing, incoming, opts) {
     if (!outgoing || !incoming || typeof Flip === 'undefined') return null;
     var visual =
@@ -829,18 +854,18 @@
         : outgoing.querySelector('.visual');
     if (!visual) return null;
 
-    var state = Flip.getState(visual, { props: 'borderRadius' });
+    var state = (opts && opts.state) || Flip.getState(visual, { props: 'borderRadius' });
     var incomingVisual = incoming.querySelector('.visual');
     if (incomingVisual && incomingVisual !== visual) incomingVisual.remove();
     incoming.appendChild(visual);
-    gsap.set(visual, { borderRadius: 0 });
+    if (opts && opts.endBorderRadius != null) {
+      gsap.set(visual, { borderRadius: opts.endBorderRadius });
+    }
 
     return Flip.from(state, {
       absolute: true,
       duration: (opts && opts.duration) || 0.6,
       ease: (opts && opts.ease) || 'power2.inOut',
-      scale: true,
-      simple: true,
     });
   }
 
@@ -993,12 +1018,32 @@
           to: { custom: function (data) { return nsOf(data.next.container, data.next.namespace) === 'cms-page'; } },
           enter: function (data) {
             makeItemActive();
-            var active = document.querySelector('.active-flip-item');
-            // Destination = image slot inside first horizontal track panel (.cms-hero)
+            // Capture First while thumb is still in list .visual_wrap
+            var fromVisual = resolveFromVisual();
+            if (!fromVisual) {
+              var active = document.querySelector('.active-flip-item');
+              fromVisual = active && active.querySelector('.visual_wrap .visual');
+            }
+            var state =
+              fromVisual && typeof Flip !== 'undefined'
+                ? Flip.getState(fromVisual, { props: 'borderRadius' })
+                : null;
+
             var wrap = prepareCmsHero(data.next.container);
-            var visual = active && (active.querySelector('.visual_wrap .visual') || active.querySelector('.visual'));
-            if (visual && wrap) {
-              flip(visual, wrap, { duration: 0.6, ease: 'power2.inOut' });
+            if (fromVisual && wrap && state) {
+              var existing = wrap.querySelector('.visual');
+              if (existing && existing !== fromVisual) existing.remove();
+              wrap.appendChild(fromVisual);
+              gsap.set(fromVisual, { borderRadius: 0 });
+              Flip.from(state, {
+                absolute: true,
+                duration: 0.6,
+                ease: 'power2.inOut',
+              });
+              window.__kfilmsFlipFromVisual = null;
+            } else if (fromVisual && wrap) {
+              flipListToHero(fromVisual, wrap, { duration: 0.6, ease: 'power2.inOut' });
+              window.__kfilmsFlipFromVisual = null;
             }
             return gsap.to(data.current.container, { opacity: 0, duration: 0.6, ease: 'power2.inOut' });
           }
@@ -1018,8 +1063,18 @@
               if (idx >= 0) mySlider.slideTo(idx, 0);
             }
             var wrap = data.current.container.querySelector('.cms-page_img-wrap');
+            var fromVisual = wrap && wrap.querySelector('.visual');
             var dest = active ? active.querySelector('.visual_wrap') : null;
-            if (wrap && dest) flip(wrap, dest, { duration: 0.6, ease: 'power2.inOut' });
+            if (fromVisual && dest) {
+              var returnState = Flip.getState(fromVisual, { props: 'borderRadius' });
+              dest.appendChild(fromVisual);
+              gsap.set(fromVisual, { borderRadius: 8 });
+              Flip.from(returnState, {
+                absolute: true,
+                duration: 0.6,
+                ease: 'power2.inOut',
+              });
+            }
             return gsap.to(data.current.container, { opacity: 0, duration: 0.6, ease: 'power2.inOut' });
           }
         },
