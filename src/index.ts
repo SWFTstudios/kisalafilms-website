@@ -709,18 +709,16 @@ export default {
       return new Response(res.body, { status: res.status, headers });
     }
 
-    // Legacy vinyl lookbook → Theatre in the 2027 Webflow theme
-    if (url.pathname === "/lookbook" || url.pathname === "/lookbook/") {
-      return redirect("/theatre" + url.search);
-    }
+    // Legacy vinyl lookbook + old theatre gallery → Flip 2.0 home grid
     if (
+      url.pathname === "/lookbook" ||
+      url.pathname === "/lookbook/" ||
       url.pathname === "/lookbook/film" ||
       url.pathname === "/lookbook/film/" ||
-      url.pathname === "/lookbook/film.html"
+      url.pathname === "/lookbook/film.html" ||
+      url.pathname === "/theatre" ||
+      url.pathname === "/theatre/"
     ) {
-      return redirect("/theatre" + url.search);
-    }
-    if (url.pathname === "/theatre" || url.pathname === "/theatre/") {
       return redirect("/" + url.search + "#theatre-grid");
     }
 
