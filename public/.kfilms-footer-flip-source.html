@@ -1,5 +1,14 @@
 <script>
 (function () {
+  if (document.getElementById('kfilms-menu-v2')) return;
+  var s = document.createElement('style');
+  s.id = 'kfilms-menu-v2';
+  s.textContent = '.site-menu-overlay {\n  position: fixed;\n  inset: 0;\n  z-index: 1001;\n  display: flex;\n  justify-content: flex-end;\n  opacity: 0;\n  visibility: hidden;\n  pointer-events: none;\n  transition: opacity 0.35s ease, visibility 0.35s ease;\n  mix-blend-mode: normal;\n  isolation: isolate;\n}\n.site-menu-overlay.is-open {\n  opacity: 1;\n  visibility: visible;\n  pointer-events: auto;\n}\n.site-menu-backdrop {\n  position: absolute;\n  inset: 0;\n  background: rgba(0, 0, 0, 0.55);\n  -webkit-backdrop-filter: blur(6px);\n  backdrop-filter: blur(6px);\n  cursor: pointer;\n}\n.site-menu-panel {\n  position: relative;\n  z-index: 1;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  width: 100%;\n  height: 100%;\n  padding: 5rem 1.5rem 5.5rem;\n  background: var(--bg-elevated);\n  color: var(--text);\n  transform: translateY(10px);\n  transition: transform 0.35s ease;\n}\n.site-menu-overlay.is-open .site-menu-panel {\n  transform: none;\n}\n.site-menu-close {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2.5rem;\n  height: 2.5rem;\n  margin: 2rem auto 0;\n  padding: 0;\n  border: 0;\n  background: none;\n  color: inherit;\n  font-size: 1.5rem;\n  line-height: 1;\n  cursor: pointer;\n  order: 3;\n}\n.site-menu-close:hover { opacity: 0.7; }\n.site-menu-nav {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 1.1rem;\n  order: 1;\n}\n.site-menu-item {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 0.15rem;\n  color: inherit;\n  text-decoration: none;\n}\n.site-menu-item_label {\n  display: none;\n  font-family: var(--font-sans);\n  font-size: 0.7rem;\n  font-weight: 400;\n  letter-spacing: 0.04em;\n  color: var(--text-muted);\n  text-transform: none;\n}\n.site-menu-item_title {\n  font-family: var(--font-display);\n  font-size: clamp(1.75rem, 7vw, 2.75rem);\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  line-height: 1.05;\n}\n.site-menu-item:hover { opacity: 0.7; }\n.site-menu-theme {\n  order: 2;\n  margin-top: 2rem;\n  display: inline-flex;\n  align-items: center;\n  gap: 0.75rem;\n  font-family: var(--font-sans);\n  font-size: 0.8125rem;\n  font-weight: 500;\n  background: none;\n  border: 0;\n  color: var(--text-muted);\n  padding: 0;\n  cursor: pointer;\n  width: fit-content;\n  text-decoration: underline;\n  text-underline-offset: 0.2em;\n}\n.site-menu-theme:hover { opacity: 0.85; color: var(--text); }\n@media (min-width: 768px) {\n  .site-menu-panel {\n    width: min(42vw, 30rem);\n    align-items: flex-end;\n    text-align: right;\n    padding: 4.5rem 2.75rem 3rem;\n    transform: translateX(16px);\n    box-shadow: -24px 0 60px rgba(0, 0, 0, 0.35);\n  }\n  .site-menu-overlay.is-open .site-menu-panel {\n    transform: none;\n  }\n  .site-menu-close {\n    position: absolute;\n    top: 1.5rem;\n    right: 1.75rem;\n    margin: 0;\n    order: 0;\n  }\n  .site-menu-nav {\n    align-items: flex-end;\n    gap: 1.35rem;\n    width: 100%;\n  }\n  .site-menu-item {\n    align-items: flex-end;\n  }\n  .site-menu-item_label {\n    display: block;\n  }\n  .site-menu-item_title {\n    font-size: clamp(2rem, 3.2vw, 3rem);\n    letter-spacing: -0.02em;\n    text-transform: none;\n  }\n  .site-menu-theme {\n    margin-top: 2.5rem;\n  }\n}\n.kf-static-page {\n  padding: 7rem 1.5rem 4rem;\n  min-height: 100vh;\n  color: var(--text);\n  background: var(--bg);\n}\n.kf-static-page section,\nbody > section {\n  padding: 7rem 1.5rem 4rem;\n  max-width: 72rem;\n  margin: 0 auto;\n}\n.kf-static-page h1,\nbody > section > h1 {\n  font-family: var(--font-display);\n  font-size: clamp(2.5rem, 6vw, 5rem);\n  font-weight: 600;\n  line-height: 1.05;\n  letter-spacing: -0.02em;\n  margin: 0 0 1rem;\n}\n.kf-static-page h2,\nbody > section > h2 {\n  font-family: var(--font-display);\n  font-size: clamp(1.5rem, 3vw, 2.25rem);\n  margin: 2.5rem 0 0.5rem;\n}\n.kf-static-page h3,\nbody > section > h3 {\n  font-family: var(--font-sans);\n  font-size: 1.125rem;\n  font-weight: 500;\n  margin: 2rem 0 0.35rem;\n}\n.kf-static-page p,\nbody > section > p {\n  font-size: 1rem;\n  line-height: 1.5;\n  color: var(--text-muted);\n  max-width: 36rem;\n  margin: 0 0 0.75rem;\n}\n.kf-gallery-grid,\nbody > section > div {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 0.75rem;\n  margin-top: 2.5rem;\n}\n@media (min-width: 768px) {\n  .kf-gallery-grid,\n  body > section > div {\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n    gap: 1rem;\n  }\n  .kf-static-page,\n  body > section {\n    padding-left: 2.5rem;\n    padding-right: 2.5rem;\n  }\n}\nbody > section > div > a,\nbody > section > div > div {\n  display: flex;\n  align-items: flex-end;\n  min-height: 10rem;\n  padding: 1rem;\n  background: var(--bg-elevated);\n  border: 1px solid var(--border);\n  color: inherit;\n  text-decoration: none;\n  font-family: var(--font-sans);\n  font-size: 0.875rem;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n}\nbody > section > div > a:hover { opacity: 0.85; }\n.sg-section { padding: 4rem 1.5rem; border-bottom: 1px solid var(--border); }\n.sg-section h2 { margin: 0 0 1.5rem; }\n.sg-swatch-row { display: flex; flex-wrap: wrap; gap: 1rem; }\n.sg-swatch {\n  flex: 1 1 140px;\n  min-height: 120px;\n  padding: 1rem;\n  border: 1px solid var(--border);\n  display: flex;\n  flex-direction: column;\n  justify-content: flex-end;\n  gap: 0.25rem;\n}\n.sg-note { font-size: 0.8125rem; color: var(--text-muted); max-width: 40rem; line-height: 1.5; }\nbody.menu-open { overflow: hidden; }';
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function () {
   if (document.getElementById('kfilms-flip20')) return;
   var s = document.createElement('style');
   s.id = 'kfilms-flip20';
@@ -95,22 +104,46 @@
     if (h12 === 0) h12 = 12;
     return h12 + ':' + pad(m) + ':' + pad(s) + ' ' + ampm;
   }
+  function menuItem(href, label, title) {
+    return (
+      '<li>' +
+        '<a class="site-menu-item" href="' + href + '">' +
+          '<span class="site-menu-item_label">(' + label + ')</span>' +
+          '<span class="site-menu-item_title">' + title + '</span>' +
+        '</a>' +
+      '</li>'
+    );
+  }
   function ensureOverlay() {
     var overlay = document.querySelector('.site-menu-overlay');
-    if (overlay) return overlay;
+    if (overlay) {
+      if (!overlay.querySelector('.site-menu-panel')) {
+        overlay.remove();
+        overlay = null;
+      } else {
+        return overlay;
+      }
+    }
     overlay = document.createElement('div');
     overlay.className = 'site-menu-overlay';
+    overlay.id = 'site-menu-overlay';
     overlay.setAttribute('aria-hidden', 'true');
     overlay.innerHTML =
-      '<nav aria-label="Site">' +
-        '<ul class="site-menu-nav">' +
-          '<li><a href="/">Home</a></li>' +
-          '<li><a href="/#theatre-grid">Theatre</a></li>' +
-          '<li><a href="/styleguide">Styleguide</a></li>' +
-          '<li><a href="/about">About</a></li>' +
-        '</ul>' +
-      '</nav>' +
-      '<button type="button" class="site-menu-theme">Switch to Day</button>';
+      '<div class="site-menu-backdrop" data-menu-close="1"></div>' +
+      '<div class="site-menu-panel" role="dialog" aria-modal="true" aria-label="Site menu">' +
+        '<button type="button" class="site-menu-close" aria-label="Close menu" data-menu-close="1">&times;</button>' +
+        '<nav aria-label="Site">' +
+          '<ul class="site-menu-nav">' +
+            menuItem('/', 'Home', 'Home') +
+            menuItem('/gallery', 'Gallery', 'Gallery') +
+            menuItem('/theatre', 'Theatre', 'Theatre') +
+            menuItem('/about', 'About', 'About') +
+            menuItem('/blog', 'Blog', 'Blog') +
+            menuItem('/shop', 'Shop', 'Shop') +
+          '</ul>' +
+        '</nav>' +
+        '<button type="button" class="site-menu-theme">Switch to Day</button>' +
+      '</div>';
     document.body.appendChild(overlay);
     return overlay;
   }
@@ -122,7 +155,10 @@
     overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
     document.body.classList.toggle('menu-open', open);
     var menuBtn = document.querySelector('.site-header_menu');
-    if (menuBtn) menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (menuBtn) {
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
   }
   function initHeader(header) {
     if (header.getAttribute('data-site-header-ready')) return;
@@ -158,12 +194,9 @@
       menuBtn.setAttribute('role', 'button');
       menuBtn.addEventListener('click', function (e) {
         e.preventDefault();
-        var open = !document.body.classList.contains('menu-open');
-        setMenuOpen(open);
-        menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        setMenuOpen(!document.body.classList.contains('menu-open'));
       });
     }
-    overlay.id = 'site-menu-overlay';
     var themeBtn = overlay.querySelector('.site-menu-theme');
     if (themeBtn && !themeBtn.getAttribute('data-bound')) {
       themeBtn.setAttribute('data-bound', '1');
@@ -175,9 +208,15 @@
     overlay.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () { setMenuOpen(false); });
     });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') setMenuOpen(false);
+    overlay.querySelectorAll('[data-menu-close]').forEach(function (el) {
+      el.addEventListener('click', function () { setMenuOpen(false); });
     });
+    if (!window.__kfilmsMenuEscBound) {
+      window.__kfilmsMenuEscBound = true;
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') setMenuOpen(false);
+      });
+    }
   }
   applyTheme(getStoredTheme());
   function boot() {
