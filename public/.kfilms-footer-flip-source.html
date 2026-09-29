@@ -50,7 +50,7 @@
       '<nav aria-label="Site">' +
         '<ul class="site-menu-nav">' +
           '<li><a href="/">Home</a></li>' +
-          '<li><a href="/theatre">Theatre</a></li>' +
+          '<li><a href="/#theatre-grid">Theatre</a></li>' +
           '<li><a href="/styleguide">Styleguide</a></li>' +
           '<li><a href="/about">About</a></li>' +
         '</ul>' +
@@ -180,7 +180,7 @@
       scope.querySelector('.marquee-track') ||
       scope.querySelector('.theatre-pin') ||
       scope.querySelector('.about-intro-media') ||
-      scope.querySelector('.theatre-list')
+      scope.querySelector('.theatre-list, [data-theatre-grid]')
     );
   }
 
@@ -209,7 +209,7 @@
         (t.closest('.horizontal') ||
           t.closest('.about-intro-media') ||
           t.closest('.theatre-pin') ||
-          t.closest('.theatre-list') ||
+          t.closest('.theatre-list, [data-theatre-grid]') ||
           t.closest('.marquee-section'))
       ) {
         st.kill();
@@ -218,7 +218,7 @@
     var clearRoot = document.querySelector('[data-barba="container"]') || document;
     gsap.set(
       clearRoot.querySelectorAll(
-        '.theatre-list .theatre-dept-label, .theatre-list .theatre-dept-links, .theatre-list .theatre-dept-desc, .theatre-list .theatre-dept-media, .theatre-list .theatre-dept-line, .theatre-list-intro > *'
+        '.theatre-dept-label, .theatre-dept-links, .theatre-dept-desc, .theatre-dept-media, .theatre-dept-line, .theatre-list-intro > *'
       ),
       { clearProps: 'opacity,transform,translate' }
     );
@@ -493,7 +493,8 @@
   };
 
   function boot() {
-    var container = document.querySelector('[data-barba-namespace="home"]') ||
+    var container = document.querySelector('[data-barba-namespace="grid-page"]') ||
+      document.querySelector('[data-barba-namespace="home"]') ||
       document.querySelector('[data-barba="container"]');
     if (container && hasHomeMarkers(container)) {
       window.kfilmsInitHome(container);
@@ -507,259 +508,259 @@
   }
 })();
 </script>
+
+<script src="https://unpkg.com/@barba/core@2.9.7/dist/barba.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
 <script>
 (function () {
-  var HASHES = ['video-cars', 'video-motorcycles', 'video-real-estate', 'video-weddings', 'video-training'];
-  var FLIP_ID_KEY = 'kfilmsFlipId';
-  var theatreInstances = [];
+  if (window.__kfilmsFlip20Ready) return;
+  window.__kfilmsFlip20Ready = true;
 
-  function numberWithZero(num) {
-    return num < 10 ? '0' + num : String(num);
-  }
+  var mySlider = null;
 
-  function syncTheatreCloseHref(id, scope) {
-    if (!id || HASHES.indexOf(id) === -1) return;
-    var root = scope || document;
-    root.querySelectorAll('.theatre-close').forEach(function (a) {
-      a.setAttribute('href', '/#' + id);
-    });
-  }
-
-  function persistFlipId(id) {
-    if (!id || HASHES.indexOf(id) === -1) return;
-    window.__kfilmsFlipId = id;
-    try { sessionStorage.setItem(FLIP_ID_KEY, id); } catch (e) {}
-    syncTheatreCloseHref(id);
-  }
-
-  function readStoredFlipId() {
-    try {
-      var id = sessionStorage.getItem(FLIP_ID_KEY);
-      if (id && HASHES.indexOf(id) !== -1) return id;
-    } catch (e) {}
-    return null;
-  }
-
-  function clearFlipId() {
-    window.__kfilmsFlipId = null;
-    try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
-  }
-
-  function getTheatreDept(id) {
-    if (!id) return null;
-    return (
-      document.getElementById(id) ||
-      document.querySelector('.theatre-list .theatre-dept[data-theatre-id="' + id + '"]')
-    );
-  }
-
-
-  function scrollHomeToTheatreId(id) {
-    if (!id || HASHES.indexOf(id) === -1) return;
-    var el = getTheatreDept(id);
-    if (!el) return;
-    function applyScroll() {
-      el = getTheatreDept(id) || el;
-      if (!el) return;
-      if (window.lenis && typeof window.lenis.scrollTo === 'function') {
-        try {
-          window.lenis.scrollTo(el, { immediate: true, offset: 0 });
-          return;
-        } catch (e) {}
-      }
-      try {
-        var top = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
-        window.scrollTo(0, Math.max(0, top));
-      } catch (e) {
-        try { el.scrollIntoView({ block: 'start', behavior: 'auto' }); } catch (err) {}
-      }
+  function ensureLibs() {
+    var ok = typeof barba !== 'undefined' && typeof gsap !== 'undefined' && typeof Flip !== 'undefined' && typeof Swiper !== 'undefined';
+    if (ok && gsap.registerPlugin) {
+      try { gsap.registerPlugin(Flip); if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger); } catch (e) {}
     }
-    // Wait for ScrollTrigger pins from kfilmsInitHome to settle, then scroll (and re-apply once).
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        if (typeof ScrollTrigger !== 'undefined') {
-          try { ScrollTrigger.refresh(true); } catch (e) {}
+    return ok;
+  }
+
+  function createSwiper() {
+    if (typeof Swiper === 'undefined') return null;
+    var el = document.querySelector('[data-theatre-grid] .swiper, .kf-flip-grid .swiper');
+    if (!el) return null;
+    if (mySlider && mySlider.destroy) {
+      try { mySlider.destroy(true, true); } catch (e) {}
+      mySlider = null;
+    }
+    mySlider = new Swiper(el, {
+      direction: 'horizontal',
+      slidesPerView: 1,
+      keyboard: true,
+      freeMode: true,
+      centeredSlides: true,
+      mousewheel: true,
+      breakpoints: {
+        480: { slidesPerView: 2 },
+        768: { slidesPerView: 3 }
+      },
+      speed: 300
+    });
+    mySlider.on('progress', function (e) {
+      var fill = document.querySelector('.progress-bar_fill');
+      if (fill) fill.style.width = (e.progress * 100) + '%';
+    });
+    return mySlider;
+  }
+
+  function resetWebflow(data) {
+    try {
+      var parser = new DOMParser();
+      var dom = parser.parseFromString(data.next.html, 'text/html');
+      var webflowPageId = dom.documentElement.getAttribute('data-wf-page');
+      if (webflowPageId) document.documentElement.setAttribute('data-wf-page', webflowPageId);
+      if (window.Webflow) {
+        if (window.Webflow.destroy) window.Webflow.destroy();
+        if (window.Webflow.ready) window.Webflow.ready();
+        if (window.Webflow.require) {
+          var ix2 = window.Webflow.require('ix2');
+          if (ix2 && ix2.init) ix2.init();
         }
-        applyScroll();
-        setTimeout(applyScroll, 50);
-        setTimeout(applyScroll, 200);
-      });
+      }
+    } catch (e) {}
+  }
+
+  function makeItemActive() {
+    var cms = document.querySelector('.cms-page');
+    if (!cms) return;
+    var nameEl = cms.querySelector('.item-name');
+    var cmsPageName = nameEl ? (nameEl.textContent || '').trim() : '';
+    document.querySelectorAll('.w-dyn-item, .swiper-slide.is-list').forEach(function (item) {
+      item.classList.remove('active-flip-item');
+      var n = item.querySelector('.item-name');
+      if (n && (n.textContent || '').trim() === cmsPageName) {
+        item.classList.add('active-flip-item');
+      }
     });
   }
 
-  function destroyTheatre() {
-    theatreInstances.forEach(function (sw) {
-      try { if (sw && sw.destroy) sw.destroy(true, true); } catch (e) {}
-    });
-    theatreInstances = [];
+  function flip(outgoing, incoming) {
+    if (!outgoing || !incoming || typeof Flip === 'undefined') return;
+    var visual = outgoing.querySelector('.visual');
+    if (!visual) return;
+    var state = Flip.getState(visual);
+    var incomingVisual = incoming.querySelector('.visual');
+    if (incomingVisual) incomingVisual.remove();
+    incoming.appendChild(visual);
+    Flip.from(state, { duration: 0.5, ease: 'power1.inOut' });
   }
 
-  window.kfilmsInitTheatre = function (root, hashOverride) {
-    if (typeof Swiper === 'undefined' || typeof window.jQuery === 'undefined') return false;
-    var $ = window.jQuery;
+  function destroyCmsHorizontal() {
+    if (window.__kfilmsCmsSt) {
+      try { window.__kfilmsCmsSt.kill(); } catch (e) {}
+      window.__kfilmsCmsSt = null;
+    }
+  }
+
+  function initCmsHorizontal(root) {
+    destroyCmsHorizontal();
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
     var scope = root || document;
-    var $galleries = $(scope).find('[data-theatre-gallery]');
-    if (!$galleries.length && $(scope).is('[data-theatre-gallery]')) $galleries = $(scope);
-    if (!$galleries.length) return false;
-    destroyTheatre();
-    $galleries.each(function () {
-      var $root = $(this);
-      var $bg = $root.find('[data-slider="bg"]');
-      var $titles = $root.find('[data-slider="titles"]');
-      var $thumbs = $root.find('[data-slider="thumbs"]');
-      if (!$bg.length || !$titles.length || !$thumbs.length) return;
-      $bg.addClass('swiper is-slider-bg');
-      $titles.addClass('swiper is-slider-titles');
-      $thumbs.addClass('swiper is-slider-thumbs');
-      $root.find('[data-wrapper]').addClass('swiper-wrapper');
-      $bg.find('[data-wrapper]').addClass('is-slider-bg');
-      $titles.find('[data-wrapper]').addClass('is-slider-titles');
-      $thumbs.find('[data-wrapper]').addClass('is-slider-thumbs');
-      $root.find('[data-hash]').addClass('swiper-slide');
-      $bg.find('[data-hash]').addClass('is-slider-bg');
-      $titles.find('[data-hash]').addClass('is-slider-titles');
-      $thumbs.find('[data-hash]').addClass('is-slider-thumbs');
-      $root.find('[data-swiper-nav="prev"]').addClass('swiper-prev slider-gallery_button');
-      $root.find('[data-swiper-nav="next"]').addClass('swiper-next slider-gallery_button');
-      $bg.find('.slider-bg_img').addClass('visual');
-      var total = $thumbs.find('[data-hash]').length;
-      $root.find('.swiper-number-total').text(numberWithZero(total));
-      var hash = (hashOverride || (window.location.hash || '').replace(/^#/, ''));
-      var initial = HASHES.indexOf(hash);
-      if (initial < 0) initial = 0;
-      if (HASHES[initial]) persistFlipId(HASHES[initial]);
-      var bgSwiper = new Swiper($bg[0], {
-        slidesPerView: 1, speed: 400, effect: 'fade', allowTouchMove: false, initialSlide: initial
-      });
-      var thumbsSwiper = new Swiper($thumbs[0], {
-        slidesPerView: 1, speed: 600, loop: true, loopedSlides: 5, slideToClickedSlide: true, initialSlide: initial
-      });
-      var textSwiper = new Swiper($titles[0], {
-        slidesPerView: 'auto', speed: 600, loop: true, loopedSlides: 5, slideToClickedSlide: true,
-        mousewheel: true, keyboard: true, centeredSlides: true, initialSlide: initial,
-        slideActiveClass: 'is-active', slideDuplicateActiveClass: 'is-active',
-        thumbs: { swiper: bgSwiper },
-        navigation: {
-          nextEl: $root.find('.swiper-next, [data-swiper-nav="next"]')[0],
-          prevEl: $root.find('.swiper-prev, [data-swiper-nav="prev"]')[0]
-        }
-      });
-      textSwiper.controller.control = thumbsSwiper;
-      thumbsSwiper.controller.control = textSwiper;
-      $root.find('.swiper-number-current').text(numberWithZero(initial + 1));
-      textSwiper.on('slideChange', function (e) {
-        $root.find('.swiper-number-current').text(numberWithZero(e.realIndex + 1));
-        var h = HASHES[e.realIndex];
-        if (h) {
-          persistFlipId(h);
-          if (window.history && window.history.replaceState) {
-            window.history.replaceState(null, '', '#' + h);
-          }
-        }
-      });
-      $root.find('[data-swiper-nav]').on('click', function (e) { e.preventDefault(); });
-      theatreInstances.push(bgSwiper, thumbsSwiper, textSwiper);
+    var height = scope.querySelector('.section-height');
+    var track = scope.querySelector('.track-flex') || scope.querySelector('.track');
+    if (!height || !track) return;
+    gsap.registerPlugin(ScrollTrigger);
+    var tween = gsap.to(track, {
+      x: function () { return -(track.scrollWidth - window.innerWidth); },
+      ease: 'none',
+      scrollTrigger: {
+        trigger: height,
+        start: 'top top',
+        end: function () { return '+=' + Math.max(window.innerHeight, track.scrollWidth); },
+        scrub: 1,
+        pin: scope.querySelector('.sticky-element') || true,
+        invalidateOnRefresh: true
+      }
     });
-    return true;
+    window.__kfilmsCmsSt = tween.scrollTrigger;
+  }
+
+  window.kfilmsInitCmsPage = function (root) {
+    initCmsHorizontal(root);
   };
 
-  function bootTheatre() {
+  function onEnterGrid(data) {
+    createSwiper();
+    var active = document.querySelector('.active-flip-item');
+    if (mySlider && active) {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.swiper-slide.is-list'));
+      var idx = slides.indexOf(active);
+      if (idx >= 0) mySlider.slideTo(idx, 0);
+    }
+    if (typeof window.kfilmsInitHome === 'function') {
+      window.kfilmsInitHome(data.next.container);
+    }
+  }
+
+  function bootBarba() {
+    if (!ensureLibs()) return false;
+    if (window.__kfilmsBarbaInited) {
+      createSwiper();
+      return true;
+    }
+    window.__kfilmsBarbaInited = true;
+
+      function nsOf(container, fallback) {
+    if (!container) return fallback || '';
+    var attr = container.getAttribute('data-barba-namespace');
+    if (attr) return attr;
+    if (container.classList.contains('cms-page') || container.querySelector('.cms-page')) return 'cms-page';
+    if (container.classList.contains('kf-flip-grid') || container.querySelector('[data-theatre-grid], .kf-flip-grid')) return 'grid-page';
+    if (container.querySelector('.theatre-list, .hero-section, .horizontal')) return 'grid-page';
+    return fallback || '';
+  }
+
+    
+    barba.hooks.after(function (data) {
+      if (data.next && data.next.container) {
+        data.next.container.classList.remove('fixed');
+      }
+      document.querySelectorAll('.active-flip-item').forEach(function (el) {
+        el.classList.remove('active-flip-item');
+      });
+      window.scrollTo(0, 0);
+      resetWebflow(data);
+      var ns = data.next ? nsOf(data.next.container, data.next.namespace) : '';
+      if (ns === 'grid-page') {
+        requestAnimationFrame(function () {
+          onEnterGrid(data);
+          if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh(true);
+        });
+      } else if (ns === 'cms-page') {
+        requestAnimationFrame(function () {
+          window.kfilmsInitCmsPage(data.next.container);
+        });
+      }
+    });
+
+    barba.hooks.beforeLeave(function (data) {
+      if (data.current && nsOf(data.current.container, data.current.namespace) === 'grid-page') {
+        if (typeof window.kfilmsDestroyHome === 'function') window.kfilmsDestroyHome();
+      }
+      if (data.current && nsOf(data.current.container, data.current.namespace) === 'cms-page') {
+        destroyCmsHorizontal();
+      }
+    });
+
+    barba.init({
+      preventRunning: true,
+      transitions: [
+        {
+          name: 'grid-to-cms',
+          sync: true,
+          from: { custom: function (data) { return nsOf(data.current.container, data.current.namespace) === 'grid-page'; } },
+          to: { custom: function (data) { return nsOf(data.next.container, data.next.namespace) === 'cms-page'; } },
+          enter: function (data) {
+            makeItemActive();
+            data.next.container.classList.add('fixed');
+            var active = document.querySelector('.active-flip-item');
+            var wrap = data.next.container.querySelector('.cms-page_img-wrap');
+            if (active && wrap) flip(active, wrap);
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.5 });
+          }
+        },
+        {
+          name: 'cms-to-grid',
+          sync: true,
+          from: { custom: function (data) { return nsOf(data.current.container, data.current.namespace) === 'cms-page'; } },
+          to: { custom: function (data) { return nsOf(data.next.container, data.next.namespace) === 'grid-page'; } },
+          enter: function (data) {
+            makeItemActive();
+            createSwiper();
+            var active = document.querySelector('.active-flip-item');
+            if (mySlider && active) {
+              var slides = Array.prototype.slice.call(document.querySelectorAll('.swiper-slide.is-list'));
+              var idx = slides.indexOf(active);
+              if (idx >= 0) mySlider.slideTo(idx, 0);
+            }
+            data.next.container.classList.add('fixed');
+            var wrap = data.current.container.querySelector('.cms-page_img-wrap');
+            var dest = active ? active.querySelector('.visual_wrap') : null;
+            if (wrap && dest) flip(wrap, dest);
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.5 });
+          }
+        },
+        {
+          name: 'default',
+          leave: function (data) {
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.25 });
+          },
+          enter: function (data) {
+            gsap.fromTo(data.next.container, { opacity: 0 }, { opacity: 1, duration: 0.25 });
+          }
+        }
+      ]
+    });
+
+    createSwiper();
+    if (document.querySelector('.cms-page')) {
+      window.kfilmsInitCmsPage(document.querySelector('[data-barba="container"]') || document);
+    }
+    return true;
+  }
+
+  function tryBoot() {
     var tries = 0;
     function attempt() {
       tries += 1;
-      if (window.kfilmsInitTheatre(document)) return;
-      if (tries < 40) setTimeout(attempt, 100);
+      if (bootBarba()) return;
+      if (tries < 50) setTimeout(attempt, 100);
     }
     attempt();
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootTheatre);
-  else bootTheatre();
 
-  /* Play cursor */
-  var cursorEl = null, cx = 0, cy = 0, tx = 0, ty = 0, raf = 0;
-  function ensureCursor() {
-    if (cursorEl) return cursorEl;
-    cursorEl = document.createElement('div');
-    cursorEl.className = 'kf-play-cursor';
-    cursorEl.setAttribute('aria-hidden', 'true');
-    cursorEl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
-    document.body.appendChild(cursorEl);
-    return cursorEl;
-  }
-  function tickCursor() {
-    cx += (tx - cx) * 0.18;
-    cy += (ty - cy) * 0.18;
-    if (cursorEl) { cursorEl.style.left = cx + 'px'; cursorEl.style.top = cy + 'px'; }
-    raf = requestAnimationFrame(tickCursor);
-  }
-  function setCursorActive(on) {
-    ensureCursor();
-    cursorEl.classList.toggle('is-active', !!on);
-  }
-  function onMove(e) { tx = e.clientX; ty = e.clientY; }
-  function bindPlayCursor(scope) {
-    var root = scope || document;
-    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
-    ensureCursor();
-    if (!raf) raf = requestAnimationFrame(tickCursor);
-    document.removeEventListener('mousemove', onMove);
-    document.addEventListener('mousemove', onMove);
-    root.querySelectorAll('.theatre-list .theatre-dept-media').forEach(function (el) {
-      if (el.getAttribute('data-kf-cursor')) return;
-      el.setAttribute('data-kf-cursor', '1');
-      el.addEventListener('mouseenter', function () { setCursorActive(true); });
-      el.addEventListener('mouseleave', function () { setCursorActive(false); });
-    });
-  }
-  window.kfilmsBindPlayCursor = bindPlayCursor;
-
-  function bindTheatreLinkPersist(scope) {
-    var root = scope || document;
-    root.querySelectorAll('.theatre-list a[href*="#video-"], .theatre-list [data-theatre-id]').forEach(function (el) {
-      if (el.getAttribute('data-kf-persist')) return;
-      el.setAttribute('data-kf-persist', '1');
-      el.addEventListener('click', function () {
-        var id = el.getAttribute('data-theatre-id');
-        if (!id) {
-          var href = el.getAttribute('href') || '';
-          var m = href.match(/#(video-[\w-]+)/);
-          if (m) id = m[1];
-        }
-        if (id) persistFlipId(id);
-      });
-    });
-  }
-
-  function bootHomeHashScroll() {
-    var hash = (window.location.hash || '').replace(/^#/, '');
-    if (!hash || HASHES.indexOf(hash) === -1) hash = readStoredFlipId();
-    if (!hash || HASHES.indexOf(hash) === -1) return;
-    if (!document.querySelector('.theatre-list')) return;
-    scrollHomeToTheatreId(hash);
-    setTimeout(function () {
-      try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
-      window.__kfilmsFlipId = null;
-    }, 500);
-  }
-
-  function bootPage() {
-    bindPlayCursor(document);
-    bindTheatreLinkPersist(document);
-    var hash = (window.location.hash || '').replace(/^#/, '');
-    if (!hash || HASHES.indexOf(hash) === -1) hash = readStoredFlipId();
-    if (document.querySelector('[data-theatre-gallery], .theatre-gallery')) {
-      if (hash) {
-        persistFlipId(hash);
-        syncTheatreCloseHref(hash, document);
-      }
-    }
-    if (document.querySelector('.theatre-list')) {
-      setTimeout(bootHomeHashScroll, 100);
-      setTimeout(bootHomeHashScroll, 400);
-    }
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootPage);
-  else bootPage();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tryBoot);
+  else tryBoot();
 })();
 </script>

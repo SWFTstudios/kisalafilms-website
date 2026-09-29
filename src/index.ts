@@ -11,6 +11,11 @@ import {
 } from "./films";
 import { syncMetroPrices } from "./metro-prices";
 import {
+  getTheatreProject,
+  importTheatreProjects,
+  listTheatreProjects,
+} from "./theatre";
+import {
   attachStripeSession,
   getOrderById,
   getOrderBySession,
@@ -715,6 +720,9 @@ export default {
     ) {
       return redirect("/theatre" + url.search);
     }
+    if (url.pathname === "/theatre" || url.pathname === "/theatre/") {
+      return redirect("/" + url.search + "#theatre-grid");
+    }
 
     if (url.pathname === "/api/checkout/deposit") {
       if (request.method === "OPTIONS") {
@@ -798,6 +806,57 @@ export default {
       const row = await getOrderById(env.DB, id);
       if (!row) return json({ error: "Order not found." }, 404);
       return json({ order: publicOrder(row) });
+    }
+
+    if (url.pathname === "/api/theatre" || url.pathname === "/api/theatre/") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsApi(request) });
+      }
+      if (request.method !== "GET") {
+        return json({ error: "GET only." }, 405);
+      }
+      if (!env.DB) {
+        return json({ error: "D1 database is not bound." }, 503);
+      }
+      const projects = await listTheatreProjects(env.DB);
+      return json({ projects });
+    }
+
+    if (url.pathname === "/api/theatre/import") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsApi(request) });
+      }
+      if (request.method !== "POST") {
+        return json({ error: "POST only." }, 405);
+      }
+      if (!env.DB) {
+        return json({ error: "D1 database is not bound." }, 503);
+      }
+      return importTheatreProjects(
+        request,
+        env.DB,
+        env.FILMS_IMPORT_TOKEN || env.FOUNDER_ADMIN_TOKEN
+      );
+    }
+
+    const theatreMatch = url.pathname.match(/^\/api\/theatre\/([^/]+)\/?$/);
+    if (theatreMatch) {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsApi(request) });
+      }
+      if (request.method !== "GET") {
+        return json({ error: "GET only." }, 405);
+      }
+      if (!env.DB) {
+        return json({ error: "D1 database is not bound." }, 503);
+      }
+      const slug = decodeURIComponent(theatreMatch[1]);
+      if (slug === "import") {
+        return json({ error: "Not found." }, 404);
+      }
+      const project = await getTheatreProject(env.DB, slug);
+      if (!project) return json({ error: "Not found." }, 404);
+      return json({ project });
     }
 
     if (url.pathname === "/api/films/pricing.csv") {
