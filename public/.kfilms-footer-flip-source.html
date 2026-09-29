@@ -217,6 +217,13 @@
         st.kill();
       }
     });
+    var clearRoot = document.querySelector('[data-barba="container"]') || document;
+    gsap.set(
+      clearRoot.querySelectorAll(
+        '.theatre-list .theatre-dept-label, .theatre-list .theatre-dept-links, .theatre-list .theatre-dept-desc, .theatre-list .theatre-dept-media, .theatre-list .theatre-dept-line, .theatre-list-intro > *'
+      ),
+      { clearProps: 'opacity,transform,translate' }
+    );
   };
 
   function initAboutWipe(scope) {
@@ -348,6 +355,7 @@
         duration: 0.8,
         stagger: 0.1,
         ease: 'power2.out',
+        immediateRender: false,
         scrollTrigger: {
           trigger: intro,
           start: 'top 80%',
@@ -371,6 +379,7 @@
             scaleX: 1,
             ease: 'power2.out',
             duration: 1,
+            immediateRender: false,
             scrollTrigger: {
               trigger: dept,
               start: 'top 75%',
@@ -388,6 +397,7 @@
           duration: 0.75,
           stagger: 0.12,
           ease: 'power2.out',
+          immediateRender: false,
           scrollTrigger: {
             trigger: dept,
             start: 'top 75%',
@@ -798,6 +808,9 @@
         } catch (e) {
           window.scrollTo(0, active.getBoundingClientRect().top + window.pageYOffset - window.innerHeight / 3);
         }
+        if (window.lenis) {
+          try { window.lenis.scrollTo(window.scrollY || window.pageYOffset || 0, { immediate: true }); } catch (e) {}
+        }
         setTimeout(function () {
           document.querySelectorAll('.active-flip-item').forEach(function (el) {
             el.classList.remove('active-flip-item');
@@ -899,7 +912,6 @@
             prepareVisuals(data.next.container);
             bindPlayCursor(data.next.container);
             bindFlipPointer(data.next.container);
-            if (window.kfilmsInitHome) window.kfilmsInitHome(data.next.container);
             var outgoing = data.current.container.querySelector(
               '.kf-slide-bg[data-theatre-id="' + id + '"]'
             );

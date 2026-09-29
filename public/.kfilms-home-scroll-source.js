@@ -1,6 +1,3 @@
-<script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script>
 (function () {
   if (window.__kfilmsHomeScrollReady) return;
   window.__kfilmsHomeScrollReady = true;
@@ -76,6 +73,13 @@
         st.kill();
       }
     });
+    var clearRoot = document.querySelector('[data-barba="container"]') || document;
+    gsap.set(
+      clearRoot.querySelectorAll(
+        '.theatre-list .theatre-dept-label, .theatre-list .theatre-dept-links, .theatre-list .theatre-dept-desc, .theatre-list .theatre-dept-media, .theatre-list .theatre-dept-line, .theatre-list-intro > *'
+      ),
+      { clearProps: 'opacity,transform,translate' }
+    );
   };
 
   function initAboutWipe(scope) {
@@ -207,6 +211,7 @@
         duration: 0.8,
         stagger: 0.1,
         ease: 'power2.out',
+        immediateRender: false,
         scrollTrigger: {
           trigger: intro,
           start: 'top 80%',
@@ -230,6 +235,7 @@
             scaleX: 1,
             ease: 'power2.out',
             duration: 1,
+            immediateRender: false,
             scrollTrigger: {
               trigger: dept,
               start: 'top 75%',
@@ -247,6 +253,7 @@
           duration: 0.75,
           stagger: 0.12,
           ease: 'power2.out',
+          immediateRender: false,
           scrollTrigger: {
             trigger: dept,
             start: 'top 75%',
@@ -357,4 +364,3 @@
     boot();
   }
 })();
-</script>

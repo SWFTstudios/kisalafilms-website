@@ -560,6 +560,13 @@ a.slider-gallery_button,
         st.kill();
       }
     });
+    var clearRoot = document.querySelector('[data-barba="container"]') || document;
+    gsap.set(
+      clearRoot.querySelectorAll(
+        '.theatre-list .theatre-dept-label, .theatre-list .theatre-dept-links, .theatre-list .theatre-dept-desc, .theatre-list .theatre-dept-media, .theatre-list .theatre-dept-line, .theatre-list-intro > *'
+      ),
+      { clearProps: 'opacity,transform,translate' }
+    );
   };
 
   function initAboutWipe(scope) {
@@ -691,6 +698,7 @@ a.slider-gallery_button,
         duration: 0.8,
         stagger: 0.1,
         ease: 'power2.out',
+        immediateRender: false,
         scrollTrigger: {
           trigger: intro,
           start: 'top 80%',
@@ -714,6 +722,7 @@ a.slider-gallery_button,
             scaleX: 1,
             ease: 'power2.out',
             duration: 1,
+            immediateRender: false,
             scrollTrigger: {
               trigger: dept,
               start: 'top 75%',
@@ -731,6 +740,7 @@ a.slider-gallery_button,
           duration: 0.75,
           stagger: 0.12,
           ease: 'power2.out',
+          immediateRender: false,
           scrollTrigger: {
             trigger: dept,
             start: 'top 75%',
@@ -1093,11 +1103,33 @@ a.slider-gallery_button,
       if (data.next && data.next.container) {
         data.next.container.classList.remove('fixed');
       }
-      document.querySelectorAll('.active-flip-item').forEach(function (el) {
-        el.classList.remove('active-flip-item');
-      });
+      var reverseHome = data.next && data.next.namespace === 'home' &&
+        data.current && data.current.namespace === 'theatre';
+      var active = document.querySelector('.active-flip-item');
+      if (reverseHome && active) {
+        try {
+          active.scrollIntoView({ block: 'center', behavior: 'auto' });
+        } catch (e) {
+          window.scrollTo(0, active.getBoundingClientRect().top + window.pageYOffset - window.innerHeight / 3);
+        }
+        if (window.lenis) {
+          try { window.lenis.scrollTo(window.scrollY || window.pageYOffset || 0, { immediate: true }); } catch (e) {}
+        }
+        setTimeout(function () {
+          document.querySelectorAll('.active-flip-item').forEach(function (el) {
+            el.classList.remove('active-flip-item');
+          });
+        }, 400);
+      } else {
+        document.querySelectorAll('.active-flip-item').forEach(function (el) {
+          el.classList.remove('active-flip-item');
+        });
+        window.scrollTo(0, 0);
+      }
       window.__kfilmsFlipId = null;
-      window.scrollTo(0, 0);
+      if (!(data.next && data.next.namespace === 'theatre')) {
+        try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+      }
       resetWebflow(data);
       prepareVisuals(data.next && data.next.container);
       if (data.next && data.next.namespace === 'home') {
