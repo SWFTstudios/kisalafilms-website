@@ -1,5 +1,55 @@
 <script>
 (function () {
+  if (document.getElementById('kfilms-flip20')) return;
+  var s = document.createElement('style');
+  s.id = 'kfilms-flip20';
+  s.textContent = `/* Flip 2.0 theatre grid + cms-page */
+.kf-flip-grid{position:relative;width:100%;min-height:100vh}
+.kf-flip-grid .progress-bar{width:100%;height:4px;position:absolute;top:0;left:0;z-index:5;background:rgba(245,245,245,.12)}
+.progress-bar_fill{width:0%;height:100%;max-width:100%;background:#d5fb70}
+.kf-flip-grid .section.is-grid{width:100%;min-height:100vh}
+.kf-flip-grid .container.is-slider{min-height:100vh;display:flex;align-items:stretch;padding:13vh 2rem}
+@media (min-width:768px){.kf-flip-grid .container.is-slider{padding:13vh 7em}}
+.kf-flip-grid .swiper{width:100%;overflow:visible}
+.kf-flip-grid .swiper-wrapper{align-items:stretch}
+.kf-flip-grid .swiper-slide.is-list{height:auto;flex:none;padding-right:1em;position:relative;aspect-ratio:3/4}
+.grid_link{z-index:2;width:100%;height:100%;display:block;position:relative;color:inherit;text-decoration:none}
+.visual_wrap{width:100%;height:100%;position:absolute;inset:0}
+.visual{z-index:1;width:100%;height:100%;object-fit:cover;background:#000;border-radius:.6em;position:absolute;inset:0;overflow:hidden}
+.visual img,.visual video{width:100%;height:100%;object-fit:cover;display:block}
+.kf-flip-grid .item-name{position:absolute;left:1rem;bottom:1rem;z-index:10;margin:0;font-size:.9rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.55);display:block}
+.active-flip-item{z-index:2}
+[data-barba="container"].fixed{position:fixed;inset:0;width:100%;z-index:10}
+.cms-page_img-wrap{width:100%;height:100vh;position:relative}
+.cms-page_img-wrap .visual{border-radius:0}
+.cms-page .item-name{display:none}
+.heading_wrap{z-index:2;width:100%;height:100%;background-image:linear-gradient(rgba(31,31,31,0) 62%,rgba(31,31,31,.9) 88%,#1f1f1f 96%);flex-direction:column;justify-content:space-between;align-items:flex-start;padding:2.7em;display:flex;position:absolute;inset:auto 0 0 0}
+.button.flip-close{z-index:3;color:#1f1f1f;background:#d5fb70;border-radius:100vw;padding:1.1em 1.5em;font-size:.9em;font-weight:500;text-decoration:none;display:inline-block}
+.cms-page_heading{width:100%;max-width:22.2em;font-size:clamp(1.6rem,4vw,2.1em);line-height:1.2;margin:0;color:#fff}
+.section-height{width:100%;height:500vw}
+.sticky-element.disable-overflow{width:100%;height:100vh;justify-content:flex-start;align-items:stretch;margin-bottom:-100vh;display:flex;position:sticky;top:0;overflow:hidden}
+.track{flex:none;justify-content:flex-start;align-items:stretch;display:flex;position:relative}
+.track-flex{justify-content:flex-start;align-items:stretch;margin-right:-100vw;display:flex}
+.section._90vw{width:90vw;flex:none}
+.container.is-wide{height:100vh;flex-direction:column;justify-content:flex-start;align-items:flex-start;display:flex}
+.panel1,.panel2,.panel3,.panel4,.panel5{height:100%;flex:none;display:flex;justify-content:center;align-items:center}
+.panel1{width:100vw;background:rgba(0,0,0,.5);color:#fff}
+.panel2{width:100vw;background:#fff;color:#1f1f1f}
+.panel3{width:200vw;background:#bbab00;color:#1f1f1f}
+.panel4{width:130vh;background:#141414;color:#fff}
+.panel5{width:70vw;background:rgba(46,31,133,.5);color:#fff}
+.container.is-rich{padding:10em 2rem;max-width:54em;margin:0 auto}
+.panel1 h1,.panel2 h1,.panel3 h1,.panel4 h1,.panel5 h1{font-size:clamp(2rem,6vw,4rem);margin:0;text-align:center;padding:1rem}
+
+.kf-flip-grid .visual img, .cms-page_img-wrap .visual img { width:100%;height:100%;object-fit:cover;display:block; }
+.kf-flip-grid .item-name { left:1rem;bottom:1rem;margin:0;font-size:.9rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.55);display:block; }
+.cms-page .item-name { display:none; }
+`;
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function () {
   if (window.__kfilmsSiteHeaderReady) return;
   window.__kfilmsSiteHeaderReady = true;
   var THEME_KEY = 'kfilms-theme';
