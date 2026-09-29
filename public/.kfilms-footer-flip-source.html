@@ -3,21 +3,16 @@
   if (document.getElementById('kfilms-flip20')) return;
   var s = document.createElement('style');
   s.id = 'kfilms-flip20';
-  s.textContent = `/* Flip 2.0 theatre grid + cms-page */
-.kf-flip-grid{position:relative;width:100%;min-height:100vh}
-.kf-flip-grid .progress-bar{width:100%;height:4px;position:absolute;top:0;left:0;z-index:5;background:rgba(245,245,245,.12)}
-.progress-bar_fill{width:0%;height:100%;max-width:100%;background:#d5fb70}
-.kf-flip-grid .section.is-grid{width:100%;min-height:100vh}
-.kf-flip-grid .container.is-slider{min-height:100vh;display:flex;align-items:stretch;padding:13vh 2rem}
-@media (min-width:768px){.kf-flip-grid .container.is-slider{padding:13vh 7em}}
-.kf-flip-grid .swiper{width:100%;overflow:visible}
-.kf-flip-grid .swiper-wrapper{align-items:stretch}
-.kf-flip-grid .swiper-slide.is-list{height:auto;flex:none;padding-right:1em;position:relative;aspect-ratio:3/4}
-.grid_link{z-index:2;width:100%;height:100%;display:block;position:relative;color:inherit;text-decoration:none}
+  s.textContent = `/* Flip 2.0 theatre vertical stack + cms-page */
+.kf-flip-stack{position:relative;width:100%;display:flex;flex-direction:column}
+.theatre-dept{display:grid!important}
+.theatre-dept-media{position:relative;overflow:hidden}
+.theatre-dept-media .visual_wrap{position:absolute;inset:0;width:100%;height:100%}
+.theatre-dept-media .visual{z-index:1;width:100%;height:100%;object-fit:cover;background:#000;border-radius:8px;position:absolute;inset:0;overflow:hidden}
+.theatre-dept-media .visual img,.theatre-dept-media .theatre-dept-img,.visual img,.visual video{width:100%;height:100%;object-fit:cover;display:block}
+.theatre-dept .item-name{position:static;left:auto;bottom:auto;z-index:auto;margin:0;font:inherit;letter-spacing:inherit;text-transform:none;color:inherit;text-shadow:none;display:inline}
 .visual_wrap{width:100%;height:100%;position:absolute;inset:0}
-.visual{z-index:1;width:100%;height:100%;object-fit:cover;background:#000;border-radius:.6em;position:absolute;inset:0;overflow:hidden}
-.visual img,.visual video{width:100%;height:100%;object-fit:cover;display:block}
-.kf-flip-grid .item-name{position:absolute;left:1rem;bottom:1rem;z-index:10;margin:0;font-size:.9rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.55);display:block}
+.visual{z-index:1;width:100%;height:100%;object-fit:cover;background:#000;position:absolute;inset:0;overflow:hidden}
 .active-flip-item{z-index:2}
 [data-barba="container"].fixed{position:fixed;inset:0;width:100%;z-index:10}
 .cms-page_img-wrap{width:100%;height:100vh;position:relative}
@@ -40,10 +35,7 @@
 .panel5{width:70vw;background:rgba(46,31,133,.5);color:#fff}
 .container.is-rich{padding:10em 2rem;max-width:54em;margin:0 auto}
 .panel1 h1,.panel2 h1,.panel3 h1,.panel4 h1,.panel5 h1{font-size:clamp(2rem,6vw,4rem);margin:0;text-align:center;padding:1rem}
-
-.kf-flip-grid .visual img, .cms-page_img-wrap .visual img { width:100%;height:100%;object-fit:cover;display:block; }
-.kf-flip-grid .item-name { left:1rem;bottom:1rem;margin:0;font-size:.9rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.55);display:block; }
-.cms-page .item-name { display:none; }
+.cms-page_img-wrap .visual img{width:100%;height:100%;object-fit:cover;display:block}
 `;
   document.head.appendChild(s);
 })();
@@ -569,11 +561,31 @@
   var mySlider = null;
 
   function ensureLibs() {
-    var ok = typeof barba !== 'undefined' && typeof gsap !== 'undefined' && typeof Flip !== 'undefined' && typeof Swiper !== 'undefined';
+    var ok = typeof barba !== 'undefined' && typeof gsap !== 'undefined' && typeof Flip !== 'undefined';
     if (ok && gsap.registerPlugin) {
       try { gsap.registerPlugin(Flip); if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger); } catch (e) {}
     }
     return ok;
+  }
+
+  function flipItems() {
+    return Array.prototype.slice.call(document.querySelectorAll('.theatre-dept, .swiper-slide.is-list, .w-dyn-item'));
+  }
+
+  function scrollToActiveFlipItem() {
+    var active = document.querySelector('.active-flip-item');
+    if (!active) return;
+    try {
+      active.scrollIntoView({ block: 'center', behavior: 'auto' });
+    } catch (e) {
+      try {
+        var top = active.getBoundingClientRect().top + (window.pageYOffset || 0) - window.innerHeight * 0.2;
+        window.scrollTo(0, Math.max(0, top));
+      } catch (e2) {}
+    }
+    if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+      try { window.lenis.scrollTo(active, { immediate: true, offset: -80 }); } catch (e3) {}
+    }
   }
 
   function createSwiper() {
@@ -626,7 +638,7 @@
     if (!cms) return;
     var nameEl = cms.querySelector('.item-name');
     var cmsPageName = nameEl ? (nameEl.textContent || '').trim() : '';
-    document.querySelectorAll('.w-dyn-item, .swiper-slide.is-list').forEach(function (item) {
+    flipItems().forEach(function (item) {
       item.classList.remove('active-flip-item');
       var n = item.querySelector('.item-name');
       if (n && (n.textContent || '').trim() === cmsPageName) {
@@ -687,6 +699,8 @@
       var slides = Array.prototype.slice.call(document.querySelectorAll('.swiper-slide.is-list'));
       var idx = slides.indexOf(active);
       if (idx >= 0) mySlider.slideTo(idx, 0);
+    } else {
+      scrollToActiveFlipItem();
     }
     if (typeof window.kfilmsInitHome === 'function') {
       window.kfilmsInitHome(data.next.container);
@@ -706,7 +720,7 @@
     var attr = container.getAttribute('data-barba-namespace');
     if (attr) return attr;
     if (container.classList.contains('cms-page') || container.querySelector('.cms-page')) return 'cms-page';
-    if (container.classList.contains('kf-flip-grid') || container.querySelector('[data-theatre-grid], .kf-flip-grid')) return 'grid-page';
+    if (container.classList.contains('kf-flip-grid') || container.classList.contains('kf-flip-stack') || container.querySelector('[data-theatre-grid], .kf-flip-grid, .kf-flip-stack')) return 'grid-page';
     if (container.querySelector('.theatre-list, .hero-section, .horizontal')) return 'grid-page';
     return fallback || '';
   }
@@ -773,6 +787,8 @@
               var slides = Array.prototype.slice.call(document.querySelectorAll('.swiper-slide.is-list'));
               var idx = slides.indexOf(active);
               if (idx >= 0) mySlider.slideTo(idx, 0);
+            } else {
+              scrollToActiveFlipItem();
             }
             data.next.container.classList.add('fixed');
             var wrap = data.current.container.querySelector('.cms-page_img-wrap');
