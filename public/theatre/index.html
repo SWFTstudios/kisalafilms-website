@@ -490,8 +490,6 @@ a.slider-gallery_button,
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@barba/core@2.9.7/dist/barba.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -909,15 +907,6 @@ a.slider-gallery_button,
     );
   }
 
-  function getTheatreMedia(id, root) {
-    if (!id) return null;
-    var scope = root || document;
-    return (
-      scope.querySelector('.theatre-list a.theatre-dept-media[data-theatre-id="' + id + '"]') ||
-      scope.querySelector('#' + id + ' .theatre-dept-media') ||
-      scope.querySelector('.theatre-list [data-theatre-id="' + id + '"]')
-    );
-  }
 
   function scrollHomeToTheatreId(id) {
     if (!id || HASHES.indexOf(id) === -1) return;
@@ -950,24 +939,6 @@ a.slider-gallery_button,
         setTimeout(applyScroll, 200);
       });
     });
-  }
-
-  function resolveReturnTheatreId(data) {
-    var id = null;
-    if (data && data.next && data.next.url && data.next.url.hash) {
-      id = String(data.next.url.hash).replace(/^#/, '');
-    }
-    if ((!id || HASHES.indexOf(id) === -1) && window.location && window.location.hash) {
-      id = String(window.location.hash).replace(/^#/, '');
-    }
-    if (!id || HASHES.indexOf(id) === -1) id = resolveLeavingTheatreId(data);
-    if (!id || HASHES.indexOf(id) === -1) {
-      var active = document.querySelector('.active-flip-item');
-      if (active) id = active.getAttribute('data-theatre-id');
-    }
-    if (!id || HASHES.indexOf(id) === -1) id = readStoredFlipId();
-    if (!id || HASHES.indexOf(id) === -1) id = window.__kfilmsReturnTheatreId || null;
-    return id && HASHES.indexOf(id) !== -1 ? id : null;
   }
 
   function destroyTheatre() {
@@ -1096,433 +1067,54 @@ a.slider-gallery_button,
   }
   window.kfilmsBindPlayCursor = bindPlayCursor;
 
-  function prepareVisuals(scope) {
+  function bindTheatreLinkPersist(scope) {
     var root = scope || document;
-    root.querySelectorAll('.theatre-dept-img').forEach(function (img) {
-      img.classList.add('visual');
-    });
-    root.querySelectorAll('.slider-bg_img').forEach(function (img) {
-      img.classList.add('visual');
-    });
-  }
-
-  function resolveTheatreId(trigger) {
-    if (window.__kfilmsFlipId) return window.__kfilmsFlipId;
-    if (!trigger || trigger === 'back' || trigger === 'popstate' || trigger === 'barba') return null;
-    var el = trigger;
-    if (el.closest) {
-      if (!el.closest('.theatre-list')) return null;
-      var media = el.closest('.theatre-list [data-theatre-id]') || el.closest('.theatre-list .theatre-dept-media');
-      if (media) return media.getAttribute('data-theatre-id') || null;
-      var dept = el.closest('.theatre-list .theatre-dept');
-      if (dept) {
-        var m = dept.querySelector('[data-theatre-id]');
-        if (m) return m.getAttribute('data-theatre-id') || null;
-      }
-    }
-    var href = el.getAttribute && el.getAttribute('href');
-    if (href && el.closest && el.closest('.theatre-list')) {
-      var m2 = href.match(/#(video-[\w-]+)/);
-      if (m2) return m2[1];
-    }
-    return null;
-  }
-
-  function resolveLeavingTheatreId(data) {
-    var hash = '';
-    if (data && data.current && data.current.url && data.current.url.hash) {
-      hash = String(data.current.url.hash).replace(/^#/, '');
-    }
-    if (!hash && window.location && window.location.hash) {
-      hash = String(window.location.hash).replace(/^#/, '');
-    }
-    if (hash && HASHES.indexOf(hash) !== -1) return hash;
-    if (window.__kfilmsFlipId && HASHES.indexOf(window.__kfilmsFlipId) !== -1) {
-      return window.__kfilmsFlipId;
-    }
-    return readStoredFlipId();
-  }
-
-  function markActive(id) {
-    document.querySelectorAll('.active-flip-item').forEach(function (el) {
-      el.classList.remove('active-flip-item');
-    });
-    if (!id) return null;
-    var el = getTheatreMedia(id);
-    if (el) el.classList.add('active-flip-item');
-    return el;
-  }
-
-  function bindFlipPointer(scope) {
-    var root = scope || document;
-    var list = root.querySelectorAll ? (root.matches && root.matches('.theatre-list') ? [root] : root.querySelectorAll('.theatre-list')) : [];
-    if (!list.length && root.querySelectorAll) list = root.querySelectorAll('.theatre-section .theatre-list');
-    Array.prototype.forEach.call(list, function (listRoot) {
-      listRoot.querySelectorAll('.theatre-dept-media, .theatre-dept-link, a[href*="#video-"]').forEach(function (el) {
-        if (el.getAttribute('data-kf-flip')) return;
-        el.setAttribute('data-kf-flip', '1');
-        el.addEventListener('pointerdown', function () {
-          var id = el.getAttribute('data-theatre-id');
-          if (!id) {
-            var href = el.getAttribute('href') || '';
-            var m = href.match(/#(video-[\w-]+)/);
-            if (m) id = m[1];
-            if (!id) {
-              var dept = el.closest('.theatre-dept');
-              var media = dept && dept.querySelector('[data-theatre-id]');
-              if (media) id = media.getAttribute('data-theatre-id');
-            }
-          }
-          if (id) {
-            window.__kfilmsFlipId = id;
-            markActive(id);
-          }
-        });
+    root.querySelectorAll('.theatre-list a[href*="#video-"], .theatre-list [data-theatre-id]').forEach(function (el) {
+      if (el.getAttribute('data-kf-persist')) return;
+      el.setAttribute('data-kf-persist', '1');
+      el.addEventListener('click', function () {
+        var id = el.getAttribute('data-theatre-id');
+        if (!id) {
+          var href = el.getAttribute('href') || '';
+          var m = href.match(/#(video-[\w-]+)/);
+          if (m) id = m[1];
+        }
+        if (id) persistFlipId(id);
       });
     });
   }
 
-  function flipDom($, outgoing, incoming) {
-    if (!outgoing || !outgoing.length || !incoming || !incoming.length) return null;
-    var $visual = outgoing.find('.visual').first();
-    if (!$visual.length) return null;
-    var state = Flip.getState($visual);
-    incoming.find('.visual').remove();
-    $visual.appendTo(incoming);
-    return Flip.from(state, {
-      duration: 0.55,
-      ease: 'power1.inOut',
-      absolute: true,
-      onComplete: function () {
-        gsap.set($visual, {
-          clearProps: 'position,top,left,width,height,transform,maxWidth,maxHeight'
-        });
-      }
-    });
-  }
-
-  function resetWebflow(data) {
-    try {
-      var parser = new DOMParser();
-      var dom = parser.parseFromString(data.next.html, 'text/html');
-      var pageId = dom.documentElement.getAttribute('data-wf-page');
-      if (pageId) document.documentElement.setAttribute('data-wf-page', pageId);
-      if (window.Webflow) {
-        if (window.Webflow.destroy) window.Webflow.destroy();
-        if (window.Webflow.ready) window.Webflow.ready();
-        if (window.Webflow.require) {
-          var ix2 = window.Webflow.require('ix2');
-          if (ix2 && ix2.init) ix2.init();
-        }
-      }
-    } catch (e) {}
-  }
-
-  function finishHomeReturn(data, returnId) {
-    window.__kfilmsTransitionFinished = 'home-return';
-    if (returnId) {
-      persistFlipId(returnId);
-      window.__kfilmsReturnTheatreId = returnId;
-      markActive(returnId);
-    }
-    if (data.next && data.next.container) {
-      data.next.container.classList.remove('fixed');
-    }
-    resetWebflow(data);
-    prepareVisuals(data.next && data.next.container);
-    bindPlayCursor(data.next && data.next.container);
-    bindFlipPointer(data.next && data.next.container);
-    if (window.kfilmsInitHome) window.kfilmsInitHome(data.next.container);
-    if (window.lenis && window.lenis.start) try { window.lenis.start(); } catch (e) {}
-    // Scroll after init — ScrollTrigger.refresh in kfilmsInitHome otherwise wins and leaves page at top.
-    if (returnId) scrollHomeToTheatreId(returnId);
+  function bootHomeHashScroll() {
+    var hash = (window.location.hash || '').replace(/^#/, '');
+    if (!hash || HASHES.indexOf(hash) === -1) hash = readStoredFlipId();
+    if (!hash || HASHES.indexOf(hash) === -1) return;
+    if (!document.querySelector('.theatre-list')) return;
+    scrollHomeToTheatreId(hash);
     setTimeout(function () {
-      document.querySelectorAll('.active-flip-item').forEach(function (el) {
-        el.classList.remove('active-flip-item');
-      });
-      window.__kfilmsFlipId = null;
-      window.__kfilmsReturnTheatreId = null;
       try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
-    }, 450);
-  }
-
-  function finishTheatreEnter(data, id) {
-    window.__kfilmsTransitionFinished = 'theatre-enter';
-    if (data.next && data.next.container) {
-      data.next.container.classList.remove('fixed');
-    }
-    resetWebflow(data);
-    if (id) syncTheatreCloseHref(id, data.next && data.next.container);
-  }
-
-  function initBarba() {
-    if (typeof barba === 'undefined' || typeof gsap === 'undefined' || typeof Flip === 'undefined') {
-      setTimeout(initBarba, 50);
-      return;
-    }
-    if (window.__kfilmsBarbaReady) return;
-    window.__kfilmsBarbaReady = true;
-    gsap.registerPlugin(Flip);
-    barba.hooks.beforeLeave(function (data) {
-      if (data.current && data.current.namespace === 'home') {
-        if (window.kfilmsDestroyHome) window.kfilmsDestroyHome();
-        if (window.lenis && window.lenis.stop) try { window.lenis.stop(); } catch (e) {}
-      }
-    });
-    prepareVisuals(document);
-    bindPlayCursor(document);
-    bindFlipPointer(document);
-
-    barba.hooks.after(function (data) {
-      if (data.next && data.next.container) {
-        data.next.container.classList.remove('fixed');
-      }
-      // Flip transitions own cleanup in finishHomeReturn / finishTheatreEnter.
-      if (window.__kfilmsTransitionFinished) {
-        return;
-      }
-      // Theatre Close can land here if transition finished before the flag was set —
-      // never force top-of-page when returning to a theatre dept.
-      var returnId = null;
-      if (data.next && data.next.namespace === 'home' &&
-          data.current && data.current.namespace === 'theatre') {
-        returnId = resolveReturnTheatreId(data);
-      }
-      if (returnId) {
-        finishHomeReturn(data, returnId);
-        return;
-      }
-      document.querySelectorAll('.active-flip-item').forEach(function (el) {
-        el.classList.remove('active-flip-item');
-      });
-      window.scrollTo(0, 0);
       window.__kfilmsFlipId = null;
-      window.__kfilmsReturnTheatreId = null;
-      if (!(data.next && data.next.namespace === 'theatre')) {
-        try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
-      }
-      resetWebflow(data);
-      prepareVisuals(data.next && data.next.container);
-      if (data.next && data.next.namespace === 'home') {
-        bindPlayCursor(data.next.container);
-        bindFlipPointer(data.next.container);
-        if (window.kfilmsInitHome) window.kfilmsInitHome(data.next.container);
-        if (window.lenis && window.lenis.start) try { window.lenis.start(); } catch (e) {}
-      } else if (data.next && data.next.namespace === 'theatre') {
-        var theatreId = (data.next.url && data.next.url.hash || '').replace(/^#/, '') || readStoredFlipId();
-        if (theatreId) syncTheatreCloseHref(theatreId, data.next.container);
-      }
-    });
-
-    barba.init({
-      preventRunning: true,
-      transitions: [
-        {
-          name: 'list-to-theatre',
-          sync: true,
-          from: {
-            namespace: ['home'],
-            custom: function (data) {
-              var trigger = data.trigger;
-              if (!trigger || !trigger.closest || !trigger.closest('.theatre-list')) return false;
-              var id = resolveTheatreId(trigger);
-              if (!id && trigger.getAttribute) {
-                var href = trigger.getAttribute('href') || '';
-                var mm = href.match(/#(video-[\w-]+)/);
-                if (mm) id = mm[1];
-              }
-              if (!id && trigger.closest) {
-                var media = trigger.closest('.theatre-list [data-theatre-id]');
-                if (media) id = media.getAttribute('data-theatre-id');
-              }
-              return !!id && HASHES.indexOf(id) !== -1;
-            }
-          },
-          to: { namespace: ['theatre'] },
-          enter: function (data) {
-            var $ = window.jQuery;
-            var id = resolveTheatreId(data.trigger) || window.__kfilmsFlipId;
-            if (!id && data.next && data.next.url) {
-              id = (data.next.url.hash || '').replace(/^#/, '');
-            }
-            setCursorActive(false);
-            if (window.kfilmsDestroyHome) window.kfilmsDestroyHome();
-            if (window.lenis && window.lenis.stop) try { window.lenis.stop(); } catch (e) {}
-            persistFlipId(id);
-            markActive(id);
-            data.next.container.classList.add('fixed');
-            if (id && window.history && window.history.replaceState) {
-              window.history.replaceState(null, '', data.next.url.path + '#' + id);
-            }
-            prepareVisuals(data.next.container);
-            window.kfilmsInitTheatre(data.next.container, id);
-            var outgoingEl = getTheatreMedia(id, data.current.container) ||
-              data.current.container.querySelector('.active-flip-item') ||
-              document.querySelector('.active-flip-item');
-            var incoming = data.next.container.querySelector(
-              '.kf-slide-bg[data-theatre-id="' + id + '"]'
-            );
-            if ($ && outgoingEl && incoming) {
-              flipDom($, $(outgoingEl), $(incoming));
-            }
-            return gsap.to(data.current.container, {
-              opacity: 0,
-              duration: 0.5,
-              ease: 'power1.inOut',
-              onComplete: function () {
-                finishTheatreEnter(data, id);
-              }
-            });
-          }
-        },
-        {
-          name: 'theatre-to-list',
-          sync: true,
-          from: {
-            namespace: ['theatre'],
-            custom: function (data) {
-              return !!resolveLeavingTheatreId(data);
-            }
-          },
-          to: { namespace: ['home'] },
-          leave: function () {
-            setCursorActive(false);
-            // Defer destroyTheatre until after Flip captures the visual
-            return Promise.resolve();
-          },
-          enter: function (data) {
-            var $ = window.jQuery;
-            var id = resolveLeavingTheatreId(data);
-            setCursorActive(false);
-            // Set early so hooks.after never window.scrollTo(0,0) before onComplete.
-            window.__kfilmsTransitionFinished = 'home-return';
-            persistFlipId(id);
-            window.__kfilmsReturnTheatreId = id;
-            if (id && data.next && data.next.url && window.history && window.history.replaceState) {
-              try {
-                window.history.replaceState(null, '', (data.next.url.path || '/') + '#' + id);
-              } catch (e) {}
-            }
-            prepareVisuals(data.next.container);
-            var outgoing = data.current.container.querySelector(
-              '.kf-slide-bg[data-theatre-id="' + id + '"]'
-            );
-            if (!outgoing) {
-              outgoing = data.current.container.querySelector('.kf-slide-bg.is-active, .swiper-slide-active .kf-slide-bg, .kf-slide-bg');
-            }
-            var incoming = markActive(id);
-            if (!incoming && data.next.container) {
-              incoming = getTheatreMedia(id, data.next.container);
-              if (incoming) incoming.classList.add('active-flip-item');
-            }
-            data.next.container.classList.add('fixed');
-            if ($ && outgoing && incoming) {
-              flipDom($, $(outgoing), $(incoming));
-            }
-            return gsap.to(data.current.container, {
-              opacity: 0,
-              duration: 0.5,
-              ease: 'power1.inOut',
-              onComplete: function () {
-                destroyTheatre();
-                finishHomeReturn(data, id);
-              }
-            });
-          }
-        },
-        {
-          name: 'default-fade',
-          leave: function (data) {
-            setCursorActive(false);
-            destroyTheatre();
-            return gsap.to(data.current.container, { opacity: 0, duration: 0.3, ease: 'power2.inOut' });
-          },
-          enter: function (data) {
-            gsap.set(data.next.container, { opacity: 0 });
-            var ns = data.next.namespace;
-            var h = null;
-            var fadeReturnId = null;
-            if (ns === 'theatre') {
-              h = (data.next.url && data.next.url.hash || '').replace(/^#/, '');
-              if (h) persistFlipId(h);
-            }
-            if (ns === 'home') {
-              fadeReturnId = (data.next.url && data.next.url.hash || '').replace(/^#/, '') ||
-                window.__kfilmsReturnTheatreId ||
-                readStoredFlipId();
-              if (fadeReturnId && HASHES.indexOf(fadeReturnId) !== -1) {
-                window.__kfilmsReturnTheatreId = fadeReturnId;
-                markActive(fadeReturnId);
-              } else {
-                fadeReturnId = null;
-              }
-            }
-            return gsap.to(data.next.container, {
-              opacity: 1,
-              duration: 0.35,
-              ease: 'power2.out',
-              onComplete: function () {
-                if (ns === 'theatre') {
-                  prepareVisuals(data.next.container);
-                  window.kfilmsInitTheatre(data.next.container, h || null);
-                  finishTheatreEnter(data, h);
-                } else if (ns === 'home') {
-                  finishHomeReturn(data, fadeReturnId);
-                } else {
-                  resetWebflow(data);
-                }
-              }
-            });
-          }
-        }
-      ],
-      views: [
-        {
-          namespace: 'home',
-          afterEnter: function (data) {
-            if (window.__kfilmsTransitionFinished === 'home-return') {
-              window.__kfilmsTransitionFinished = null;
-              return;
-            }
-            var root = data.next ? data.next.container : document;
-            prepareVisuals(root);
-            window.kfilmsBindPlayCursor(root);
-            bindFlipPointer(root);
-            if (window.kfilmsInitHome) window.kfilmsInitHome(root);
-            if (window.lenis && window.lenis.start) try { window.lenis.start(); } catch (e) {}
-          }
-        },
-        {
-          namespace: 'theatre',
-          afterEnter: function (data) {
-            if (window.__kfilmsTransitionFinished === 'theatre-enter') {
-              window.__kfilmsTransitionFinished = null;
-              return;
-            }
-            var h = (window.location.hash || '').replace(/^#/, '');
-            if (!h) h = readStoredFlipId();
-            var root = data.next ? data.next.container : document;
-            prepareVisuals(root);
-            window.kfilmsInitTheatre(root, h || null);
-            if (h) {
-              persistFlipId(h);
-              syncTheatreCloseHref(h, root);
-            }
-          }
-        }
-      ]
-    });
-
-    document.addEventListener('mouseover', function (e) {
-      var a = e.target.closest && e.target.closest('a[href*="/theatre"]');
-      if (a && barba.prefetch) {
-        try { barba.prefetch(a.href.split('#')[0]); } catch (err) {}
-      }
-    }, true);
+    }, 500);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initBarba);
-  else initBarba();
+  function bootPage() {
+    bindPlayCursor(document);
+    bindTheatreLinkPersist(document);
+    var hash = (window.location.hash || '').replace(/^#/, '');
+    if (!hash || HASHES.indexOf(hash) === -1) hash = readStoredFlipId();
+    if (document.querySelector('[data-theatre-gallery], .theatre-gallery')) {
+      if (hash) {
+        persistFlipId(hash);
+        syncTheatreCloseHref(hash, document);
+      }
+    }
+    if (document.querySelector('.theatre-list')) {
+      setTimeout(bootHomeHashScroll, 100);
+      setTimeout(bootHomeHashScroll, 400);
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootPage);
+  else bootPage();
 })();
 </script>
 <!-- theatre init via site footer (Barba) --></body></html>
