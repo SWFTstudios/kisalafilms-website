@@ -59,7 +59,7 @@
     if (theatrePinTween) {
       try {
         if (theatrePinTween.scrollTrigger) theatrePinTween.scrollTrigger.kill();
-        theatrePinTween.kill();
+        if (theatrePinTween.kill) theatrePinTween.kill();
       } catch (e) {}
       theatrePinTween = null;
     }
@@ -182,55 +182,62 @@
     if (theatrePinTween) {
       try {
         if (theatrePinTween.scrollTrigger) theatrePinTween.scrollTrigger.kill();
-        theatrePinTween.kill();
+        if (theatrePinTween.kill) theatrePinTween.kill();
       } catch (e) {}
       theatrePinTween = null;
     }
 
-    gsap.set(reel, { clearProps: 'width,height,aspectRatio,maxWidth,maxHeight' });
-    gsap.set(reel, { aspectRatio: 'auto' });
+    // CSS sticky stage + scrubbed size. Do NOT ScrollTrigger-pin the stage —
+    // pinning the sticky child collapses the scrub distance.
+    pin.style.height = '250vh';
+    pin.style.minHeight = '250vh';
+    pin.style.position = 'relative';
+    if (stage) {
+      stage.style.position = 'sticky';
+      stage.style.top = '0px';
+      stage.style.height = '100vh';
+      stage.style.width = '100%';
+      stage.style.display = 'flex';
+      stage.style.alignItems = 'center';
+      stage.style.justifyContent = 'center';
+      stage.style.overflow = 'hidden';
+      stage.style.zIndex = '5';
+    }
 
     function getStartSize() {
       var vw = window.innerWidth;
       return Math.round(vw < 768 ? vw * 0.55 : vw * 0.4);
     }
 
-    // Pin the stage with ScrollTrigger (pinSpacing:false ≈ CSS sticky).
-    // More reliable than position:sticky when ancestors use overflow-x: clip.
-    theatrePinTween = gsap.fromTo(
-      reel,
-      {
-        width: function () {
-          return getStartSize();
-        },
-        height: function () {
-          return getStartSize();
-        },
+    function applySize(progress) {
+      var p = Math.max(0, Math.min(1, progress || 0));
+      var start = getStartSize();
+      var w = start + (window.innerWidth - start) * p;
+      var h = start + (window.innerHeight - start) * p;
+      gsap.set(reel, {
+        width: w,
+        height: h,
+        aspectRatio: 'auto',
+        maxWidth: 'none',
+        maxHeight: 'none',
+      });
+    }
+
+    applySize(0);
+
+    theatrePinTween = ScrollTrigger.create({
+      trigger: pin,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: true,
+      invalidateOnRefresh: true,
+      onUpdate: function (self) {
+        applySize(self.progress);
       },
-      {
-        width: function () {
-          return window.innerWidth;
-        },
-        height: function () {
-          return window.innerHeight;
-        },
-        ease: 'none',
-        immediateRender: false,
-        scrollTrigger: {
-          trigger: pin,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: true,
-          pin: stage || true,
-          pinSpacing: false,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onRefreshInit: function () {
-            gsap.set(reel, { aspectRatio: 'auto' });
-          },
-        },
-      }
-    );
+      onRefresh: function (self) {
+        applySize(self.progress);
+      },
+    });
   }
 
   function initTheatreList(scope) {
@@ -363,9 +370,12 @@
   }
 
   window.kfilmsInitHome = function (root) {
-    if (!ensurePlugins()) return;
+    if (!ensurePlugins()) return false;
     var scope = scopeRoot(root);
-    if (!hasHomeMarkers(scope)) return;
+    if (!hasHomeMarkers(scope)) {
+      scope = document;
+      if (!hasHomeMarkers(scope)) return false;
+    }
 
     window.kfilmsDestroyHome();
     var lenis = ensureLenis();
@@ -379,18 +389,34 @@
     initTheatrePin(scope);
     initTheatreList(scope);
 
-    requestAnimationFrame(function () {
+    function refresh() {
       if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh(true);
+    }
+    requestAnimationFrame(function () {
+      refresh();
+      setTimeout(refresh, 120);
+      setTimeout(refresh, 400);
     });
+    return true;
   };
 
   function boot() {
-    var container = document.querySelector('[data-barba-namespace="grid-page"]') ||
-      document.querySelector('[data-barba-namespace="home"]') ||
-      document.querySelector('[data-barba="container"]');
-    if (container && hasHomeMarkers(container)) {
-      window.kfilmsInitHome(container);
+    var tries = 0;
+    function attempt() {
+      tries += 1;
+      if (!ensurePlugins()) {
+        if (tries < 80) setTimeout(attempt, 50);
+        return;
+      }
+      var container =
+        document.querySelector('[data-barba-namespace="grid-page"]') ||
+        document.querySelector('[data-barba-namespace="home"]') ||
+        document.querySelector('[data-barba="container"]') ||
+        document;
+      if (window.kfilmsInitHome(container)) return;
+      if (tries < 80) setTimeout(attempt, 50);
     }
+    attempt();
   }
 
   if (document.readyState === 'loading') {
