@@ -519,10 +519,19 @@
     return num < 10 ? '0' + num : String(num);
   }
 
+  function syncTheatreCloseHref(id, scope) {
+    if (!id || HASHES.indexOf(id) === -1) return;
+    var root = scope || document;
+    root.querySelectorAll('.theatre-close').forEach(function (a) {
+      a.setAttribute('href', '/#' + id);
+    });
+  }
+
   function persistFlipId(id) {
     if (!id || HASHES.indexOf(id) === -1) return;
     window.__kfilmsFlipId = id;
     try { sessionStorage.setItem(FLIP_ID_KEY, id); } catch (e) {}
+    syncTheatreCloseHref(id);
   }
 
   function readStoredFlipId() {
@@ -536,6 +545,42 @@
   function clearFlipId() {
     window.__kfilmsFlipId = null;
     try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+  }
+
+  function scrollHomeToTheatreId(id) {
+    if (!id || HASHES.indexOf(id) === -1) return;
+    var el = document.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
+    if (!el) return;
+    if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+      try {
+        window.lenis.scrollTo(el, { immediate: true, offset: -window.innerHeight * 0.25 });
+      } catch (e) {
+        try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (err) {}
+      }
+    } else {
+      try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
+    }
+    if (typeof ScrollTrigger !== 'undefined') {
+      try { ScrollTrigger.refresh(); } catch (e) {}
+    }
+  }
+
+  function resolveReturnTheatreId(data) {
+    var id = null;
+    if (data && data.next && data.next.url && data.next.url.hash) {
+      id = String(data.next.url.hash).replace(/^#/, '');
+    }
+    if ((!id || HASHES.indexOf(id) === -1) && window.location && window.location.hash) {
+      id = String(window.location.hash).replace(/^#/, '');
+    }
+    if (!id || HASHES.indexOf(id) === -1) id = resolveLeavingTheatreId(data);
+    if (!id || HASHES.indexOf(id) === -1) {
+      var active = document.querySelector('.active-flip-item');
+      if (active) id = active.getAttribute('data-theatre-id');
+    }
+    if (!id || HASHES.indexOf(id) === -1) id = readStoredFlipId();
+    if (!id || HASHES.indexOf(id) === -1) id = window.__kfilmsReturnTheatreId || null;
+    return id && HASHES.indexOf(id) !== -1 ? id : null;
   }
 
   function destroyTheatre() {
@@ -801,30 +846,21 @@
       }
       var reverseHome = data.next && data.next.namespace === 'home' &&
         data.current && data.current.namespace === 'theatre';
-      var active = document.querySelector('.active-flip-item');
-      if (reverseHome && active) {
-        try {
-          active.scrollIntoView({ block: 'center', behavior: 'auto' });
-        } catch (e) {
-          window.scrollTo(0, active.getBoundingClientRect().top + window.pageYOffset - window.innerHeight / 3);
-        }
-        if (window.lenis) {
-          try { window.lenis.scrollTo(window.scrollY || window.pageYOffset || 0, { immediate: true }); } catch (e) {}
-        }
-        setTimeout(function () {
-          document.querySelectorAll('.active-flip-item').forEach(function (el) {
-            el.classList.remove('active-flip-item');
-          });
-        }, 400);
+      var returnId = reverseHome ? resolveReturnTheatreId(data) : null;
+      if (returnId) {
+        markActive(returnId);
+        persistFlipId(returnId);
+        window.__kfilmsReturnTheatreId = returnId;
       } else {
         document.querySelectorAll('.active-flip-item').forEach(function (el) {
           el.classList.remove('active-flip-item');
         });
         window.scrollTo(0, 0);
-      }
-      window.__kfilmsFlipId = null;
-      if (!(data.next && data.next.namespace === 'theatre')) {
-        try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+        window.__kfilmsFlipId = null;
+        window.__kfilmsReturnTheatreId = null;
+        if (!(data.next && data.next.namespace === 'theatre')) {
+          try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+        }
       }
       resetWebflow(data);
       prepareVisuals(data.next && data.next.container);
@@ -833,6 +869,24 @@
         bindFlipPointer(data.next.container);
         if (window.kfilmsInitHome) window.kfilmsInitHome(data.next.container);
         if (window.lenis && window.lenis.start) try { window.lenis.start(); } catch (e) {}
+        if (returnId) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              scrollHomeToTheatreId(returnId);
+              setTimeout(function () {
+                document.querySelectorAll('.active-flip-item').forEach(function (el) {
+                  el.classList.remove('active-flip-item');
+                });
+                window.__kfilmsFlipId = null;
+                window.__kfilmsReturnTheatreId = null;
+                try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+              }, 450);
+            });
+          });
+        }
+      } else if (data.next && data.next.namespace === 'theatre') {
+        var theatreId = (data.next.url && data.next.url.hash || '').replace(/^#/, '') || readStoredFlipId();
+        if (theatreId) syncTheatreCloseHref(theatreId, data.next.container);
       }
     });
 
@@ -956,6 +1010,18 @@
               window.kfilmsBindPlayCursor(data.next.container);
               bindFlipPointer(data.next.container);
               if (window.kfilmsInitHome) window.kfilmsInitHome(data.next.container);
+              var fadeReturnId = (data.next.url && data.next.url.hash || '').replace(/^#/, '') ||
+                window.__kfilmsReturnTheatreId ||
+                readStoredFlipId();
+              if (fadeReturnId && HASHES.indexOf(fadeReturnId) !== -1) {
+                window.__kfilmsReturnTheatreId = fadeReturnId;
+                markActive(fadeReturnId);
+                requestAnimationFrame(function () {
+                  requestAnimationFrame(function () {
+                    scrollHomeToTheatreId(fadeReturnId);
+                  });
+                });
+              }
             }
             return gsap.to(data.next.container, { opacity: 1, duration: 0.35, ease: 'power2.out' });
           }
@@ -971,6 +1037,17 @@
             bindFlipPointer(root);
             if (window.kfilmsInitHome) window.kfilmsInitHome(root);
             if (window.lenis && window.lenis.start) try { window.lenis.start(); } catch (e) {}
+            var returnId = window.__kfilmsReturnTheatreId ||
+              (window.location.hash || '').replace(/^#/, '') ||
+              readStoredFlipId();
+            if (returnId && HASHES.indexOf(returnId) !== -1) {
+              markActive(returnId);
+              requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                  scrollHomeToTheatreId(returnId);
+                });
+              });
+            }
           }
         },
         {
@@ -978,9 +1055,13 @@
           afterEnter: function (data) {
             var h = (window.location.hash || '').replace(/^#/, '');
             if (!h) h = readStoredFlipId();
-            prepareVisuals(data.next ? data.next.container : document);
-            window.kfilmsInitTheatre(data.next ? data.next.container : document, h || null);
-            if (h) persistFlipId(h);
+            var root = data.next ? data.next.container : document;
+            prepareVisuals(root);
+            window.kfilmsInitTheatre(root, h || null);
+            if (h) {
+              persistFlipId(h);
+              syncTheatreCloseHref(h, root);
+            }
           }
         }
       ]

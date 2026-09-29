@@ -855,10 +855,75 @@ a.slider-gallery_button,
 <script>
 (function () {
   var HASHES = ['video-cars', 'video-motorcycles', 'video-real-estate', 'video-weddings', 'video-training'];
+  var FLIP_ID_KEY = 'kfilmsFlipId';
   var theatreInstances = [];
 
   function numberWithZero(num) {
     return num < 10 ? '0' + num : String(num);
+  }
+
+  function syncTheatreCloseHref(id, scope) {
+    if (!id || HASHES.indexOf(id) === -1) return;
+    var root = scope || document;
+    root.querySelectorAll('.theatre-close').forEach(function (a) {
+      a.setAttribute('href', '/#' + id);
+    });
+  }
+
+  function persistFlipId(id) {
+    if (!id || HASHES.indexOf(id) === -1) return;
+    window.__kfilmsFlipId = id;
+    try { sessionStorage.setItem(FLIP_ID_KEY, id); } catch (e) {}
+    syncTheatreCloseHref(id);
+  }
+
+  function readStoredFlipId() {
+    try {
+      var id = sessionStorage.getItem(FLIP_ID_KEY);
+      if (id && HASHES.indexOf(id) !== -1) return id;
+    } catch (e) {}
+    return null;
+  }
+
+  function clearFlipId() {
+    window.__kfilmsFlipId = null;
+    try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+  }
+
+  function scrollHomeToTheatreId(id) {
+    if (!id || HASHES.indexOf(id) === -1) return;
+    var el = document.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
+    if (!el) return;
+    if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+      try {
+        window.lenis.scrollTo(el, { immediate: true, offset: -window.innerHeight * 0.25 });
+      } catch (e) {
+        try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (err) {}
+      }
+    } else {
+      try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
+    }
+    if (typeof ScrollTrigger !== 'undefined') {
+      try { ScrollTrigger.refresh(); } catch (e) {}
+    }
+  }
+
+  function resolveReturnTheatreId(data) {
+    var id = null;
+    if (data && data.next && data.next.url && data.next.url.hash) {
+      id = String(data.next.url.hash).replace(/^#/, '');
+    }
+    if ((!id || HASHES.indexOf(id) === -1) && window.location && window.location.hash) {
+      id = String(window.location.hash).replace(/^#/, '');
+    }
+    if (!id || HASHES.indexOf(id) === -1) id = resolveLeavingTheatreId(data);
+    if (!id || HASHES.indexOf(id) === -1) {
+      var active = document.querySelector('.active-flip-item');
+      if (active) id = active.getAttribute('data-theatre-id');
+    }
+    if (!id || HASHES.indexOf(id) === -1) id = readStoredFlipId();
+    if (!id || HASHES.indexOf(id) === -1) id = window.__kfilmsReturnTheatreId || null;
+    return id && HASHES.indexOf(id) !== -1 ? id : null;
   }
 
   function destroyTheatre() {
@@ -901,6 +966,7 @@ a.slider-gallery_button,
       var hash = (hashOverride || (window.location.hash || '').replace(/^#/, ''));
       var initial = HASHES.indexOf(hash);
       if (initial < 0) initial = 0;
+      if (HASHES[initial]) persistFlipId(HASHES[initial]);
       var bgSwiper = new Swiper($bg[0], {
         slidesPerView: 1, speed: 400, effect: 'fade', allowTouchMove: false, initialSlide: initial
       });
@@ -923,8 +989,11 @@ a.slider-gallery_button,
       textSwiper.on('slideChange', function (e) {
         $root.find('.swiper-number-current').text(numberWithZero(e.realIndex + 1));
         var h = HASHES[e.realIndex];
-        if (h && window.history && window.history.replaceState) {
-          window.history.replaceState(null, '', '#' + h);
+        if (h) {
+          persistFlipId(h);
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', '#' + h);
+          }
         }
       });
       $root.find('[data-swiper-nav]').on('click', function (e) { e.preventDefault(); });
@@ -1013,6 +1082,21 @@ a.slider-gallery_button,
       if (m2) return m2[1];
     }
     return null;
+  }
+
+  function resolveLeavingTheatreId(data) {
+    var hash = '';
+    if (data && data.current && data.current.url && data.current.url.hash) {
+      hash = String(data.current.url.hash).replace(/^#/, '');
+    }
+    if (!hash && window.location && window.location.hash) {
+      hash = String(window.location.hash).replace(/^#/, '');
+    }
+    if (hash && HASHES.indexOf(hash) !== -1) return hash;
+    if (window.__kfilmsFlipId && HASHES.indexOf(window.__kfilmsFlipId) !== -1) {
+      return window.__kfilmsFlipId;
+    }
+    return readStoredFlipId();
   }
 
   function markActive(id) {
@@ -1105,30 +1189,21 @@ a.slider-gallery_button,
       }
       var reverseHome = data.next && data.next.namespace === 'home' &&
         data.current && data.current.namespace === 'theatre';
-      var active = document.querySelector('.active-flip-item');
-      if (reverseHome && active) {
-        try {
-          active.scrollIntoView({ block: 'center', behavior: 'auto' });
-        } catch (e) {
-          window.scrollTo(0, active.getBoundingClientRect().top + window.pageYOffset - window.innerHeight / 3);
-        }
-        if (window.lenis) {
-          try { window.lenis.scrollTo(window.scrollY || window.pageYOffset || 0, { immediate: true }); } catch (e) {}
-        }
-        setTimeout(function () {
-          document.querySelectorAll('.active-flip-item').forEach(function (el) {
-            el.classList.remove('active-flip-item');
-          });
-        }, 400);
+      var returnId = reverseHome ? resolveReturnTheatreId(data) : null;
+      if (returnId) {
+        markActive(returnId);
+        persistFlipId(returnId);
+        window.__kfilmsReturnTheatreId = returnId;
       } else {
         document.querySelectorAll('.active-flip-item').forEach(function (el) {
           el.classList.remove('active-flip-item');
         });
         window.scrollTo(0, 0);
-      }
-      window.__kfilmsFlipId = null;
-      if (!(data.next && data.next.namespace === 'theatre')) {
-        try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+        window.__kfilmsFlipId = null;
+        window.__kfilmsReturnTheatreId = null;
+        if (!(data.next && data.next.namespace === 'theatre')) {
+          try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+        }
       }
       resetWebflow(data);
       prepareVisuals(data.next && data.next.container);
@@ -1137,6 +1212,24 @@ a.slider-gallery_button,
         bindFlipPointer(data.next.container);
         if (window.kfilmsInitHome) window.kfilmsInitHome(data.next.container);
         if (window.lenis && window.lenis.start) try { window.lenis.start(); } catch (e) {}
+        if (returnId) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              scrollHomeToTheatreId(returnId);
+              setTimeout(function () {
+                document.querySelectorAll('.active-flip-item').forEach(function (el) {
+                  el.classList.remove('active-flip-item');
+                });
+                window.__kfilmsFlipId = null;
+                window.__kfilmsReturnTheatreId = null;
+                try { sessionStorage.removeItem(FLIP_ID_KEY); } catch (e) {}
+              }, 450);
+            });
+          });
+        }
+      } else if (data.next && data.next.namespace === 'theatre') {
+        var theatreId = (data.next.url && data.next.url.hash || '').replace(/^#/, '') || readStoredFlipId();
+        if (theatreId) syncTheatreCloseHref(theatreId, data.next.container);
       }
     });
 
@@ -1174,6 +1267,7 @@ a.slider-gallery_button,
             setCursorActive(false);
             if (window.kfilmsDestroyHome) window.kfilmsDestroyHome();
             if (window.lenis && window.lenis.stop) try { window.lenis.stop(); } catch (e) {}
+            persistFlipId(id);
             markActive(id);
             data.next.container.classList.add('fixed');
             if (id && window.history && window.history.replaceState) {
@@ -1193,6 +1287,52 @@ a.slider-gallery_button,
           }
         },
         {
+          name: 'theatre-to-list',
+          sync: true,
+          from: {
+            namespace: ['theatre'],
+            custom: function (data) {
+              return !!resolveLeavingTheatreId(data);
+            }
+          },
+          to: { namespace: ['home'] },
+          leave: function () {
+            setCursorActive(false);
+            // Defer destroyTheatre until after Flip captures the visual
+            return Promise.resolve();
+          },
+          enter: function (data) {
+            var $ = window.jQuery;
+            var id = resolveLeavingTheatreId(data);
+            setCursorActive(false);
+            persistFlipId(id);
+            prepareVisuals(data.next.container);
+            bindPlayCursor(data.next.container);
+            bindFlipPointer(data.next.container);
+            var outgoing = data.current.container.querySelector(
+              '.kf-slide-bg[data-theatre-id="' + id + '"]'
+            );
+            if (!outgoing) {
+              outgoing = data.current.container.querySelector('.kf-slide-bg.is-active, .swiper-slide-active .kf-slide-bg, .kf-slide-bg');
+            }
+            var incoming = markActive(id);
+            if (!incoming && data.next.container) {
+              incoming = data.next.container.querySelector('.theatre-list [data-theatre-id="' + id + '"]');
+              if (incoming) incoming.classList.add('active-flip-item');
+            }
+            data.next.container.classList.add('fixed');
+            if ($ && outgoing && incoming) {
+              flipDom($, $(outgoing), $(incoming));
+            }
+            return gsap.to(data.current.container, {
+              opacity: 0,
+              duration: 0.5,
+              ease: 'power1.inOut',
+              onComplete: function () { destroyTheatre(); }
+            });
+          }
+        },
+        {
           name: 'default-fade',
           leave: function (data) {
             setCursorActive(false);
@@ -1206,12 +1346,25 @@ a.slider-gallery_button,
               var h = (data.next.url && data.next.url.hash || '').replace(/^#/, '');
               prepareVisuals(data.next.container);
               window.kfilmsInitTheatre(data.next.container, h || null);
+              if (h) persistFlipId(h);
             }
             if (ns === 'home') {
               prepareVisuals(data.next.container);
               window.kfilmsBindPlayCursor(data.next.container);
               bindFlipPointer(data.next.container);
               if (window.kfilmsInitHome) window.kfilmsInitHome(data.next.container);
+              var fadeReturnId = (data.next.url && data.next.url.hash || '').replace(/^#/, '') ||
+                window.__kfilmsReturnTheatreId ||
+                readStoredFlipId();
+              if (fadeReturnId && HASHES.indexOf(fadeReturnId) !== -1) {
+                window.__kfilmsReturnTheatreId = fadeReturnId;
+                markActive(fadeReturnId);
+                requestAnimationFrame(function () {
+                  requestAnimationFrame(function () {
+                    scrollHomeToTheatreId(fadeReturnId);
+                  });
+                });
+              }
             }
             return gsap.to(data.next.container, { opacity: 1, duration: 0.35, ease: 'power2.out' });
           }
@@ -1227,14 +1380,31 @@ a.slider-gallery_button,
             bindFlipPointer(root);
             if (window.kfilmsInitHome) window.kfilmsInitHome(root);
             if (window.lenis && window.lenis.start) try { window.lenis.start(); } catch (e) {}
+            var returnId = window.__kfilmsReturnTheatreId ||
+              (window.location.hash || '').replace(/^#/, '') ||
+              readStoredFlipId();
+            if (returnId && HASHES.indexOf(returnId) !== -1) {
+              markActive(returnId);
+              requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                  scrollHomeToTheatreId(returnId);
+                });
+              });
+            }
           }
         },
         {
           namespace: 'theatre',
           afterEnter: function (data) {
             var h = (window.location.hash || '').replace(/^#/, '');
-            prepareVisuals(data.next ? data.next.container : document);
-            window.kfilmsInitTheatre(data.next ? data.next.container : document, h || null);
+            if (!h) h = readStoredFlipId();
+            var root = data.next ? data.next.container : document;
+            prepareVisuals(root);
+            window.kfilmsInitTheatre(root, h || null);
+            if (h) {
+              persistFlipId(h);
+              syncTheatreCloseHref(h, root);
+            }
           }
         }
       ]
