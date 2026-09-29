@@ -567,10 +567,8 @@
     }
     requestAnimationFrame(function () {
       refresh();
-      setTimeout(refresh, 120);
-      setTimeout(refresh, 400);
       if ((location.hash || '').match(/^#video-/)) {
-        setTimeout(function () {
+        requestAnimationFrame(function () {
           if (typeof window.kfilmsScrollToTheatreHash === 'function') {
             window.kfilmsScrollToTheatreHash();
           } else {
@@ -579,11 +577,10 @@
               try { el.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
             }
           }
-        }, 160);
-        setTimeout(function () {
-          if (typeof window.kfilmsScrollToTheatreHash === 'function') window.kfilmsScrollToTheatreHash();
-        }, 450);
+        });
       }
+      setTimeout(refresh, 120);
+      setTimeout(refresh, 400);
     });
     return true;
   };
@@ -666,6 +663,35 @@
     }
   }
 
+  /** While grid is position:fixed, translate so active row is viewport-centered before Flip. */
+  function prepareReturnTarget(container) {
+    if (!container) return null;
+    makeItemActive();
+    var active = resolveFlipScrollTarget();
+    if (!active) return null;
+
+    container.style.transform = '';
+    void container.offsetHeight;
+
+    var rect = active.getBoundingClientRect();
+    var naturalCenter = rect.top + rect.height / 2;
+    var viewportCenter = window.innerHeight / 2;
+    var dy = viewportCenter - naturalCenter;
+    container.style.transform = 'translateY(' + dy + 'px)';
+    void container.offsetHeight;
+
+    // When fixed is cleared, scroll so the same row stays centered
+    window.__kfilmsReturnScrollY = Math.max(0, Math.round(naturalCenter - viewportCenter));
+    return active;
+  }
+
+  function clearReturnPrep(container) {
+    if (container) {
+      container.classList.remove('fixed');
+      container.style.transform = '';
+    }
+  }
+
   window.kfilmsScrollToTheatreHash = function () {
     if (!(location.hash || '').match(/^#video-/)) return false;
     scrollToActiveFlipItem();
@@ -731,7 +757,7 @@
     });
   }
 
-  function flip(outgoing, incoming) {
+  function flip(outgoing, incoming, opts) {
     if (!outgoing || !incoming || typeof Flip === 'undefined') return;
     var visual = outgoing.querySelector('.visual');
     if (!visual) return;
@@ -739,7 +765,10 @@
     var incomingVisual = incoming.querySelector('.visual');
     if (incomingVisual) incomingVisual.remove();
     incoming.appendChild(visual);
-    Flip.from(state, { duration: 0.5, ease: 'power1.inOut' });
+    Flip.from(state, {
+      duration: (opts && opts.duration) || 0.55,
+      ease: (opts && opts.ease) || 'power2.inOut',
+    });
   }
 
   function destroyCmsHorizontal() {
@@ -783,8 +812,6 @@
       var slides = Array.prototype.slice.call(document.querySelectorAll('.swiper-slide.is-list'));
       var idx = slides.indexOf(active);
       if (idx >= 0) mySlider.slideTo(idx, 0);
-    } else {
-      scrollToActiveFlipItem();
     }
     if (typeof window.kfilmsInitHome === 'function') {
       window.kfilmsInitHome(data.next.container);
@@ -811,28 +838,46 @@
 
     
     barba.hooks.after(function (data) {
-      if (data.next && data.next.container) {
-        data.next.container.classList.remove('fixed');
-      }
       var ns = data.next ? nsOf(data.next.container, data.next.namespace) : '';
       var fromCms = data.current && nsOf(data.current.container, data.current.namespace) === 'cms-page';
       var hasTheatreHash = !!(location.hash || '').match(/^#video-/);
-      if (!(ns === 'grid-page' && (fromCms || hasTheatreHash))) {
+      var returningToRow = ns === 'grid-page' && (fromCms || hasTheatreHash);
+      var returnY = window.__kfilmsReturnScrollY;
+
+      if (data.next && data.next.container) {
+        if (returningToRow) {
+          clearReturnPrep(data.next.container);
+          if (typeof returnY === 'number' && !isNaN(returnY)) {
+            window.scrollTo(0, returnY);
+          } else {
+            scrollToActiveFlipItem();
+            returnY =
+              (window.pageYOffset || document.documentElement.scrollTop || 0);
+          }
+          window.__kfilmsReturnScrollY = null;
+        } else {
+          data.next.container.classList.remove('fixed');
+          data.next.container.style.transform = '';
+        }
+      }
+
+      if (!returningToRow) {
         document.querySelectorAll('.active-flip-item').forEach(function (el) {
           el.classList.remove('active-flip-item');
         });
         window.scrollTo(0, 0);
       }
+
       resetWebflow(data);
       if (ns === 'grid-page') {
         requestAnimationFrame(function () {
           onEnterGrid(data);
           if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh(true);
-          requestAnimationFrame(function () {
-            scrollToActiveFlipItem();
-            setTimeout(scrollToActiveFlipItem, 120);
-            setTimeout(scrollToActiveFlipItem, 400);
-          });
+          if (returningToRow && typeof returnY === 'number') {
+            requestAnimationFrame(function () {
+              window.scrollTo(0, returnY);
+            });
+          }
         });
       } else if (ns === 'cms-page') {
         requestAnimationFrame(function () {
@@ -863,8 +908,8 @@
             data.next.container.classList.add('fixed');
             var active = document.querySelector('.active-flip-item');
             var wrap = data.next.container.querySelector('.cms-page_img-wrap');
-            if (active && wrap) flip(active, wrap);
-            return gsap.to(data.current.container, { opacity: 0, duration: 0.5 });
+            if (active && wrap) flip(active, wrap, { duration: 0.55, ease: 'power2.inOut' });
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.55 });
           }
         },
         {
@@ -873,21 +918,18 @@
           from: { custom: function (data) { return nsOf(data.current.container, data.current.namespace) === 'cms-page'; } },
           to: { custom: function (data) { return nsOf(data.next.container, data.next.namespace) === 'grid-page'; } },
           enter: function (data) {
-            makeItemActive();
             createSwiper();
-            var active = document.querySelector('.active-flip-item');
+            data.next.container.classList.add('fixed');
+            var active = prepareReturnTarget(data.next.container);
             if (mySlider && active) {
               var slides = Array.prototype.slice.call(document.querySelectorAll('.swiper-slide.is-list'));
               var idx = slides.indexOf(active);
               if (idx >= 0) mySlider.slideTo(idx, 0);
-            } else {
-              scrollToActiveFlipItem();
             }
-            data.next.container.classList.add('fixed');
             var wrap = data.current.container.querySelector('.cms-page_img-wrap');
             var dest = active ? active.querySelector('.visual_wrap') : null;
-            if (wrap && dest) flip(wrap, dest);
-            return gsap.to(data.current.container, { opacity: 0, duration: 0.5 });
+            if (wrap && dest) flip(wrap, dest, { duration: 0.55, ease: 'power2.inOut' });
+            return gsap.to(data.current.container, { opacity: 0, duration: 0.55 });
           }
         },
         {
