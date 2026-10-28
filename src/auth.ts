@@ -132,7 +132,9 @@ export async function issueLogin(
   )
     .bind(customer.id, hourAgo)
     .first<{ n: number }>();
-  if ((recent?.n ?? 0) >= MAX_LOGINS_PER_HOUR) return { limited: true };
+  // Local runs sign the same test addresses in over and over.
+  const limit = isLocal(request) ? 100 : MAX_LOGINS_PER_HOUR;
+  if ((recent?.n ?? 0) >= limit) return { limited: true };
 
   const rowId = id("lt");
   const token = secret();

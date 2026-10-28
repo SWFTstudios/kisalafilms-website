@@ -5,7 +5,9 @@
  *                                      the intake form before the job exists
  *   DELETE /api/uploads/:id?draft=…    take one back off the draft
  *   POST   /api/jobs/:id/photos        one image, signed in, onto an existing job
- *   GET    /api/photos/:id             the image, to its owner or the studio
+ *   GET    /api/photos/:id             the image, to its owner or the studio, or
+ *                                      to anyone if it is a studio photo on a
+ *                                      build published to /builds
  *
  * A draft id is minted in the browser and is the only thing tying anonymous
  * uploads together, so it is treated like a bearer secret: long, random, never
@@ -43,6 +45,8 @@ type PhotoRow = {
   draft_id: string | null;
   r2_key: string;
   content_type: string;
+  kind: string;
+  published: number | null;
 };
 
 async function storeBody(
@@ -162,20 +166,25 @@ async function canSee(request: Request, env: PortalEnv, photo: PhotoRow, viewer:
 export async function handlePhoto(request: Request, env: PortalEnv, photoId: string): Promise<Response> {
   if (!env.PHOTOS) return json({ error: "Photo storage is not configured." }, 503);
   const photo = await env.DB.prepare(
-    "SELECT id, job_id, draft_id, r2_key, content_type FROM photos WHERE id = ?"
+    `SELECT p.id, p.job_id, p.draft_id, p.r2_key, p.content_type, p.kind,
+       (SELECT 1 FROM jobs j WHERE j.id = p.job_id AND j.published_at IS NOT NULL) AS published
+     FROM photos p WHERE p.id = ?`
   )
     .bind(photoId)
     .first<PhotoRow>();
-  const viewer = photo?.job_id ? await currentViewer(request, env) : null;
-  if (!photo || !(await canSee(request, env, photo, viewer))) return json({ error: "Not found." }, 404);
+  const isPublic = !!photo && photo.kind === "progress" && !!photo.published;
+  const viewer = photo?.job_id && !isPublic ? await currentViewer(request, env) : null;
+  if (!photo || (!isPublic && !(await canSee(request, env, photo, viewer)))) return json({ error: "Not found." }, 404);
 
   const object = await env.PHOTOS.get(photo.r2_key);
   if (!object) return json({ error: "Not found." }, 404);
   return new Response(object.body, {
     headers: {
       "Content-Type": photo.content_type,
-      // Private to the signed-in browser; ids never change, so it can keep them.
-      "Cache-Control": "private, max-age=86400, immutable",
+      // Ids never change, so browsers can keep them. Only a published build's
+      // photos may sit in a shared cache, and only briefly, so unpublishing
+      // takes effect within the hour.
+      "Cache-Control": isPublic ? "public, max-age=3600" : "private, max-age=86400, immutable",
       "X-Content-Type-Options": "nosniff",
     },
   });

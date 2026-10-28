@@ -7,7 +7,7 @@
  * It relies on the local-only devLink/devCode fields the auth endpoints add
  * when the request host is localhost, so it cannot be pointed at production.
  * Each run uses fresh customer addresses; the admin address is the first in
- * ADMIN_EMAILS and is limited to five sign-ins an hour like anyone else.
+ * ADMIN_EMAILS. The five-an-hour sign-in limit is raised on localhost.
  */
 const BASE = (process.argv[2] || "http://localhost:8787").replace(/\/$/, "");
 const ADMIN = process.env.ADMIN_EMAIL || "elombe@swftstudios.com";
@@ -162,7 +162,7 @@ check("a later form can't overwrite the customer's details", r.data?.customer?.n
 /* ---- Studio ----------------------------------------------------------- */
 r = await call("POST", "/api/auth/request", { body: { email: ADMIN } });
 if (!r.data?.devCode) {
-  check("admin sign-in issued (skipped if rate-limited this hour)", true);
+  check("admin sign-in issued", false, "no devCode returned");
 } else {
   r = await call("POST", "/api/auth/code", { body: { email: ADMIN, code: r.data.devCode } });
   const cookieAdmin = sessionFrom(r.headers);
@@ -174,6 +174,70 @@ if (!r.data?.devCode) {
   check("admin message is from the studio", r.data?.message?.author === "studio");
   r = await call("GET", `/api/jobs/${jobA}`, { cookie: cookieA });
   check("customer sees the studio reply", r.data?.messages?.some((m) => m.author === "studio"));
+
+  /* ---- Studio admin --------------------------------------------------- */
+  r = await call("GET", "/api/admin/jobs", { cookie: cookieA });
+  check("customers are refused the admin board", r.status === 403);
+  r = await call("POST", `/api/admin/jobs/${jobA}/stage`, { cookie: cookieB, body: { stage: "complete" } });
+  check("customers can't move a job", r.status === 403);
+  r = await call("GET", "/api/admin/jobs", { cookie: cookieAdmin });
+  check("admin board lists the job", r.status === 200 && r.data.jobs.some((j) => j.id === jobA) && r.data.stages.length === 10);
+
+  r = await call("POST", `/api/admin/jobs/${jobA}/quotes`, { cookie: cookieAdmin, body: { items: [], send: true } });
+  check("empty quote refused", r.status === 400);
+  r = await call("POST", `/api/admin/jobs/${jobA}/quotes`, { cookie: cookieAdmin, body: {
+    items: [{ label: "Colour change labour", quantity: 1, unitCents: 165000 }, { label: "Cast film", quantity: 2, unitCents: 26000 }],
+    depositCents: 50000, notes: "Includes pickup.", send: false } });
+  check("draft quote saved", r.status === 201 && r.data.status === "draft" && r.data.totalCents === 217000);
+  r = await call("GET", `/api/jobs/${jobA}`, { cookie: cookieA });
+  check("customer can't see a draft quote", r.data.quotes.length === 0);
+  r = await call("POST", `/api/admin/jobs/${jobA}/quotes`, { cookie: cookieAdmin, body: {
+    items: [{ label: "Colour change labour", quantity: 1, unitCents: 165000 }, { label: "Cast film", quantity: 2, unitCents: 26000 }],
+    depositCents: 50000, send: true } });
+  const quoteId = r.data?.quoteId;
+  r = await call("GET", `/api/jobs/${jobA}`, { cookie: cookieA });
+  check("sent quote moves the job to quoted", r.data.job.stage === "quoted" && r.data.quotes.length === 1 && r.data.quotes[0].items.length === 2);
+  r = await call("POST", `/api/jobs/${jobA}/quotes/${quoteId}/approve`, { cookie: cookieB });
+  check("another customer can't approve it", r.status === 404);
+  r = await call("POST", `/api/jobs/${jobA}/quotes/${quoteId}/approve`, { cookie: cookieA });
+  check("owner approves the quote", r.status === 200);
+
+  r = await call("POST", `/api/admin/jobs/${jobA}/payments`, { cookie: cookieAdmin, body: { kind: "deposit", amountCents: 50000, method: "Zelle" } });
+  r = await call("GET", `/api/jobs/${jobA}`, { cookie: cookieA });
+  check("deposit books the job", r.data.job.stage === "booked" && r.data.payments.some((p) => p.kind === "deposit" && p.status === "paid"));
+
+  r = await call("POST", `/api/admin/jobs/${jobA}/stage`, { cookie: cookieAdmin, body: { stage: "prep", note: "Fairings off.", notify: false } });
+  const eventId = r.data?.eventId;
+  check("admin moves the stage", r.status === 201 && !!eventId);
+  r = await call("POST", `/api/admin/jobs/${jobA}/photos?event=${eventId}`, { cookie: cookieAdmin, raw: fakeJpeg, type: "image/jpeg" });
+  const progressPhoto = r.data?.id;
+  check("admin posts a progress photo", r.status === 201);
+  r = await call("POST", `/api/admin/jobs/${jobA}/stage`, { cookie: cookieAdmin, body: { stage: "prep", note: "Studio-only: one tab broken.", visible: false } });
+  r = await call("GET", `/api/jobs/${jobA}`, { cookie: cookieA });
+  check("customer sees the photo on its update", r.data.photos.some((p) => p.id === progressPhoto && p.kind === "progress" && p.event_id === eventId));
+  check("customer doesn't see studio-only notes", !r.data.events.some((e) => /Studio-only/.test(e.note || "")));
+  r = await call("POST", `/api/jobs/${jobA}/photos`, { cookie: cookieA, raw: fakeJpeg, type: "image/jpeg" });
+  check("customer can't add photos once work starts", r.status === 409);
+
+  r = await call("PATCH", `/api/admin/jobs/${jobA}`, { cookie: cookieAdmin, body: { internalNotes: "Left mirror stem scuffed." } });
+  r = await call("GET", `/api/jobs/${jobA}`, { cookie: cookieAdmin });
+  check("internal notes saved for the studio", r.data.job.internalNotes === "Left mirror stem scuffed." && r.data.job.customer?.email === riderA);
+
+  r = await call("GET", `/api/photos/${progressPhoto}`);
+  check("unpublished progress photo is private", r.status === 404);
+  r = await call("POST", `/api/admin/jobs/${jobA}/publish`, { cookie: cookieAdmin, body: { title: "Test build", summary: "Satin.", coverPhotoId: progressPhoto } });
+  check("job published", r.data?.published === true);
+  r = await call("GET", "/api/builds");
+  const pub = r.data?.builds?.find((b) => b.id === jobA);
+  check("published build is in the public feed", pub && pub.title === "Test build" && pub.photos.length === 1);
+  check("public feed carries no customer details", pub && !JSON.stringify(pub).includes(riderA) && !JSON.stringify(pub).includes("Rider A"));
+  r = await call("GET", `/api/photos/${progressPhoto}`);
+  check("published progress photo is public", r.status === 200);
+  r = await call("GET", `/api/photos/${photo1}`);
+  check("the customer's own photo stays private", r.status === 404);
+  r = await call("POST", `/api/admin/jobs/${jobA}/publish`, { cookie: cookieAdmin, body: { publish: false } });
+  r = await call("GET", `/api/photos/${progressPhoto}`);
+  check("unpublishing makes it private again", r.status === 404);
 }
 
 /* ---- Sign out --------------------------------------------------------- */

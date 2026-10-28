@@ -24,7 +24,7 @@ import { EDITABLE_STAGES, STAGES, stageLabel } from "./stages";
 import { MAX_PHOTO_BYTES, MAX_PHOTOS_PER_DRAFT, validDraft } from "./uploads";
 
 /** The service keys of kisala-config.js, plus "unsure". */
-const SERVICES: Record<string, string> = {
+export const SERVICES: Record<string, string> = {
   fullWrap: "Colour change",
   ppf: "Paint protection",
   partialWrap: "Accents & partials",
@@ -57,11 +57,14 @@ type JobRow = {
   estimate_low: number | null;
   estimate_high: number | null;
   internal_notes: string | null;
+  published_at: string | null;
+  public_title: string | null;
+  public_summary: string | null;
   created_at: string;
   updated_at: string;
 };
 
-function bikeLabel(b: { year?: string | null; make?: string | null; model?: string | null }): string {
+export function bikeLabel(b: { year?: string | null; make?: string | null; model?: string | null }): string {
   return [b.year, b.make, b.model].filter(Boolean).join(" ") || "Your bike";
 }
 
@@ -334,7 +337,7 @@ export async function handleGetJob(request: Request, env: PortalEnv, jobId: stri
   const [bike, events, photos, messages, quotes, payments] = await Promise.all([
     job.bike_id ? env.DB.prepare("SELECT year, make, model, colour, mileage, vin FROM bikes WHERE id = ?").bind(job.bike_id).first<Record<string, string | null>>() : null,
     env.DB.prepare(`SELECT id, stage, note, author, visible, created_at FROM job_events WHERE job_id = ? ${admin ? "" : "AND visible = 1"} ORDER BY created_at`).bind(jobId).all<Record<string, unknown>>(),
-    env.DB.prepare("SELECT id, event_id, kind, caption, created_at FROM photos WHERE job_id = ? ORDER BY created_at").bind(jobId).all<Record<string, string | null>>(),
+    env.DB.prepare("SELECT id, event_id, kind, caption, is_cover, created_at FROM photos WHERE job_id = ? ORDER BY created_at").bind(jobId).all<Record<string, string | null>>(),
     env.DB.prepare("SELECT id, author, body, created_at, read_at FROM messages WHERE job_id = ? ORDER BY created_at").bind(jobId).all<Record<string, unknown>>(),
     env.DB.prepare(`SELECT id, status, total_cents, deposit_cents, notes, created_at, sent_at, approved_at FROM quotes WHERE job_id = ? ${admin ? "" : "AND status IN ('sent', 'approved')"} ORDER BY created_at DESC`).bind(jobId).all<Record<string, unknown>>(),
     env.DB.prepare("SELECT id, quote_id, kind, amount_cents, status, created_at, paid_at FROM payments WHERE job_id = ? ORDER BY created_at").bind(jobId).all<Record<string, unknown>>(),
@@ -348,6 +351,10 @@ export async function handleGetJob(request: Request, env: PortalEnv, jobId: stri
         .bind(...quoteIds)
         .all<Record<string, unknown>>()
     : { results: [] };
+
+  const customer = admin
+    ? await env.DB.prepare("SELECT name, email, phone FROM customers WHERE id = ?").bind(job.customer_id).first<Record<string, string | null>>()
+    : null;
 
   // Opening the job marks the other side's messages read.
   await env.DB.prepare("UPDATE messages SET read_at = ? WHERE job_id = ? AND author = ? AND read_at IS NULL")
@@ -376,7 +383,16 @@ export async function handleGetJob(request: Request, env: PortalEnv, jobId: stri
       estimate: job.estimate_low != null ? { low: job.estimate_low, high: job.estimate_high } : null,
       createdAt: job.created_at,
       updatedAt: job.updated_at,
-      ...(admin ? { internalNotes: job.internal_notes, customerId: job.customer_id } : {}),
+      ...(admin
+        ? {
+            internalNotes: job.internal_notes,
+            customerId: job.customer_id,
+            customer,
+            publishedAt: job.published_at,
+            publicTitle: job.public_title,
+            publicSummary: job.public_summary,
+          }
+        : {}),
     },
     bike: bike ? { ...bike, label: bikeLabel(bike) } : null,
     stages: STAGES.map((s) => ({ id: s.id, label: s.label, customer: s.customer })),

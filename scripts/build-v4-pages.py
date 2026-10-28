@@ -424,13 +424,14 @@ def builds_page() -> str:
             <figcaption><div><h3>Honda CBR600 F4i</h3><p class="meta">Build 001 &middot; Gloss black colour change</p></div><span class="link-line">View build <span class="btn-arrow" aria-hidden="true"></span></span></figcaption>
           </figure>
         </a>
-        <div class="build-card build-card--empty rv">
+        <div class="build-grid-feed" data-builds-feed hidden></div>
+        <div class="build-card build-card--empty rv" data-build-slot>
           <figure>
             <div class="frame"><p class="display-s">Build 002</p></div>
             <figcaption><div><h3>Your bike here</h3><p class="meta">Founding build &middot; <span data-cfg="founding.slotsRemaining" data-cfg-format="integer">6</span> of <span data-cfg="founding.slotsTotal" data-cfg-format="integer">8</span> open</p></div></figcaption>
           </figure>
         </div>
-        <div class="build-card build-card--empty rv rv-d1">
+        <div class="build-card build-card--empty rv rv-d1" data-build-slot>
           <figure>
             <div class="frame"><p class="display-s">Build 003</p></div>
             <figcaption><div><h3>Your bike here</h3><p class="meta">Founding build</p></div></figcaption>
@@ -456,6 +457,47 @@ def builds_page() -> str:
         "Motorcycle Wrap Builds & Portfolio | K Films, Jersey City",
         "Motorcycle wrap builds from the K Films studio in Jersey City, each one shot in the same light. Colour changes, protection film and liveries.",
         body,
+        scripts=("/js/builds.js",),
+    )
+
+
+def build_view_page() -> str:
+    """One published build, filled in by builds.js from /api/builds."""
+    body = f"""
+    <section class="page-hero page-hero--plain" aria-labelledby="page-title">
+      <div class="wrap page-hero-grid">
+        <div>
+          {crumbs([("Home", "/"), ("Builds", "/builds"), ("Build", None)])}
+          <h1 class="display-xl" id="page-title" data-build-title>The build.</h1>
+        </div>
+        <p class="lede" data-build-summary></p>
+      </div>
+    </section>
+
+    <section class="section--tight" aria-label="Build details">
+      <div class="wrap">
+        <dl class="spec" data-build-spec></dl>
+      </div>
+    </section>
+
+    <section class="section--tight" aria-label="Photos">
+      <div class="wrap gallery" data-build-gallery></div>
+    </section>
+
+    <section aria-label="Back to builds">
+      <div class="wrap">
+        <a class="next-page" href="/builds">
+          <span class="label">All builds</span>
+          <span class="display-l">Back to the builds <span class="btn-arrow" aria-hidden="true"></span></span>
+        </a>
+      </div>
+    </section>
+{finale("build-view-final")}"""
+    return page(
+        "A Build from the Studio | K Films, Jersey City",
+        "A motorcycle wrap build from the K Films studio in Jersey City.",
+        body,
+        scripts=("/js/builds.js",),
     )
 
 
@@ -1159,7 +1201,25 @@ def portal_page() -> str:
         "Your K Films builds: timeline, progress photos, quotes, payments and messages.",
         body,
         extra_head='  <link rel="stylesheet" href="/css/portal.css">\n',
-        scripts=("/js/portal.js",),
+        scripts=("/js/ui.js", "/js/portal.js"),
+    )
+
+
+def admin_page() -> str:
+    body = """
+    <section class="portal admin" aria-live="polite">
+      <div class="wrap admin-wrap">
+        <div class="portal-loading" data-portal-loading><p class="label">Loading the studio&hellip;</p></div>
+        <div data-admin-root></div>
+        <noscript><p class="lede">The studio admin needs JavaScript turned on.</p></noscript>
+      </div>
+    </section>"""
+    return page(
+        "Studio Admin | K Films",
+        "The K Films studio admin.",
+        body,
+        extra_head='  <link rel="stylesheet" href="/css/portal.css">\n  <link rel="stylesheet" href="/css/admin.css">\n',
+        scripts=("/js/ui.js", "/js/admin.js"),
     )
 
 
@@ -1196,6 +1256,7 @@ def main() -> None:
     OUT["services.html"] = services_hub()
     OUT["builds.html"] = builds_page()
     OUT["builds/honda-cbr600-f4i.html"] = f4i_page()
+    OUT["builds/view.html"] = build_view_page()
     OUT["finishes.html"] = finishes_page()
     OUT["process.html"] = process_page()
     OUT["studio.html"] = studio_page()
@@ -1205,6 +1266,7 @@ def main() -> None:
     OUT["book-thanks.html"] = book_thanks_page()
     OUT["login.html"] = login_page()
     OUT["portal.html"] = portal_page()
+    OUT["admin.html"] = admin_page()
 
     for rel, html in OUT.items():
         path = PUBLIC / rel

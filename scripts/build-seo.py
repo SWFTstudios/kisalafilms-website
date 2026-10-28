@@ -32,6 +32,8 @@ NOINDEX = {
   "book-thanks.html",
   "login.html",
   "portal.html",
+  "admin.html",
+  "builds/view.html",
   "styleguide.html",
   "404.html",
   "wrap-quote/index.html",

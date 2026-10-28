@@ -1,7 +1,18 @@
 /**
- * Routing for the portal API: sign-in, photos and jobs. Returns null for any
+ * Routing for the portal API: sign-in, photos, jobs, the studio admin and
+ * the public feed of published builds. Returns null for any
  * path it does not own, so index.ts can fall through to the rest.
  */
+import {
+  handleAdminJobs,
+  handleAdminPayment,
+  handleAdminPhoto,
+  handleAdminPublish,
+  handleAdminQuote,
+  handleAdminStage,
+  handleAdminUpdate,
+  handlePublicBuilds,
+} from "./admin";
 import { handleAuthCode, handleAuthRequest, handleAuthVerify, handleLogout, handleMe } from "./auth";
 import { json, type PortalEnv } from "./http";
 import {
@@ -40,6 +51,16 @@ const ROUTES: Route[] = [
   { method: "POST", pattern: new RegExp(`^/api/jobs/${ID}/messages$`), handle: (r, e, [j]) => handlePostMessage(r, e, j) },
   { method: "POST", pattern: new RegExp(`^/api/jobs/${ID}/photos$`), handle: (r, e, [j]) => handleJobUpload(r, e, j) },
   { method: "POST", pattern: new RegExp(`^/api/jobs/${ID}/quotes/${ID}/approve$`), handle: (r, e, [j, q]) => handleApproveQuote(r, e, j, q) },
+
+  { method: "GET", pattern: /^\/api\/admin\/jobs$/, handle: (r, e) => handleAdminJobs(r, e) },
+  { method: "PATCH", pattern: new RegExp(`^/api/admin/jobs/${ID}$`), handle: (r, e, [j]) => handleAdminUpdate(r, e, j) },
+  { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/stage$`), handle: (r, e, [j]) => handleAdminStage(r, e, j) },
+  { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/photos$`), handle: (r, e, [j]) => handleAdminPhoto(r, e, j) },
+  { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/quotes$`), handle: (r, e, [j]) => handleAdminQuote(r, e, j) },
+  { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/payments$`), handle: (r, e, [j]) => handleAdminPayment(r, e, j) },
+  { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/publish$`), handle: (r, e, [j]) => handleAdminPublish(r, e, j) },
+
+  { method: "GET", pattern: /^\/api\/builds$/, handle: (r, e) => handlePublicBuilds(r, e) },
 ];
 
 export async function routePortal(request: Request, env: PortalEnv): Promise<Response | null> {
