@@ -74,6 +74,29 @@
     });
   }
 
+  /* ---- FAQ accordions ---------------------------------------------------- */
+  // The markup keeps button.faq-q then p.faq-a: scripts/build-jsonld.mjs reads
+  // exactly that shape for the FAQPage graph, so the aria wiring is added here.
+  document.querySelectorAll(".faq-item").forEach((item, i) => {
+    const btn = item.querySelector(".faq-q");
+    const answer = item.querySelector(".faq-a");
+    if (!btn || !answer) return;
+    answer.id = answer.id || `faq-a-${i}`;
+    btn.setAttribute("aria-controls", answer.id);
+    btn.setAttribute("aria-expanded", String(item.classList.contains("open")));
+    btn.addEventListener("click", () => {
+      const open = item.classList.toggle("open");
+      btn.setAttribute("aria-expanded", String(open));
+      const mark = btn.querySelector(".mark");
+      if (mark) mark.textContent = open ? "–" : "+";
+    });
+  });
+
+  // FormSubmit redirects back with ?sent=1.
+  if (new URLSearchParams(location.search).has("sent")) {
+    document.querySelectorAll(".form-note").forEach((note) => note.classList.add("show"));
+  }
+
   /* ---- Reveals ----------------------------------------------------------- */
   const revealables = document.querySelectorAll(".rv, .wipe, [data-mask]");
   if (reduceMotion || !("IntersectionObserver" in window)) {

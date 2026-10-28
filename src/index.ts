@@ -80,6 +80,44 @@ function redirect(to: string, status = 301): Response {
   });
 }
 
+/**
+ * Pages retired by the v4 redesign, and where each one's visitors belong now.
+ * The HTML files are gone, so no static asset answers these paths and the
+ * request reaches the Worker. Keys are extensionless, without a trailing slash.
+ */
+const RETIRED: Record<string, string> = {
+  "/about": "/studio",
+  "/contact": "/studio#message",
+  "/locations": "/studio#areas",
+  "/gallery": "/builds",
+  "/journal": "/builds",
+  "/testimonials": "/builds",
+  "/films": "/builds",
+  "/watch": "/builds",
+  "/series": "/builds",
+  "/dispatches": "/builds",
+  "/inspo-museum": "/builds",
+  "/pricing": "/services",
+  "/work-with-me": "/quote",
+  "/services/full-wraps": "/services/colour-change",
+  "/services/accent-package": "/services/accents",
+  "/services/transformation-film": "/services",
+  "/shop": "/services",
+  "/shop/wrap": "/finishes",
+  "/shop/photoshoot": "/services",
+  "/shop/k-merch": "/",
+  "/shop/merch": "/",
+};
+
+function retiredTarget(pathname: string): string | null {
+  const path = pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
+  if (RETIRED[path]) return RETIRED[path];
+  // Every product page under a retired shop collection goes to its collection.
+  const collection = path.match(/^\/shop\/[^/]+/);
+  if (collection) return RETIRED[collection[0]] ?? "/services";
+  return null;
+}
+
 function adminAuthed(request: Request, env: Env): boolean {
   const token = env.FOUNDER_ADMIN_TOKEN || env.FILMS_IMPORT_TOKEN;
   if (!token) return false;
@@ -679,6 +717,12 @@ export default {
 
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    const retired = retiredTarget(url.pathname);
+    if (retired) {
+      const [path, hash] = retired.split("#");
+      return redirect(path + url.search + (hash ? `#${hash}` : ""));
+    }
 
     if (url.pathname === "/lookbook" || url.pathname === "/lookbook/") {
       return redirect("/vinyl-catalog" + url.search);

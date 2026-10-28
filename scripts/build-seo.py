@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
 
 SITE = "https://kisalafilms-website.elombe.workers.dev"
-SHARE_IMAGE = f"{SITE}/images/brand/kisala-films-logo.png"
+SHARE_IMAGE = f"{SITE}/images/refs/ref-05-head-on-1920.webp"
 
 # Kept out of the index. /thanks.html and /wrap-quote/ are post-conversion and
 # ad-campaign pages; styleguide and 404 have no business in search results.
@@ -42,17 +42,19 @@ NOINDEX = {
 PRIORITY = {
     "index.html": "1.0",
     "quote.html": "0.9",
+    "services.html": "0.9",
+    "services/colour-change.html": "0.8",
+    "services/paint-protection.html": "0.8",
+    "services/accents.html": "0.8",
+    "services/custom-livery.html": "0.8",
+    "services/chrome-delete.html": "0.8",
+    "builds.html": "0.8",
+    "studio.html": "0.8",
     "process.html": "0.7",
-    "wrap-studio.html": "0.9",
-    "project.html": "0.9",
-    "vinyl-catalog.html": "0.9",
-    "pricing.html": "0.9",
-    "services.html": "0.8",
-    "gallery.html": "0.8",
-    "shop.html": "0.8",
-    "shop/wrap.html": "0.8",
-    "shop/photoshoot.html": "0.7",
-    "shop/k-merch.html": "0.7",
+    "finishes.html": "0.7",
+    "wrap-studio.html": "0.6",
+    "project.html": "0.6",
+    "vinyl-catalog.html": "0.6",
     "locations/jersey-city.html": "0.8",
     "locations/brooklyn.html": "0.8",
     "locations/new-york-city.html": "0.8",
@@ -152,8 +154,12 @@ def apply_to(path: Path) -> str:
 
     # Anchored above the stylesheet so the block lands in the same place on every
     # page. /wrap-quote/ has inline styles and no link, hence the fallback.
-    anchor = '  <link rel="stylesheet" href="/css/kfilms.css">'
-    if anchor in page:
+    anchor = next(
+        (a for a in ('  <link rel="stylesheet" href="/css/kfilms.css">',
+                     '  <link rel="stylesheet" href="/css/kf.css">') if a in page),
+        None,
+    )
+    if anchor:
         page = page.replace(anchor, tags + anchor, 1)
     elif "</head>" in page:
         page = page.replace("</head>", tags + "</head>", 1)

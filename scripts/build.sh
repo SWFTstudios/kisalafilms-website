@@ -12,15 +12,15 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-echo "==> Local landing pages (composes chrome from locations.html)"
+echo "==> Local landing pages (v4)"
 python3 scripts/build-local-pages.py
 
 echo
-echo "==> Shop hub, collections and product pages"
-python3 scripts/build-shop-pages.py
+echo "==> v4 marketing pages, and the v4 chrome onto every page that carries it"
+python3 scripts/build-v4-pages.py
 
 echo
-echo "==> v3 chrome (header, drawer, footer) from index.html"
+echo "==> v3 chrome on the pages not yet redesigned"
 python3 scripts/build-v3-chrome.py
 
 echo
