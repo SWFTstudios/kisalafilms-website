@@ -47,6 +47,8 @@ SOURCES = [
     "refs/ref-10-tank-cockpit.jpg",
     "refs/ref-11-wheel-brake.jpg",
     "refs/ref-12-night-motion.jpg",
+    "refs/helmet-wrap-finished.jpg",
+    "refs/helmet-wrap-install.jpg",
     "hero-f4i-garage-night.jpg",
     "story-elombe-workshop.jpg",
     "about-vinyl-hands.jpg",

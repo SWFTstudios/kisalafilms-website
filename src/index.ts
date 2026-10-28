@@ -10,6 +10,7 @@ import {
   type D1Database,
 } from "./films";
 import { syncMetroPrices } from "./metro-prices";
+import { syncVinylFrogPrices } from "./vinylfrog-prices";
 import {
   attachStripeSession,
   getOrderById,
@@ -24,6 +25,7 @@ import {
   type ProjectSurface,
 } from "./project-quote";
 import { recordQuoteRequest } from "./quote";
+import { handleQuoteEstimate } from "./quote-estimate";
 
 type Env = {
   ASSETS: {
@@ -662,9 +664,16 @@ export default {
       return;
     }
     ctx.waitUntil(
-      syncMetroPrices(env.DB)
-        .then((r) => console.log("metro price sync", JSON.stringify(r)))
-        .catch((err) => console.error("metro price sync failed", String(err)))
+      Promise.all([
+        syncMetroPrices(env.DB)
+          .then((r) => console.log("metro price sync", JSON.stringify(r)))
+          .catch((err) => console.error("metro price sync failed", String(err))),
+        syncVinylFrogPrices(env.DB)
+          .then((r) => console.log("vinylfrog price sync", JSON.stringify(r)))
+          .catch((err) =>
+            console.error("vinylfrog price sync failed", String(err))
+          ),
+      ])
     );
   },
 
@@ -701,6 +710,17 @@ export default {
         return json({ error: "POST only." }, 405);
       }
       return withCors(await recordQuoteRequest(request, env), request);
+    }
+
+    // Owner-only internal pricing sheet for /quote (never shown on the form UI).
+    if (url.pathname === "/api/quote/estimate") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsApi(request) });
+      }
+      if (request.method !== "POST") {
+        return json({ error: "POST only." }, 405);
+      }
+      return withCors(await handleQuoteEstimate(request, env), request);
     }
 
     if (url.pathname === "/api/quote/project") {
@@ -838,8 +858,15 @@ export default {
       if (!adminAuthed(request, env)) {
         return json({ error: "Unauthorized." }, 401);
       }
+      const vendor = (url.searchParams.get("vendor") || "metro").toLowerCase();
+      if (vendor === "vinylfrog" || vendor === "all") {
+        const frog = await syncVinylFrogPrices(env.DB);
+        if (vendor === "vinylfrog") return json({ ok: true, vendor: "vinylfrog", ...frog });
+        const metro = await syncMetroPrices(env.DB);
+        return json({ ok: true, metro, vinylfrog: frog });
+      }
       const result = await syncMetroPrices(env.DB);
-      return json({ ok: true, ...result });
+      return json({ ok: true, vendor: "metro", ...result });
     }
 
     const filmMatch = url.pathname.match(/^\/api\/films\/([^/]+)\/?$/);

@@ -11,7 +11,8 @@
     "test": "node scripts/test-pages.mjs",
     "verify:links": "node scripts/crawl-links.mjs",
     "verify:browser": "node scripts/verify-browser.mjs",
-    "audit": "node scripts/audit-pages.mjs"
+    "audit": "node scripts/audit-pages.mjs",
+    "export:copy": "node scripts/export-website-copy.mjs"
   },
   "devDependencies": {
     "jsdom": "^29.1.1",

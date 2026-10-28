@@ -103,8 +103,8 @@
   <!-- CHROME:HEADER start — synced by scripts/build-v3-chrome.py, edit index.html -->
   <header class="site-header">
     <div class="header-shell">
-      <a class="logo" href="/" aria-label="K Films — home">
-        <img src="/images/brand/k-films-signature-white.png" alt="K Films" width="1003" height="714">
+      <a class="logo" href="/" aria-label="Kisala Films — home">
+        <img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745">
       </a>
 
       <nav class="nav-cluster nav-cluster--centre" aria-label="Primary">
@@ -129,8 +129,8 @@
   <div class="nav-backdrop" data-nav-backdrop data-nav-close></div>
   <aside class="nav-panel" id="nav-drawer" aria-hidden="true" aria-label="Menu">
     <div class="nav-panel-head">
-      <a class="logo" href="/" aria-label="K Films — home">
-        <img src="/images/brand/k-films-signature-white.png" alt="K Films" width="1003" height="714">
+      <a class="logo" href="/" aria-label="Kisala Films — home">
+        <img src="/images/brand/kisala-films-logo.png" alt="Kisala Films" width="1421" height="745">
       </a>
       <button type="button" class="nav-close" data-nav-close aria-label="Close menu">&times;</button>
     </div>
@@ -226,14 +226,15 @@
           </article>
 
           <article class="kf-service-card reveal">
-            <!-- No helmet photography in the repository yet, so this card is
-                 drawn rather than faked with a stock or unrelated shot. -->
-            <div class="kf-service-card-media kf-service-card-media--drawn">
-              <svg viewBox="0 0 160 120" role="img" aria-label="Illustration of a full-face helmet">
-                <path d="M20 78c0-33 27-58 60-58s60 22 60 52c0 12-5 18-16 18H86l-8 12H40c-11 0-20-9-20-20z"/>
-                <path d="M46 52c9-13 24-20 40-20 12 0 23 3 32 10l-14 30H52z"/>
-                <path d="M20 78h58"/>
-              </svg>
+            <div class="kf-service-card-media">
+              <picture>
+                <source type="image/webp"
+                        srcset="/images/refs/helmet-wrap-finished-640.webp 640w, /images/refs/helmet-wrap-finished-1024.webp 1024w"
+                        sizes="(min-width: 800px) 50vw, 100vw">
+                <img src="/images/refs/helmet-wrap-finished.jpg"
+                     alt="Matte black full-face helmet with gloss accents and red pinstripes on the K Films workbench"
+                     width="1024" height="682" loading="lazy" decoding="async">
+              </picture>
             </div>
             <div class="kf-service-card-body">
               <h3>Helmet wraps</h3>

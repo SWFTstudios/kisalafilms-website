@@ -68,6 +68,7 @@ export function metroColorToFilm(c: MetroColor): FilmRow | null {
     vinyl_markup: VINYL_MARKUP,
     price_synced_at: "",
     updated_at: "",
+    source: "metro",
   };
 }
 

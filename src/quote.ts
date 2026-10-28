@@ -100,6 +100,15 @@ function normalise(body: Record<string, unknown>) {
     photoCount: count(body.photo_count),
     summary: text(body.summary, CAP.long),
     page: text(body.page, CAP.medium),
+    internalQuoteSheet: text(body.internal_quote_sheet, 12000),
+    internalQuoteJson: text(
+      typeof body.internal_quote_json === "string"
+        ? body.internal_quote_json
+        : body.internal_quote_json
+          ? JSON.stringify(body.internal_quote_json)
+          : "",
+      20000
+    ),
   };
 }
 
@@ -150,8 +159,9 @@ export async function recordQuoteRequest(
          description, finish, desired_colour, handoff, pickup_zip,
          customer_name, customer_email, customer_phone, instagram,
          preferred_contact, photo_count, summary, page,
-         referer, user_agent, country
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         referer, user_agent, country,
+         internal_quote_sheet, internal_quote_json
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
       .bind(
         record.id,
@@ -182,12 +192,66 @@ export async function recordQuoteRequest(
         record.page,
         text(request.headers.get("Referer"), CAP.medium),
         text(request.headers.get("User-Agent"), CAP.medium),
-        text(request.headers.get("CF-IPCountry"), 8)
+        text(request.headers.get("CF-IPCountry"), 8),
+        record.internalQuoteSheet || null,
+        record.internalQuoteJson || null
       )
       .run();
   } catch (err) {
-    console.error("quote request insert failed", record.id, String(err));
-    return json({ ok: true, id: record.id, stored: false });
+    // Older DBs without the internal columns still get the lead.
+    const message = String(err);
+    if (!/internal_quote/i.test(message)) {
+      console.error("quote request insert failed", record.id, message);
+      return json({ ok: true, id: record.id, stored: false });
+    }
+    try {
+      await env.DB.prepare(
+        `INSERT INTO quote_requests (
+           id, created_at, item_type, services, service_other,
+           bike_make, bike_model, bike_year, bike_style,
+           helmet_brand, helmet_model, helmet_size, helmet_style,
+           description, finish, desired_colour, handoff, pickup_zip,
+           customer_name, customer_email, customer_phone, instagram,
+           preferred_contact, photo_count, summary, page,
+           referer, user_agent, country
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+        .bind(
+          record.id,
+          record.createdAt,
+          record.itemType,
+          record.services,
+          record.serviceOther,
+          record.bikeMake,
+          record.bikeModel,
+          record.bikeYear,
+          record.bikeStyle,
+          record.helmetBrand,
+          record.helmetModel,
+          record.helmetSize,
+          record.helmetStyle,
+          record.description,
+          record.finish,
+          record.desiredColour,
+          record.handoff,
+          record.pickupZip,
+          record.name,
+          record.email,
+          record.phone,
+          record.instagram,
+          record.preferredContact,
+          record.photoCount,
+          record.summary,
+          record.page,
+          text(request.headers.get("Referer"), CAP.medium),
+          text(request.headers.get("User-Agent"), CAP.medium),
+          text(request.headers.get("CF-IPCountry"), 8)
+        )
+        .run();
+    } catch (err2) {
+      console.error("quote request insert failed", record.id, String(err2));
+      return json({ ok: true, id: record.id, stored: false });
+    }
   }
 
   return json({ ok: true, id: record.id, stored: true });

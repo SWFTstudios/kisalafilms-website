@@ -8,12 +8,13 @@
  * photos are the whole point of this form, and the native post is the only path
  * they survive.
  *
- * So this file never stands between the rider and the send. It validates,
- * curates the file list, fills the hidden summary field, fires a best-effort
- * record at /api/quote with keepalive so the lead lands in D1 even as the page
- * unloads, and then lets the browser submit. If /api/quote is down, or this
- * script throws before it runs, or JavaScript never loaded at all, the form
- * still posts and the lead still arrives.
+ * So this file never stands between the rider and the send for long. It
+ * validates, curates the file list, fills the hidden summary field, asks the
+ * Worker for an owner-only internal pricing sheet (short timeout), fires a
+ * best-effort record at /api/quote with keepalive, and then lets the browser
+ * submit. If the estimate or /api/quote is down, or this script throws before
+ * it runs, or JavaScript never loaded at all, the form still posts and the
+ * lead still arrives.
  *
  * The conversion event fires on /quote-thanks rather than here, for the reason
  * analytics.js already documents: the redirect target is the only thing that
@@ -278,6 +279,9 @@
 
   /* ---- Summary ----------------------------------------------------------- */
   const summaryField = $("[data-summary-field]");
+  const internalSheetField = $("[data-internal-sheet]");
+  const ESTIMATE_ENDPOINT = QUOTE.estimateEndpoint || "/api/quote/estimate";
+  const ESTIMATE_TIMEOUT_MS = QUOTE.estimateTimeoutMs || 2500;
 
   const val = (name) => {
     const el = form.elements[name];
@@ -505,6 +509,7 @@
       preferred_contact: checkedValues("preferred_contact")[0] || "",
       photo_count: picked.current.length + picked.inspiration.length,
       summary: summaryField ? summaryField.value : "",
+      internal_quote_sheet: internalSheetField ? internalSheetField.value : "",
       page: window.location.pathname + window.location.search,
     };
 
@@ -517,6 +522,54 @@
       }).catch(() => {});
     } catch {
       /* The lead is already going out by native post; nothing to recover. */
+    }
+  }
+
+  /**
+   * Owner-only pricing sheet for the FormSubmit inbox.
+   * Never written into the visible summary. Failure is silent — the lead still sends.
+   */
+  async function fillInternalEstimate() {
+    if (!internalSheetField) return;
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer =
+      controller &&
+      setTimeout(() => {
+        try {
+          controller.abort();
+        } catch {
+          /* ignore */
+        }
+      }, ESTIMATE_TIMEOUT_MS);
+
+    try {
+      const res = await fetch(ESTIMATE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          item_type: itemValue(),
+          services: checkedValues("services"),
+          bike_make: val("bike_make"),
+          bike_model: val("bike_model"),
+          bike_year: val("bike_year"),
+          bike_style: val("bike_style"),
+          helmet_brand: val("helmet_brand"),
+          helmet_model: val("helmet_model"),
+          finish: val("finish"),
+          desired_colour: val("desired_colour"),
+          description: val("description"),
+        }),
+        signal: controller ? controller.signal : undefined,
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data && typeof data.sheet === "string" && data.sheet) {
+        internalSheetField.value = data.sheet;
+      }
+    } catch {
+      /* Estimate is a garage aid, not part of delivery. */
+    } finally {
+      if (timer) clearTimeout(timer);
     }
   }
 
@@ -541,24 +594,28 @@
       return;
     }
 
+    // Hold the native post long enough to fetch the owner-only sheet, then
+    // submit via the HTMLFormElement method so this listener does not re-enter.
+    e.preventDefault();
     sending = true;
     updateSummary();
-    recordLead();
-
-    if (window.KisalaTrack) {
-      window.KisalaTrack("quote_submit", {
-        label: itemValue() || "unspecified",
-        photos: picked.current.length + picked.inspiration.length,
-      });
-    }
 
     if (submitBtn) submitBtn.disabled = true;
     if (submitLabel) submitLabel.textContent = "Sending…";
     announce("Sending your request.");
 
-    // No preventDefault: the browser posts the form itself, photos and all.
-    // The disabled button is what stops a second submit, and it is set after
-    // the event so it cannot suppress the submission it belongs to.
+    fillInternalEstimate().finally(() => {
+      recordLead();
+
+      if (window.KisalaTrack) {
+        window.KisalaTrack("quote_submit", {
+          label: itemValue() || "unspecified",
+          photos: picked.current.length + picked.inspiration.length,
+        });
+      }
+
+      HTMLFormElement.prototype.submit.call(form);
+    });
   });
 
   /* ---- Wire-up ------------------------------------------------------------ */

@@ -80,11 +80,17 @@ Retired routes (`/films`, `/watch`, `/series`, `/dispatches`, `/inspo-museum`, `
 
 [`/quote`](./public/quote.html) is the page the whole site funnels into, and the one to be most careful with. It asks for the least a real price depends on: bike or helmet, what you want done, photos, and how to reach you. Steps that do not apply are hidden and the remaining ones renumber, so a helmet-only request never sees a year/make/model field.
 
-**It posts natively as `multipart/form-data` to FormSubmit and must stay that way.** FormSubmit is the only path that delivers the photos, it sits behind a Cloudflare managed challenge so it cannot be proxied from the Worker, and its AJAX endpoint accepts a request with attachments and silently drops them. `quote.js` validates and curates the file list first, then gets out of the way — it does not submit the form, the browser does.
+**It posts as `multipart/form-data` to FormSubmit and must stay that way.** FormSubmit is the only path that delivers the photos, it sits behind a Cloudflare managed challenge so it cannot be proxied from the Worker, and its AJAX endpoint accepts a request with attachments and silently drops them. `quote.js` validates and curates the file list, briefly asks the Worker for an owner-only pricing sheet, then submits via the browser’s native form post.
 
-That has a consequence worth internalising: **a JavaScript error must never be able to swallow a lead.** `validate()` runs inside a `try`/`catch`, and a validator that throws lets the submission through rather than blocking it. A half-checked request costs a follow-up email; a suppressed one costs the job. The form also works with JavaScript off — every field is present, nothing is gated behind a script, and `npm test` asserts that.
+That has a consequence worth internalising: **a JavaScript error must never be able to swallow a lead.** `validate()` runs inside a `try`/`catch`, and a validator that throws lets the submission through rather than blocking it. A half-checked request costs a follow-up email; a suppressed one costs the job. The form also works with JavaScript off — every field is present, nothing is gated behind a script, and `npm test` asserts that. Without JS the owner-only sheet is simply absent from the email.
 
 Alongside the native post, `quote.js` fires a best-effort `fetch` with `keepalive` at `POST /api/quote`, which records the text fields in D1 ([`src/quote.ts`](./src/quote.ts), [`migrations/0004_quote_requests.sql`](./migrations/0004_quote_requests.sql)). It is deliberately fire-and-forget: the email is the delivery mechanism, the database is the record, and losing the record must not cost the email.
+
+### Owner-only internal pricing sheet
+
+Before the FormSubmit post, `quote.js` calls `POST /api/quote/estimate` ([`src/quote-estimate.ts`](./src/quote-estimate.ts)) with a short timeout (`quote.estimateTimeoutMs`). The Worker matches finish/colour against Metro ([`vinyl-colors.json`](./public/data/vinyl-colors.json)) and Vinyl Frog ([`vinylfrog-colors.json`](./public/data/vinylfrog-colors.json)), estimates rolls with waste, and returns a plaintext sheet. That sheet is stuffed into the hidden `internal_quote_sheet` field so it appears in your FormSubmit inbox — **never on the page UI** and never in a customer autoresponse (`/quote` has none).
+
+Tunables live in `quoteInternal` in [`kisala-config.js`](./public/js/kisala-config.js) (mirrored in the Worker): waste factor, vinyl markup, bike style → body class / labour difficulty.
 
 Upload limits live in `quote.uploads` in the config — 8 photos per uploader, 5MB each, 9MB combined against FormSubmit's 10MB ceiling.
 
@@ -265,7 +271,7 @@ Until the real exports land, `public/images/brand/` holds the old metallic mark 
 
 ## Data catalogues
 
-[`motorcycles.json`](./public/data/motorcycles.json) (year/make/model + fairing R&R labour bands), [`vinyl-colors.json`](./public/data/vinyl-colors.json) (Metro Restyling film catalogue + stock), [`vinyl-size-guide.json`](./public/data/vinyl-size-guide.json), [`films.json`](./public/data/films.json) (Vimeo ids, runtimes and cities for the archive), [`products.json`](./public/data/products.json).
+[`motorcycles.json`](./public/data/motorcycles.json) (year/make/model + fairing R&R labour bands), [`vinyl-colors.json`](./public/data/vinyl-colors.json) (Metro Restyling film catalogue + stock), [`vinylfrog-colors.json`](./public/data/vinylfrog-colors.json) (Vinyl Frog catalogue + roll prices for owner-only quote estimates), [`vinyl-size-guide.json`](./public/data/vinyl-size-guide.json), [`films.json`](./public/data/films.json) (Vimeo ids, runtimes and cities for the archive), [`products.json`](./public/data/products.json).
 
 Editable CSVs for film notes live in [`doc/spreadsheets/`](./doc/spreadsheets/). The **vinyl catalog** reads [`vinyl-colors.json`](./public/data/vinyl-colors.json) in the browser (JSON-first). Optional D1 price overlay via `/api/films` when seeded.
 
@@ -305,7 +311,7 @@ Most tiles are currently filled in only as far as the repository can vouch for: 
 
 Public browse lives at [`/vinyl-catalog`](./public/vinyl-catalog.html) and reads **[`public/data/vinyl-colors.json`](./public/data/vinyl-colors.json) first** (Metro Restyling export — ~1,100 films). No database required to show the grid.
 
-Optional live roll prices can overlay from D1 (`GET /api/films`) when that table is seeded; browsing never depends on it. Rebuild Metro JSON with [`build-vinyl-catalog.py`](./scripts/build-vinyl-catalog.py). Film detail and project onboarding use the same JSON via [`vinyl-catalog-data.js`](./public/js/vinyl-catalog-data.js).
+Optional live roll prices can overlay from D1 (`GET /api/films`) when that table is seeded; browsing never depends on it. Rebuild Metro JSON with [`build-vinyl-catalog.py`](./scripts/build-vinyl-catalog.py). Rebuild Vinyl Frog JSON (used by the owner-only `/quote` estimator) with [`build-vinylfrog-catalog.py`](./scripts/build-vinylfrog-catalog.py), then optionally import into D1 with [`import-vinylfrog-d1.py`](./scripts/import-vinylfrog-d1.py). Film detail and project onboarding use the Metro JSON via [`vinyl-catalog-data.js`](./public/js/vinyl-catalog-data.js).
 
 Wrap Studio’s in-form browse panel still uses [`vinyl-catalog.js`](./public/js/vinyl-catalog.js) over the same JSON file.
 

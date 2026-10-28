@@ -260,6 +260,11 @@ window.KISALA_CONFIG = {
      step: the Worker is the one that decides. */
   quote: {
     endpoint: "/api/quote",
+    estimateEndpoint: "/api/quote/estimate",
+    /* How long quote.js waits for the owner-only sheet before giving up and
+       submitting without it. Mirrored server-side math lives in
+       src/quote-estimate.ts. */
+    estimateTimeoutMs: 2500,
     uploads: {
       maxFiles: 8,          // per uploader
       maxFileMb: 5,
@@ -276,6 +281,49 @@ window.KISALA_CONFIG = {
       enabled: false,
       label: "Ship / mail my helmet",
       note: "Post the helmet to the garage and we return it when it's done.",
+    },
+  },
+
+  /* ---- Owner-only internal quote sheet (/quote email) -------------------
+     Never rendered on the customer-facing form. Used by src/quote-estimate.ts
+     (mirrored constants) to fill the FormSubmit `internal_quote_sheet` field
+     so the garage inbox gets materials + labour + a reply range.
+     REVIEW: wasteFactor and rangePad after a few real Metro/Vinyl Frog buys. */
+  quoteInternal: {
+    wasteFactor: 0.25,
+    vinylMarkup: 1.4, // keep in sync with projectCheckout.vinylMarkup
+    rangePadLow: 0.9,
+    rangePadHigh: 1.15,
+    rollWidthFt: 5,
+    rollLengthFt: 25,
+    candidatesPerVendor: 3,
+    /* Fallback roll cost when neither vendor has a synced price for the match. */
+    fallbackRollCostUsd: 450,
+    /* Quote form bike_style → projectCheckout.fullFeetByBody key. */
+    styleToBodyClass: {
+      Sport: "full_sport",
+      Naked: "naked_minimal",
+      Cruiser: "cruiser_simple",
+      Touring: "touring_complex",
+      Adventure: "adventure_touring",
+      Dirt: "dirt_mx",
+      Supermoto: "half_faired",
+      Scooter: "scooter_enclosed",
+      Other: "unknown",
+      "": "unknown",
+    },
+    /* Quote form bike_style → motorcycle labour difficulty 1–5. */
+    styleToDifficulty: {
+      Sport: 4,
+      Naked: 2,
+      Cruiser: 2,
+      Touring: 5,
+      Adventure: 4,
+      Dirt: 2,
+      Supermoto: 3,
+      Scooter: 3,
+      Other: 3,
+      "": 3,
     },
   },
 
