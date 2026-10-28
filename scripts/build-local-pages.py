@@ -2,13 +2,14 @@
 """Generate the three local landing pages.
 
 Chrome is duplicated per page across this site rather than templated, so these
-are composed from locations.html's header, footer and <head> and written out as
-static files — the same "generate once, commit the output" approach shop.html
-uses. Re-run it after editing the chrome on locations.html.
+are composed from scripts/v4_page.py's head and the home page's v4 chrome, and
+written out as static files — the same "generate once, commit the output" approach shop.html
+uses. Re-run it after editing the chrome on index.html.
 
 Every factual claim here is one the site can stand behind: one garage in Jersey
 City, pickup runs to Brooklyn and NYC, the published hours, the email address.
-No ratings, no reviews, no street address, no invented projects or credentials.
+No ratings, no reviews, no invented projects or credentials. The street address
+is the studio's own, published in kisala-config.js.
 Neighbourhood names are geography, not a claim to have worked in them.
 
 Usage:
@@ -21,9 +22,10 @@ import json
 import re
 from pathlib import Path
 
+from v4_page import btn, crumbs, finale, mask, page, picture
+
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
-SOURCE = PUBLIC / "locations.html"
 OUTDIR = PUBLIC / "locations"
 
 SITE = "https://kisalafilms-website.elombe.workers.dev"
@@ -39,7 +41,8 @@ CITIES = [
             "or have your bike collected from $75."
         ),
         "eyebrow": "Jersey City, NJ",
-        "h1": "Motorcycle wraps in Jersey City",
+        "h1": ["Motorcycle wraps", "in <em>Jersey City.</em>"],
+        "hero": "/images/refs/ref-07-low-nose",
         "intro": (
             "This is the garage. Not a franchise counter with a queue behind it &mdash; one "
             "bench, one installer, and your bike on it for two or three days. Every wrap "
@@ -74,16 +77,13 @@ CITIES = [
         "faq": [
             (
                 "Where in Jersey City are you?",
-                "The garage is in Jersey City, NJ and it&rsquo;s appointment-only, so the exact "
-                "address goes out with your confirmed booking rather than sitting on a public "
-                "page. Hours are Monday to Friday, 10:00 AM to 6:00 PM, with weekends by "
-                "arrangement.",
+                "95 Christopher Columbus Dr, Jersey City, NJ 07302. It&rsquo;s appointment-only: "
+                "Monday to Friday, 10:00 AM to 6:00 PM, with weekends by arrangement.",
             ),
             (
                 "Do I need an appointment?",
                 "Yes. There is one bay and one person in it, so turning up unannounced means "
-                "waiting or coming back. Send a build sheet through the Wrap Studio and "
-                "we&rsquo;ll fix a window.",
+                "waiting or coming back. Start your build online and we&rsquo;ll fix a window.",
             ),
             (
                 "How long will my bike be with you?",
@@ -104,7 +104,8 @@ CITIES = [
             "changes, chrome delete and tank protection."
         ),
         "eyebrow": "Brooklyn, NY",
-        "h1": "Motorcycle wraps for Brooklyn riders",
+        "h1": ["Wraps for", "<em>Brooklyn</em> riders."],
+        "hero": "/images/refs/ref-12-night-motion",
         "intro": (
             "Straight answer first: there is no K Films shop in Brooklyn. There is one "
             "garage, and it&rsquo;s in Jersey City. What Brooklyn gets is the van &mdash; I "
@@ -130,7 +131,7 @@ CITIES = [
                 "Street-parked bikes get looked at properly",
                 "A bike that lives outside in Brooklyn has usually collected some things: "
                 "scuffed tank edges, a mirror that met a van, oxidised plastics, a previous "
-                "wrap someone rushed. Send photos with your build sheet and I&rsquo;ll tell you "
+                "wrap someone rushed. Send photos when you start your build and I&rsquo;ll tell you "
                 "what film will sit right and what needs sorting first &mdash; before you&rsquo;ve "
                 "paid anything.",
             ),
@@ -162,8 +163,8 @@ CITIES = [
             (
                 "Can I come and watch the install?",
                 "You&rsquo;re welcome at the garage while the bike is there, by arrangement. "
-                "Most Brooklyn riders would rather see the film of it than sit in Jersey City "
-                "for three days, which is why every build gets shot.",
+                "Most Brooklyn riders would rather not sit in Jersey City for three days, which "
+                "is why progress photos go up in your client portal at every stage.",
             ),
         ],
         "cross": ["jersey-city", "nyc"],
@@ -178,7 +179,8 @@ CITIES = [
             "and delivered back."
         ),
         "eyebrow": "New York City",
-        "h1": "Motorcycle wraps for New York City riders",
+        "h1": ["Wraps for", "<em>New York</em> riders."],
+        "hero": "/images/refs/ref-04-rear-3q",
         "intro": (
             "Wrapping a bike in New York has one real obstacle, and it isn&rsquo;t the wrap. "
             "It&rsquo;s that everything involves moving the bike somewhere, and moving the bike "
@@ -224,9 +226,9 @@ CITIES = [
             (
                 "Which boroughs do you collect from?",
                 "Manhattan, Brooklyn, Queens, the Bronx and Staten Island. Pickup starts at "
-                "{pickup}. If you&rsquo;re further out than that, say where you are in the Wrap "
-                "Studio and I&rsquo;ll tell you honestly whether I can reach you rather than "
-                "quote first and work it out later.",
+                "{pickup}. If you&rsquo;re further out than that, say where you are when you start "
+                "your build and I&rsquo;ll tell you honestly whether I can reach you rather "
+                "than quote first and work it out later.",
             ),
             (
                 "Can you wrap it without taking it away?",
@@ -237,9 +239,9 @@ CITIES = [
             ),
             (
                 "How do I know what it'll cost before it leaves?",
-                "Build the sheet in the Wrap Studio. It gives you a ballpark on the wrap and a "
-                "separate line for transport before you send anything, and I come back with a "
-                "real number off your photos.",
+                "Start your build online with the bike&rsquo;s details and photos. The written "
+                "quote that comes back has transport as its own line, so you see it before you "
+                "agree to anything.",
             ),
         ],
         "cross": ["jersey-city", "brooklyn"],
@@ -252,78 +254,8 @@ CITY_BY_ZONE = {c["zone"]: c for c in CITIES}
 ZONE_LABELS = {"jersey-city": "Jersey City", "brooklyn": "Brooklyn", "nyc": "NYC"}
 
 
-# The header and footer are no longer copied out of locations.html. Both pages
-# carry the v3 chrome, which build-v3-chrome.py writes from index.html on the
-# step after this one, so all these pages need is the markers to fill.
-HEADER_BLOCK = (
-    "  <!-- CHROME:HEADER start — synced by scripts/build-v3-chrome.py, edit index.html -->\n"
-    "  <!-- CHROME:HEADER end -->\n"
-)
-FOOTER_BLOCK = (
-    "  <!-- CHROME:FOOTER start — synced by scripts/build-v3-chrome.py, edit index.html -->\n"
-    "  <!-- CHROME:FOOTER end -->\n"
-    "\n"
-    '  <script src="/js/config-apply.js"></script>\n'
-    '  <script src="/js/nav.js"></script>\n'
-    '  <script src="/js/site.js"></script>\n'
-    "\n"
-    "</body>\n"
-    "</html>\n"
-)
-
-
-def head_template() -> str:
-    """The <head> of locations.html, which these pages are siblings of."""
-    html = SOURCE.read_text(encoding="utf-8")
-    head = re.search(r"<!DOCTYPE html>.*?<head>\n(.*?)</head>", html, re.S)
-    if not head:
-        raise SystemExit("Could not read the <head> out of locations.html")
-    return head.group(1)
-
-
-# The chrome is lifted from a page that has already been through build-seo.py and
-# build-jsonld.mjs, so its <head> carries that page's canonical, social tags and
-# structured data. Copied across verbatim, every city page would claim to be
-# /locations. build-seo.py rewrites the canonical and social tags on its own pass,
-# but it does not touch JSON-LD and the city pages are not in build-jsonld.mjs's
-# page map — so the inherited graph has to be removed here.
-#
-# Each pattern takes the tag's whole line, trailing newline included. Leaving the
-# newline behind would leave a blank line per stripped tag, and since the chrome
-# is re-copied on every run those blank lines pile up build after build.
-INHERITED = [
-    r'[ \t]*<!-- JSON-LD: generated by scripts/build-jsonld\.mjs -->\s*<script type="application/ld\+json">[\s\S]*?</script>\n',
-    r'[ \t]*<script type="application/ld\+json">[\s\S]*?</script>\n',
-    r'[ \t]*<!-- SEO: generated by scripts/build-seo\.py -->\n',
-    r'[ \t]*<link rel="canonical"[^>]*>\n',
-    r'[ \t]*<meta property="og:[^"]+"[^>]*>\n',
-    r'[ \t]*<meta name="twitter:[^"]+"[^>]*>\n',
-    r'[ \t]*<meta name="robots"[^>]*>\n',
-]
-
-
-def head_for(city: dict, head_template: str) -> str:
-    """Rewrite the shared <head> with this page's title and description.
-
-    Canonical, Open Graph and Twitter tags are deliberately not written here —
-    scripts/build-seo.py owns those for every page on the site and derives them
-    from the title and description below. Run it after this.
-    """
-    head = head_template
-    for pattern in INHERITED:
-        head = re.sub(pattern, "", head)
-
-    head = re.sub(r"<title>.*?</title>", f"<title>{city['title']}</title>", head, flags=re.S)
-    return re.sub(
-        r'<meta name="description" content=".*?">',
-        f'<meta name="description" content="{city["description"]}">',
-        head,
-        flags=re.S,
-    )
-
-
 def jsonld(city: dict) -> str:
-    """Only verifiable claims: no rating, no review, no street address."""
+    """Only verifiable claims: no rating, no review."""
     # Extensionless: Cloudflare Static Assets 307-redirects the .html form, so
     # naming it here would point every URL in the graph at a redirect. Matches
     # canonical_path() in scripts/build-seo.py.
@@ -347,11 +279,13 @@ def jsonld(city: dict) -> str:
         "@type": "AutoBodyShop",
         "@id": "{SITE}/#garage",
         "name": "K Films",
-        "description": "Motorcycle wrap film and transformation film, by appointment, from a one-person garage in Jersey City, NJ.",
+        "description": "Motorcycle colour-change wraps, paint protection film and custom liveries, by appointment, from a one-person studio in Jersey City, NJ.",
         "url": "{SITE}/",
         "email": "elombe@swftstudios.com",
         "address": {{
           "@type": "PostalAddress",
+          "streetAddress": "95 Christopher Columbus Dr",
+          "postalCode": "07302",
           "addressLocality": "Jersey City",
           "addressRegion": "NJ",
           "addressCountry": "US"
@@ -388,7 +322,7 @@ def jsonld(city: dict) -> str:
         "@type": "BreadcrumbList",
         "itemListElement": [
           {{ "@type": "ListItem", "position": 1, "name": "Home", "item": "{SITE}/" }},
-          {{ "@type": "ListItem", "position": 2, "name": "Locations", "item": "{SITE}/locations" }},
+          {{ "@type": "ListItem", "position": 2, "name": "The Studio", "item": "{SITE}/studio" }},
           {{ "@type": "ListItem", "position": 3, "name": "{city['eyebrow']}", "item": "{url}" }}
         ]
       }},
@@ -421,176 +355,114 @@ def body_for(city: dict) -> str:
             "roundtrip": '<span data-cfg="transport.roundTrip.from">$150</span>'}
 
     local = "\n".join(
-        f"""        <article class="kf-card">
-          <h3>{heading}</h3>
-          <p>{copy.format(**fees)}</p>
-        </article>"""
-        for heading, copy in city["local"]
+        f'          <li class="rv"><span>{i:02d}</span><div><h3>{heading}</h3><p>{copy.format(**fees)}</p></div></li>'
+        for i, (heading, copy) in enumerate(city["local"], 1)
     )
 
     faq = "\n".join(
-        f"""        <div class="faq-item{' open' if i == 0 else ''}"><button class="faq-q" type="button">{q}<span class="mark">{'–' if i == 0 else '+'}</span></button><p class="faq-a">{a.format(**fees)}</p></div>"""
+        f'          <div class="faq-item{" open" if i == 0 else ""}"><button class="faq-q" type="button">{q}<span class="mark">{"–" if i == 0 else "+"}</span></button><p class="faq-a">{a.format(**fees)}</p></div>'
         for i, (q, a) in enumerate(city["faq"])
     )
 
     cross = "\n".join(
-        f"""        <article class="kf-card">
-          <span class="kf-chip">{'The garage' if other['zone'] == 'jersey-city' else 'Pickup zone'}</span>
-          <h3>{other['eyebrow']}</h3>
-          <p>{other['transport_note']}</p>
-          <p><a class="link-arrow" href="/locations/{other['slug']}.html">Wraps in {ZONE_LABELS[other['zone']]}</a></p>
-        </article>"""
+        f"""          <a class="card rv" href="/locations/{other['slug']}">
+            <p class="label">{'The studio' if other['zone'] == 'jersey-city' else 'Pickup run'}</p>
+            <h3>{other['eyebrow']}</h3>
+            <p>{other['transport_note']}</p>
+            <span class="link-line">Wraps in {ZONE_LABELS[other['zone']]} <span class="btn-arrow" aria-hidden="true"></span></span>
+          </a>"""
         for other in (CITY_BY_ZONE[z] for z in city["cross"])
     )
 
     ride_in = (
-        """        <article class="kf-card">
-          <span class="kf-chip">No charge</span>
-          <h3>Ride it in</h3>
-          <p>Straight to the garage, by appointment. Nothing added to the quote.</p>
-        </article>"""
+        '<div class="card rv"><p class="label">No charge</p><h3>Ride it in</h3>'
+        "<p>Straight to the studio at 95 Christopher Columbus Dr, by appointment. Nothing added to the quote.</p></div>"
         if zone == "jersey-city"
-        else """        <article class="kf-card">
-          <span class="kf-chip">No charge</span>
-          <h3>Ride it over yourself</h3>
-          <p>If you don&rsquo;t mind the trip to Jersey City, drop-off is free. Plenty of riders would rather not do it twice.</p>
-        </article>"""
+        else '<div class="card rv"><p class="label">No charge</p><h3>Ride it over yourself</h3>'
+        "<p>If you don&rsquo;t mind the trip to Jersey City, drop-off is free. Plenty of riders would rather not do it twice.</p></div>"
     )
 
-    return f"""  <section class="page-hero" data-local-zone="{zone}">
-    <div class="kf-container">
-      <p class="eyebrow">{city['eyebrow']}</p>
-      <h1>{city['h1']}</h1>
-      <p class="p-lg">{city['intro']}</p>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="/quote.html" data-track="cta_click" data-track-label="{zone}-hero">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
-        <a class="btn btn-ghost" href="/pricing.html">See pricing</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="kf-section">
-    <div class="kf-container">
-      <div class="kf-section-head reveal">
-        <p class="eyebrow">What this looks like from where you are</p>
-        <h2>{city['eyebrow']}, specifically</h2>
-      </div>
-      <div class="kf-cards reveal">
-{local}
-      </div>
-    </div>
-  </section>
-
-  <section class="kf-section kf-section--surface kf-section--hairline" id="getting-here">
-    <div class="kf-container">
-      <div class="kf-section-head reveal">
-        <p class="eyebrow">Getting the bike here</p>
-        <h2>Three ways, one of them free</h2>
-        <p class="p-lg">{city['transport_note']} Transport is quoted with the build, never charged up front.</p>
-      </div>
-      <div class="kf-cards reveal">
-{ride_in}
-        <article class="kf-card">
-          <span class="kf-chip">From {fees['pickup']}</span>
-          <h3>I collect it</h3>
-          <p>The van comes to you and the bike goes back to the bench. Tell me where it&rsquo;s parked and whether it runs.</p>
-        </article>
-        <article class="kf-card">
-          <span class="kf-chip">From {fees['roundtrip']}</span>
-          <h3>Collect and deliver back</h3>
-          <p>Picked up before the build, delivered back after. You never move it yourself.</p>
-        </article>
-      </div>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="/quote.html" data-track="cta_click" data-track-label="{zone}-transport">Price it with pickup</a>
-        <a class="btn btn-ghost" href="/locations.html#zones">The whole run</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="kf-section" data-cfg-show="founding">
-    <div class="kf-container">
-      <div class="kf-banner reveal">
+    return f"""
+    <section class="page-hero" data-local-zone="{zone}" aria-labelledby="page-title">
+      <div class="page-hero-media">{picture(city['hero'], '', attrs='fetchpriority="high" decoding="async"')}</div>
+      <div class="wrap page-hero-grid">
         <div>
-          <p class="eyebrow">Founding riders</p>
-          <h2 class="h3">The first <span data-cfg="founding.slotsTotal" data-cfg-format="integer">8</span> builds set the rate.</h2>
-          <p class="p">I&rsquo;m building this portfolio in public and the riders who come in early get the founding rate for it &mdash; <strong><span data-cfg="founding.slotsRemaining" data-cfg-format="integer">6</span> still open</strong>. Same cast film, same panels-off install.</p>
+          {crumbs([("Home", "/"), ("The Studio", "/studio"), (city['eyebrow'], None)])}
+          {mask(city['h1'], "display-xl", "h1", "page-title")}
         </div>
-        <a class="btn btn-primary" href="/pricing.html" data-track="cta_click" data-track-label="{zone}-founding">See the rates</a>
+        <div>
+          <p class="lede rv">{city['intro']}</p>
+          <div class="rv">{btn("Start your build", track=f"{zone}-hero")}</div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="kf-section kf-section--surface kf-section--hairline">
-    <div class="kf-container kf-container--narrow">
-      <div class="kf-section-head reveal">
-        <p class="eyebrow">Straight answers</p>
-        <h2>{city['eyebrow']} questions</h2>
+    <section class="section" aria-labelledby="local-title">
+      <div class="wrap statement">
+        <div>
+          <p class="label rv">From where you are</p>
+          {mask([f"{city['eyebrow']},", "<em>specifically.</em>"], "display-m", "h2", "local-title")}
+        </div>
+        <ul class="lines">
+{local}
+        </ul>
       </div>
-      <div class="faq-list" data-faq>
+    </section>
+
+    <section class="section hairline" id="getting-here" aria-labelledby="transport-title">
+      <div class="wrap">
+        <div class="section-head section-head--split">
+          <div>
+            <p class="label rv">Getting the bike here</p>
+            {mask(["Three ways,", "<em>one of them free.</em>"], "display-m", "h2", "transport-title")}
+          </div>
+          <p class="body rv rv-d1">{city['transport_note']} Transport is quoted with the build, never charged up front.</p>
+        </div>
+        <div class="cards">
+          {ride_in}
+          <div class="card rv rv-d1"><p class="label">From {fees['pickup']}</p><h3>We collect it</h3><p>The van comes to you and the bike goes to the studio. Say where it&rsquo;s parked and whether it runs.</p></div>
+          <div class="card rv rv-d2"><p class="label">From {fees['roundtrip']}</p><h3>Collect and return</h3><p>Picked up before the build, delivered back after. You never move it yourself.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="faq-title">
+      <div class="wrap statement">
+        <div>
+          <p class="label rv">Straight answers</p>
+          <h2 class="display-s rv" id="faq-title" style="margin-top:18px">{city['eyebrow']} questions.</h2>
+          <p class="rv" style="margin-top:28px"><a class="link-line" href="/faq">All questions <span class="btn-arrow" aria-hidden="true"></span></a></p>
+        </div>
+        <div class="faq-list">
 {faq}
+        </div>
       </div>
-      <div class="btn-row">
-        <a class="btn btn-ghost" href="/faq.html">All the questions</a>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="kf-section">
-    <div class="kf-container">
-      <div class="kf-section-head reveal">
-        <p class="eyebrow">Also on the run</p>
-        <h2>Somewhere else?</h2>
-      </div>
-      <div class="kf-cards reveal">
+    <section class="section--tight" aria-labelledby="cross-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="label rv">Also on the run</p>
+          <h2 class="display-s rv" id="cross-title">Somewhere else?</h2>
+        </div>
+        <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
 {cross}
-      </div>
-    </div>
-  </section>
-
-  <section class="kf-cta">
-    <div class="kf-container kf-cta-grid">
-      <div class="reveal">
-        <h2>Ready when your bike is.</h2>
-        <p class="p-lg">Send the bike, the idea and a few photos. You get a real number back, not a category.</p>
-        <div class="btn-row">
-          <a class="btn btn-primary" href="/quote.html" data-track="cta_click" data-track-label="{zone}-final-cta">Get a quote <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
-      <div class="kf-cta-notes reveal">
-        <div class="kf-cta-note">
-          <h3>One garage</h3>
-          <p>Every wrap on this site was cut and installed in Jersey City.</p>
-        </div>
-        <div class="kf-cta-note">
-          <h3>Transport quoted up front</h3>
-          <p>You see the pickup line before you agree to anything.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-"""
+    </section>
+{finale(f"{zone}-final")}"""
 
 
 def main() -> None:
-    head = head_template()
     OUTDIR.mkdir(exist_ok=True)
 
     for city in CITIES:
-        page = (
-            "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"
-            + head_for(city, head)
-            + jsonld(city)
-            + "</head>\n<body class=\"kfilms\">\n\n"
-            + '  <a class="skip-link" href="#main">Skip to content</a>\n\n'
-            + HEADER_BLOCK
-            + '\n  <main id="main">\n\n'
-            + body_for(city)
-            + "\n  </main>\n\n"
-            + FOOTER_BLOCK
-        )
+        html = page(city["title"], city["description"], body_for(city))
+        # The city pages carry their own graph, with the FAQ read from CITIES,
+        # because build-jsonld.mjs does not know them.
+        html = html.replace("</head>", jsonld(city) + "</head>", 1)
         out = OUTDIR / f"{city['slug']}.html"
-        out.write_text(page, encoding="utf-8")
+        out.write_text(html, encoding="utf-8")
         print(f"Wrote {out.relative_to(PUBLIC)}")
 
 

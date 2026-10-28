@@ -89,6 +89,7 @@ def build_films(metro: dict, sheet: dict[str, dict[str, str]]) -> list[dict]:
                 "install_notes": row.get("install_notes") or "",
                 "recommended_for": row.get("recommended_for") or "",
                 "notes": row.get("notes") or "",
+                "source": "metro",
             }
         )
     return films

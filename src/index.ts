@@ -10,11 +10,7 @@ import {
   type D1Database,
 } from "./films";
 import { syncMetroPrices } from "./metro-prices";
-import {
-  getTheatreProject,
-  importTheatreProjects,
-  listTheatreProjects,
-} from "./theatre";
+import { syncVinylFrogPrices } from "./vinylfrog-prices";
 import {
   attachStripeSession,
   getOrderById,
@@ -28,7 +24,11 @@ import {
   type ProjectCoverage,
   type ProjectSurface,
 } from "./project-quote";
+import { type EmailBinding, type R2Bucket } from "./http";
+import { settleSession } from "./payments";
+import { routePortal } from "./portal-routes";
 import { recordQuoteRequest } from "./quote";
+import { handleQuoteEstimate } from "./quote-estimate";
 
 type Env = {
   ASSETS: {
@@ -40,6 +40,12 @@ type Env = {
   SITE_URL?: string;
   FILMS_IMPORT_TOKEN?: string;
   FOUNDER_ADMIN_TOKEN?: string;
+  PHOTOS?: R2Bucket;
+  EMAIL?: EmailBinding;
+  EMAIL_FROM?: string;
+  ADMIN_EMAILS?: string;
+  RESEND_API_KEY?: string;
+  STRIPE_API_BASE?: string;
   STYLEGUIDE_PASSWORD?: string;
 };
 
@@ -82,6 +88,58 @@ function redirect(to: string, status = 301): Response {
     status,
     headers: { Location: to, "Cache-Control": "public, max-age=3600" },
   });
+}
+
+/**
+ * Pages retired by the v4 redesign, and where each one's visitors belong now.
+ * The HTML files are gone, so no static asset answers these paths and the
+ * request reaches the Worker. Keys are extensionless, without a trailing slash.
+ */
+const RETIRED: Record<string, string> = {
+  "/about": "/studio",
+  "/contact": "/studio#message",
+  "/locations": "/studio#areas",
+  "/gallery": "/builds",
+  "/journal": "/builds",
+  "/testimonials": "/builds",
+  "/films": "/builds",
+  "/watch": "/builds",
+  "/series": "/builds",
+  "/dispatches": "/builds",
+  "/inspo-museum": "/builds",
+  "/pricing": "/services",
+  "/work-with-me": "/book",
+  "/quote": "/book",
+  "/quote-thanks": "/book-thanks",
+  "/wrap-studio": "/book",
+  "/thanks": "/book-thanks",
+  "/project": "/book",
+  "/project-thanks": "/portal",
+  "/deposit-thanks": "/portal",
+  // The cinematic photography pages that were on main before the wrap studio.
+  "/events": "/",
+  "/event-videography": "/",
+  "/portraits": "/",
+  "/creative-films": "/",
+  "/films-v2": "/",
+  "/portfolio": "/builds",
+  "/services/full-wraps": "/services/colour-change",
+  "/services/accent-package": "/services/accents",
+  "/services/transformation-film": "/services",
+  "/shop": "/services",
+  "/shop/wrap": "/finishes",
+  "/shop/photoshoot": "/services",
+  "/shop/k-merch": "/",
+  "/shop/merch": "/",
+};
+
+function retiredTarget(pathname: string): string | null {
+  const path = pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
+  if (RETIRED[path]) return RETIRED[path];
+  // Every product page under a retired shop collection goes to its collection.
+  const collection = path.match(/^\/shop\/[^/]+/);
+  if (collection) return RETIRED[collection[0]] ?? "/services";
+  return null;
 }
 
 function adminAuthed(request: Request, env: Env): boolean {
@@ -604,6 +662,19 @@ async function handleStripeWebhook(
     return json({ error: "Invalid JSON." }, 400);
   }
 
+  if (
+    event.type === "checkout.session.completed" ||
+    event.type === "checkout.session.async_payment_succeeded"
+  ) {
+    const session = event.data?.object || {};
+    // Portal payments carry a payment_id; the older /project orders don't.
+    const portalMeta = (session.metadata || {}) as Record<string, string>;
+    if (portalMeta.payment_id) {
+      await settleSession(request, env, session);
+      return json({ received: true });
+    }
+  }
+
   if (event.type === "checkout.session.completed") {
     const session = event.data?.object || {};
     const sessionId = String(session.id || "");
@@ -692,9 +763,16 @@ export default {
       return;
     }
     ctx.waitUntil(
-      syncMetroPrices(env.DB)
-        .then((r) => console.log("metro price sync", JSON.stringify(r)))
-        .catch((err) => console.error("metro price sync failed", String(err)))
+      Promise.all([
+        syncMetroPrices(env.DB)
+          .then((r) => console.log("metro price sync", JSON.stringify(r)))
+          .catch((err) => console.error("metro price sync failed", String(err))),
+        syncVinylFrogPrices(env.DB)
+          .then((r) => console.log("vinylfrog price sync", JSON.stringify(r)))
+          .catch((err) =>
+            console.error("vinylfrog price sync failed", String(err))
+          ),
+      ])
     );
   },
 
@@ -709,17 +787,26 @@ export default {
       return new Response(res.body, { status: res.status, headers });
     }
 
-    // Legacy vinyl lookbook + old theatre gallery → Flip 2.0 home grid
+    const retired = retiredTarget(url.pathname);
+    if (retired) {
+      const [path, hash] = retired.split("#");
+      return redirect(path + url.search + (hash ? `#${hash}` : ""));
+    }
+
+    if (url.pathname.startsWith("/api/")) {
+      const portal = await routePortal(request, env);
+      if (portal) return portal;
+    }
+
+    if (url.pathname === "/lookbook" || url.pathname === "/lookbook/") {
+      return redirect("/vinyl-catalog" + url.search);
+    }
     if (
-      url.pathname === "/lookbook" ||
-      url.pathname === "/lookbook/" ||
       url.pathname === "/lookbook/film" ||
       url.pathname === "/lookbook/film/" ||
-      url.pathname === "/lookbook/film.html" ||
-      url.pathname === "/theatre" ||
-      url.pathname === "/theatre/"
+      url.pathname === "/lookbook/film.html"
     ) {
-      return redirect("/" + url.search + "#theatre-grid");
+      return redirect("/vinyl-catalog/film.html" + url.search);
     }
 
     if (url.pathname === "/api/checkout/deposit") {
@@ -741,6 +828,17 @@ export default {
         return json({ error: "POST only." }, 405);
       }
       return withCors(await recordQuoteRequest(request, env), request);
+    }
+
+    // Owner-only internal pricing sheet for /quote (never shown on the form UI).
+    if (url.pathname === "/api/quote/estimate") {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { status: 204, headers: corsApi(request) });
+      }
+      if (request.method !== "POST") {
+        return json({ error: "POST only." }, 405);
+      }
+      return withCors(await handleQuoteEstimate(request, env), request);
     }
 
     if (url.pathname === "/api/quote/project") {
@@ -804,57 +902,6 @@ export default {
       const row = await getOrderById(env.DB, id);
       if (!row) return json({ error: "Order not found." }, 404);
       return json({ order: publicOrder(row) });
-    }
-
-    if (url.pathname === "/api/theatre" || url.pathname === "/api/theatre/") {
-      if (request.method === "OPTIONS") {
-        return new Response(null, { status: 204, headers: corsApi(request) });
-      }
-      if (request.method !== "GET") {
-        return json({ error: "GET only." }, 405);
-      }
-      if (!env.DB) {
-        return json({ error: "D1 database is not bound." }, 503);
-      }
-      const projects = await listTheatreProjects(env.DB);
-      return json({ projects });
-    }
-
-    if (url.pathname === "/api/theatre/import") {
-      if (request.method === "OPTIONS") {
-        return new Response(null, { status: 204, headers: corsApi(request) });
-      }
-      if (request.method !== "POST") {
-        return json({ error: "POST only." }, 405);
-      }
-      if (!env.DB) {
-        return json({ error: "D1 database is not bound." }, 503);
-      }
-      return importTheatreProjects(
-        request,
-        env.DB,
-        env.FILMS_IMPORT_TOKEN || env.FOUNDER_ADMIN_TOKEN
-      );
-    }
-
-    const theatreMatch = url.pathname.match(/^\/api\/theatre\/([^/]+)\/?$/);
-    if (theatreMatch) {
-      if (request.method === "OPTIONS") {
-        return new Response(null, { status: 204, headers: corsApi(request) });
-      }
-      if (request.method !== "GET") {
-        return json({ error: "GET only." }, 405);
-      }
-      if (!env.DB) {
-        return json({ error: "D1 database is not bound." }, 503);
-      }
-      const slug = decodeURIComponent(theatreMatch[1]);
-      if (slug === "import") {
-        return json({ error: "Not found." }, 404);
-      }
-      const project = await getTheatreProject(env.DB, slug);
-      if (!project) return json({ error: "Not found." }, 404);
-      return json({ project });
     }
 
     if (url.pathname === "/api/films/pricing.csv") {
@@ -929,8 +976,15 @@ export default {
       if (!adminAuthed(request, env)) {
         return json({ error: "Unauthorized." }, 401);
       }
+      const vendor = (url.searchParams.get("vendor") || "metro").toLowerCase();
+      if (vendor === "vinylfrog" || vendor === "all") {
+        const frog = await syncVinylFrogPrices(env.DB);
+        if (vendor === "vinylfrog") return json({ ok: true, vendor: "vinylfrog", ...frog });
+        const metro = await syncMetroPrices(env.DB);
+        return json({ ok: true, metro, vinylfrog: frog });
+      }
       const result = await syncMetroPrices(env.DB);
-      return json({ ok: true, ...result });
+      return json({ ok: true, vendor: "metro", ...result });
     }
 
     const filmMatch = url.pathname.match(/^\/api\/films\/([^/]+)\/?$/);

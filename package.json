@@ -2,7 +2,7 @@
   "name": "kisalafilms-website",
   "private": true,
   "version": "0.1.0",
-  "description": "Kisala Films (K Films) \u2014 2027 Webflow theme on Cloudflare Workers",
+  "description": "Kisala Films marketing site \u2014 motorcycle wraps \u00d7 cinema",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
@@ -11,7 +11,11 @@
     "test": "node scripts/test-pages.mjs",
     "verify:links": "node scripts/crawl-links.mjs",
     "verify:browser": "node scripts/verify-browser.mjs",
-    "audit": "node scripts/audit-pages.mjs"
+    "audit": "node scripts/audit-pages.mjs",
+    "export:copy": "node scripts/export-website-copy.mjs",
+    "test:portal": "node scripts/test-portal-api.mjs",
+    "db:migrate:local": "wrangler d1 migrations apply kisalafilms --local",
+    "test:payments": "node scripts/test-payments.mjs"
   },
   "devDependencies": {
     "jsdom": "^29.1.1",

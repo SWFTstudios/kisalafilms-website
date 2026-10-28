@@ -9,7 +9,8 @@
  * What it asserts is limited to what the site can stand behind: the business
  * name, the Jersey City locality, the email, the published hours,
  * appointment-only, and the three served areas. No aggregateRating, no review
- * markup, no street address, no telephone, no invented credentials.
+ * markup, no telephone, no invented credentials. The street address is the
+ * Jersey City HQ in kisala-config.js.
  *
  * Idempotent. Re-run after editing prices, the FAQ or the page set.
  *
@@ -59,13 +60,15 @@ const garage = () => ({
   "@id": GARAGE_ID,
   name: "K Films",
   description:
-    "Motorcycle wrap film and transformation film, by appointment, from a one-person garage in Jersey City, NJ.",
+    "Motorcycle colour-change wraps, paint protection film and custom liveries, by appointment, from a one-person studio in Jersey City, NJ.",
   url: `${SITE}/`,
   email: CONFIG.email,
-  image: `${SITE}/images/brand/kisala-films-logo.png`,
+  image: `${SITE}/images/brand/kfilms-moto-logo.png`,
   sameAs: [CONFIG.instagram],
   address: {
     "@type": "PostalAddress",
+    streetAddress: CONFIG.garage.street,
+    postalCode: CONFIG.garage.postalCode,
     addressLocality: CONFIG.garage.city,
     addressRegion: CONFIG.garage.region,
     addressCountry: CONFIG.garage.country,
@@ -180,60 +183,46 @@ const PAGES = {
     breadcrumbs([["Home", "/"], ["FAQ", "/faq.html"]]),
   ],
 
-  "pricing.html": () => [
-    garage(),
-    offer("fullWrap", "Full colour-change motorcycle wrap", "Every painted panel in premium cast film, fairings off, edges wrapped."),
-    offer("partialWrap", "Partial motorcycle wrap and accents", "Tank, tail, belly pan or stripes in cast film."),
-    offer("chromeDelete", "Motorcycle chrome delete", "Trim, badges and brightwork in gloss or satin black."),
-    offer("tankGuard", "Motorcycle tank protection film", "Clear film over the knee and buckle wear zones."),
-    breadcrumbs([["Home", "/"], ["Pricing", "/pricing.html"]]),
-  ],
-
   "services.html": () => [
     garage(),
     breadcrumbs([["Home", "/"], ["Services", "/services.html"]]),
   ],
-
-  "gallery.html": () => [breadcrumbs([["Home", "/"], ["Gallery", "/gallery.html"]])],
-  "quote.html": () => [
+  "services/colour-change.html": () => [
+    offer("fullWrap", "Motorcycle colour-change wrap", "Every painted panel in premium cast film, panels off, edges wrapped."),
+    breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Colour change", "/services/colour-change.html"]]),
+  ],
+  "services/paint-protection.html": () => [
+    offer("ppf", "Motorcycle paint protection film", "Clear, self-healing film over the tank, fairings, headlight and high-wear zones."),
+    breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Paint protection", "/services/paint-protection.html"]]),
+  ],
+  "services/accents.html": () => [
+    offer("partialWrap", "Partial motorcycle wrap and accents", "Tank, tail, fairing sides or contrast panels in cast film."),
+    breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Accents & partials", "/services/accents.html"]]),
+  ],
+  "services/custom-livery.html": () => [
+    offer("customPrint", "Custom motorcycle livery", "Printed graphics designed around the bike's bodywork, proofed before printing."),
+    breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Custom livery", "/services/custom-livery.html"]]),
+  ],
+  "services/chrome-delete.html": () => [
+    offer("chromeDelete", "Motorcycle chrome delete and trim", "Trim, shields and brightwork in gloss or satin black, with light tints and rim stripes."),
+    breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Chrome delete & trim", "/services/chrome-delete.html"]]),
+  ],
+  "builds.html": () => [breadcrumbs([["Home", "/"], ["Builds", "/builds.html"]])],
+  "builds/honda-cbr600-f4i.html": () => [
+    breadcrumbs([["Home", "/"], ["Builds", "/builds.html"], ["Honda CBR600 F4i", "/builds/honda-cbr600-f4i.html"]]),
+  ],
+  "finishes.html": () => [breadcrumbs([["Home", "/"], ["Finishes", "/finishes.html"]])],
+  "book.html": () => [
     garage(),
-    breadcrumbs([["Home", "/"], ["Get a quote", "/quote.html"]]),
+    breadcrumbs([["Home", "/"], ["Start your build", "/book.html"]]),
   ],
   "process.html": () => [
     garage(),
     breadcrumbs([["Home", "/"], ["Process", "/process.html"]]),
   ],
-  "about.html": () => [
+  "studio.html": () => [
     garage(),
-    breadcrumbs([["Home", "/"], ["About", "/about.html"]]),
-  ],
-  "locations.html": () => [
-    garage(),
-    breadcrumbs([["Home", "/"], ["Locations", "/locations.html"]]),
-  ],
-  "contact.html": () => [
-    garage(),
-    breadcrumbs([["Home", "/"], ["Contact", "/contact.html"]]),
-  ],
-  "journal.html": () => [breadcrumbs([["Home", "/"], ["Journal", "/journal.html"]])],
-  "testimonials.html": () => [breadcrumbs([["Home", "/"], ["Rider notes", "/testimonials.html"]])],
-  "shop.html": () => [breadcrumbs([["Home", "/"], ["Shop", "/shop.html"]])],
-  "wrap-studio.html": () => [
-    garage(),
-    breadcrumbs([["Home", "/"], ["Wrap Studio", "/wrap-studio.html"]]),
-  ],
-
-  "services/full-wraps.html": () => [
-    offer("fullWrap", "Full colour-change motorcycle wrap", "Every painted panel in premium cast film, fairings off, edges wrapped."),
-    breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Full colour-change wraps", "/services/full-wraps.html"]]),
-  ],
-  "services/accent-package.html": () => [
-    offer("partialWrap", "Partial motorcycle wrap and accents", "Tank, tail, belly pan or stripes in cast film."),
-    breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Partial & accents", "/services/accent-package.html"]]),
-  ],
-  "services/transformation-film.html": () => [
-    offer("filmOnly", "Motorcycle build photography and film", "Photos and video of the strip-down, the install and the finished bike."),
-    breadcrumbs([["Home", "/"], ["Services", "/services.html"], ["Transformation film", "/services/transformation-film.html"]]),
+    breadcrumbs([["Home", "/"], ["The Studio", "/studio.html"]]),
   ],
 };
 
@@ -272,8 +261,11 @@ for (const [rel, build] of Object.entries(PAGES)) {
   // anchor to is a mistake worth shouting about rather than skipping quietly —
   // silently skipping is how the home page's structured data once froze at what
   // it said before the redesign.
-  const anchor = '  <link rel="stylesheet" href="/css/kfilms.css">';
-  if (!html.includes(anchor)) {
+  const anchor = [
+    '  <link rel="stylesheet" href="/css/kfilms.css">',
+    '  <link rel="stylesheet" href="/css/kf.css">',
+  ].find((a) => html.includes(a));
+  if (!anchor) {
     console.error(`${rel}: no stylesheet anchor, skipped`);
     continue;
   }

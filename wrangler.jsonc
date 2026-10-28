@@ -13,8 +13,8 @@
        Worker running first, the basic-auth gate on /internal/* never sees the
        request and the brand guide is public. Listing only /internal/* is not
        enough: with a pattern list, a path that matches nothing and has no
-       file (every /api/* route, every Worker redirect) gets the 404 page
-       instead of the Worker. */
+       file (every /api/* route, every retired-page redirect) gets the 404
+       page instead of the Worker. */
     "run_worker_first": [
       "/*",
       "!/css/*",
@@ -49,7 +49,29 @@
      Internal docs (HTTP basic auth for everything under /internal/, e.g.
      the brand style guide — unset means /internal/* refuses all requests):
      wrangler secret put STYLEGUIDE_PASSWORD */
+  /* Client portal photos. Create once with:
+       npx wrangler r2 bucket create kisalafilms-photos */
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "kisalafilms-photos"
+    }
+  ],
+  /* Portal email (sign-in links, build updates). Sends only from a domain
+     onboarded to Cloudflare Email Sending, named by EMAIL_FROM below:
+       npx wrangler email sending enable <domain>
+     Or set a Resend key instead: wrangler secret put RESEND_API_KEY
+     With neither, mail is written to the Worker log. */
+  "send_email": [
+    {
+      "name": "EMAIL"
+    }
+  ],
   "vars": {
-    "SITE_URL": "https://kisalafilms-website.elombe.workers.dev"
+    "SITE_URL": "https://kisalafilms-website.elombe.workers.dev",
+    /* Who can open /admin, and where studio alerts go (first address). */
+    "ADMIN_EMAILS": "elombe@swftstudios.com",
+    /* e.g. "K Films <studio@yourdomain.com>". Empty until a domain is set up. */
+    "EMAIL_FROM": ""
   }
 }

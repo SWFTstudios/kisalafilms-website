@@ -26,6 +26,8 @@ export type FilmRow = {
   vinyl_markup: number;
   price_synced_at: string;
   updated_at: string;
+  /** 'metro' | 'vinylfrog' — which storefront owns this handle. */
+  source: string;
 };
 
 type FilmDbRow = {
@@ -48,6 +50,7 @@ type FilmDbRow = {
   roll_price_usd: number | null;
   price_synced_at: string | null;
   updated_at: string;
+  source: string | null;
 };
 
 export type D1Database = {
@@ -108,6 +111,7 @@ function mapFilm(row: FilmDbRow, showCostPrices: boolean): FilmRow {
     vinyl_markup: VINYL_MARKUP,
     price_synced_at: row.price_synced_at || "",
     updated_at: row.updated_at,
+    source: row.source || "metro",
   };
 }
 
@@ -153,6 +157,7 @@ function normalizeIncoming(raw: Record<string, unknown>): FilmRow | null {
     vinyl_markup: VINYL_MARKUP,
     price_synced_at: String(raw.price_synced_at || "").trim(),
     updated_at: new Date().toISOString(),
+    source: String(raw.source || "metro").trim().toLowerCase() || "metro",
   };
 }
 
@@ -584,8 +589,8 @@ export async function importFilms(
     `INSERT INTO films (
       handle, sku, name, brand, finish, color_family, product_type, collection,
       image_url, metro_url, in_stock, description, install_notes, recommended_for,
-      notes, price_usd, roll_price_usd, price_synced_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      notes, price_usd, roll_price_usd, price_synced_at, updated_at, source
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(handle) DO UPDATE SET
       sku = excluded.sku,
       name = excluded.name,
@@ -607,7 +612,8 @@ export async function importFilms(
         WHEN excluded.price_usd IS NOT NULL THEN excluded.price_synced_at
         ELSE films.price_synced_at
       END,
-      updated_at = excluded.updated_at`
+      updated_at = excluded.updated_at,
+      source = excluded.source`
   );
 
   const batch: D1PreparedStatement[] = [];
@@ -638,7 +644,8 @@ export async function importFilms(
         film.price_usd,
         film.roll_price_usd,
         film.price_synced_at || null,
-        film.updated_at
+        film.updated_at,
+        film.source || "metro"
       )
     );
   }
@@ -680,8 +687,19 @@ export async function updateFilmPrices(
 }
 
 export async function listFilmHandles(db: D1Database): Promise<string[]> {
-  const rows = await db
-    .prepare(`SELECT handle FROM films ORDER BY handle ASC`)
-    .all<{ handle: string }>();
-  return (rows.results || []).map((r) => r.handle);
+  try {
+    const rows = await db
+      .prepare(
+        `SELECT handle FROM films
+         WHERE lower(coalesce(source, 'metro')) IN ('metro', '')
+         ORDER BY handle ASC`
+      )
+      .all<{ handle: string }>();
+    return (rows.results || []).map((r) => r.handle);
+  } catch {
+    const rows = await db
+      .prepare(`SELECT handle FROM films ORDER BY handle ASC`)
+      .all<{ handle: string }>();
+    return (rows.results || []).map((r) => r.handle);
+  }
 }

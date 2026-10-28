@@ -1,0 +1,93 @@
+/* ==========================================================================
+   Studio admin (/admin). Builds on portal.css; no colours or type of its own.
+   ========================================================================== */
+
+.admin-wrap { max-width: 1680px; }
+
+/* ---- Board toolbar ------------------------------------------------------ */
+.board-tools { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-bottom: 28px; }
+.board-tools input[type="search"] {
+  flex: 1 1 260px; max-width: 420px; padding: 12px 0; font: inherit; color: var(--bone);
+  background: transparent; border: 0; border-bottom: 1px solid var(--line-strong);
+}
+.board-tools input[type="search"]:focus { outline: none; border-color: var(--bone); }
+.toggle { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: var(--bone-2); cursor: pointer; }
+.toggle input { accent-color: var(--bone); width: 16px; height: 16px; }
+.board-stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-left: auto; }
+.board-stats div { display: grid; gap: 2px; }
+.board-stats dd { margin: 0; font-family: var(--serif); font-size: 1.5rem; }
+
+/* ---- Board -------------------------------------------------------------- */
+.board {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr);
+  gap: 12px; overflow-x: auto; padding-bottom: 16px; scroll-snap-type: x proximity;
+}
+.board-col { display: grid; grid-template-rows: auto 1fr; min-height: 60vh; border: 1px solid var(--line); scroll-snap-align: start; transition: border-color var(--fast), background var(--fast); }
+.board-col.is-over { border-color: var(--gold); background: var(--ink-2); }
+.board-col-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); position: sticky; top: 0; }
+.board-col-head h2 { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bone); }
+.board-col-head .meta { font-family: var(--serif); font-size: 1.1rem; }
+.board-col-body { display: grid; gap: 10px; align-content: start; padding: 10px; }
+
+.board-card { display: grid; gap: 6px; padding: 14px; background: var(--ink-2); border: 1px solid var(--line); cursor: grab; transition: border-color var(--fast); text-align: left; }
+.board-card:hover { border-color: var(--line-strong); }
+.board-card.is-dragging { opacity: 0.4; }
+.board-card h3 { font-family: var(--serif); font-size: 1.25rem; line-height: 1.15; }
+.board-card .meta { font-size: 12px; line-height: 1.5; }
+.board-card .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid var(--line-strong); font-size: 11px; color: var(--bone-2); }
+.badge--alert { background: var(--bone); border-color: var(--bone); color: var(--ink); }
+.badge--good { border-color: var(--gold-deep); color: var(--gold); }
+
+/* ---- Dialog ------------------------------------------------------------- */
+.dialog-backdrop { position: fixed; inset: 0; z-index: 140; display: grid; place-items: center; padding: 16px; background: rgba(7,7,7,.8); }
+.dialog { width: min(100%, 520px); padding: 28px; background: var(--ink-2); border: 1px solid var(--line-strong); display: grid; gap: 20px; }
+.dialog h2 { font-family: var(--serif); font-size: 1.8rem; line-height: 1.1; }
+.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+
+/* ---- Workspace ---------------------------------------------------------- */
+.admin .job-grid { grid-template-columns: 1fr; }
+@media (min-width: 1100px) { .admin .job-grid { grid-template-columns: 1.25fr 1fr; } }
+.contact-row { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; }
+.contact-row a { color: var(--bone-2); }
+.contact-row a:hover { color: var(--bone); }
+
+.panel-body select, .panel-body input[type="number"], .panel-body input[type="email"] {
+  width: 100%; padding: 12px 14px; font: inherit; font-size: 16px; color: var(--bone);
+  background: var(--ink); border: 1px solid var(--line-strong); border-radius: 0;
+}
+.panel-body select option { background: var(--ink-3); }
+.panel-body label.label { display: block; margin-bottom: 8px; }
+.panel-body input[type="file"] { font-size: 14px; color: var(--bone-2); max-width: 100%; }
+.row-2 { display: grid; gap: 12px; }
+@media (min-width: 600px) { .row-2 { grid-template-columns: 1fr 1fr; } }
+.checks { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+.feed-item.is-private { background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(236,232,225,.02) 10px 20px); }
+
+/* Quote builder */
+.qb-table { width: 100%; border-collapse: collapse; }
+.qb-table th { text-align: left; padding: 0 8px 8px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); }
+.qb-table td { padding: 4px 8px 4px 0; vertical-align: middle; }
+.qb-table td:last-child { padding-right: 0; width: 36px; }
+.qb-table input { width: 100%; padding: 10px; font: inherit; font-size: 15px; color: var(--bone); background: var(--ink); border: 1px solid var(--line-strong); }
+.qb-table .qb-qty { width: 64px; }
+.qb-table .qb-price { width: 120px; }
+.qb-remove { width: 36px; height: 40px; border: 1px solid var(--line); color: var(--bone-2); }
+.qb-remove:hover { border-color: var(--bone); color: var(--bone); }
+.qb-totals { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px; padding-top: 14px; border-top: 1px solid var(--line-strong); }
+.qb-total { font-family: var(--serif); font-size: 2rem; line-height: 1; }
+@media (max-width: 599px) {
+  .qb-table thead { display: none; }
+  /* Description on its own row, then quantity, price and remove beneath it. */
+  .qb-table tr { display: grid; grid-template-columns: 72px 1fr 36px; gap: 6px; padding: 8px 0; border-top: 1px solid var(--line); }
+  .qb-table td { padding: 0; width: auto !important; }
+  .qb-table td:first-child { grid-column: 1 / -1; }
+  .qb-table .qb-qty, .qb-table .qb-price { width: 100%; }
+}
+
+/* Cover picker for publishing */
+.cover-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
+.cover-pick label { position: relative; aspect-ratio: 1; cursor: pointer; overflow: hidden; border: 1px solid var(--line); }
+.cover-pick img { width: 100%; height: 100%; object-fit: cover; }
+.cover-pick input { position: absolute; opacity: 0; }
+.cover-pick input:checked + img { outline: 2px solid var(--bone); outline-offset: -2px; }

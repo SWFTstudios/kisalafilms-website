@@ -39,7 +39,10 @@ BODY_TAG = '  <script src="/js/config-apply.js"></script>\n'
 # Anchor the head scripts to the stylesheet so they land in a predictable place
 # rather than falling back to just-before-</head>. /wrap-quote/ forks its own
 # inline styles and has no link to anchor to, which is what the fallback covers.
-STYLESHEETS = ('  <link rel="stylesheet" href="/css/kfilms.css">\n',)
+STYLESHEETS = (
+    '  <link rel="stylesheet" href="/css/kfilms.css">\n',
+    '  <link rel="stylesheet" href="/css/kf.css">\n',
+)
 
 
 def is_redirect_stub(html: str) -> bool:

@@ -1,0 +1,63 @@
+{
+  "note": "Heuristic Metro Restyling order sizes for motorcycle wraps. Metro color-change film is typically 5ft wide; buy length in feet. Figures include contour waste. Refine with your timed jobs.",
+  "rollWidthFt": 5,
+  "stockLengthsFt": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 75],
+  "parts": {
+    "full_bike": {
+      "label": "Full color-change wrap",
+      "hint": "All exposed painted bodywork",
+      "exclusive": true
+    },
+    "tank": { "label": "Tank", "hint": "Fuel tank only", "baseFt": 4 },
+    "fairings": { "label": "Fairings / body panels", "hint": "Uppers, lowers, side fairings", "baseFt": 8 },
+    "front_fender": { "label": "Front fender", "baseFt": 2 },
+    "rear_fender": { "label": "Rear fender / hugger", "baseFt": 2 },
+    "side_covers": { "label": "Side covers / covers", "baseFt": 3 },
+    "tail_cowl": { "label": "Tail / seat cowl", "baseFt": 3 },
+    "accents": { "label": "Accent pieces", "hint": "Tank pads, hugger tips, small bits", "baseFt": 3 },
+    "mirrors": { "label": "Mirrors / surrounds", "baseFt": 1 },
+    "lights": { "label": "Head / tail light wrap", "hint": "Usually light-wrap film, not full color vinyl", "baseFt": 2, "filmNote": "light_wrap" },
+    "calipers": { "label": "Brake calipers", "hint": "Caliper wrap kits / small cuts", "baseFt": 1, "filmNote": "caliper" }
+  },
+  "fullPackageByBody": {
+    "naked_minimal": { "ft": 12, "label": "Naked / cafe full wrap" },
+    "cruiser_simple": { "ft": 15, "label": "Cruiser full wrap" },
+    "half_faired": { "ft": 18, "label": "Half-faired full wrap" },
+    "adventure_touring": { "ft": 22, "label": "Adventure / touring full wrap" },
+    "full_sport": { "ft": 20, "label": "Full-fairing sportbike wrap" },
+    "touring_complex": { "ft": 30, "label": "Touring / bagger full wrap" },
+    "scooter_enclosed": { "ft": 16, "label": "Scooter full wrap" },
+    "dirt_mx": { "ft": 12, "label": "Dirt / MX plastics wrap" },
+    "sidecar_utv": { "ft": 25, "label": "Specialty / UTV-scale wrap" },
+    "unknown": { "ft": 18, "label": "General motorcycle full wrap" }
+  },
+  "fairingMultiplierByBody": {
+    "naked_minimal": 0.4,
+    "cruiser_simple": 0.5,
+    "half_faired": 0.85,
+    "adventure_touring": 1.1,
+    "full_sport": 1.15,
+    "touring_complex": 1.35,
+    "scooter_enclosed": 0.9,
+    "dirt_mx": 0.7,
+    "sidecar_utv": 1.2,
+    "unknown": 1.0
+  },
+  "filmDifficulty": {
+    "Gloss": { "waste": 1.12, "label": "Standard stretch", "level": 1 },
+    "Satin": { "waste": 1.15, "label": "Standard stretch", "level": 2 },
+    "Matte": { "waste": 1.15, "label": "Shows handling marks — slight buffer", "level": 2 },
+    "Metallic": { "waste": 1.22, "label": "Direction-sensitive — more waste", "level": 3 },
+    "Chrome": { "waste": 1.35, "label": "Hard / fragile film — larger buffer", "level": 4 },
+    "Candy": { "waste": 1.3, "label": "Layer / depth films — larger buffer", "level": 4 },
+    "Color Shift": { "waste": 1.35, "label": "Orientation critical — larger buffer", "level": 5 },
+    "Shift": { "waste": 1.35, "label": "Orientation critical — larger buffer", "level": 5 },
+    "Textured": { "waste": 1.28, "label": "Textured films stretch less", "level": 4 },
+    "Reflective": { "waste": 1.25, "label": "Stiffer film — add buffer", "level": 3 },
+    "Not sure - want recommendations": { "waste": 1.25, "label": "Uncertainty buffer", "level": 2 },
+    "Custom / other": { "waste": 1.25, "label": "Uncertainty buffer", "level": 3 },
+    "Custom / other (see notes)": { "waste": 1.25, "label": "Uncertainty buffer", "level": 3 },
+    "_default": { "waste": 1.2, "label": "General buffer", "level": 2 }
+  },
+  "safeExtraFt": 2
+}
