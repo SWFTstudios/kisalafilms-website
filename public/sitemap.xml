@@ -87,16 +87,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://kisalafilms-website.elombe.workers.dev/login</loc>
-    <lastmod>2026-10-28</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://kisalafilms-website.elombe.workers.dev/project</loc>
-    <lastmod>2026-10-28</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://kisalafilms-website.elombe.workers.dev/vinyl-catalog</loc>
     <lastmod>2026-10-28</lastmod>
     <priority>0.6</priority>

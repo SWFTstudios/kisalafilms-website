@@ -1100,6 +1100,70 @@ def book_thanks_page() -> str:
 
 
 # =============================================================================
+# Client portal: sign-in and the portal itself
+# =============================================================================
+
+def login_page() -> str:
+    body = f"""
+    <section class="login" aria-labelledby="page-title">
+      <div class="wrap login-grid">
+        <div>
+          <p class="label">Client portal</p>
+          <h1 class="display-l" id="page-title">Sign <em>in.</em></h1>
+          <p class="lede">No password. Enter the email you used for your build and we'll send a one-time link and code.</p>
+          <p class="meta">New here? <a class="link-line" href="{BOOK_URL}">Start your build</a> and your portal is created with it.</p>
+        </div>
+
+        <div class="login-card">
+          <p class="login-note" data-login-note hidden role="status"></p>
+
+          <form class="form" data-login-email action="/api/auth/request" method="post">
+            <div class="field"><label class="label" for="login-email">Email</label>
+              <input id="login-email" name="email" type="email" autocomplete="email" required></div>
+            <button class="btn btn--solid" type="submit">Email me a link <span class="btn-arrow" aria-hidden="true"></span></button>
+          </form>
+
+          <form class="form" data-login-code hidden>
+            <p class="body">Check <strong data-login-sent-to></strong>. Open the link on this device, or type the 6-digit code here.</p>
+            <div class="field"><label class="label" for="login-code">Code</label>
+              <input id="login-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{{6}}" class="code-input" required></div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px">
+              <button class="btn btn--solid" type="submit">Sign in <span class="btn-arrow" aria-hidden="true"></span></button>
+              <button class="btn" type="button" data-login-restart>Use another email</button>
+            </div>
+            <p class="meta" data-login-dev hidden></p>
+          </form>
+        </div>
+      </div>
+    </section>"""
+    return page(
+        "Client Portal Sign-in | K Films",
+        "Sign in to your K Films client portal with a one-time link. No password needed.",
+        body,
+        extra_head='  <link rel="stylesheet" href="/css/portal.css">\n',
+        scripts=("/js/login.js",),
+    )
+
+
+def portal_page() -> str:
+    body = """
+    <section class="portal" aria-live="polite">
+      <div class="wrap">
+        <div class="portal-loading" data-portal-loading><p class="label">Loading your portal&hellip;</p></div>
+        <div data-portal-root></div>
+        <noscript><p class="lede">The client portal needs JavaScript turned on.</p></noscript>
+      </div>
+    </section>"""
+    return page(
+        "Your Builds | K Films Client Portal",
+        "Your K Films builds: timeline, progress photos, quotes, payments and messages.",
+        body,
+        extra_head='  <link rel="stylesheet" href="/css/portal.css">\n',
+        scripts=("/js/portal.js",),
+    )
+
+
+# =============================================================================
 # 404
 # =============================================================================
 
@@ -1139,6 +1203,8 @@ def main() -> None:
     OUT["404.html"] = not_found_page()
     OUT["book.html"] = booking_page()
     OUT["book-thanks.html"] = book_thanks_page()
+    OUT["login.html"] = login_page()
+    OUT["portal.html"] = portal_page()
 
     for rel, html in OUT.items():
         path = PUBLIC / rel

@@ -1,6 +1,6 @@
 /**
  * Shared vinyl build cart — films added from the catalog land here so a rider
- * can gather colours, then open /project to place notes and photos.
+ * can gather colours, then start a build at /book, which picks them up.
  */
 (() => {
   const KEY = "kisala-vinyl-build";

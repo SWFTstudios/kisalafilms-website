@@ -7,6 +7,7 @@
  *                                    messages, quotes and payments
  *   PATCH /api/jobs/:id              notes, dates and links, until check-in
  *   POST  /api/jobs/:id/messages     a message to or from the studio
+ *   POST  /api/jobs/:id/quotes/:q/approve   the customer accepts a sent quote
  *
  * POST /api/jobs takes JSON from the wizard, or the wizard's own form posted
  * natively (scripts off, or the JSON submit failed). The native post can carry
@@ -378,13 +379,16 @@ export async function handleGetJob(request: Request, env: PortalEnv, jobId: stri
       ...(admin ? { internalNotes: job.internal_notes, customerId: job.customer_id } : {}),
     },
     bike: bike ? { ...bike, label: bikeLabel(bike) } : null,
-    stages: STAGES.map((s) => ({ id: s.id, label: s.label })),
+    stages: STAGES.map((s) => ({ id: s.id, label: s.label, customer: s.customer })),
     events: events.results.map((e) => ({ ...e, stageLabel: stageLabel(String(e.stage)) })),
     photos: photos.results.map((p) => ({ ...p, url: `/api/photos/${p.id}` })),
     messages: messages.results,
     quotes: quotes.results.map((q) => ({ ...q, items: items.results.filter((i) => i.quote_id === q.id) })),
     payments: payments.results,
     viewer: { isAdmin: admin },
+    // Online payment arrives with Stripe checkout; until then the portal shows
+    // amounts due without a pay button.
+    canPay: false,
   });
 }
 
@@ -459,4 +463,41 @@ export async function handlePostMessage(request: Request, env: PortalEnv, jobId:
   }
 
   return json({ ok: true, message: row }, 201);
+}
+
+/* ---- Quotes ------------------------------------------------------------ */
+
+export async function handleApproveQuote(request: Request, env: PortalEnv, jobId: string, quoteId: string): Promise<Response> {
+  const viewer = await currentViewer(request, env);
+  if (!viewer) return json({ error: "Sign in first." }, 401);
+  const job = await loadJob(env, viewer, jobId);
+  if (!job || job.customer_id !== viewer.customer.id) return json({ error: "Not found." }, 404);
+
+  const quote = await env.DB.prepare("SELECT id, status FROM quotes WHERE id = ? AND job_id = ?")
+    .bind(quoteId, jobId)
+    .first<{ id: string; status: string }>();
+  if (!quote || quote.status === "draft" || quote.status === "superseded") return json({ error: "Not found." }, 404);
+  if (quote.status === "approved") return json({ ok: true, already: true });
+
+  const at = now();
+  await env.DB.batch([
+    env.DB.prepare("UPDATE quotes SET status = 'approved', approved_at = ? WHERE id = ?").bind(at, quoteId),
+    env.DB.prepare("UPDATE jobs SET updated_at = ? WHERE id = ?").bind(at, jobId),
+    env.DB.prepare(
+      "INSERT INTO job_events (id, job_id, stage, note, author, visible, created_at) VALUES (?, ?, ?, ?, 'customer', 1, ?)"
+    ).bind(id("ev"), jobId, job.stage, "Quote approved.", at),
+  ]);
+
+  const inbox = studioInbox(env);
+  if (inbox) {
+    await sendEmail(env, {
+      to: inbox,
+      replyTo: viewer.customer.email,
+      subject: `Quote approved: ${job.ref}`,
+      heading: `${job.ref}: quote approved`,
+      paragraphs: [`${viewer.customer.name || viewer.customer.email} approved the quote.`],
+      button: { label: "Open in admin", href: `${siteUrl(request, env)}/admin?job=${jobId}` },
+    });
+  }
+  return json({ ok: true });
 }

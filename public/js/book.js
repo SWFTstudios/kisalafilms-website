@@ -107,6 +107,18 @@
   };
   Object.entries(prefill).forEach(([k, v]) => { if (v) writeFields({ [k]: v }); });
 
+  // Films saved with "Add to build" in the catalog (vinyl-build.js).
+  try {
+    const basket = JSON.parse(localStorage.getItem("kisala-vinyl-build") || "null");
+    const films = basket && Array.isArray(basket.films) ? basket.films.filter((f) => f && f.handle) : [];
+    if (films.length && !form.elements.colour.value) {
+      writeFields({
+        colour: films.map((f) => [f.brand, f.name].filter(Boolean).join(" ")).join(", ").slice(0, 120),
+        film_handle: films.map((f) => f.handle).join(",").slice(0, 120),
+      });
+    }
+  } catch (e) { /* no basket */ }
+
   /* ---- Pricing helpers (mirror config-apply.js) ------------------------- */
   const MODE = CONFIG.pricingMode === "standard" ? "standard" : "founding";
   const round25 = (n) => Math.round(n / 25) * 25;

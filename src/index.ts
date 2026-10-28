@@ -110,6 +110,8 @@ const RETIRED: Record<string, string> = {
   "/quote-thanks": "/book-thanks",
   "/wrap-studio": "/book",
   "/thanks": "/book-thanks",
+  "/project": "/book",
+  "/project-thanks": "/portal",
   "/services/full-wraps": "/services/colour-change",
   "/services/accent-package": "/services/accents",
   "/services/transformation-film": "/services",

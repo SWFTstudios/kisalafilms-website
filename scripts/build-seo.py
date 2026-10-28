@@ -29,8 +29,9 @@ SHARE_IMAGE = f"{SITE}/images/refs/ref-05-head-on-1920.webp"
 # ad-campaign pages; styleguide and 404 have no business in search results.
 NOINDEX = {
   "deposit-thanks.html",
-  "project-thanks.html",
   "book-thanks.html",
+  "login.html",
+  "portal.html",
   "styleguide.html",
   "404.html",
   "wrap-quote/index.html",
@@ -51,7 +52,6 @@ PRIORITY = {
     "studio.html": "0.8",
     "process.html": "0.7",
     "finishes.html": "0.7",
-    "project.html": "0.6",
     "vinyl-catalog.html": "0.6",
     "locations/jersey-city.html": "0.8",
     "locations/brooklyn.html": "0.8",

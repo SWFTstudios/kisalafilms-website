@@ -4,7 +4,14 @@
  */
 import { handleAuthCode, handleAuthRequest, handleAuthVerify, handleLogout, handleMe } from "./auth";
 import { json, type PortalEnv } from "./http";
-import { handleCreateJob, handleGetJob, handleListJobs, handlePostMessage, handleUpdateJob } from "./portal";
+import {
+  handleApproveQuote,
+  handleCreateJob,
+  handleGetJob,
+  handleListJobs,
+  handlePostMessage,
+  handleUpdateJob,
+} from "./portal";
 import { handleDraftDelete, handleDraftUpload, handleJobUpload, handlePhoto } from "./uploads";
 
 type Route = {
@@ -32,6 +39,7 @@ const ROUTES: Route[] = [
   { method: "PATCH", pattern: new RegExp(`^/api/jobs/${ID}$`), handle: (r, e, [j]) => handleUpdateJob(r, e, j) },
   { method: "POST", pattern: new RegExp(`^/api/jobs/${ID}/messages$`), handle: (r, e, [j]) => handlePostMessage(r, e, j) },
   { method: "POST", pattern: new RegExp(`^/api/jobs/${ID}/photos$`), handle: (r, e, [j]) => handleJobUpload(r, e, j) },
+  { method: "POST", pattern: new RegExp(`^/api/jobs/${ID}/quotes/${ID}/approve$`), handle: (r, e, [j, q]) => handleApproveQuote(r, e, j, q) },
 ];
 
 export async function routePortal(request: Request, env: PortalEnv): Promise<Response | null> {
