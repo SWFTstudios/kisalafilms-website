@@ -4,12 +4,11 @@
 User-agent: *
 Allow: /
 Disallow: /404
+Disallow: /book-thanks
 Disallow: /deposit-thanks
 Disallow: /lookbook/film
 Disallow: /project-thanks
-Disallow: /quote-thanks
 Disallow: /styleguide
-Disallow: /thanks
 Disallow: /wrap-quote/
 
 Sitemap: https://kisalafilms-website.elombe.workers.dev/sitemap.xml

@@ -28,10 +28,9 @@ SHARE_IMAGE = f"{SITE}/images/refs/ref-05-head-on-1920.webp"
 # Kept out of the index. /thanks.html and /wrap-quote/ are post-conversion and
 # ad-campaign pages; styleguide and 404 have no business in search results.
 NOINDEX = {
-  "thanks.html",
   "deposit-thanks.html",
   "project-thanks.html",
-  "quote-thanks.html",
+  "book-thanks.html",
   "styleguide.html",
   "404.html",
   "wrap-quote/index.html",
@@ -41,7 +40,7 @@ NOINDEX = {
 # Priority by role rather than a flat list: the conversion path first.
 PRIORITY = {
     "index.html": "1.0",
-    "quote.html": "0.9",
+    "book.html": "0.9",
     "services.html": "0.9",
     "services/colour-change.html": "0.8",
     "services/paint-protection.html": "0.8",
@@ -52,7 +51,6 @@ PRIORITY = {
     "studio.html": "0.8",
     "process.html": "0.7",
     "finishes.html": "0.7",
-    "wrap-studio.html": "0.6",
     "project.html": "0.6",
     "vinyl-catalog.html": "0.6",
     "locations/jersey-city.html": "0.8",

@@ -8,6 +8,10 @@
  *   PATCH /api/jobs/:id              notes, dates and links, until check-in
  *   POST  /api/jobs/:id/messages     a message to or from the studio
  *
+ * POST /api/jobs takes JSON from the wizard, or the wizard's own form posted
+ * natively (scripts off, or the JSON submit failed). The native post can carry
+ * its photos as files, and is answered with a redirect to /book-thanks.
+ *
  * Creating a job never signs the browser in. Anyone can type any email into a
  * form, so the only way into a job is the sign-in link emailed to the address
  * on it; the submit reply says to check the inbox.
@@ -16,7 +20,7 @@ import { currentViewer, issueLogin, upsertCustomer, type Viewer } from "./auth";
 import { sendEmail, studioInbox } from "./email";
 import { email as cleanEmail, id, json, now, readJson, siteUrl, text, type PortalEnv } from "./http";
 import { EDITABLE_STAGES, STAGES, stageLabel } from "./stages";
-import { validDraft } from "./uploads";
+import { MAX_PHOTO_BYTES, MAX_PHOTOS_PER_DRAFT, validDraft } from "./uploads";
 
 /** The service keys of kisala-config.js, plus "unsure". */
 const SERVICES: Record<string, string> = {
@@ -75,11 +79,89 @@ async function nextRef(env: PortalEnv): Promise<string> {
   return `KF-${1001 + (row?.n ?? 0)}`;
 }
 
+/** The wizard's form field names, mapped onto the JSON shape the API takes. */
+async function readForm(request: Request): Promise<{ body: Record<string, unknown>; files: File[] } | null> {
+  let data: FormData;
+  try {
+    data = await request.formData();
+  } catch {
+    return null;
+  }
+  const one = (k: string) => {
+    const v = data.get(k);
+    return typeof v === "string" ? v : "";
+  };
+  const files = data
+    .getAll("photos")
+    .filter((f): f is File => typeof f !== "string" && f.size > 0)
+    .slice(0, MAX_PHOTOS_PER_DRAFT);
+  return {
+    files,
+    body: {
+      draft: one("draft"),
+      source: one("source") || "book-form",
+      name: one("name"),
+      email: one("email"),
+      phone: one("phone"),
+      bike: {
+        year: one("bike_year"),
+        make: one("bike_make"),
+        model: one("bike_model"),
+        colour: one("bike_colour"),
+        mileage: one("bike_mileage"),
+        vin: one("bike_vin"),
+      },
+      service: one("service"),
+      coverage: one("coverage"),
+      panels: data.getAll("panels").filter((v) => typeof v === "string"),
+      finish: one("finish"),
+      colour: one("colour"),
+      filmHandle: one("film_handle"),
+      notes: one("notes"),
+      inspiration: one("inspiration"),
+      preferredDates: one("preferred_dates"),
+      handoff: one("handoff"),
+      pickupZip: one("pickup_zip"),
+    },
+  };
+}
+
+const PHOTO_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/heic": "heic", "image/heif": "heif",
+};
+
+async function storeFormPhotos(env: PortalEnv, jobId: string, files: File[]): Promise<number> {
+  if (!env.PHOTOS) return 0;
+  let stored = 0;
+  for (const file of files) {
+    const ext = PHOTO_TYPES[file.type];
+    if (!ext || file.size > MAX_PHOTO_BYTES) continue;
+    const photoId = id("ph");
+    const key = `jobs/${jobId}/${photoId}.${ext}`;
+    await env.PHOTOS.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: file.type } });
+    await env.DB.prepare(
+      "INSERT INTO photos (id, job_id, kind, r2_key, content_type, bytes, created_at) VALUES (?, ?, 'customer', ?, ?, ?, ?)"
+    )
+      .bind(photoId, jobId, key, file.type, file.size, now())
+      .run();
+    stored += 1;
+  }
+  return stored;
+}
+
 /* ---- Create ------------------------------------------------------------ */
 
 export async function handleCreateJob(request: Request, env: PortalEnv): Promise<Response> {
-  const body = await readJson(request);
+  const type = request.headers.get("Content-Type") || "";
+  const isForm = /multipart\/form-data|application\/x-www-form-urlencoded/.test(type);
+  const form = isForm ? await readForm(request) : null;
+  const body = form ? form.body : await readJson(request);
   if (!body) return json({ error: "Expected a JSON body." }, 400);
+  // A native post has no script to show an error, so it gets a page instead.
+  const reject = (message: string, fields: string[]) =>
+    isForm
+      ? new Response(null, { status: 303, headers: { Location: `/book?error=${encodeURIComponent(message)}` } })
+      : json({ error: message, fields }, 400);
 
   const address = cleanEmail(body.email);
   const name = text(body.name, CAP.short);
@@ -101,7 +183,7 @@ export async function handleCreateJob(request: Request, env: PortalEnv): Promise
   if (!name) problems.push("your name");
   if (!bike.make || !bike.model) problems.push("your bike's make and model");
   if (!SERVICES[service]) problems.push("a service");
-  if (problems.length) return json({ error: `Please add ${problems.join(", ")}.`, fields: problems }, 400);
+  if (problems.length) return reject(`Please add ${problems.join(", ")}.`, problems);
 
   const coverage = text(body.coverage, 20);
   const handoff = text(body.handoff, 20);
@@ -160,14 +242,14 @@ export async function handleCreateJob(request: Request, env: PortalEnv): Promise
     .bind(id("ev"), jobId, "Build received.", at)
     .run();
 
-  let photoCount = 0;
   if (validDraft(draft)) {
     await env.DB.prepare("UPDATE photos SET job_id = ?, draft_id = NULL WHERE draft_id = ? AND job_id IS NULL")
       .bind(jobId, draft)
       .run();
-    const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM photos WHERE job_id = ?").bind(jobId).first<{ n: number }>();
-    photoCount = n?.n ?? 0;
   }
+  if (form?.files.length) await storeFormPhotos(env, jobId, form.files);
+  const counted = await env.DB.prepare("SELECT COUNT(*) AS n FROM photos WHERE job_id = ?").bind(jobId).first<{ n: number }>();
+  const photoCount = counted?.n ?? 0;
 
   const label = bikeLabel(bike);
   const issued = await issueLogin(request, env, customer, `/portal?job=${jobId}`, {
@@ -198,6 +280,9 @@ export async function handleCreateJob(request: Request, env: PortalEnv): Promise
     });
   }
 
+  if (isForm) {
+    return new Response(null, { status: 303, headers: { Location: `/book-thanks?ref=${encodeURIComponent(ref)}` } });
+  }
   return json(
     { ok: true, jobId, ref, photoCount, ...(issued.devLink ? { devLink: issued.devLink, devCode: issued.devCode } : {}) },
     201

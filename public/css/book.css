@@ -1,0 +1,142 @@
+/* ==========================================================================
+   Start your build — the intake wizard at /book.
+   Extends kf.css; defines no colours or type of its own.
+   With scripts off every step shows, stacked, and the form posts natively.
+   ========================================================================== */
+
+.book { padding: calc(var(--header-h) + clamp(32px, 6vw, 72px)) 0 clamp(80px, 10vw, 140px); }
+.book-grid { display: grid; gap: clamp(40px, 6vw, 96px); align-items: start; }
+@media (min-width: 1000px) { .book-grid { grid-template-columns: 4fr 7fr; } }
+
+/* ---- Aside: title, live summary, ballpark ------------------------------- */
+.book-aside h1 { margin: 22px 0 20px; }
+.book-aside .lede { margin-bottom: 36px; }
+@media (min-width: 1000px) { .book-aside { position: sticky; top: calc(var(--header-h) + 24px); } }
+
+.book-summary { margin: 0; display: grid; }
+.book-summary div { display: grid; grid-template-columns: 8.5em 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.book-summary div:last-child { border-bottom: 1px solid var(--line); }
+.book-summary dd { margin: 0; color: var(--bone); }
+@media (max-width: 999px) { .book-summary { display: none; } }
+
+.book-estimate { margin-top: 28px; padding: 24px; border: 1px solid var(--line); background: var(--ink-2); }
+.book-estimate .label { margin: 0 0 8px; }
+.book-estimate-figure { margin: 0 0 6px; font-family: var(--serif); font-size: 2.2rem; line-height: 1.05; }
+.book-estimate .meta { margin: 0; }
+
+/* ---- Progress ----------------------------------------------------------- */
+.book-progress { display: none; }
+.js .book-progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: clamp(36px, 5vw, 56px); }
+.book-progress li { display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--mute); transition: color var(--mid) var(--ease), border-color var(--mid) var(--ease); }
+.book-progress .num { font-family: var(--serif); font-size: 1.05rem; }
+.book-progress .name { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; }
+.book-progress li.is-done { color: var(--bone-2); border-color: var(--line-strong); }
+.book-progress li.is-current { color: var(--bone); border-color: var(--bone); }
+@media (max-width: 599px) { .book-progress .name { display: none; } }
+
+/* ---- Steps -------------------------------------------------------------- */
+.book-step { border: 0; margin: 0 0 56px; padding: 0; min-width: 0; display: grid; gap: 32px; }
+.book-step legend { padding: 0; margin-bottom: 32px; display: grid; gap: 14px; }
+.js .book-step:not(.is-current) { display: none; }
+.js .book-step { margin-bottom: 0; animation: step-in 0.7s var(--ease); }
+@keyframes step-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.field > .label span, .field > label.label span { text-transform: none; letter-spacing: 0; color: var(--mute); font-weight: 300; }
+.field select { appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--bone-2) 50%), linear-gradient(135deg, var(--bone-2) 50%, transparent 50%); background-position: calc(100% - 12px) 55%, calc(100% - 7px) 55%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
+.field select option { background: var(--ink-3); color: var(--bone); }
+.field .meta { margin: 0; }
+.form-row--3 { grid-template-columns: 1fr; }
+@media (min-width: 700px) { .form-row--3 { grid-template-columns: 1fr 1.4fr 1.6fr; } }
+.field.is-invalid input, .field.is-invalid select { border-color: #d07a6b; }
+
+.book-more summary { cursor: pointer; list-style: none; display: inline-flex; gap: 10px; align-items: center; padding: 6px 0; }
+.book-more summary::before { content: "+"; font-size: 15px; color: var(--bone-2); }
+.book-more[open] summary::before { content: "–"; }
+.book-more summary span { text-transform: none; letter-spacing: 0; font-weight: 300; }
+.book-more .form-row { margin-top: 20px; }
+
+/* Shown only when the wizard decides they apply. */
+.js [data-when]:not(.is-shown) { display: none; }
+
+/* ---- Bike search -------------------------------------------------------- */
+.bike-search { position: relative; }
+.bike-results {
+  position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
+  max-height: 320px; overflow-y: auto; margin-top: 4px;
+  background: var(--ink-3); border: 1px solid var(--line-strong);
+}
+.bike-results li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 16px; cursor: pointer; border-top: 1px solid var(--line); }
+.bike-results li:first-child { border-top: 0; }
+.bike-results li[aria-selected="true"], .bike-results li:hover { background: var(--ink-2); color: var(--bone); }
+.bike-results .meta { flex: none; }
+.bike-results .bike-results-other { color: var(--steel); }
+
+/* ---- Choice cards and chips -------------------------------------------- */
+.choices { display: grid; gap: 12px; }
+@media (min-width: 700px) { .choices { grid-template-columns: 1fr 1fr; } }
+.choice { position: relative; display: block; cursor: pointer; }
+.choice input, .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice-body {
+  display: grid; gap: 6px; height: 100%; padding: 22px 22px 20px;
+  border: 1px solid var(--line); background: transparent;
+  transition: border-color var(--fast), background var(--fast);
+}
+.choice-title { font-family: var(--serif); font-size: 1.6rem; line-height: 1.1; color: var(--bone); }
+.choice-text { color: var(--bone-2); font-size: 15px; }
+.choice-meta { margin-top: 8px; font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--mute); }
+.choice:hover .choice-body { border-color: var(--line-strong); }
+.choice input:checked + .choice-body { border-color: var(--bone); background: var(--ink-2); }
+.choice input:checked + .choice-body .choice-meta { color: var(--steel); }
+.choice input:focus-visible + .choice-body { outline: 1px solid var(--steel); outline-offset: 3px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { position: relative; cursor: pointer; }
+.chip span {
+  display: inline-flex; align-items: center; min-height: 42px; padding: 0 18px;
+  border: 1px solid var(--line); font-size: 14px; color: var(--bone-2);
+  transition: border-color var(--fast), color var(--fast), background var(--fast);
+}
+.chip:hover span { border-color: var(--line-strong); color: var(--bone); }
+.chip input:checked + span { border-color: var(--bone); background: var(--bone); color: var(--ink); }
+.chip input:focus-visible + span { outline: 1px solid var(--steel); outline-offset: 3px; }
+
+/* ---- Photos ------------------------------------------------------------- */
+.angle-list { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.angle-list li { font-size: 13px; color: var(--bone-2); display: inline-flex; align-items: center; gap: 8px; }
+.angle-list li::before { content: ""; width: 5px; height: 5px; border: 1px solid var(--steel); transform: rotate(45deg); }
+
+.dropzone {
+  position: relative; display: grid; place-items: center; gap: 10px; text-align: center;
+  padding: clamp(40px, 6vw, 72px) 24px; cursor: pointer;
+  border: 1px dashed var(--line-strong); transition: border-color var(--fast), background var(--fast);
+}
+.dropzone:hover, .dropzone.is-over { border-color: var(--bone); background: var(--ink-2); }
+.dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.no-js-photos .dropzone input { position: static; opacity: 1; }
+.dropzone-title { font-family: var(--serif); font-size: 1.9rem; line-height: 1; }
+.dropzone .meta { max-width: 32em; }
+.dropzone:focus-within { outline: 1px solid var(--steel); outline-offset: 4px; }
+
+.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.thumbs:empty { display: none; }
+.thumb { position: relative; aspect-ratio: 1; overflow: hidden; background: var(--ink-3); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; transition: opacity var(--mid); }
+.thumb.is-uploading img { opacity: 0.45; }
+.thumb-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(0,0,0,.5); }
+.thumb-bar::after { content: ""; display: block; height: 100%; background: var(--bone); transform-origin: left; transform: scaleX(var(--up, 0)); transition: transform 0.2s linear; }
+.thumb:not(.is-uploading) .thumb-bar { display: none; }
+.thumb-remove {
+  position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; display: grid; place-items: center;
+  background: rgba(7,7,7,.75); color: var(--bone); font-size: 18px; line-height: 1;
+}
+.thumb-remove:hover { background: var(--bone); color: var(--ink); }
+.thumb.is-failed::after { content: "Failed — tap × and retry"; position: absolute; inset: auto 0 0; padding: 6px; font-size: 11px; background: rgba(120,30,20,.85); }
+
+/* ---- Navigation, errors, done ------------------------------------------ */
+.book-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--line); }
+.book-nav [data-back][hidden] + [data-next] { margin-left: auto; }
+.js .book-submit { justify-self: start; }
+.book-error { margin: 24px 0 0; padding: 14px 18px; border: 1px solid rgba(208,122,107,.5); color: #f0c2b8; }
+
+.book-done { outline: none; }
+.book-done h2 { margin: 18px 0 24px; }
+.book-done .lines { margin-top: 40px; }

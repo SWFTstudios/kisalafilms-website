@@ -842,6 +842,264 @@ def faq_page() -> str:
 
 
 # =============================================================================
+# Start your build (the intake wizard)
+# =============================================================================
+
+BOOK_SERVICES = [
+    ("fullWrap", "Colour change", "Full-coverage cast film in any finish.", "$1,650"),
+    ("ppf", "Paint protection", "Clear, self-healing film where it wears.", "$450"),
+    ("partialWrap", "Accents &amp; partials", "Tank, tail, single panels, two-tone.", "$575"),
+    ("customPrint", "Custom livery", "Printed graphics, designed for your bike.", "$950"),
+    ("chromeDelete", "Chrome delete &amp; trim", "Trim, tints and rim stripes.", "$275"),
+    ("unsure", "Not sure yet", "Tell us the look; we'll suggest the work.", None),
+]
+COVERAGES = [("full", "The whole bike"), ("partial", "Part of it"), ("panels", "Specific panels"), ("unsure", "Not sure")]
+PANELS = [
+    ("tank", "Tank"), ("tank-top", "Tank top / knee areas"), ("front-fairing", "Front fairing / nose"),
+    ("side-fairings", "Side fairings"), ("belly-pan", "Belly pan"), ("tail", "Tail section"),
+    ("front-fender", "Front fender"), ("rear-hugger", "Rear hugger"), ("screen", "Windscreen"),
+    ("headlight", "Headlight"), ("mirrors", "Mirrors"), ("wheels", "Wheels / rim stripes"),
+    ("side-covers", "Side covers"), ("trim", "Chrome trim"),
+]
+FINISH_CHOICES = [("gloss", "Gloss"), ("satin", "Satin"), ("matte", "Matte"), ("metallic", "Metallic"),
+                  ("colour-shift", "Colour-shift"), ("chrome", "Chrome"), ("carbon", "Carbon / textured"),
+                  ("clear", "Clear protection"), ("unsure", "Not sure")]
+HANDOFF_CHOICES = [
+    ("drop-off", "I'll bring it in", "To 95 Christopher Columbus Dr, by appointment.", "No charge"),
+    ("pickup", "Collect it from me", "The van comes to you in JC, Brooklyn or NYC.", price("transport.pickup.from", "$75")),
+    ("round-trip", "Collect and return it", "Picked up before, delivered back after.", price("transport.roundTrip.from", "$150")),
+    ("undecided", "Not sure yet", "We'll work out what's easiest with your quote.", "&nbsp;"),
+]
+PHOTO_ANGLES = ["Left side", "Right side", "Front", "Rear", "Tank from above", "Any damage, close up"]
+
+
+def booking_page() -> str:
+    years = "\n".join(f'                <option value="{y}">{y}</option>' for y in range(2027, 1984, -1))
+    services = "\n".join(
+        f"""              <label class="choice choice--card">
+                <input type="radio" name="service" value="{key}" required>
+                <span class="choice-body">
+                  <span class="choice-title">{name}</span>
+                  <span class="choice-text">{blurb}</span>
+                  <span class="choice-meta">{"From " + price(key, fb) if fb else "Free advice"}</span>
+                </span>
+              </label>"""
+        for key, name, blurb, fb in BOOK_SERVICES
+    )
+    coverages = "\n".join(
+        f'              <label class="chip"><input type="radio" name="coverage" value="{v}"><span>{l}</span></label>'
+        for v, l in COVERAGES
+    )
+    panels = "\n".join(
+        f'              <label class="chip"><input type="checkbox" name="panels" value="{v}"><span>{l}</span></label>'
+        for v, l in PANELS
+    )
+    finishes = "\n".join(
+        f'              <label class="chip"><input type="radio" name="finish" value="{v}"><span>{l}</span></label>'
+        for v, l in FINISH_CHOICES
+    )
+    handoffs = "\n".join(
+        f"""              <label class="choice choice--card">
+                <input type="radio" name="handoff" value="{v}">
+                <span class="choice-body">
+                  <span class="choice-title">{t}</span>
+                  <span class="choice-text">{d}</span>
+                  <span class="choice-meta">{m}</span>
+                </span>
+              </label>"""
+        for v, t, d, m in HANDOFF_CHOICES
+    )
+    angles = "".join(f"<li>{a}</li>" for a in PHOTO_ANGLES)
+    step_names = ["Your bike", "The work", "Photos", "Notes &amp; timing", "You"]
+    progress = "\n".join(
+        f'            <li data-progress-step="{n}"><span class="num">{n:02d}</span><span class="name">{name}</span></li>'
+        for n, name in enumerate(step_names, 1)
+    )
+
+    body = f"""
+    <section class="book" data-book aria-labelledby="page-title">
+      <div class="wrap book-grid">
+        <aside class="book-aside">
+          {crumbs([("Home", "/"), ("Start your build", None)])}
+          <h1 class="display-l" id="page-title">Start your <em>build.</em></h1>
+          <p class="lede">A few minutes, no payment. You'll get a written quote in your client portal, and every update from there.</p>
+
+          <dl class="book-summary" aria-live="polite">
+            <div><dt class="label">Bike</dt><dd data-sum="bike">&mdash;</dd></div>
+            <div><dt class="label">Work</dt><dd data-sum="service">&mdash;</dd></div>
+            <div><dt class="label">Finish</dt><dd data-sum="finish">&mdash;</dd></div>
+            <div><dt class="label">Photos</dt><dd data-sum="photos">0</dd></div>
+            <div><dt class="label">Getting here</dt><dd data-sum="handoff">&mdash;</dd></div>
+          </dl>
+          <div class="book-estimate" data-estimate hidden>
+            <p class="label">Ballpark</p>
+            <p class="book-estimate-figure" data-estimate-figure></p>
+            <p class="meta" data-estimate-note>A starting range for this kind of bike. Your written quote is the real number.</p>
+          </div>
+        </aside>
+
+        <div class="book-main">
+          <ol class="book-progress" aria-label="Steps">
+{progress}
+          </ol>
+
+          <form class="book-form form" id="book-form" action="/api/jobs" method="post" enctype="multipart/form-data" novalidate>
+            <input type="hidden" name="draft" value="">
+            <input type="hidden" name="body_class" value="">
+            <input type="hidden" name="source" value="book">
+
+            <fieldset class="book-step" data-step="1">
+              <legend class="display-s"><span class="label">Step 01</span>Your bike</legend>
+              <div class="field bike-search" data-bike-search hidden>
+                <label class="label" for="bike-search">Find your bike</label>
+                <input id="bike-search" type="text" role="combobox" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="bike-results" placeholder="Try &ldquo;CBR600&rdquo;, &ldquo;Ninja 400&rdquo; or &ldquo;Street Triple&rdquo;">
+                <ul class="bike-results" id="bike-results" role="listbox" hidden></ul>
+              </div>
+              <div class="form-row form-row--3">
+                <div class="field"><label class="label" for="bike-year">Year</label>
+                  <select id="bike-year" name="bike_year">
+                    <option value="">Year</option>
+{years}
+                    <option value="older">Older</option>
+                  </select>
+                </div>
+                <div class="field"><label class="label" for="bike-make">Make</label><input id="bike-make" name="bike_make" type="text" list="bike-makes" autocomplete="off" required placeholder="Honda"><datalist id="bike-makes"></datalist></div>
+                <div class="field"><label class="label" for="bike-model">Model</label><input id="bike-model" name="bike_model" type="text" autocomplete="off" required placeholder="CBR600 F4i"></div>
+              </div>
+              <details class="book-more">
+                <summary class="label">More about the bike <span>(optional)</span></summary>
+                <div class="form-row form-row--3">
+                  <div class="field"><label class="label" for="bike-colour">Current colour</label><input id="bike-colour" name="bike_colour" type="text" placeholder="Black"></div>
+                  <div class="field"><label class="label" for="bike-mileage">Mileage</label><input id="bike-mileage" name="bike_mileage" type="text" inputmode="numeric" placeholder="12,000"></div>
+                  <div class="field"><label class="label" for="bike-vin">VIN</label><input id="bike-vin" name="bike_vin" type="text" autocapitalize="characters" maxlength="17"></div>
+                </div>
+              </details>
+            </fieldset>
+
+            <fieldset class="book-step" data-step="2">
+              <legend class="display-s"><span class="label">Step 02</span>The work</legend>
+              <div class="choices">
+{services}
+              </div>
+              <div class="field" data-when="coverage">
+                <p class="label">How much of the bike?</p>
+                <div class="chips">
+{coverages}
+                </div>
+              </div>
+              <div class="field" data-when="panels">
+                <p class="label">Which panels?</p>
+                <div class="chips">
+{panels}
+                </div>
+              </div>
+              <div class="field">
+                <p class="label">Finish</p>
+                <div class="chips">
+{finishes}
+                </div>
+              </div>
+              <div class="field"><label class="label" for="colour">Colour or film <span>(optional)</span></label>
+                <input id="colour" name="colour" type="text" placeholder="e.g. Nardo grey, or a film name from the catalog">
+                <p class="meta">Browse every colour in the <a class="link-line" href="/vinyl-catalog" target="_blank" rel="noopener">film catalog</a>, or leave it and we'll suggest some.</p>
+              </div>
+              <input type="hidden" name="film_handle" value="">
+            </fieldset>
+
+            <fieldset class="book-step" data-step="3">
+              <legend class="display-s"><span class="label">Step 03</span>Photos</legend>
+              <p class="body">Photos make the quote accurate: paint condition, existing film and how the bodywork comes apart all show up in them. Up to 20.</p>
+              <ul class="angle-list" aria-label="Useful angles">{angles}</ul>
+              <label class="dropzone" data-dropzone>
+                <input type="file" name="photos" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple>
+                <span class="dropzone-title">Add photos</span>
+                <span class="meta">Drag them here, or tap to choose or take them. They're resized on your device before upload.</span>
+              </label>
+              <ul class="thumbs" data-thumbs aria-live="polite"></ul>
+            </fieldset>
+
+            <fieldset class="book-step" data-step="4">
+              <legend class="display-s"><span class="label">Step 04</span>Notes &amp; timing</legend>
+              <div class="field"><label class="label" for="notes">What do you have in mind?</label><textarea id="notes" name="notes" rows="5" placeholder="Colours you like, bikes you've seen, anything you want kept as it is."></textarea></div>
+              <div class="field"><label class="label" for="inspiration">Inspiration links <span>(optional)</span></label><textarea id="inspiration" name="inspiration" rows="2" placeholder="Instagram posts, photos, other builds"></textarea></div>
+              <div class="field"><label class="label" for="preferred-dates">When would you like it done?</label><input id="preferred-dates" name="preferred_dates" type="text" placeholder="e.g. before April, or any weekday next month"></div>
+              <div class="field">
+                <p class="label">Getting the bike here</p>
+                <div class="choices choices--two">
+{handoffs}
+                </div>
+              </div>
+              <div class="field" data-when="zip"><label class="label" for="pickup-zip">Pickup ZIP code</label><input id="pickup-zip" name="pickup_zip" type="text" inputmode="numeric" maxlength="10" placeholder="11211"></div>
+            </fieldset>
+
+            <fieldset class="book-step" data-step="5">
+              <legend class="display-s"><span class="label">Step 05</span>You</legend>
+              <div class="form-row">
+                <div class="field"><label class="label" for="name">Name</label><input id="name" name="name" type="text" autocomplete="name" required></div>
+                <div class="field"><label class="label" for="phone">Phone <span>(optional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+              </div>
+              <div class="field"><label class="label" for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required>
+                <p class="meta">Your portal link comes here. No password to remember.</p>
+              </div>
+              <button class="btn btn--solid book-submit" type="submit" data-submit>Send my build <span class="btn-arrow" aria-hidden="true"></span></button>
+            </fieldset>
+
+            <p class="book-error" role="alert" data-error hidden></p>
+
+            <div class="book-nav" data-nav hidden>
+              <button class="btn" type="button" data-back>Back</button>
+              <button class="btn btn--solid" type="button" data-next>Continue <span class="btn-arrow" aria-hidden="true"></span></button>
+            </div>
+          </form>
+
+          <div class="book-done" data-done hidden tabindex="-1">
+            <p class="label">Build <span data-done-ref></span></p>
+            <h2 class="display-l">Your build <em>is in.</em></h2>
+            <p class="lede">We've emailed a link to your client portal at <strong data-done-email></strong>. Your written quote will appear there, along with every update and photo from the studio.</p>
+            <ul class="lines">
+              <li><span>01</span><div><h3>Your quote</h3><p>Written up from your photos, with the work, film and any transport on their own lines.</p></div></li>
+              <li><span>02</span><div><h3>Approve and reserve</h3><p>Approve it in your portal and hold your studio date with a deposit online.</p></div></li>
+              <li><span>03</span><div><h3>Follow the build</h3><p>Progress photos at every stage, through to collection.</p></div></li>
+            </ul>
+            <p class="meta" data-done-dev hidden>Local dev: <a class="link-line" data-done-dev-link href="#">open the portal sign-in link</a> (code <span data-done-dev-code></span>)</p>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
+              <a class="btn btn--solid" href="/login">Open my portal <span class="btn-arrow" aria-hidden="true"></span></a>
+              <a class="btn" href="/">Back to home</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>"""
+    return page(
+        "Start Your Build: Motorcycle Wrap Quote | K Films, Jersey City",
+        "Send your bike's year, make and model, photos and ideas in a few minutes. A written quote comes back in your client portal. No payment needed.",
+        body,
+        extra_head='  <link rel="stylesheet" href="/css/book.css">\n',
+        scripts=("/js/book.js",),
+    )
+
+
+def book_thanks_page() -> str:
+    body = f"""
+    <section class="page-hero page-hero--plain" style="min-height:100svh" aria-labelledby="page-title">
+      <div class="wrap page-hero-grid">
+        <div>
+          <p class="label">Build received</p>
+          {mask(["Your build", "<em>is in.</em>"], "display-xl", "h1", "page-title")}
+        </div>
+        <div>
+          <p class="lede rv">We've emailed a link to your client portal. Your written quote will appear there, along with every update from the studio.</p>
+          <div class="rv" style="display:flex;flex-wrap:wrap;gap:12px">
+            <a class="btn btn--solid" href="/login">Open my portal <span class="btn-arrow" aria-hidden="true"></span></a>
+            <a class="btn" href="/">Back to home</a>
+          </div>
+        </div>
+      </div>
+    </section>"""
+    return page("Build received | K Films", "Your build is in. Check your email for your portal link.", body)
+
+
+# =============================================================================
 # 404
 # =============================================================================
 
@@ -879,6 +1137,8 @@ def main() -> None:
     OUT["studio.html"] = studio_page()
     OUT["faq.html"] = faq_page()
     OUT["404.html"] = not_found_page()
+    OUT["book.html"] = booking_page()
+    OUT["book-thanks.html"] = book_thanks_page()
 
     for rel, html in OUT.items():
         path = PUBLIC / rel

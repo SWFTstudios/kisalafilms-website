@@ -19,7 +19,7 @@ PUBLIC = ROOT / "public"
 SOURCE = PUBLIC / "index.html"
 
 STYLESHEET = '  <link rel="stylesheet" href="/css/kf.css">'
-BOOK_URL = "/quote"  # The intake wizard replaces this route in phase 4.
+BOOK_URL = "/book"
 
 
 def chrome_blocks() -> dict[str, str]:
@@ -48,7 +48,7 @@ def sync_chrome(html: str, blocks: dict[str, str]) -> str:
     return html
 
 
-def head(title: str, description: str, preload: str | None = None) -> str:
+def head(title: str, description: str, preload: str | None = None, extra_head: str = "") -> str:
     preload_tag = (
         f'  <link rel="preload" as="image" fetchpriority="high" href="{preload}">\n'
         if preload
@@ -71,7 +71,7 @@ def head(title: str, description: str, preload: str | None = None) -> str:
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 {STYLESHEET}
-{preload_tag}  <script src="/js/kisala-config.js"></script>
+{extra_head}{preload_tag}  <script src="/js/kisala-config.js"></script>
   <script src="/js/analytics.js"></script>
 </head>
 <body>
@@ -81,17 +81,21 @@ def head(title: str, description: str, preload: str | None = None) -> str:
 """
 
 
-def page(title: str, description: str, body: str, preload: str | None = None) -> str:
+def page(title: str, description: str, body: str, preload: str | None = None,
+         extra_head: str = "", scripts: tuple[str, ...] = ()) -> str:
     blocks = chrome_blocks()
+    extra_scripts = "".join(f'  <script src="{src}"></script>\n' for src in scripts)
     return (
-        head(title, description, preload)
+        head(title, description, preload, extra_head)
         + blocks["HEADER"]
         + "\n\n  <main id=\"main\">\n"
         + body.rstrip()
         + "\n\n  </main>\n\n"
         + blocks["FOOTER"]
         + "\n\n  <script src=\"/js/config-apply.js\"></script>\n"
-        + "  <script src=\"/js/kf.js\"></script>\n</body>\n</html>\n"
+        + "  <script src=\"/js/kf.js\"></script>\n"
+        + extra_scripts
+        + "</body>\n</html>\n"
     )
 
 

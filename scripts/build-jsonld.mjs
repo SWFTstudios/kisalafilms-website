@@ -212,9 +212,9 @@ const PAGES = {
     breadcrumbs([["Home", "/"], ["Builds", "/builds.html"], ["Honda CBR600 F4i", "/builds/honda-cbr600-f4i.html"]]),
   ],
   "finishes.html": () => [breadcrumbs([["Home", "/"], ["Finishes", "/finishes.html"]])],
-  "quote.html": () => [
+  "book.html": () => [
     garage(),
-    breadcrumbs([["Home", "/"], ["Get a quote", "/quote.html"]]),
+    breadcrumbs([["Home", "/"], ["Start your build", "/book.html"]]),
   ],
   "process.html": () => [
     garage(),
@@ -223,10 +223,6 @@ const PAGES = {
   "studio.html": () => [
     garage(),
     breadcrumbs([["Home", "/"], ["The Studio", "/studio.html"]]),
-  ],
-  "wrap-studio.html": () => [
-    garage(),
-    breadcrumbs([["Home", "/"], ["Wrap Studio", "/wrap-studio.html"]]),
   ],
 };
 
