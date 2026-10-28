@@ -24,6 +24,8 @@ import {
   type ProjectCoverage,
   type ProjectSurface,
 } from "./project-quote";
+import { type EmailBinding, type R2Bucket } from "./http";
+import { routePortal } from "./portal-routes";
 import { recordQuoteRequest } from "./quote";
 import { handleQuoteEstimate } from "./quote-estimate";
 
@@ -37,6 +39,11 @@ type Env = {
   SITE_URL?: string;
   FILMS_IMPORT_TOKEN?: string;
   FOUNDER_ADMIN_TOKEN?: string;
+  PHOTOS?: R2Bucket;
+  EMAIL?: EmailBinding;
+  EMAIL_FROM?: string;
+  ADMIN_EMAILS?: string;
+  RESEND_API_KEY?: string;
 };
 
 const JSON_HEADERS = {
@@ -722,6 +729,11 @@ export default {
     if (retired) {
       const [path, hash] = retired.split("#");
       return redirect(path + url.search + (hash ? `#${hash}` : ""));
+    }
+
+    if (url.pathname.startsWith("/api/")) {
+      const portal = await routePortal(request, env);
+      if (portal) return portal;
     }
 
     if (url.pathname === "/lookbook" || url.pathname === "/lookbook/") {

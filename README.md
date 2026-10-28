@@ -48,6 +48,32 @@ npm run deploy
 
 Worker `name` in `wrangler.jsonc` must stay `kisalafilms-website` to match the Cloudflare project.
 
+## Client portal API
+
+The redesign's back end (phase 3 of [doc/REDESIGN-PLAN.md](./doc/REDESIGN-PLAN.md)). Customers, bikes, jobs, the stage timeline, photos, messages, quotes and payments live in D1 ([`migrations/0006_portal.sql`](./migrations/0006_portal.sql)); photos themselves live in the `kisalafilms-photos` R2 bucket.
+
+- [`src/auth.ts`](./src/auth.ts) — passwordless sign-in: an emailed one-time link plus a 6-digit code, 30-day `kf_session` cookie. Only hashes are stored. Accounts are created by submitting a build; addresses in `ADMIN_EMAILS` are the studio.
+- [`src/uploads.ts`](./src/uploads.ts) — photo uploads (raw image body, 15 MB cap) onto a browser-minted draft before the job exists, or onto a job after; served only to the owner or the studio.
+- [`src/portal.ts`](./src/portal.ts) — create a job from the intake form, list and read jobs, edit notes until check-in, messages. Creating a job never signs anyone in: the way in is the link emailed to the address on it.
+- [`src/stages.ts`](./src/stages.ts) — the timeline, in order.
+- [`src/email.ts`](./src/email.ts) — Cloudflare Email Service binding, then Resend, then the Worker log.
+
+Run it locally:
+
+```bash
+npm run db:migrate:local
+npm run dev
+npm run test:portal
+```
+
+On localhost the sign-in endpoints also return the link and code (`devLink`, `devCode`) and mail goes to the log, so the whole flow works without a mail provider.
+
+Before deploying:
+
+1. `npx wrangler r2 bucket create kisalafilms-photos`
+2. `npx wrangler d1 migrations apply kisalafilms --remote`
+3. Mail: onboard a domain to Cloudflare Email Sending (`npx wrangler email sending enable <domain>`) and set `EMAIL_FROM` in `wrangler.jsonc`, or `wrangler secret put RESEND_API_KEY` with `EMAIL_FROM` on a Resend-verified domain. Until then sign-in emails only reach the log.
+
 ## Information architecture
 
 Primary nav: **Home · Services · Gallery · About · Process · FAQ**, with **Get a quote** as the standing CTA. The commercial pages that are not part of that story — Pricing, Shop, the vinyl catalog, the configurator, Login — stay reachable from the footer and the mobile drawer.

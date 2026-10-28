@@ -29,7 +29,29 @@
      Films import: wrangler secret put FILMS_IMPORT_TOKEN
      Founder admin (mark completed orders / force price sync):
      wrangler secret put FOUNDER_ADMIN_TOKEN */
+  /* Client portal photos. Create once with:
+       npx wrangler r2 bucket create kisalafilms-photos */
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "kisalafilms-photos"
+    }
+  ],
+  /* Portal email (sign-in links, build updates). Sends only from a domain
+     onboarded to Cloudflare Email Sending, named by EMAIL_FROM below:
+       npx wrangler email sending enable <domain>
+     Or set a Resend key instead: wrangler secret put RESEND_API_KEY
+     With neither, mail is written to the Worker log. */
+  "send_email": [
+    {
+      "name": "EMAIL"
+    }
+  ],
   "vars": {
-    "SITE_URL": "https://kisalafilms-website.elombe.workers.dev"
+    "SITE_URL": "https://kisalafilms-website.elombe.workers.dev",
+    /* Who can open /admin, and where studio alerts go (first address). */
+    "ADMIN_EMAILS": "elombe@swftstudios.com",
+    /* e.g. "K Films <studio@yourdomain.com>". Empty until a domain is set up. */
+    "EMAIL_FROM": ""
   }
 }
