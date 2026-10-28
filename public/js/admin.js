@@ -10,7 +10,8 @@
  *     customer sees it and gets an email
  *   - the full history, studio-only entries included
  *   - messages
- *   - the quote builder (draft or send), payments taken off-site
+ *   - the quote builder (draft or send), Stripe payment links, payments
+ *     taken in person
  *   - the brief, the rider's photos, internal notes
  *   - publish the finished build to /builds
  *
@@ -328,10 +329,22 @@
           try { await post(`/api/admin/jobs/${job.id}/payments`, { kind: kindSel.value, amountCents: dollars(amountIn.value), method: methodIn.value }); toast("Payment recorded."); reload(); }
           catch (err) { toast(err.message); }
         } },
+          d.canPay && live && live.status === "approved" ? h("div", { class: "checks" },
+            h("button", { class: "btn btn--small", type: "button", onclick: () => sendLink("deposit") }, "Email deposit link"),
+            h("button", { class: "btn btn--small", type: "button", onclick: () => sendLink("balance") }, "Email balance link")) : null,
           h("p", { class: "label", text: "Record a payment taken in person" }),
           h("div", { class: "row-2" }, kindSel, amountIn),
           methodIn,
           h("div", null, h("button", { class: "btn btn--small", type: "submit" }, "Record payment")))));
+
+    async function sendLink(kind) {
+      if (!confirm(`Email ${c.email} a Stripe link for the ${kind}?`)) return;
+      try {
+        const res = await post(`/api/admin/jobs/${job.id}/payment-link`, { kind });
+        toast(`Link for ${money(res.amountCents)} sent.`);
+        reload();
+      } catch (err) { toast(err.message); }
+    }
 
     /* Brief and rider photos */
     const row = (k, v) => (v ? h("div", null, h("dt", { class: "label", text: k }), h("dd", { text: v })) : null);

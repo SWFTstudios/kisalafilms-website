@@ -402,9 +402,8 @@ export async function handleGetJob(request: Request, env: PortalEnv, jobId: stri
     quotes: quotes.results.map((q) => ({ ...q, items: items.results.filter((i) => i.quote_id === q.id) })),
     payments: payments.results,
     viewer: { isAdmin: admin },
-    // Online payment arrives with Stripe checkout; until then the portal shows
-    // amounts due without a pay button.
-    canPay: false,
+    // Without a Stripe key the portal shows what is due, with no pay button.
+    canPay: !!env.STRIPE_SECRET_KEY,
   });
 }
 

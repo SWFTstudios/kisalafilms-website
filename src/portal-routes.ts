@@ -23,6 +23,7 @@ import {
   handlePostMessage,
   handleUpdateJob,
 } from "./portal";
+import { handleCheckout, handleCheckoutConfirm, handlePaymentLink } from "./payments";
 import { handleDraftDelete, handleDraftUpload, handleJobUpload, handlePhoto } from "./uploads";
 
 type Route = {
@@ -59,6 +60,10 @@ const ROUTES: Route[] = [
   { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/quotes$`), handle: (r, e, [j]) => handleAdminQuote(r, e, j) },
   { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/payments$`), handle: (r, e, [j]) => handleAdminPayment(r, e, j) },
   { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/publish$`), handle: (r, e, [j]) => handleAdminPublish(r, e, j) },
+
+  { method: "POST", pattern: new RegExp(`^/api/admin/jobs/${ID}/payment-link$`), handle: (r, e, [j]) => handlePaymentLink(r, e, j) },
+  { method: "POST", pattern: new RegExp(`^/api/jobs/${ID}/checkout$`), handle: (r, e, [j]) => handleCheckout(r, e, j) },
+  { method: "POST", pattern: new RegExp(`^/api/jobs/${ID}/checkout/confirm$`), handle: (r, e, [j]) => handleCheckoutConfirm(r, e, j) },
 
   { method: "GET", pattern: /^\/api\/builds$/, handle: (r, e) => handlePublicBuilds(r, e) },
 ];

@@ -3,7 +3,8 @@
  *
  * Without ?job= it lists the rider's builds; with ?job=<id> it shows one:
  * the stage timeline, updates from the studio with their photos, the quote
- * (approve it here), payments, messages, the brief and the rider's own photos.
+ * (approve it here), payments (paid through Stripe Checkout), messages, the
+ * brief and the rider's own photos.
  *
  * Everything comes from the /api/jobs endpoints and is drawn with DOM calls
  * and textContent, never innerHTML with data, so nothing a rider or the
@@ -123,6 +124,8 @@
       ] : h("p", { class: "body", text: "Your written quote will appear here, usually after the studio has gone through your photos. You'll get an email when it's ready." })));
 
     /* Payments */
+    // Unfinished checkouts are bookkeeping, not something to show the rider.
+    const settled = payments.filter((p) => p.status === "paid" || p.status === "refunded");
     const paid = payments.filter((p) => p.status === "paid");
     const paidTotal = paid.reduce((n, p) => n + p.amount_cents, 0);
     const due = quote && quote.status === "approved" ? Math.max(quote.total_cents - paidTotal, 0) : 0;
@@ -130,13 +133,15 @@
     const paymentsPanel = h("section", { class: "panel" },
       h("div", { class: "panel-head" }, h("h2", { text: "Payments" })),
       h("div", { class: "panel-body" },
-        payments.length ? h("dl", { class: "details" }, payments.map((p) =>
+        settled.length ? h("dl", { class: "details" }, settled.map((p) =>
           h("div", null, h("dt", { class: "label", text: p.kind }),
             h("dd", { text: `${money(p.amount_cents)} · ${p.status === "paid" ? `paid ${when(p.paid_at)}` : p.status}` })))) : null,
         quote && quote.status === "approved"
           ? h("p", { class: "body", text: depositDue ? `Deposit due to hold your date: ${money(depositDue)}.` : due ? `Balance due at collection: ${money(due)}.` : "Paid in full. Thank you." })
           : h("p", { class: "body", text: "Nothing is due yet. Payments are taken here once you've approved your quote." }),
-        (depositDue || due) && d.canPay ? h("button", { class: "btn btn--solid", type: "button", "data-pay": depositDue ? "deposit" : "balance" }, `Pay ${money(depositDue || due)} `, arrow()) : null));
+        (depositDue || due) && d.canPay ? h("button", { class: "btn btn--solid", type: "button",
+          onclick: (e) => pay(job.id, depositDue ? "deposit" : "balance", e.currentTarget) }, `Pay ${money(depositDue || due)} `, arrow()) : null,
+        (depositDue || due) && d.canPay ? h("p", { class: "meta", text: "Card, Apple Pay or Google Pay, through Stripe." }) : null));
 
     /* Messages */
     const thread = h("div", { class: "thread" }, messages.map((m) => message(m)));
@@ -228,7 +233,8 @@
       h("button", { class: "btn btn--small btn--solid", type: "button", onclick: jump(quote && quote.status === "sent" ? quotePanel : paymentsPanel) },
         quote && quote.status === "sent" ? "Review quote" : "View payment")) : null;
 
-    root.replaceChildren(
+    // replaceChildren would write a null out as the text "null".
+    root.replaceChildren(...[
       h("div", { class: "job-head" },
         h("nav", { class: "crumbs label", "aria-label": "Breadcrumb" },
           h("a", { href: "/portal", onclick: (e) => { e.preventDefault(); openList(); } }, "Your builds"),
@@ -241,7 +247,8 @@
       timeline,
       h("div", { class: "job-grid" },
         h("div", { class: "job-col" }, updates, care, messagesPanel),
-        h("div", { class: "job-col" }, quotePanel, paymentsPanel, brief, mine)));
+        h("div", { class: "job-col" }, quotePanel, paymentsPanel, brief, mine)),
+    ].filter(Boolean));
 
     thread.scrollTop = thread.scrollHeight;
     document.title = `${job.ref} · ${bike ? bike.label : "Build"} | K Films Client Portal`;
@@ -265,6 +272,40 @@
     return h("div", { class: `msg${mine ? " msg--mine" : ""}` },
       h("span", { class: "meta", text: `${m.author === "studio" ? "K Films studio" : "You"} · ${whenTime(m.created_at)}` }),
       h("p", { text: m.body }));
+  }
+
+  async function pay(jobId, kind, button) {
+    button.disabled = true;
+    try {
+      const { url } = await api(`/api/jobs/${jobId}/checkout`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind }),
+      });
+      track("portal_checkout", { kind });
+      location.assign(url);
+    } catch (err) {
+      button.disabled = false;
+      toast(err.message);
+    }
+  }
+
+  /** Back from Stripe: confirm the session so the page is right straight away,
+   *  without waiting on the webhook. */
+  async function settleReturn(jobId) {
+    const params = new URLSearchParams(location.search);
+    const sessionId = params.get("paid");
+    if (params.has("cancelled")) toast("Payment cancelled. Nothing was charged.");
+    if (!sessionId && !params.has("cancelled")) return;
+    history.replaceState(null, "", `/portal?job=${encodeURIComponent(jobId)}`);
+    if (!sessionId) return;
+    try {
+      const res = await api(`/api/jobs/${jobId}/checkout/confirm`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId }),
+      });
+      toast(res.status === "paid" ? "Payment received. Thank you." : "Payment is processing. This page updates when it clears.");
+      track("portal_payment_return", { status: res.status });
+    } catch (err) {
+      toast(err.message);
+    }
   }
 
   async function approve(jobId, quoteId, button) {
@@ -319,7 +360,7 @@
   }
   function route() {
     const id = new URLSearchParams(location.search).get("job");
-    return show(id ? renderJob(id) : renderList());
+    return show(id ? settleReturn(id).then(() => renderJob(id)) : renderList());
   }
   window.addEventListener("popstate", route);
   // Coming back to the tab picks up anything the studio posted meanwhile.

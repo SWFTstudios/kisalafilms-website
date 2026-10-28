@@ -40,6 +40,8 @@ export type PortalEnv = {
   ADMIN_EMAILS?: string;
   RESEND_API_KEY?: string;
   SITE_URL?: string;
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_API_BASE?: string;
 };
 
 const JSON_HEADERS = {

@@ -25,6 +25,7 @@ import {
   type ProjectSurface,
 } from "./project-quote";
 import { type EmailBinding, type R2Bucket } from "./http";
+import { settleSession } from "./payments";
 import { routePortal } from "./portal-routes";
 import { recordQuoteRequest } from "./quote";
 import { handleQuoteEstimate } from "./quote-estimate";
@@ -44,6 +45,7 @@ type Env = {
   EMAIL_FROM?: string;
   ADMIN_EMAILS?: string;
   RESEND_API_KEY?: string;
+  STRIPE_API_BASE?: string;
 };
 
 const JSON_HEADERS = {
@@ -625,6 +627,19 @@ async function handleStripeWebhook(
     event = JSON.parse(payload) as typeof event;
   } catch {
     return json({ error: "Invalid JSON." }, 400);
+  }
+
+  if (
+    event.type === "checkout.session.completed" ||
+    event.type === "checkout.session.async_payment_succeeded"
+  ) {
+    const session = event.data?.object || {};
+    // Portal payments carry a payment_id; the older /project orders don't.
+    const portalMeta = (session.metadata || {}) as Record<string, string>;
+    if (portalMeta.payment_id) {
+      await settleSession(request, env, session);
+      return json({ received: true });
+    }
   }
 
   if (event.type === "checkout.session.completed") {

@@ -14,7 +14,8 @@
     "audit": "node scripts/audit-pages.mjs",
     "export:copy": "node scripts/export-website-copy.mjs",
     "test:portal": "node scripts/test-portal-api.mjs",
-    "db:migrate:local": "wrangler d1 migrations apply kisalafilms --local"
+    "db:migrate:local": "wrangler d1 migrations apply kisalafilms --local",
+    "test:payments": "node scripts/test-payments.mjs"
   },
   "devDependencies": {
     "jsdom": "^29.1.1",

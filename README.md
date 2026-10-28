@@ -72,11 +72,16 @@ npm run test:portal
 
 On localhost the sign-in endpoints also return the link and code (`devLink`, `devCode`) and mail goes to the log, so the whole flow works without a mail provider.
 
+- [`src/payments.ts`](./src/payments.ts) — Stripe Checkout for the deposit and the balance, started by the rider from the portal or emailed by the studio as a link. The amount always comes from the approved quote, never the browser. A pending `payments` row travels in the session metadata, and the rider's return (`/checkout/confirm`) and the `checkout.session.completed` webhook both settle it; only one of them records it.
+
+`npm run test:payments` drives the whole payment flow against a mock Stripe; the comment at the top of [`scripts/test-payments.mjs`](./scripts/test-payments.mjs) has the three commands it needs.
+
 Before deploying:
 
 1. `npx wrangler r2 bucket create kisalafilms-photos`
 2. `npx wrangler d1 migrations apply kisalafilms --remote`
-3. Mail: onboard a domain to Cloudflare Email Sending (`npx wrangler email sending enable <domain>`) and set `EMAIL_FROM` in `wrangler.jsonc`, or `wrangler secret put RESEND_API_KEY` with `EMAIL_FROM` on a Resend-verified domain. Until then sign-in emails only reach the log.
+3. Payments: `wrangler secret put STRIPE_SECRET_KEY` (start with an `sk_test_` key), add a webhook endpoint in Stripe for `https://<site>/api/webhooks/stripe` with `checkout.session.completed` and `checkout.session.async_payment_succeeded`, then `wrangler secret put STRIPE_WEBHOOK_SECRET` with its signing secret. Until the key is set, the portal shows what's due without a pay button.
+4. Mail: onboard a domain to Cloudflare Email Sending (`npx wrangler email sending enable <domain>`) and set `EMAIL_FROM` in `wrangler.jsonc`, or `wrangler secret put RESEND_API_KEY` with `EMAIL_FROM` on a Resend-verified domain. Until then sign-in emails only reach the log.
 
 ## Information architecture
 

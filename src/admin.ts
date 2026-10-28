@@ -8,6 +8,7 @@
  *   POST  /api/admin/jobs/:id/quotes              write a quote, as a draft or sent
  *   POST  /api/admin/jobs/:id/payments            record a payment taken off-site
  *   POST  /api/admin/jobs/:id/publish             show (or hide) the job on /builds
+ *   POST  /api/admin/jobs/:id/payment-link        email a Stripe link (src/payments.ts)
  *
  * Reading one job is the shared GET /api/jobs/:id, which already returns the
  * studio-only fields to an admin, and messages are the shared endpoint too.
@@ -254,17 +255,30 @@ export async function handleAdminQuote(request: Request, env: PortalEnv, jobId: 
 
 /**
  * Record a paid payment and move the job on: a deposit books it. Shared with
- * the Stripe webhook, which calls it with the checkout's own payment row.
+ * Stripe checkout (src/payments.ts), which passes its own pending row. Returns
+ * false when that row was already settled.
  */
 export async function recordPayment(
   request: Request,
   env: PortalEnv,
   job: Job,
-  payment: { kind: string; amountCents: number; quoteId?: string | null; method?: string; paymentId?: string }
-): Promise<void> {
+  payment: {
+    kind: string;
+    amountCents: number;
+    quoteId?: string | null;
+    method?: string;
+    paymentId?: string;
+    paymentIntent?: string | null;
+  }
+): Promise<boolean> {
   const at = now();
   if (payment.paymentId) {
-    await env.DB.prepare("UPDATE payments SET status = 'paid', paid_at = ? WHERE id = ?").bind(at, payment.paymentId).run();
+    // Only a still-pending row flips to paid, so a webhook and a browser
+    // return racing for the same checkout record it once between them.
+    const result = (await env.DB.prepare(
+      "UPDATE payments SET status = 'paid', paid_at = ?, stripe_payment_intent = COALESCE(?, stripe_payment_intent) WHERE id = ? AND status IN ('pending', 'expired')"
+    ).bind(at, payment.paymentIntent || null, payment.paymentId).run()) as { meta?: { changes?: number } };
+    if (!result.meta?.changes) return false;
   } else {
     await env.DB.prepare(
       "INSERT INTO payments (id, job_id, quote_id, kind, amount_cents, status, created_at, paid_at) VALUES (?, ?, ?, ?, ?, 'paid', ?, ?)"
@@ -282,6 +296,7 @@ export async function recordPayment(
     books ? "Your studio date is held. You'll get an update when your bike is checked in." : "",
     "Your receipt is in your portal.",
   ]);
+  return true;
 }
 
 export async function handleAdminPayment(request: Request, env: PortalEnv, jobId: string): Promise<Response> {
