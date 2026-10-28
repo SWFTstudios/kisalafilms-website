@@ -86,15 +86,19 @@
 
   let saveTimer = null;
   let finished = false;
-  const persist = () => {
+  const saveNow = () => {
     clearTimeout(saveTimer);
     if (finished) return;
-    saveTimer = setTimeout(() => {
-      state.fields = readFields();
-      const photos = state.photos.filter((p) => p.id).map((p) => ({ id: p.id, url: p.url }));
-      store({ draft: state.draft, step: state.step, fields: state.fields, photos });
-    }, 250);
+    state.fields = readFields();
+    const photos = state.photos.filter((p) => p.id).map((p) => ({ id: p.id, url: p.url }));
+    store({ draft: state.draft, step: state.step, fields: state.fields, photos });
   };
+  const persist = () => {
+    clearTimeout(saveTimer);
+    if (!finished) saveTimer = setTimeout(saveNow, 250);
+  };
+  // A pending save must not be lost to a reload or a closed tab.
+  window.addEventListener("pagehide", saveNow);
 
   /* ---- Prefill: saved draft, then links like ?service=fullWrap ---------- */
   writeFields(state.fields);

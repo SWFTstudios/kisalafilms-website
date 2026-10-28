@@ -114,6 +114,7 @@ const RETIRED: Record<string, string> = {
   "/thanks": "/book-thanks",
   "/project": "/book",
   "/project-thanks": "/portal",
+  "/deposit-thanks": "/portal",
   "/services/full-wraps": "/services/colour-change",
   "/services/accent-package": "/services/accents",
   "/services/transformation-film": "/services",

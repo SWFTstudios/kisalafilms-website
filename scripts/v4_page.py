@@ -101,6 +101,22 @@ def page(title: str, description: str, body: str, preload: str | None = None,
 
 # ---- Components ------------------------------------------------------------
 
+def webp_size(path: Path) -> tuple[int, int] | None:
+    """Width and height from a WebP header (lossy, lossless or extended)."""
+    b = path.read_bytes()[:32]
+    if b[:4] != b"RIFF" or b[8:12] != b"WEBP":
+        return None
+    chunk = b[12:16]
+    if chunk == b"VP8 ":
+        return int.from_bytes(b[26:28], "little") & 0x3FFF, int.from_bytes(b[28:30], "little") & 0x3FFF
+    if chunk == b"VP8L":
+        bits = int.from_bytes(b[21:25], "little")
+        return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+    if chunk == b"VP8X":
+        return int.from_bytes(b[24:27], "little") + 1, int.from_bytes(b[27:30], "little") + 1
+    return None
+
+
 def picture(name: str, alt: str, sizes: str = "100vw", widths=(640, 1280, 1920),
             attrs: str = 'loading="lazy" decoding="async"', img_attrs: str = "") -> str:
     """A <picture> over the repo's -640/-1280/-1920.webp variants.
@@ -115,9 +131,12 @@ def picture(name: str, alt: str, sizes: str = "100vw", widths=(640, 1280, 1920),
     srcset = ", ".join(f"{name}-{w}.webp {w}w" for w in found)
     fallback = f"{name}-{found[-1]}.webp"
     extra = f" {img_attrs}" if img_attrs else ""
+    # Intrinsic size, so the browser reserves the space before the file lands.
+    size = webp_size(PUBLIC / fallback.lstrip("/"))
+    dims = f' width="{size[0]}" height="{size[1]}"' if size else ""
     return (
         f'<picture><source type="image/webp" srcset="{srcset}" sizes="{sizes}">'
-        f'<img src="{fallback}" alt="{alt}" {attrs}{extra}></picture>'
+        f'<img src="{fallback}" alt="{alt}"{dims} {attrs}{extra}></picture>'
     )
 
 
@@ -145,7 +164,7 @@ def finale(track: str, kicker: str = "Are you ready to", lines=("ride something"
            image: str = "/images/refs/ref-12-night-motion-1280.webp") -> str:
     return f"""
     <section class="finale" aria-labelledby="finale-title">
-      <div class="finale-bg" aria-hidden="true"><img data-parallax src="{image}" alt="" loading="lazy"></div>
+      <div class="finale-bg" aria-hidden="true"><img data-parallax src="{image}" alt="" width="1280" height="853" loading="lazy"></div>
       <div class="wrap">
         <p class="label rv">{kicker}</p>
         {mask(list(lines), "display-xl", "h2", "finale-title")}

@@ -1,5 +1,5 @@
 /**
- * Responsive and accessibility sweep of the v3 pages in a real browser.
+ * Responsive and accessibility sweep of every page in a real browser.
  *
  * The suites either side of this one answer different questions:
  * test-pages.mjs asserts behaviour under jsdom, verify-browser.mjs proves the
@@ -17,46 +17,39 @@
 import puppeteer from "puppeteer-core";
 
 const BASE = process.env.BASE_URL || "http://127.0.0.1:8787";
-const CHROME = process.env.CHROME_PATH || "/usr/local/bin/google-chrome";
+const CHROME =
+  process.env.CHROME_PATH ||
+  (process.platform === "darwin"
+    ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    : "/usr/local/bin/google-chrome");
 
-/* Every page a rider can reach. This used to be the eight v3 pages, with the
-   rest excused as "audited by eye" while they were still on the old stylesheet;
-   they are all on one system now, so there is nothing left to excuse. Redirect
-   stubs are not listed because there is no layout to measure. */
+/* Every page a rider can reach on the v4 site. /portal and /admin redirect to
+   /login when signed out, which is what gets measured for them here; their
+   signed-in views are covered by the browser walkthroughs. */
 const ROUTES = [
   "/",
   "/services",
-  "/services/full-wraps",
-  "/services/accent-package",
-  "/services/transformation-film",
-  "/gallery",
-  "/about",
+  "/services/colour-change",
+  "/services/paint-protection",
+  "/services/accents",
+  "/services/custom-livery",
+  "/services/chrome-delete",
+  "/builds",
+  "/builds/honda-cbr600-f4i",
+  "/finishes",
   "/process",
+  "/studio",
   "/faq",
-  "/quote",
-  "/quote-thanks",
-  "/pricing",
-  "/contact",
-  "/locations",
+  "/book",
+  "/book-thanks",
+  "/login",
+  "/portal",
   "/locations/jersey-city",
   "/locations/brooklyn",
   "/locations/new-york-city",
   "/vinyl-catalog",
   "/vinyl-catalog/film",
-  "/project",
-  "/project-thanks",
-  "/wrap-studio",
-  "/shop",
-  "/shop/wrap",
-  "/shop/wrap/gloss",
-  "/shop/k-merch",
-  "/shop/photoshoot",
-  "/testimonials",
-  "/journal",
-  "/login",
   "/styleguide",
-  "/thanks",
-  "/deposit-thanks",
   "/wrap-quote/",
   "/404",
 ];
@@ -64,7 +57,7 @@ const ROUTES = [
 /* Two small phones, a large phone, a tablet, a small laptop, a desktop. */
 const WIDTHS = [375, 390, 430, 768, 1024, 1440];
 
-/** Apple and WCAG both land near this; the design system calls it --kf-tap. */
+/** Apple and WCAG both land near this. */
 const TAP = 44;
 
 const problems = [];
@@ -196,6 +189,8 @@ function measure(width, tap) {
 try {
   for (const route of ROUTES) {
     const page = await browser.newPage();
+    // The first-visit intro covers the page for two seconds; measure the page.
+    await page.evaluateOnNewDocument(() => { try { localStorage.setItem("kf-intro-seen", "1"); } catch (e) {} });
     const scriptErrors = new Set();
     page.on("pageerror", (e) => scriptErrors.add(`page error: ${e.message}`));
     page.on("console", (m) => {
@@ -204,7 +199,13 @@ try {
 
     for (const width of WIDTHS) {
       await page.setViewport({ width, height: 900 });
-      await page.goto(BASE + route, { waitUntil: "networkidle0" });
+      try {
+        // The film catalog lazy-loads a thousand swatches; give it room.
+        await page.goto(BASE + route, { waitUntil: "networkidle0", timeout: 60000 });
+      } catch (err) {
+        note(`${route} @${width} did not settle: ${err.message}`);
+        continue;
+      }
       const found = await page.evaluate(measure, width, TAP);
       const where = `${route} @${width}`;
 

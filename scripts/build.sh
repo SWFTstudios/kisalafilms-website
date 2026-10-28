@@ -19,9 +19,6 @@ echo
 echo "==> v4 marketing pages, and the v4 chrome onto every page that carries it"
 python3 scripts/build-v4-pages.py
 
-echo
-echo "==> v3 chrome on the pages not yet redesigned"
-python3 scripts/build-v3-chrome.py
 
 echo
 echo "==> Shared scripts into every page"

@@ -7,7 +7,6 @@ Disallow: /404
 Disallow: /admin
 Disallow: /book-thanks
 Disallow: /builds/view
-Disallow: /deposit-thanks
 Disallow: /login
 Disallow: /lookbook/film
 Disallow: /portal

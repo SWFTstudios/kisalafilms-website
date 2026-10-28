@@ -36,7 +36,7 @@
     const cards = builds.map((b) =>
       h("a", { class: "build-card", href: `/builds/view?b=${encodeURIComponent(b.id)}` },
         h("figure", null,
-          h("div", { class: "frame" }, b.cover ? h("img", { src: b.cover, alt: b.title, loading: "lazy" }) : null),
+          h("div", { class: "frame" }, b.cover ? h("img", { src: b.cover, alt: b.title, width: "1600", height: "1200", loading: "lazy" }) : null),
           h("figcaption", null,
             h("div", null, h("h3", { text: b.title }), h("p", { class: "meta", text: [b.service, b.finish].filter(Boolean).join(" · ") })),
             h("span", { class: "link-line", text: "View build" })))));
@@ -62,7 +62,7 @@
     const gallery = document.querySelector("[data-build-gallery]");
     b.photos.forEach((p, i) => {
       const size = i === 0 ? "g-full" : i % 5 < 3 ? "g-half" : "g-third";
-      gallery.append(h("figure", { class: size }, h("img", { src: p.url, alt: p.caption || b.title, loading: "lazy" })));
+      gallery.append(h("figure", { class: size }, h("img", { src: p.url, alt: p.caption || b.title, width: "1600", height: "1067", loading: "lazy" })));
     });
   }
 })();

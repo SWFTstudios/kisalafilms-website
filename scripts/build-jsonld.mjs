@@ -63,7 +63,7 @@ const garage = () => ({
     "Motorcycle colour-change wraps, paint protection film and custom liveries, by appointment, from a one-person studio in Jersey City, NJ.",
   url: `${SITE}/`,
   email: CONFIG.email,
-  image: `${SITE}/images/brand/kisala-films-logo.png`,
+  image: `${SITE}/images/brand/kfilms-moto-logo.png`,
   sameAs: [CONFIG.instagram],
   address: {
     "@type": "PostalAddress",

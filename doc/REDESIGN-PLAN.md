@@ -1,6 +1,6 @@
 # K Films redesign plan — premium motorcycle film studio
 
-**Status:** draft for review. Nothing has been built yet.
+**Status:** built on the `redesign` branch, phases 0–8 complete. See [GO-LIVE.md](./GO-LIVE.md) before merging. Open questions in §10 not answered during the build were filled with the defaults listed there.
 **HQ / workshop:** 95 Christopher Columbus Dr, Jersey City, NJ 07302 (wraps are done here)
 **Reference:** forgeautomotive.co.uk
 

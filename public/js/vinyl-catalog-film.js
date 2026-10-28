@@ -136,7 +136,7 @@
               <button type="button" class="btn btn-primary" data-add-to-build data-track="cta_click" data-track-label="film-add-to-build">
                 ${inBuild ? "Added to build" : "Add to build"}
               </button>
-              <a class="btn btn-ghost" href="/book" data-track="cta_click" data-track-label="film-to-project">View build</a>
+              <a class="btn btn-ghost" href="/book" data-track="cta_click" data-track-label="film-to-book">Start your build</a>
               <a class="btn btn-ghost" href="/vinyl-catalog">All colours</a>
               <a class="btn btn-ghost" href="${escapeHtml(
                 metroHref
@@ -162,7 +162,7 @@
         addBtn.textContent = "Added to build";
         if (toast) {
           toast.hidden = false;
-          toast.innerHTML = `In your build. <a href="/book">Open build</a> to add notes and photos, or keep browsing.`;
+          toast.innerHTML = `Saved. <a href="/book">Start your build</a> and it comes with you, or keep browsing.`;
         }
         window.KisalaTrack?.("vinyl_add_to_build", { label: film.handle });
       });

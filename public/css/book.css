@@ -48,7 +48,7 @@
 @media (min-width: 700px) { .form-row--3 { grid-template-columns: 1fr 1.4fr 1.6fr; } }
 .field.is-invalid input, .field.is-invalid select { border-color: #d07a6b; }
 
-.book-more summary { cursor: pointer; list-style: none; display: inline-flex; gap: 10px; align-items: center; padding: 6px 0; }
+.book-more summary { cursor: pointer; list-style: none; display: inline-flex; gap: 10px; align-items: center; min-height: 44px; }
 .book-more summary::before { content: "+"; font-size: 15px; color: var(--bone-2); }
 .book-more[open] summary::before { content: "–"; }
 .book-more summary span { text-transform: none; letter-spacing: 0; font-weight: 300; }

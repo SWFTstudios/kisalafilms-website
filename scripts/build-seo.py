@@ -28,7 +28,6 @@ SHARE_IMAGE = f"{SITE}/images/refs/ref-05-head-on-1920.webp"
 # Kept out of the index. /thanks.html and /wrap-quote/ are post-conversion and
 # ad-campaign pages; styleguide and 404 have no business in search results.
 NOINDEX = {
-  "deposit-thanks.html",
   "book-thanks.html",
   "login.html",
   "portal.html",
