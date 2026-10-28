@@ -29,7 +29,7 @@
 .js .book-progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: clamp(36px, 5vw, 56px); }
 .book-progress li { display: grid; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--mute); transition: color var(--mid) var(--ease), border-color var(--mid) var(--ease); }
 .book-progress .num { font-family: var(--serif); font-size: 1.05rem; }
-.book-progress .name { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; }
+.book-progress .name { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
 .book-progress li.is-done { color: var(--bone-2); border-color: var(--line-strong); }
 .book-progress li.is-current { color: var(--bone); border-color: var(--bone); }
 @media (max-width: 599px) { .book-progress .name { display: none; } }
@@ -40,7 +40,7 @@
 .js .book-step:not(.is-current) { display: none; }
 .js .book-step { margin-bottom: 0; animation: step-in 0.7s var(--ease); }
 @keyframes step-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-.field > .label span, .field > label.label span { text-transform: none; letter-spacing: 0; color: var(--mute); font-weight: 300; }
+.field > .label span, .field > label.label span { text-transform: none; letter-spacing: 0; color: var(--mute); font-weight: 400; }
 .field select { appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--bone-2) 50%), linear-gradient(135deg, var(--bone-2) 50%, transparent 50%); background-position: calc(100% - 12px) 55%, calc(100% - 7px) 55%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
 .field select option { background: var(--ink-3); color: var(--bone); }
 .field .meta { margin: 0; }
@@ -51,7 +51,7 @@
 .book-more summary { cursor: pointer; list-style: none; display: inline-flex; gap: 10px; align-items: center; min-height: 44px; }
 .book-more summary::before { content: "+"; font-size: 15px; color: var(--bone-2); }
 .book-more[open] summary::before { content: "–"; }
-.book-more summary span { text-transform: none; letter-spacing: 0; font-weight: 300; }
+.book-more summary span { text-transform: none; letter-spacing: 0; font-weight: 400; }
 .book-more .form-row { margin-top: 20px; }
 
 /* Shown only when the wizard decides they apply. */
@@ -68,7 +68,7 @@
 .bike-results li:first-child { border-top: 0; }
 .bike-results li[aria-selected="true"], .bike-results li:hover { background: var(--ink-2); color: var(--bone); }
 .bike-results .meta { flex: none; }
-.bike-results .bike-results-other { color: var(--steel); }
+.bike-results .bike-results-other { color: var(--gold); }
 
 /* ---- Choice cards and chips -------------------------------------------- */
 .choices { display: grid; gap: 12px; }
@@ -82,11 +82,11 @@
 }
 .choice-title { font-family: var(--serif); font-size: 1.6rem; line-height: 1.1; color: var(--bone); }
 .choice-text { color: var(--bone-2); font-size: 15px; }
-.choice-meta { margin-top: 8px; font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--mute); }
+.choice-meta { margin-top: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); }
 .choice:hover .choice-body { border-color: var(--line-strong); }
 .choice input:checked + .choice-body { border-color: var(--bone); background: var(--ink-2); }
-.choice input:checked + .choice-body .choice-meta { color: var(--steel); }
-.choice input:focus-visible + .choice-body { outline: 1px solid var(--steel); outline-offset: 3px; }
+.choice input:checked + .choice-body .choice-meta { color: var(--gold); }
+.choice input:focus-visible + .choice-body { outline: 1px solid var(--gold); outline-offset: 3px; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .chip { position: relative; cursor: pointer; }
@@ -97,12 +97,12 @@
 }
 .chip:hover span { border-color: var(--line-strong); color: var(--bone); }
 .chip input:checked + span { border-color: var(--bone); background: var(--bone); color: var(--ink); }
-.chip input:focus-visible + span { outline: 1px solid var(--steel); outline-offset: 3px; }
+.chip input:focus-visible + span { outline: 1px solid var(--gold); outline-offset: 3px; }
 
 /* ---- Photos ------------------------------------------------------------- */
 .angle-list { display: flex; flex-wrap: wrap; gap: 8px 22px; }
 .angle-list li { font-size: 13px; color: var(--bone-2); display: inline-flex; align-items: center; gap: 8px; }
-.angle-list li::before { content: ""; width: 5px; height: 5px; border: 1px solid var(--steel); transform: rotate(45deg); }
+.angle-list li::before { content: ""; width: 5px; height: 5px; border: 1px solid var(--gold); transform: rotate(45deg); }
 
 .dropzone {
   position: relative; display: grid; place-items: center; gap: 10px; text-align: center;
@@ -114,7 +114,7 @@
 .no-js-photos .dropzone input { position: static; opacity: 1; }
 .dropzone-title { font-family: var(--serif); font-size: 1.9rem; line-height: 1; }
 .dropzone .meta { max-width: 32em; }
-.dropzone:focus-within { outline: 1px solid var(--steel); outline-offset: 4px; }
+.dropzone:focus-within { outline: 1px solid var(--gold); outline-offset: 4px; }
 
 .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
 .thumbs:empty { display: none; }

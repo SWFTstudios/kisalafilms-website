@@ -44,6 +44,8 @@ Check `ADMIN_EMAILS` in `wrangler.jsonc`. It decides who can open `/admin`, and 
 
 ## 4. Decide and fill in
 
+- [ ] **Brand guide password.** `npx wrangler secret put STYLEGUIDE_PASSWORD`; until it's set, `/internal/brand-style-guide` refuses everyone. Its sample headlines and voice examples still describe the earlier cinematic photography brand.
+
 - [ ] **Deposit rule.** The quote builder defaults to 25%, editable per quote (`deposit.percent` in `kisala-config.js`). Decide whether deposits are refundable, and say so in the FAQ.
 - [ ] **Studio times** on the service pages: colour change 2–3 days, accents 1–2 days, chrome delete "usually 1 day". Confirm or correct them in `scripts/build-v4-pages.py`, then `npm run build`.
 - [ ] **Build 001 wording.** The F4i is described as "the first bike through the studio".

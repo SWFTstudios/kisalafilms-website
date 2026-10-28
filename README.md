@@ -11,7 +11,7 @@ The redesign plan is [doc/REDESIGN-PLAN.md](./doc/REDESIGN-PLAN.md). Before swit
 - Static pages in `public/`, served by a Cloudflare Worker with [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/). No bundler, no framework.
 - The Worker ([`src/index.ts`](./src/index.ts)) is the API: sign-in, jobs, photos, quotes, payments, the admin, and 301s for every retired URL.
 - **D1** for customers, jobs, the timeline, quotes and payments ([`migrations/`](./migrations/)). **R2** (`kisalafilms-photos`) for photos. **Stripe Checkout** for payments. **Cloudflare Email Service** (or Resend) for mail.
-- One design system: [`public/css/kf.css`](./public/css/kf.css): black canvas, Instrument Serif headlines, Inter text, one warm-metal accent. [`/styleguide`](./public/styleguide.html) renders it. Page-specific sheets ([`book.css`](./public/css/book.css), [`portal.css`](./public/css/portal.css), [`admin.css`](./public/css/admin.css), [`catalog.css`](./public/css/catalog.css)) use its tokens and define no colours or type of their own.
+- One design system: [`public/css/kf.css`](./public/css/kf.css): the brand style guide's palette and type (Fraunces headlines, Hanken Grotesk text, one champagne-gold accent). The guide itself is at `/internal/brand-style-guide`, behind HTTP basic auth (`wrangler secret put STYLEGUIDE_PASSWORD`). [`/styleguide`](./public/styleguide.html) renders it. Page-specific sheets ([`book.css`](./public/css/book.css), [`portal.css`](./public/css/portal.css), [`admin.css`](./public/css/admin.css), [`catalog.css`](./public/css/catalog.css)) use its tokens and define no colours or type of their own.
 - Motion and chrome in one script, [`public/js/kf.js`](./public/js/kf.js): menu overlay, first-visit intro, reveals, the pinned chapters, parallax. Everything readable with scripts off, and still under `prefers-reduced-motion`.
 - Auto-deploys on push to `main` → https://kisalafilms-website.elombe.workers.dev
 
@@ -38,9 +38,10 @@ On localhost, mail is written to the Worker log instead of sent, and the sign-in
 | `/book` → `/book-thanks` | **Start your build**, the intake wizard |
 | `/login`, `/portal` | Passwordless sign-in and the client portal (`noindex`) |
 | `/admin` | The studio admin (`noindex`, `ADMIN_EMAILS` only) |
+| `/internal/brand-style-guide` | The brand guide: colour, type, buttons, imagery, voice. Basic auth via `STYLEGUIDE_PASSWORD`; refuses everyone while unset |
 | `/wrap-quote/` | The Meta ads landing page: self-contained, own inline styles, posts to FormSubmit (`noindex`) |
 
-Retired routes (`/about`, `/gallery`, `/pricing`, `/quote`, `/wrap-studio`, `/shop/*`, `/project`…) are 301s in `RETIRED` in [`src/index.ts`](./src/index.ts). Their files are deleted, because a static file would answer before the Worker could redirect.
+Retired routes (`/about`, `/gallery`, `/pricing`, `/quote`, `/wrap-studio`, `/shop/*`, `/project`, and the earlier cinematic pages `/events`, `/portraits`, `/portfolio`…) are 301s in `RETIRED` in [`src/index.ts`](./src/index.ts). Their files are deleted, because a static file would answer before the Worker could redirect.
 
 ## Generated pages
 

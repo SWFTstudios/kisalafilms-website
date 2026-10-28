@@ -7,7 +7,24 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    /* Pages and the API go to the Worker first; plain files (CSS, JS,
+       images, data) are served straight from the asset store. Without the
+       Worker running first, the basic-auth gate on /internal/* never sees the
+       request and the brand guide is public. Listing only /internal/* is not
+       enough: with a pattern list, a path that matches nothing and has no
+       file (every /api/* route, every retired-page redirect) gets the 404
+       page instead of the Worker. */
+    "run_worker_first": [
+      "/*",
+      "!/css/*",
+      "!/js/*",
+      "!/images/*",
+      "!/data/*",
+      "!/videos/*",
+      "!/robots.txt",
+      "!/sitemap.xml"
+    ]
   },
   "observability": {
     "enabled": true
@@ -28,7 +45,10 @@
      Optional: wrangler secret put SITE_URL  (defaults to the request host)
      Films import: wrangler secret put FILMS_IMPORT_TOKEN
      Founder admin (mark completed orders / force price sync):
-     wrangler secret put FOUNDER_ADMIN_TOKEN */
+     wrangler secret put FOUNDER_ADMIN_TOKEN
+     Internal docs (HTTP basic auth for everything under /internal/, e.g.
+     the brand style guide — unset means /internal/* refuses all requests):
+     wrangler secret put STYLEGUIDE_PASSWORD */
   /* Client portal photos. Create once with:
        npx wrangler r2 bucket create kisalafilms-photos */
   "r2_buckets": [

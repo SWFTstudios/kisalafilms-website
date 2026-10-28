@@ -18,7 +18,7 @@
   --kf-white: var(--bone);
   --kf-silver: var(--bone-2);
   --kf-muted: var(--mute);
-  --kf-red: var(--steel);
+  --kf-red: var(--gold);
   --kf-font-display: var(--serif);
   --kf-font-body: var(--sans);
   --kf-track: 0.2em;
@@ -34,13 +34,13 @@
 /* ---- Generic v3 classes the catalog scripts still write ----------------- */
 .catalog-offset { padding-top: calc(var(--header-h) + 32px); padding-bottom: 64px; }
 .kf-vinyl-catalog-body { padding: 0 0 clamp(64px, 8vw, 104px); }
-.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: var(--mute); }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mute); }
 .p-lg { font-size: 1.1rem; line-height: 1.65; color: var(--bone-2); }
 .p { color: var(--bone-2); }
 .h5 { font-family: var(--serif); font-size: 1.3rem; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 .btn-primary { background: var(--bone); color: var(--ink); border-color: var(--bone); }
-.btn-primary::before { background: var(--steel); }
+.btn-primary::before { background: var(--gold); }
 .btn-ghost { background: transparent; }
 .kf-film-copy h1 { font-family: var(--serif); font-size: clamp(2.4rem, 5vw, 4.4rem); line-height: 1; margin: 12px 0 16px; }
 

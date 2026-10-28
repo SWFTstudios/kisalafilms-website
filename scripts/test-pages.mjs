@@ -46,8 +46,9 @@ const pages = walk(PUBLIC)
   .map((f) => ({ rel: relative(PUBLIC, f), html: readFileSync(f, "utf8") }))
   .filter((p) => !isStub(p.html));
 
-/** The ad landing page is deliberately self-contained, with no site chrome. */
-const STANDALONE = new Set(["wrap-quote/index.html"]);
+/** Self-contained on purpose, with no site chrome: the ad landing page, and
+ *  the password-gated internal brand guide. */
+const STANDALONE = new Set(["wrap-quote/index.html", "internal/brand-style-guide.html"]);
 /** Pages whose <h1> is drawn by their script (signed in, or once the film loads). */
 const SCRIPTED_H1 = new Set(["portal.html", "admin.html", "vinyl-catalog/film.html"]);
 
@@ -168,6 +169,14 @@ expect(existsSync(join(PUBLIC, "robots.txt")), "robots.txt", "missing");
 for (const [from, to] of Object.entries(RETIRED)) {
   expect(pageExists(to), "src/index.ts RETIRED", `${from} redirects to ${to}, which doesn't exist`);
   expect(!pageExists(from) || DYNAMIC.some((r) => r.test(from)), "src/index.ts RETIRED", `${from} still has a file, so the redirect never runs`);
+}
+
+// /internal/* is behind basic auth in the Worker, which only works if the
+// Worker runs before the static file would be served.
+const wranglerConfig = readFileSync(join(ROOT, "wrangler.jsonc"), "utf8");
+if (existsSync(join(PUBLIC, "internal"))) {
+  expect(/"run_worker_first":\s*\[[^\]]*"\/\*"/.test(wranglerConfig) && !/"!\/internal/.test(wranglerConfig), "wrangler.jsonc",
+    "assets.run_worker_first must send /internal/* to the Worker, or the internal pages are public");
 }
 
 // The intake form's native post must carry the names the Worker reads.

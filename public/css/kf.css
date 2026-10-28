@@ -6,20 +6,23 @@
    ========================================================================== */
 
 /* ---- Tokens ------------------------------------------------------------- */
+/* The palette and type are the K Films brand style guide (/internal/
+   brand-style-guide): six colours, Fraunces over Hanken Grotesk. Gold is an
+   accent, never a fill bigger than a button. */
 :root {
-  --ink: #070707;          /* page */
-  --ink-2: #0d0d0d;        /* raised surface */
-  --ink-3: #151515;        /* card, input */
-  --line: rgba(236, 232, 225, 0.12);
-  --line-strong: rgba(236, 232, 225, 0.28);
-  --bone: #ece8e1;         /* primary text */
-  --bone-2: #b8b3aa;       /* secondary text */
-  --mute: #827e77;         /* labels, meta: 5.0:1 on ink, 4.8:1 on ink-2 */
-  --steel: #c9c1b4;        /* accent: brushed warm metal */
-  --steel-deep: #8e8677;
+  --ink: #0b0b0c;          /* Ink Black: page */
+  --ink-2: #16151a;        /* Charcoal Surface: panels, footer */
+  --ink-3: #1e1d22;        /* a step up from charcoal: cards, inputs */
+  --line: rgba(241, 236, 227, 0.12);
+  --line-strong: rgba(241, 236, 227, 0.28);
+  --bone: #f1ece3;         /* Bone White: primary text */
+  --bone-2: #c4bdb2;       /* body copy, between bone and stone */
+  --mute: #8b8680;         /* Muted Stone: captions, labels (4.6:1 at worst) */
+  --gold: #b08d57;         /* Champagne Gold: the accent */
+  --gold-deep: #7a5c34;    /* Deep Amber: hover states, borders */
 
-  --serif: "Instrument Serif", "Times New Roman", serif;
-  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Fraunces", "Times New Roman", serif;
+  --sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --gutter: clamp(16px, 4vw, 56px);
   --max: 1440px;
@@ -46,7 +49,7 @@ body {
   background: var(--ink);
   color: var(--bone);
   font-family: var(--sans);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -74,9 +77,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 p { margin: 0 0 1em; }
 h1, h2, h3, h4 { margin: 0; font-weight: 400; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
-::selection { background: var(--steel); color: var(--ink); }
+::selection { background: var(--gold); color: var(--ink); }
 
-:focus-visible { outline: 1px solid var(--steel); outline-offset: 4px; }
+:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
 
 .skip-link {
   position: absolute; left: 16px; top: -80px; z-index: 200;
@@ -99,20 +102,21 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .display-s {
   font-family: var(--serif);
   font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 0.98;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  font-optical-sizing: auto;
 }
-.display-xl { font-size: clamp(3.4rem, 9.5vw, 9.5rem); }
-.display-l  { font-size: clamp(2.8rem, 6.6vw, 6.4rem); }
-.display-m  { font-size: clamp(2.2rem, 4.4vw, 4.2rem); line-height: 1.04; }
-.display-s  { font-size: clamp(1.7rem, 2.6vw, 2.5rem); line-height: 1.1; }
-.display-xl em, .display-l em, .display-m em, .display-s em { font-style: italic; color: var(--steel); }
+.display-xl { font-size: clamp(3rem, 8.4vw, 8.4rem); }
+.display-l  { font-size: clamp(2.5rem, 5.8vw, 5.6rem); }
+.display-m  { font-size: clamp(2rem, 3.9vw, 3.7rem); line-height: 1.06; }
+.display-s  { font-size: clamp(1.55rem, 2.3vw, 2.2rem); line-height: 1.15; }
+.display-xl em, .display-l em, .display-m em, .display-s em { font-style: italic; color: var(--gold); }
 
 .label {
   font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.28em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--mute);
 }
@@ -135,9 +139,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   min-height: 52px;
   padding: 0 28px;
   border: 1px solid var(--line-strong);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.28em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--bone);
   white-space: nowrap;
@@ -157,8 +161,15 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .btn:hover { color: var(--ink); border-color: var(--bone); }
 .btn:hover::before { transform: scaleY(1); }
 
-.btn--solid { background: var(--bone); color: var(--ink); border-color: var(--bone); }
-.btn--solid::before { background: var(--steel); }
+/* Per the brand guide: .btn is ghost (tertiary), .btn--outline is outline
+   gold (the header's navigation CTA), .btn--solid is solid gold, kept to the
+   one highest-priority action on a screen. */
+.btn--outline { border-color: var(--gold); color: var(--gold); }
+.btn--outline::before { background: var(--gold); }
+.btn--outline:hover { border-color: var(--gold); }
+.btn--solid { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.btn--solid::before { background: var(--bone); }
+.btn--solid:hover { border-color: var(--bone); }
 .btn--small { min-height: 44px; padding: 0 18px; font-size: 10px; }
 
 .btn-arrow { width: 18px; height: 1px; background: currentColor; position: relative; }
@@ -170,7 +181,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 .link-line {
   display: inline-flex; align-items: center; gap: 12px; min-height: 44px;
-  font-size: 11px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
   padding-bottom: 6px;
   background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
   transition: background-size var(--mid) var(--ease);
@@ -208,7 +219,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 .menu-toggle {
   display: inline-flex; align-items: center; gap: 14px; min-height: 44px; min-width: 44px; justify-content: flex-end;
-  font-size: 11px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
 }
 .menu-toggle-lines { position: relative; width: 22px; height: 9px; }
 .menu-toggle-lines::before,
@@ -259,7 +270,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .menu-nav a small { font-family: var(--sans); font-size: 11px; letter-spacing: 0.2em; color: var(--mute); }
 .menu-nav a:hover, .menu-nav a[aria-current="page"] { color: var(--bone); }
-.menu-nav a:hover em { color: var(--steel); }
+.menu-nav a:hover em { color: var(--gold); }
 .menu-nav em { font-style: italic; transition: color var(--fast); }
 .menu-open .menu-nav a { transform: none; opacity: 1; }
 .menu-open .menu-nav li:nth-child(2) a { transition-delay: 0.05s, 0.25s, 0.25s; }
@@ -619,7 +630,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .next-page { display: block; padding: clamp(56px, 8vw, 120px) 0; border-top: 1px solid var(--line); }
 .next-page .display-l { display: inline-flex; align-items: center; gap: 0.3em; transition: color var(--fast); }
 .next-page .btn-arrow { width: 0.9em; transition: width var(--mid) var(--ease); }
-.next-page:hover .display-l { color: var(--steel); }
+.next-page:hover .display-l { color: var(--gold); }
 .next-page:hover .btn-arrow { width: 1.3em; }
 .next-page .label { display: block; margin-bottom: 20px; }
 
@@ -681,8 +692,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   font-family: var(--serif); font-size: clamp(1.4rem, 2.2vw, 2rem); line-height: 1.2;
   transition: color var(--fast);
 }
-.faq-q:hover { color: var(--steel); }
-.faq-q .mark { font-family: var(--sans); font-weight: 300; font-size: 1.4rem; color: var(--mute); flex: none; }
+.faq-q:hover { color: var(--gold); }
+.faq-q .mark { font-family: var(--sans); font-weight: 400; font-size: 1.4rem; color: var(--mute); flex: none; }
 .faq-a { margin: 0; padding: 0 0 28px; color: var(--bone-2); max-width: 44em; }
 .js .faq-item:not(.open) .faq-a { display: none; }
 
@@ -699,7 +710,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .field textarea { resize: vertical; min-height: 140px; }
 .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--bone); }
 .field ::placeholder { color: var(--mute); }
-.form-note { display: none; margin: 0; color: var(--steel); }
+.form-note { display: none; margin: 0; color: var(--gold); }
 .form-note.show { display: block; }
 
 /* ---- Notice band -------------------------------------------------------- */
