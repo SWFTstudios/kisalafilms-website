@@ -9,7 +9,8 @@
  * What it asserts is limited to what the site can stand behind: the business
  * name, the Jersey City locality, the email, the published hours,
  * appointment-only, and the three served areas. No aggregateRating, no review
- * markup, no street address, no telephone, no invented credentials.
+ * markup, no telephone, no invented credentials. The street address is the
+ * Jersey City HQ in kisala-config.js.
  *
  * Idempotent. Re-run after editing prices, the FAQ or the page set.
  *
@@ -66,6 +67,8 @@ const garage = () => ({
   sameAs: [CONFIG.instagram],
   address: {
     "@type": "PostalAddress",
+    streetAddress: CONFIG.garage.street,
+    postalCode: CONFIG.garage.postalCode,
     addressLocality: CONFIG.garage.city,
     addressRegion: CONFIG.garage.region,
     addressCountry: CONFIG.garage.country,

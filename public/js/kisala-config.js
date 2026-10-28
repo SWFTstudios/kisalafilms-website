@@ -329,6 +329,8 @@ window.KISALA_CONFIG = {
 
   /* ---- Garage --------------------------------------------------------- */
   garage: {
+    street: "95 Christopher Columbus Dr",
+    postalCode: "07302",
     city: "Jersey City",
     region: "NJ",
     regionName: "New Jersey",

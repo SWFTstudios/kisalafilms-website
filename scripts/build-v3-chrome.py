@@ -31,7 +31,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = ROOT / "public"
-SOURCE = PUBLIC / "index.html"
+# The redesign replaced the home page, so the v3 chrome is read from a frozen
+# copy of the old one until every page has moved to the new design.
+SOURCE = ROOT / "scripts" / "v3-chrome-source.html"
 
 BLOCKS = ("HEADER", "FOOTER")
 
